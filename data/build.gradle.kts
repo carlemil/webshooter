@@ -50,7 +50,8 @@ dependencies {
     // Room
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.paging)
-    kapt("androidx.room:room-compiler:2.6.1")
+    //noinspection KaptUsageInsteadOfKsp
+    kapt(libs.androidx.room.compiler)
 
     // Test
     testImplementation(libs.junit)

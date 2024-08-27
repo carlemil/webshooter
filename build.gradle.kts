@@ -12,6 +12,6 @@ buildscript {
         mavenCentral()
     }
     dependencies {
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.0") // Use the appropriate version
+        classpath(libs.kotlin.gradle.plugin) // Use the appropriate version
     }
 }
