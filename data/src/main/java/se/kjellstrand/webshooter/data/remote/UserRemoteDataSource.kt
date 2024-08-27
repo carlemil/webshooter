@@ -1,11 +1,12 @@
 package se.kjellstrand.webshooter.data.remote
 
-import kotlinx.coroutines.flow.Flow
+import se.kjellstrand.webshooter.util.Resource
+
 
 class UserRemoteDataSource {
 
-    fun getAll(): Flow<List<UserDto>> {
-        throw NotImplementedError()
+    fun getAll(): Resource<List<UserDto>> {
+        return Resource.Error( NotImplementedError().toString())
     }
 
 }

@@ -61,6 +61,10 @@ dependencies {
     testImplementation("com.google.truth:truth:1.1.5")
     implementation("com.google.dagger:hilt-android:2.44")
     kapt("com.google.dagger:hilt-android-compiler:2.44")
+    testImplementation("org.mockito:mockito-core:5.0.0")
+    testImplementation("net.bytebuddy:byte-buddy:1.12.0")
+    // If using Android instrumentation tests
+    androidTestImplementation("org.mockito:mockito-core:5.0.0")
 }
 
 // Allow references to generated code
