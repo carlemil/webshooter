@@ -48,23 +48,21 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 
     // Room
-    implementation("androidx.room:room-ktx:2.6.1")
-    implementation("androidx.room:room-paging:2.6.1")
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.room.paging)
     kapt("androidx.room:room-compiler:2.6.1")
 
     // Test
-    testImplementation("junit:junit:4.13.2")
-    androidTestImplementation("androidx.test.ext:junit:1.1.3")
-    androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
-    androidTestImplementation("com.google.truth:truth:1.0.1")
-    androidTestImplementation("android.arch.core:core-testing:1.0.0")
-    testImplementation("com.google.truth:truth:1.1.5")
-    implementation("com.google.dagger:hilt-android:2.44")
-    kapt("com.google.dagger:hilt-android-compiler:2.44")
-    testImplementation("org.mockito:mockito-core:5.0.0")
-    testImplementation("net.bytebuddy:byte-buddy:1.12.0")
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.truth)
+    androidTestImplementation(libs.core.testing)
+    testImplementation(libs.truth)
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.byte.buddy)
     // If using Android instrumentation tests
-    androidTestImplementation("org.mockito:mockito-core:5.0.0")
+    androidTestImplementation(libs.mockito.core)
 }
 
 // Allow references to generated code
