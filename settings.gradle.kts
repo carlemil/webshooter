@@ -22,4 +22,5 @@ dependencyResolutionManagement {
 rootProject.name = "Web Shooter"
 include(":ui")
 include(":data")
-include(":afdfh")
+include(":domain")
+include(":di")

@@ -15,6 +15,9 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
+import se.kjellstrand.webshooter.data.local.AppDatabase
+import se.kjellstrand.webshooter.data.local.UserDao
+import se.kjellstrand.webshooter.data.local.UserEntity
 import java.util.concurrent.CountDownLatch
 
 /**
@@ -24,7 +27,7 @@ import java.util.concurrent.CountDownLatch
  */
 @RunWith(AndroidJUnit4::class)
 @SmallTest
-class UserDaoInstrumentedTest {
+class UserEntityDaoInstrumentedTest {
     private lateinit var database: AppDatabase
     private lateinit var userDao: UserDao
 
@@ -47,18 +50,26 @@ class UserDaoInstrumentedTest {
 
     @Test
     fun insertUsers_andGetAllUsers() = runBlocking {
-        val user1 =
-            User(uid = 1, firstName = "John", lastName = "Doe", pistolShooterCardNumber = 12345)
-        val user2 =
-            User(uid = 2, firstName = "Jane", lastName = "Doe", pistolShooterCardNumber = 67890)
-        userDao.insertAll(user1, user2)
+        val userEntity1 =
+            UserEntity(
+                uid = 1,
+                firstName = "John",
+                lastName = "Doe",
+                pistolShooterCardNumber = 12345
+            )
+        val userEntity2 =
+            UserEntity(
+                uid = 2,
+                firstName = "Jane",
+                lastName = "Doe",
+                pistolShooterCardNumber = 67890
+            )
+        userDao.insertAll(listOf(userEntity1, userEntity2))
 
         val latch = CountDownLatch(1)
         val job = async(Dispatchers.IO) {
-            userDao.getAll().collect {
-                assertThat(it).containsExactly(user1, user2)
+            assertThat(userDao.getAll()).containsExactly(userEntity1, userEntity2)
                 latch.countDown()
-            }
         }
         latch.await()
         job.cancelAndJoin()
@@ -66,18 +77,29 @@ class UserDaoInstrumentedTest {
 
     @Test
     fun loadUsersByIds() = runBlocking {
-        val user1 =
-            User(uid = 1, firstName = "John", lastName = "Doe", pistolShooterCardNumber = 12345)
-        val user2 =
-            User(uid = 2, firstName = "Jane", lastName = "Doe", pistolShooterCardNumber = 67890)
-        userDao.insertAll(user1, user2)
+        val userEntity1 =
+            UserEntity(
+                uid = 1,
+                firstName = "John",
+                lastName = "Doe",
+                pistolShooterCardNumber = 12345
+            )
+        val userEntity2 =
+            UserEntity(
+                uid = 2,
+                firstName = "Jane",
+                lastName = "Doe",
+                pistolShooterCardNumber = 67890
+            )
+        userDao.insertAll(listOf(userEntity1, userEntity2))
 
         val latch = CountDownLatch(1)
         val job = async(Dispatchers.IO) {
-            userDao.loadAllByIds(intArrayOf(1, 2)).collect {
-                assertThat(it).containsExactly(user1, user2)
+            assertThat(userDao.loadAllByIds(intArrayOf(1, 2))).containsExactly(
+                userEntity1,
+                userEntity2
+            )
                 latch.countDown()
-            }
         }
         latch.await()
         job.cancelAndJoin()
@@ -85,18 +107,26 @@ class UserDaoInstrumentedTest {
 
     @Test
     fun findUserByPSCNumber() = runBlocking {
-        val user1 =
-            User(uid = 1, firstName = "John", lastName = "Doe", pistolShooterCardNumber = 12345)
-        val user2 =
-            User(uid = 2, firstName = "Jane", lastName = "Doe", pistolShooterCardNumber = 67890)
-        userDao.insertAll(user1, user2)
+        val userEntity1 =
+            UserEntity(
+                uid = 1,
+                firstName = "John",
+                lastName = "Doe",
+                pistolShooterCardNumber = 12345
+            )
+        val userEntity2 =
+            UserEntity(
+                uid = 2,
+                firstName = "Jane",
+                lastName = "Doe",
+                pistolShooterCardNumber = 67890
+            )
+        userDao.insertAll(listOf(userEntity1, userEntity2))
 
         val latch = CountDownLatch(1)
         val job = async(Dispatchers.IO) {
-            userDao.findByPSCNumber(12345).collect {
-                assertThat(it).isEqualTo(user1)
+            assertThat(userDao.findByPSCNumber(12345)).isEqualTo(userEntity1)
                 latch.countDown()
-            }
         }
         latch.await()
         job.cancelAndJoin()
@@ -104,18 +134,21 @@ class UserDaoInstrumentedTest {
 
     @Test
     fun deleteUser() = runBlocking {
-        val user =
-            User(uid = 1, firstName = "John", lastName = "Doe", pistolShooterCardNumber = 12345)
-        userDao.insertAll(user)
+        val userEntity =
+            UserEntity(
+                uid = 1,
+                firstName = "John",
+                lastName = "Doe",
+                pistolShooterCardNumber = 12345
+            )
+        userDao.insertAll(listOf(userEntity))
 
-        userDao.delete(user)
+        userDao.delete(userEntity)
 
         val latch = CountDownLatch(1)
         val job = async(Dispatchers.IO) {
-            userDao.getAll().collect {
-                assertThat(it).doesNotContain(user)
+            assertThat(userDao.getAll()).doesNotContain(userEntity)
                 latch.countDown()
-            }
         }
         latch.await()
         job.cancelAndJoin()

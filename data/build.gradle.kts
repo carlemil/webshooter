@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.android)
     //id("com.google.dagger.hilt.android")
     kotlin("kapt") version "1.9.0"
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -57,6 +58,12 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.4.0")
     androidTestImplementation("com.google.truth:truth:1.0.1")
     androidTestImplementation("android.arch.core:core-testing:1.0.0")
-    testImplementation ("com.google.truth:truth:1.1.5")
+    testImplementation("com.google.truth:truth:1.1.5")
+    implementation("com.google.dagger:hilt-android:2.44")
+    kapt("com.google.dagger:hilt-android-compiler:2.44")
+}
 
+// Allow references to generated code
+kapt {
+    correctErrorTypes = true
 }
