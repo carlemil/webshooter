@@ -41,7 +41,10 @@ class UserLocalDataSourceInstrumentedTest {
     @Test
     fun testPutAndGetUsers() {
         // Given an empty database
-        val users = listOf(UserEntity(1, "John", "Doe", 123456789), UserEntity(2, "Jane","Doe", 234567890))
+        val users = listOf(
+            UserEntity(1, "John", "Doe", 123456789),
+            UserEntity(2, "Jane", "Doe", 234567890)
+        )
 
         // When inserting users
         userLocalDataSource.put(users)

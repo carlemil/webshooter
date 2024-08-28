@@ -43,27 +43,31 @@ dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
 
     // Room
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.room.paging)
-    //noinspection KaptUsageInsteadOfKsp
     kapt(libs.androidx.room.compiler)
+
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.okhttp)
+    implementation(libs.logging.interceptor)
 
     // Test
     testImplementation(libs.junit)
-    androidTestImplementation(libs.truth)
-    androidTestImplementation(libs.core.testing)
     testImplementation(libs.truth)
-    implementation(libs.hilt.android)
-    kapt(libs.hilt.android.compiler)
     testImplementation(libs.mockito.core)
     testImplementation(libs.byte.buddy)
-    // If using Android instrumentation tests
+    androidTestImplementation(libs.truth)
+    androidTestImplementation(libs.core.testing)
     androidTestImplementation(libs.mockito.core)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+
 }
 
 // Allow references to generated code
