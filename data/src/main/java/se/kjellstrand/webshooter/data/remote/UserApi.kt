@@ -8,7 +8,7 @@ interface UserApi {
 
     @GET("user/{pistolShooterCardNumber}")
     suspend fun getUser(
-        @Path("category") category: String,
+        @Path("pistolShooterCardNumber") pistolShooterCardNumber: String,
         @Query("page") page: Int,
         @Query("api_key") apiKey: String = API_KEY
     ): UserDto

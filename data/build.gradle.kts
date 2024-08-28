@@ -45,6 +45,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.hilt.android)
     kapt(libs.hilt.android.compiler)
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
 
     // Room
     implementation(libs.androidx.room.ktx)
@@ -62,12 +63,13 @@ dependencies {
     testImplementation(libs.truth)
     testImplementation(libs.mockito.core)
     testImplementation(libs.byte.buddy)
-    androidTestImplementation(libs.truth)
-    androidTestImplementation(libs.core.testing)
-    androidTestImplementation(libs.mockito.core)
-    androidTestImplementation(libs.androidx.junit)
+    testImplementation(libs.okhttp3.mockwebserver)
+    androidTestImplementation(libs.okhttp3.mockwebserver)
     androidTestImplementation(libs.androidx.espresso.core)
-
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.mockito.core)
+    androidTestImplementation(libs.core.testing)
+    androidTestImplementation(libs.truth)
 }
 
 // Allow references to generated code
