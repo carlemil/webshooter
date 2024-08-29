@@ -8,7 +8,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import se.kjellstrand.webshooter.data.local.AppDatabase
+import se.kjellstrand.webshooter.data.local.ShooterDatabase
 import se.kjellstrand.webshooter.data.local.UserDao
 import se.kjellstrand.webshooter.data.local.UserEntity
 import se.kjellstrand.webshooter.data.local.UserLocalDataSource
@@ -17,7 +17,7 @@ import se.kjellstrand.webshooter.data.local.UserLocalDataSource
 class UserLocalDataSourceInstrumentedTest {
 
     private lateinit var userDao: UserDao
-    private lateinit var db: AppDatabase
+    private lateinit var db: ShooterDatabase
     private lateinit var userLocalDataSource: UserLocalDataSource
 
     @Before
@@ -25,11 +25,11 @@ class UserLocalDataSourceInstrumentedTest {
         // Create an in-memory database
         db = Room.inMemoryDatabaseBuilder(
             InstrumentationRegistry.getInstrumentation().context,
-            AppDatabase::class.java
+            ShooterDatabase::class.java
         ).build()
 
         // Initialize UserDao and UserLocalDataSource
-        userDao = db.userDao()
+        userDao = db.userDao
         userLocalDataSource = UserLocalDataSource(userDao)
     }
 

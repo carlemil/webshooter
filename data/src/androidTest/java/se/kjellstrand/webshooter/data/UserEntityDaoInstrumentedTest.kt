@@ -15,7 +15,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import se.kjellstrand.webshooter.data.local.AppDatabase
+import se.kjellstrand.webshooter.data.local.ShooterDatabase
 import se.kjellstrand.webshooter.data.local.UserDao
 import se.kjellstrand.webshooter.data.local.UserEntity
 import java.util.concurrent.CountDownLatch
@@ -28,17 +28,17 @@ import java.util.concurrent.CountDownLatch
 @RunWith(AndroidJUnit4::class)
 @SmallTest
 class UserEntityDaoInstrumentedTest {
-    private lateinit var database: AppDatabase
+    private lateinit var database: ShooterDatabase
     private lateinit var userDao: UserDao
 
     @Before
     fun setupDatabase() {
         database = Room.inMemoryDatabaseBuilder(
             ApplicationProvider.getApplicationContext(),
-            AppDatabase::class.java
+            ShooterDatabase::class.java
         ).allowMainThreadQueries().build()
 
-        userDao = database.userDao()
+        userDao = database.userDao
     }
 
     @Test
