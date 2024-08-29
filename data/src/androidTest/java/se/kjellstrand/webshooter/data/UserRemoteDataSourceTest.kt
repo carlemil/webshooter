@@ -12,12 +12,12 @@ import org.junit.Before
 import org.junit.Test
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import se.kjellstrand.webshooter.data.remote.UserApi
+import se.kjellstrand.webshooter.data.remote.UserRemoteDataSource
 
-class UserApiTest {
+class UserRemoteDataSourceTest {
 
     private lateinit var mockWebServer: MockWebServer
-    private lateinit var userApi: UserApi
+    private lateinit var userApi: UserRemoteDataSource
 
     @Before
     fun setUp() {
@@ -34,7 +34,7 @@ class UserApiTest {
             .client(OkHttpClient.Builder().build())
             .build()
 
-        userApi = retrofit.create(UserApi::class.java)
+        userApi = retrofit.create(UserRemoteDataSource::class.java)
     }
 
     @After

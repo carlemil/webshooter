@@ -2,6 +2,8 @@ package se.kjellstrand.webshooter.data
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import okio.IOException
+import retrofit2.HttpException
 import se.kjellstrand.webshooter.data.local.UserEntity
 import se.kjellstrand.webshooter.data.local.UserLocalDataSource
 import se.kjellstrand.webshooter.data.mappers.mapUserDtoToEntity
@@ -13,24 +15,30 @@ open class UserRepository(
     private val userLocalDataSource: UserLocalDataSource // database
 ) {
 
-    fun getAll(): Flow<List<UserEntity>> {
+    fun getAll(): Flow<Resource<List<UserEntity>>> {
         return flow {
-            when (val result = userRemoteDataSource.getAll()) {
-                is Resource.Error -> {
-                    result.data?.let { userLocalDataSource.put(it.mapUserDtoToEntity()) }
-                }
-                is Resource.Success -> {
-                    emit(userLocalDataSource.getAll())
-                }
-                is Resource.Loading -> TODO()
-            }
-//            if (users is List<*> && users.all { it is UserEntity }) {
-//                userLocalDataSource.put(users as List<UserEntity>)
-//        }
-//
-//            val localUsers = userLocalDataSource.getAll()
-//            emit(localUsers) // Emit the collected list from the Flow
+            emit(Resource.Loading(true))
 
+            val result = try{
+                userRemoteDataSource.getAllUsers(0, "")
+            } catch (e: IOException) {
+                e.printStackTrace()
+                emit(Resource.Error(message = "Error loading movies"))
+                return@flow
+            } catch (e: HttpException) {
+                e.printStackTrace()
+                emit(Resource.Error(message = "Error loading movies"))
+                return@flow
+            } catch (e: Exception) {
+                e.printStackTrace()
+                emit(Resource.Error(message = "Error loading movies"))
+                return@flow
+            }
+            result.let { userLocalDataSource.put(result.mapUserDtoToEntity()) }
+
+            emit(Resource.Success(userLocalDataSource.getAll()))
+
+            emit(Resource.Loading(false))
         }
     }
 }
