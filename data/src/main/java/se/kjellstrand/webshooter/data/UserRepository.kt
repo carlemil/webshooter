@@ -8,14 +8,13 @@ import se.kjellstrand.webshooter.data.local.UserEntity
 import se.kjellstrand.webshooter.data.local.UserLocalDataSource
 import se.kjellstrand.webshooter.data.mappers.mapUserDtoToEntity
 import se.kjellstrand.webshooter.data.remote.UserRemoteDataSource
-import se.kjellstrand.webshooter.util.Resource
 
 open class UserRepository(
     private val userRemoteDataSource: UserRemoteDataSource, // network
     private val userLocalDataSource: UserLocalDataSource // database
 ) {
 
-    fun getAll(): Flow<Resource<List<UserEntity>>> {
+    fun getAll(): Flow<Resource<List<UserEntity>, UserError>> {
         return flow {
             emit(Resource.Loading(true))
 
@@ -23,15 +22,15 @@ open class UserRepository(
                 userRemoteDataSource.getAllUsers(0, "")
             } catch (e: IOException) {
                 e.printStackTrace()
-                emit(Resource.Error(message = "Error loading movies"))
+                emit(Resource.Error(UserError.IOError))
                 return@flow
             } catch (e: HttpException) {
                 e.printStackTrace()
-                emit(Resource.Error(message = "Error loading movies"))
+                emit(Resource.Error(UserError.HttpError))
                 return@flow
             } catch (e: Exception) {
                 e.printStackTrace()
-                emit(Resource.Error(message = "Error loading movies"))
+                emit(Resource.Error(UserError.UnknownError))
                 return@flow
             }
             result.let { userLocalDataSource.put(result.mapUserDtoToEntity()) }
@@ -40,5 +39,11 @@ open class UserRepository(
 
             emit(Resource.Loading(false))
         }
+    }
+
+    enum class UserError : Error {
+        IOError,
+        HttpError,
+        UnknownError
     }
 }
