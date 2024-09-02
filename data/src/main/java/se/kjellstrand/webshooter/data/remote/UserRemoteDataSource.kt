@@ -3,7 +3,6 @@ package se.kjellstrand.webshooter.data.remote
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
-import se.kjellstrand.webshooter.util.Resource
 
 interface UserRemoteDataSource {
 

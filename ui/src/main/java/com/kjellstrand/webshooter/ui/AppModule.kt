@@ -11,7 +11,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import se.kjellstrand.webshooter.data.local.ShooterDatabase
-import se.kjellstrand.webshooter.data.remote.UserApi
+import se.kjellstrand.webshooter.data.remote.UserRemoteDataSource
 import javax.inject.Singleton
 
 @Module
@@ -28,13 +28,13 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun providesUserApi() : UserApi {
+    fun providesUserApi() : UserRemoteDataSource {
         return Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(UserApi.BASE_URL)
+            .baseUrl(UserRemoteDataSource.BASE_URL)
             .client(client)
             .build()
-            .create(UserApi::class.java)
+            .create(UserRemoteDataSource::class.java)
     }
 
     @Provides
