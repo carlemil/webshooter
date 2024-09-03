@@ -11,13 +11,13 @@ interface UserRemoteDataSource {
         @Path("pistolShooterCardNumber") pistolShooterCardNumber: String,
         @Query("page") page: Int,
         @Query("api_key") apiKey: String = API_KEY
-    ): UserDto
+    ): UserRequest
 
     @GET("users")
     suspend fun getAllUsers(
         @Query("page") page: Int,
         @Query("api_key") apiKey: String = API_KEY
-    ): List<UserDto>
+    ): List<UserRequest>
 
     companion object {
         const val BASE_URL = "https://api.webshooter.api/"
