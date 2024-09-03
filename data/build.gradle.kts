@@ -29,6 +29,20 @@ android {
             )
         }
     }
+
+    flavorDimensions += "server"
+
+    productFlavors {
+        create("mock") {
+            dimension = "server"
+            buildConfigField("String", "BASE_URL", "\"http://localhost:8080/\"")
+        }
+        create("prod") {
+            dimension = "server"
+            buildConfigField("String", "BASE_URL", "\"https://your.real.backend.url/\"")
+        }
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
