@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.data.remote
+package se.kjellstrand.webshooter.data.login.remote
 
 data class LoginRequest(
     val client_id: Int = 1,

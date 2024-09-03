@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.data.local
+package se.kjellstrand.webshooter.data.user.local
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity

@@ -13,7 +13,7 @@ import org.junit.Test
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import se.kjellstrand.data.BuildConfig
-import se.kjellstrand.webshooter.data.remote.UserRemoteDataSource
+import se.kjellstrand.webshooter.data.user.remote.UserRemoteDataSource
 
 class UserRemoteDataSourceTest {
 
