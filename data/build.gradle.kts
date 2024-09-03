@@ -32,6 +32,10 @@ android {
 
     flavorDimensions += "server"
 
+    buildFeatures {
+        buildConfig = true  // This enables the generation of BuildConfig class
+    }
+
     productFlavors {
         create("mock") {
             dimension = "server"
@@ -39,7 +43,7 @@ android {
         }
         create("prod") {
             dimension = "server"
-            buildConfigField("String", "BASE_URL", "\"https://your.real.backend.url/\"")
+            buildConfigField("String", "BASE_URL", "\"https://api.webshooter.api/\"")
         }
     }
 
