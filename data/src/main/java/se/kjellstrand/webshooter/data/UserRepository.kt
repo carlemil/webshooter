@@ -19,7 +19,7 @@ open class UserRepository(
             emit(Resource.Loading(true))
 
             val result = try{
-                userRemoteDataSource.getAllUsers(0, "")
+                userRemoteDataSource.getAllUsers(0)
             } catch (e: IOException) {
                 e.printStackTrace()
                 emit(Resource.Error(UserError.IOError))

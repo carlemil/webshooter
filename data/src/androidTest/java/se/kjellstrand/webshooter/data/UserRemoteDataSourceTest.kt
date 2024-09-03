@@ -12,6 +12,7 @@ import org.junit.Before
 import org.junit.Test
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import se.kjellstrand.data.BuildConfig
 import se.kjellstrand.webshooter.data.remote.UserRemoteDataSource
 
 class UserRemoteDataSourceTest {
@@ -22,14 +23,14 @@ class UserRemoteDataSourceTest {
     @Before
     fun setUp() {
         mockWebServer = MockWebServer()
-        mockWebServer.start()
+        mockWebServer.start(8080)
 
         val gson: Gson = GsonBuilder()
             .setLenient()
             .create()
 
         val retrofit = Retrofit.Builder()
-            .baseUrl(mockWebServer.url("/"))
+            .baseUrl(BuildConfig.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create(gson))
             .client(OkHttpClient.Builder().build())
             .build()
@@ -59,9 +60,8 @@ class UserRemoteDataSourceTest {
         // When
         val category = "someCategory"
         val page = 1
-        val apiKey = "xxxx"
         val response = runBlocking {
-            userApi.getUser(category, page, apiKey)
+            userApi.getUser(category, page)
         }
 
         // Then
@@ -70,6 +70,6 @@ class UserRemoteDataSourceTest {
         assertEquals("Doe", response.lastName)
 
         val recordedRequest = mockWebServer.takeRequest()
-        assertEquals("/user/someCategory?page=1&api_key=xxxx", recordedRequest.path)
+        assertEquals("/user/someCategory?page=1", recordedRequest.path)
     }
 }
