@@ -1,10 +1,9 @@
-package se.kjellstrand.webshooter.data.local
+package se.kjellstrand.webshooter.data.user.local
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDao {

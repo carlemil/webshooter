@@ -15,9 +15,8 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
-import se.kjellstrand.webshooter.data.local.ShooterDatabase
-import se.kjellstrand.webshooter.data.local.UserDao
-import se.kjellstrand.webshooter.data.local.UserEntity
+import se.kjellstrand.webshooter.data.user.local.UserDao
+import se.kjellstrand.webshooter.data.user.local.UserEntity
 import java.util.concurrent.CountDownLatch
 
 /**

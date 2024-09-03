@@ -1,6 +1,7 @@
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import junit.framework.Assert.assertEquals
+import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
@@ -9,13 +10,13 @@ import org.junit.Test
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import se.kjellstrand.data.BuildConfig
-import se.kjellstrand.webshooter.data.remote.LoginRequest
-import se.kjellstrand.webshooter.data.remote.LoginRemoteDataSource
+import se.kjellstrand.webshooter.data.login.remote.LoginRequest
+import se.kjellstrand.webshooter.data.login.remote.LoginRemoteDataSource
 
 class LoginRemoteDataSourceTest {
 
     private lateinit var mockWebServer: MockWebServer
-    private lateinit var userApi: LoginRemoteDataSource
+    private lateinit var loginApi: LoginRemoteDataSource
 
     @Before
     fun setUp() {
@@ -26,7 +27,7 @@ class LoginRemoteDataSourceTest {
             .setLenient()
             .create()
 
-        userApi = Retrofit.Builder()
+        loginApi = Retrofit.Builder()
             .baseUrl(BuildConfig.BASE_URL)  // Replace with your actual backend URL
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
@@ -39,7 +40,7 @@ class LoginRemoteDataSourceTest {
     }
 
     @Test
-    fun login_returns_correct_LoginDto_from_real_backend() {
+    fun login_returns_correct_LoginDto() {
         // Given
         val mockResponse = MockResponse()
             .setResponseCode(200)
@@ -61,13 +62,15 @@ class LoginRemoteDataSourceTest {
             "very-secret-password",
             "user@gmail.com"
         )  // Use valid test credentials
-        val response = userApi.login(request).execute()
+
+        val response = runBlocking {
+            loginApi.login(request)
+        }
 
         // Then
-        assertEquals(true, response.isSuccessful)
         // You can assert more on the actual content if you know what to expect.
-        assert(response.body()?.access_token?.length!! > 9)
-        assertEquals("Bearer", response.body()?.token_type)
-        assertEquals(31536000, response.body()?.expires_in)
+        assert(response.access_token?.length!! > 9)
+        assertEquals("Bearer", response.token_type)
+        assertEquals(31536000, response.expires_in)
     }
 }

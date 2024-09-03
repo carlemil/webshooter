@@ -1,15 +1,9 @@
 package se.kjellstrand.webshooter.data.mappers
 
-import se.kjellstrand.webshooter.data.User
-import se.kjellstrand.webshooter.data.local.UserEntity
-import se.kjellstrand.webshooter.data.remote.UserRequest
+import se.kjellstrand.webshooter.data.user.local.UserEntity
+import se.kjellstrand.webshooter.data.user.remote.UserResponse
 
-
-fun UserRequest.toUser(): User {
-    return User(firstName, lastName, pistolShooterCardNumber)
-}
-
-fun List<UserRequest>.mapUserDtoToEntity(): List<UserEntity> {
+fun List<UserResponse>.mapUserResponseToEntity(): List<UserEntity> {
     return mapIndexed { index, dto ->
         UserEntity(
             uid = index,  // Assuming 'uid' is generated based on the index, modify if needed

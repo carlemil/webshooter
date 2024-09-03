@@ -1,13 +1,15 @@
-package se.kjellstrand.webshooter.data
+package se.kjellstrand.webshooter.data.user
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okio.IOException
 import retrofit2.HttpException
-import se.kjellstrand.webshooter.data.local.UserEntity
-import se.kjellstrand.webshooter.data.local.UserLocalDataSource
-import se.kjellstrand.webshooter.data.mappers.mapUserDtoToEntity
-import se.kjellstrand.webshooter.data.remote.UserRemoteDataSource
+import se.kjellstrand.webshooter.data.Resource
+import se.kjellstrand.webshooter.data.UserError
+import se.kjellstrand.webshooter.data.user.local.UserEntity
+import se.kjellstrand.webshooter.data.user.local.UserLocalDataSource
+import se.kjellstrand.webshooter.data.mappers.mapUserResponseToEntity
+import se.kjellstrand.webshooter.data.user.remote.UserRemoteDataSource
 
 open class UserRepository(
     private val userRemoteDataSource: UserRemoteDataSource, // network
@@ -33,7 +35,7 @@ open class UserRepository(
                 emit(Resource.Error(UserError.UnknownError))
                 return@flow
             }
-            result.let { userLocalDataSource.put(result.mapUserDtoToEntity()) }
+            result.let { userLocalDataSource.put(result.mapUserResponseToEntity()) }
 
             emit(Resource.Success(userLocalDataSource.getAll()))
 
@@ -41,9 +43,4 @@ open class UserRepository(
         }
     }
 
-    enum class UserError : Error {
-        IOError,
-        HttpError,
-        UnknownError
-    }
 }
