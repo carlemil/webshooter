@@ -11,11 +11,16 @@ import se.kjellstrand.webshooter.data.login.local.LoginLocalDataSource
 import se.kjellstrand.webshooter.data.login.remote.LoginRemoteDataSource
 import se.kjellstrand.webshooter.data.login.remote.LoginRequest
 import se.kjellstrand.webshooter.data.mappers.toLoginEntity
+import javax.inject.Inject
 
 open class LoginRepository(
-    private val loginRemoteDataSource: LoginRemoteDataSource, // network
-    private val loginLocalDataSource: LoginLocalDataSource // database
 ) {
+
+    //@Inject
+    lateinit var loginLocalDataSource: LoginLocalDataSource // database
+
+    //@Inject
+    lateinit var loginRemoteDataSource: LoginRemoteDataSource // network
 
     fun login(
         email: String,
