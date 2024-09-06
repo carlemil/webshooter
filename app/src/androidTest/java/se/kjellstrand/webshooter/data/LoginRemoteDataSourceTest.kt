@@ -9,7 +9,7 @@ import org.junit.Before
 import org.junit.Test
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import se.kjellstrand.data.BuildConfig
+import se.kjellstrand.webshooter.BuildConfig
 import se.kjellstrand.webshooter.data.login.remote.LoginRequest
 import se.kjellstrand.webshooter.data.login.remote.LoginRemoteDataSource
 

@@ -1,7 +1,5 @@
 package se.kjellstrand.webshooter.di
 
-import android.app.Application
-import androidx.room.Room
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -11,13 +9,12 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
-import se.kjellstrand.data.BuildConfig
-import se.kjellstrand.webshooter.data.ShooterDatabase
-import se.kjellstrand.webshooter.data.user.remote.UserRemoteDataSource
+import se.kjellstrand.webshooter.BuildConfig
+import se.kjellstrand.webshooter.data.login.remote.LoginRemoteDataSource
 
-@Module
-@InstallIn(SingletonComponent::class)
-class AppModule {
+//@Module
+//@InstallIn(SingletonComponent::class)
+class LoginModule {
 
     private val interceptor: HttpLoggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
@@ -27,25 +24,14 @@ class AppModule {
         .addInterceptor(interceptor)
         .build()
 
-    @Provides
-    @Singleton
-    fun providesUserRemoteDataSource() : UserRemoteDataSource {
+    //@Provides
+   // @Singleton
+    fun providesLoginRemoteDataSource() : LoginRemoteDataSource {
         return Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
             .baseUrl(BuildConfig.BASE_URL)
             .client(client)
             .build()
-            .create(UserRemoteDataSource::class.java)
+            .create(LoginRemoteDataSource::class.java)
     }
-
-    @Provides
-    @Singleton
-    fun providesShooterDatabase(app: Application): ShooterDatabase {
-        return Room.databaseBuilder(
-            app,
-            ShooterDatabase::class.java,
-            "shooterdb.db"
-        ).build()
-    }
-
 }
