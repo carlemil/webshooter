@@ -16,10 +16,10 @@ import javax.inject.Inject
 open class LoginRepository(
 ) {
 
-    //@Inject
+    @Inject
     lateinit var loginLocalDataSource: LoginLocalDataSource // database
 
-    //@Inject
+    @Inject
     lateinit var loginRemoteDataSource: LoginRemoteDataSource // network
 
     fun login(
