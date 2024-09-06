@@ -11,14 +11,14 @@ import se.kjellstrand.webshooter.data.ShooterDatabase
 import se.kjellstrand.webshooter.data.login.local.LoginDao
 import javax.inject.Singleton
 
-//@InstallIn(SingletonComponent::class)
-//@Module
+@InstallIn(SingletonComponent::class)
+@Module
 class DatabaseModule {
 
-    //@Provides
-   // @Singleton
-   // fun providesDatabase(@ApplicationContext appContext: Context): ShooterDatabase {
-        fun providesDatabase( appContext: Context): ShooterDatabase {
+    @Provides
+    @Singleton
+    fun providesDatabase(@ApplicationContext appContext: Context): ShooterDatabase {
+        // fun providesDatabase( appContext: Context): ShooterDatabase {
         return Room.databaseBuilder(
             appContext,
             ShooterDatabase::class.java,
@@ -26,7 +26,7 @@ class DatabaseModule {
         ).build()
     }
 
-    //@Provides
+    @Provides
     fun provideLoginDao(database: ShooterDatabase): LoginDao {
         return database.loginDao()
     }

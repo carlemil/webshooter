@@ -12,8 +12,8 @@ import javax.inject.Singleton
 import se.kjellstrand.webshooter.BuildConfig
 import se.kjellstrand.webshooter.data.login.remote.LoginRemoteDataSource
 
-//@Module
-//@InstallIn(SingletonComponent::class)
+@Module
+@InstallIn(SingletonComponent::class)
 class LoginModule {
 
     private val interceptor: HttpLoggingInterceptor = HttpLoggingInterceptor().apply {
@@ -24,8 +24,8 @@ class LoginModule {
         .addInterceptor(interceptor)
         .build()
 
-    //@Provides
-   // @Singleton
+    @Provides
+    @Singleton
     fun providesLoginRemoteDataSource() : LoginRemoteDataSource {
         return Retrofit.Builder()
             .addConverterFactory(GsonConverterFactory.create())
