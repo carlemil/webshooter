@@ -57,10 +57,10 @@ class LoginRemoteDataSourceTest {
         val request = LoginRequest(
             1,
             "52FphTYzOrmuqHdfgsdfgytzhSEURIJiMFNp6Qt0",
-            "user@gmail.com",
+            "erbsman@gmail.com",
             "password",
-            "very-secret-password",
-            "user@gmail.com"
+            "REMOVED-OLD-PASSWORD",
+            "erbsman@gmail.com"
         )  // Use valid test credentials
 
         val response = runBlocking {

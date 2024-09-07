@@ -51,7 +51,7 @@ android {
         }
         create("prod") {
             dimension = "server"
-            buildConfigField("String", "BASE_URL", "\"https://api.webshooter.api/\"")
+            buildConfigField("String", "BASE_URL", "\"https://webshooter.se/\"")
         }
     }
 
