@@ -4,34 +4,25 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import javax.inject.Singleton
-import se.kjellstrand.webshooter.BuildConfig
+import se.kjellstrand.webshooter.data.login.LoginRepository
 import se.kjellstrand.webshooter.data.login.remote.LoginRemoteDataSource
+import javax.inject.Inject
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 class LoginModule {
 
-    private val interceptor: HttpLoggingInterceptor = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY
+    @Provides
+    @Singleton
+    fun providesLoginRemoteDataSource(retrofit: Retrofit) : LoginRemoteDataSource {
+        return retrofit.create(LoginRemoteDataSource::class.java)
     }
-
-    private val client: OkHttpClient = OkHttpClient.Builder()
-        .addInterceptor(interceptor)
-        .build()
 
     @Provides
     @Singleton
-    fun providesLoginRemoteDataSource() : LoginRemoteDataSource {
-        return Retrofit.Builder()
-            .addConverterFactory(GsonConverterFactory.create())
-            .baseUrl(BuildConfig.BASE_URL)
-            .client(client)
-            .build()
-            .create(LoginRemoteDataSource::class.java)
+    fun providesLoginRepository(loginRemoteDataSource: LoginRemoteDataSource) : LoginRepository {
+        return LoginRepository(loginRemoteDataSource)
     }
 }

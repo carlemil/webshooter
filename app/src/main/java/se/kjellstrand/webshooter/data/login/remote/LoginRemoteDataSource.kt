@@ -6,4 +6,5 @@ import retrofit2.http.POST
 interface LoginRemoteDataSource {
 
     @POST("api/v4.1.9/oauth/token")
-    suspend fun login(@Body request: LoginRequest): LoginResponse}
+    suspend fun login(@Body request: LoginRequest): LoginResponse
+}
