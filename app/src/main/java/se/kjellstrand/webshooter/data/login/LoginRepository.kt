@@ -6,10 +6,9 @@ import okio.IOException
 import retrofit2.HttpException
 import se.kjellstrand.webshooter.data.Resource
 import se.kjellstrand.webshooter.data.UserError
-import se.kjellstrand.webshooter.data.login.local.LoginEntity
 import se.kjellstrand.webshooter.data.login.remote.LoginRemoteDataSource
 import se.kjellstrand.webshooter.data.login.remote.LoginRequest
-import se.kjellstrand.webshooter.data.mappers.toLoginEntity
+import se.kjellstrand.webshooter.data.login.remote.LoginResponse
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,7 +20,7 @@ open class LoginRepository @Inject constructor(
         email: String,
         username: String,
         password: String
-    ): Flow<Resource<LoginEntity, UserError>> {
+    ): Flow<Resource<LoginResponse, UserError>> {
         return flow {
             emit(Resource.Loading(true))
 
@@ -49,7 +48,7 @@ open class LoginRepository @Inject constructor(
                 emit(Resource.Error(UserError.UnknownError))
                 return@flow
             }
-            emit(Resource.Success(result.toLoginEntity()))
+            emit(Resource.Success(result))
 
             emit(Resource.Loading(false))
         }
