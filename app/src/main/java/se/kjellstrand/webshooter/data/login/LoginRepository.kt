@@ -7,7 +7,6 @@ import retrofit2.HttpException
 import se.kjellstrand.webshooter.data.Resource
 import se.kjellstrand.webshooter.data.UserError
 import se.kjellstrand.webshooter.data.login.local.LoginEntity
-import se.kjellstrand.webshooter.data.login.local.LoginLocalDataSource
 import se.kjellstrand.webshooter.data.login.remote.LoginRemoteDataSource
 import se.kjellstrand.webshooter.data.login.remote.LoginRequest
 import se.kjellstrand.webshooter.data.mappers.toLoginEntity
@@ -18,11 +17,6 @@ import javax.inject.Singleton
 open class LoginRepository @Inject constructor(
     private val loginRemoteDataSource: LoginRemoteDataSource
 ) {
-
-    @Inject lateinit var loginLocalDataSource: LoginLocalDataSource // database
-
-    //@Inject lateinit var loginRemoteDataSource: LoginRemoteDataSource // network
-
     fun login(
         email: String,
         username: String,
@@ -55,14 +49,7 @@ open class LoginRepository @Inject constructor(
                 emit(Resource.Error(UserError.UnknownError))
                 return@flow
             }
-            result.let { loginLocalDataSource.put(result.toLoginEntity()) }
-
-            val login = loginLocalDataSource.get()
-            if (login != null) {
-                emit(Resource.Success(login))
-            } else {
-                emit(Resource.Error(UserError.UnknownError))
-            }
+            emit(Resource.Success(result.toLoginEntity()))
 
             emit(Resource.Loading(false))
         }
