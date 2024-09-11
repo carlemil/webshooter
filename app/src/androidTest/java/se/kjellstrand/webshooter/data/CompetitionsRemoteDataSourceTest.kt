@@ -69,8 +69,8 @@ class CompetitionsRemoteDataSourceTest {
 
         // Then
         // You can assert more on the actual content if you know what to expect.
-        assert(response.access_token?.length!! > 9)
-        assertEquals("Bearer", response.token_type)
-        assertEquals(31536000, response.expires_in)
+        assert(response.accessToken?.length!! > 9)
+        assertEquals("Bearer", response.tokenType)
+        assertEquals(31536000, response.expiresIn)
     }
 }
