@@ -7,7 +7,7 @@ import retrofit2.HttpException
 import se.kjellstrand.webshooter.data.Resource
 import se.kjellstrand.webshooter.data.UserError
 import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsRemoteDataSource
-import se.kjellstrand.webshooter.data.competitions.remote.parsing.CompetitionsResponse
+import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsResponse
 import javax.inject.Inject
 import javax.inject.Singleton
 
