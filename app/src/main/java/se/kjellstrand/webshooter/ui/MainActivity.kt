@@ -21,6 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import se.kjellstrand.webshooter.data.Resource
 import se.kjellstrand.webshooter.data.competitions.CompetitionsRepository
+import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsResponse
 import se.kjellstrand.webshooter.data.login.LoginRepository
 import se.kjellstrand.webshooter.ui.theme.WebShooterTheme
 import javax.inject.Inject

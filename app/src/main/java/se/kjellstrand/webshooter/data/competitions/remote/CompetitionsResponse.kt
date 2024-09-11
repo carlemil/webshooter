@@ -1,4 +1,8 @@
-package se.kjellstrand.webshooter.data.competitions.remote.parsing
+package se.kjellstrand.webshooter.data.competitions.remote
+
+import se.kjellstrand.webshooter.data.competitions.remote.parsing.ClassnameGeneral
+import se.kjellstrand.webshooter.data.competitions.remote.parsing.Competitions
+import se.kjellstrand.webshooter.data.competitions.remote.parsing.Logo
 
 import com.beust.klaxon.Converter
 import com.beust.klaxon.JsonValue
@@ -15,6 +19,7 @@ private fun <T> Klaxon.convert(k: kotlin.reflect.KClass<*>, fromJson: (JsonValue
 private val klaxon = Klaxon()
     .convert(Logo::class,             { Logo.fromValue(it.string!!) },             { "\"${it.value}\"" })
     .convert(ClassnameGeneral::class, { ClassnameGeneral.fromValue(it.string!!) }, { "\"${it.value}\"" })
+
 
 data class CompetitionsResponse (
     val competitions: Competitions
