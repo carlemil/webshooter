@@ -22,9 +22,11 @@ open class MockInterceptor @Inject constructor(
         // Intercept request and provide mock data for certain endpoints
         val responseString = when (request.url.encodedPath) {
             "/api/v4.1.9/oauth/token" -> getTextFromRaw(R.raw.api_v4_1_9_oauth_token)
-            "/getUserDetails" -> "{ \"id\": \"1\", \"name\": \"Mock User\", \"email\": \"mock@example.com\" }"
+            "/app/competitions" -> getTextFromRaw(R.raw.competitions)
             else -> throw IllegalArgumentException("Unknown request path: ${request.url.encodedPath}")
         }
+
+        // byt till riktig mock för login samt stoppa in competitions å gör sen ui för dom två, med nav? eller vad är senaste där?
 
         return Response.Builder()
             .code(200)

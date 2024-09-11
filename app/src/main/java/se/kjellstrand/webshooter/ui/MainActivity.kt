@@ -13,17 +13,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.last
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import se.kjellstrand.webshooter.data.Resource
+import se.kjellstrand.webshooter.data.competitions.CompetitionsRepository
 import se.kjellstrand.webshooter.data.login.LoginRepository
 import se.kjellstrand.webshooter.ui.theme.WebShooterTheme
 import javax.inject.Inject
@@ -33,6 +30,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var loginRepository: LoginRepository
+
+    @Inject
+    lateinit var competitionsRepository: CompetitionsRepository
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -79,6 +79,24 @@ class MainActivity : ComponentActivity() {
                         else -> {
                             // Handle other states
                             println("Login other state")
+                        }
+                    }
+                }
+                competitionsRepository.get().collect { resource ->
+                    when (resource) {
+                        is Resource.Success -> {
+                            // Handle successful login
+                            println("getCompetitions Success: ${resource.data}")
+                        }
+
+                        is Resource.Error -> {
+                            // Handle error
+                            println("getCompetitions Failed: ${resource.error}")
+                        }
+
+                        else -> {
+                            // Handle other states
+                            println("getCompetitions other state")
                         }
                     }
                 }
