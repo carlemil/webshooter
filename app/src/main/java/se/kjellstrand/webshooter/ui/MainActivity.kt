@@ -20,7 +20,7 @@ class MainActivity : ComponentActivity() {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                 ) {
-                    CompetitionsScreen()
+                    MainScreen()
                 }
             }
         }

@@ -1,6 +1,8 @@
 package se.kjellstrand.webshooter.data.competitions.remote
 
+import androidx.annotation.StringRes
 import com.beust.klaxon.*
+import se.kjellstrand.webshooter.R
 
 private fun <T> Klaxon.convert(k: kotlin.reflect.KClass<*>, fromJson: (JsonValue) -> T, toJson: (T) -> String, isUnion: Boolean = false) =
     this.converter(object: Converter {
@@ -187,6 +189,7 @@ data class Datum (
     @Json(name = "patrols_count")
     val patrolsCount: Long,
 
+    @Json(name = "status")
     val status: String,
 
     @Json(name = "status_human")

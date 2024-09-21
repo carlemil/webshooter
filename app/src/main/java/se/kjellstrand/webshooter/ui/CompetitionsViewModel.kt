@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.data.Resource
 import se.kjellstrand.webshooter.data.competitions.CompetitionsRepository
+import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import javax.inject.Inject
 
 @HiltViewModel
@@ -17,7 +18,7 @@ class CompetitionsViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CompetitionsUiState())
-    val competitions: StateFlow<CompetitionsUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<CompetitionsUiState> = _uiState.asStateFlow()
 
     init {
         _uiState.value = CompetitionsUiState()
@@ -44,5 +45,9 @@ class CompetitionsViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun getCompetitionById(competitionId: Long): Datum? {
+        return uiState.value.competitions?.data?.find { it.id == competitionId }
     }
 }
