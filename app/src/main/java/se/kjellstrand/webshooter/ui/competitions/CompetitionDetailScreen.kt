@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui
+package se.kjellstrand.webshooter.ui.competitions
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer

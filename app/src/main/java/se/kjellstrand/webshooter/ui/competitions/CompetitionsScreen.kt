@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui
+package se.kjellstrand.webshooter.ui.competitions
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -31,6 +31,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
+import se.kjellstrand.webshooter.ui.Screen
 
 @Composable
 fun MainScreen() {
