@@ -1,9 +1,12 @@
 package se.kjellstrand.webshooter.ui.competitions
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
@@ -15,9 +18,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -25,8 +31,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavType
@@ -35,6 +44,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
+import se.kjellstrand.webshooter.data.competitions.remote.Usersignup
+import se.kjellstrand.webshooter.data.competitions.remote.Weapongroup
 import se.kjellstrand.webshooter.ui.Screen
 
 @Composable
@@ -142,6 +153,63 @@ fun CompetitionItem(
             text = "Resultatberäkning: ${competition.resultsTypeHuman}",
             style = MaterialTheme.typography.bodySmall
         )
+        Spacer(modifier = Modifier.height(6.dp))
+        WeaponGroupBadges(
+            weaponGroups = competition.weapongroups,
+            userSignups = competition.usersignups
+        )
+    }
+}
+
+@Composable
+fun WeaponGroupBadges(
+    weaponGroups: List<Weapongroup>,
+    userSignups: List<Usersignup>
+) {
+    val userSignedUpForWeaponclassesIDs = userSignups.map { it.weaponclassesID }.toSet()
+    Row(modifier = Modifier.horizontalScroll(rememberScrollState())) {
+        weaponGroups.forEach { weaponGroup ->
+            val isHighlighted = weaponGroup.id in userSignedUpForWeaponclassesIDs
+            WeaponGroupBadge(
+                weaponGroup = weaponGroup,
+                isHighlighted = isHighlighted
+            )
+        }
+    }
+}
+
+@Composable
+fun WeaponGroupBadge(weaponGroup: Weapongroup, isHighlighted: Boolean) {
+    val borderModifier = if (isHighlighted) {
+        Modifier.border(
+            width = 0.6.dp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            shape = RoundedCornerShape(4.dp)
+        )
+    } else {
+        Modifier
+    }
+    val fontWeight = if (isHighlighted) {
+        FontWeight.Bold
+    } else {
+        FontWeight.Normal
+    }
+    Surface(
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        shape = RoundedCornerShape(4.dp),
+        modifier = Modifier.padding(end = 4.dp).then(borderModifier)
+    ) {
+        weaponGroup.name?.let { weaponGroupName ->
+            Text(
+                text = weaponGroupName.value,
+                style = MaterialTheme.typography.bodySmall.copy(
+                    fontSize = 10.sp,
+                    fontWeight = fontWeight
+                ),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+            )
+        }
     }
 }
 
