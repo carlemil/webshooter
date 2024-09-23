@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui
+package se.kjellstrand.webshooter.ui.competitions
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
