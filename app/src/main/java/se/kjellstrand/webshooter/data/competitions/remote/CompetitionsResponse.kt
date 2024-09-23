@@ -1,59 +1,39 @@
 package se.kjellstrand.webshooter.data.competitions.remote
 
-import androidx.annotation.StringRes
-import com.beust.klaxon.*
-import se.kjellstrand.webshooter.R
-
-private fun <T> Klaxon.convert(k: kotlin.reflect.KClass<*>, fromJson: (JsonValue) -> T, toJson: (T) -> String, isUnion: Boolean = false) =
-    this.converter(object: Converter {
-        @Suppress("UNCHECKED_CAST")
-        override fun toJson(value: Any)        = toJson(value as T)
-        override fun fromJson(jv: JsonValue)   = fromJson(jv) as Any
-        override fun canConvert(cls: Class<*>) = cls == k.java || (isUnion && cls.superclass == k.java)
-    })
-
-private val klaxon = Klaxon()
-    .convert(Logo::class,             { Logo.fromValue(it.string!!) },             { "\"${it.value}\"" })
-    .convert(ClassnameGeneral::class, { ClassnameGeneral.fromValue(it.string!!) }, { "\"${it.value}\"" })
+import com.google.gson.annotations.SerializedName
 
 data class CompetitionsResponse (
     val competitions: Competitions
-) {
-    public fun toJson() = klaxon.toJsonString(this)
-
-    companion object {
-        public fun fromJson(json: String) = klaxon.parse<CompetitionsResponse>(json)
-    }
-}
+)
 
 data class Competitions (
-    @Json(name = "current_page")
+    @SerializedName("current_page")
     val currentPage: Long,
 
     val data: List<Datum>,
 
-    @Json(name = "first_page_url")
+    @SerializedName("first_page_url")
     val firstPageURL: String,
 
     val from: Long,
 
-    @Json(name = "last_page")
+    @SerializedName("last_page")
     val lastPage: Long,
 
-    @Json(name = "last_page_url")
+    @SerializedName("last_page_url")
     val lastPageURL: String,
 
     val links: List<Link>,
 
-    @Json(name = "next_page_url")
+    @SerializedName("next_page_url")
     val nextPageURL: Any? = null,
 
     val path: String,
 
-    @Json(name = "per_page")
+    @SerializedName("per_page")
     val perPage: Long,
 
-    @Json(name = "prev_page_url")
+    @SerializedName("prev_page_url")
     val prevPageURL: Any? = null,
 
     val to: Long,
@@ -61,7 +41,7 @@ data class Competitions (
     val search: Any? = null,
     val status: String,
 
-    @Json(name = "clubs_id")
+    @SerializedName("clubs_id")
     val clubsID: Any? = null,
 
     val type: Long,
@@ -73,149 +53,149 @@ data class Competitiontype (
     val id: Long,
     val name: String,
 
-    @Json(name = "created_at")
+    @SerializedName("created_at")
     val createdAt: String,
 
-    @Json(name = "updated_at")
+    @SerializedName("updated_at")
     val updatedAt: String,
 
-    @Json(name = "deleted_at")
+    @SerializedName("deleted_at")
     val deletedAt: Any? = null
 )
 
 data class Datum (
     val id: Long,
 
-    @Json(name = "championships_id")
+    @SerializedName("championships_id")
     val championshipsID: Long,
 
-    @Json(name = "is_public")
+    @SerializedName("is_public")
     val isPublic: Long,
 
-    @Json(name = "results_is_public")
+    @SerializedName("results_is_public")
     val resultsIsPublic: Long,
 
-    @Json(name = "patrols_is_public")
+    @SerializedName("patrols_is_public")
     val patrolsIsPublic: Long,
 
-    @Json(name = "organizer_id")
+    @SerializedName("organizer_id")
     val organizerID: Long,
 
-    @Json(name = "organizer_type")
+    @SerializedName("organizer_type")
     val organizerType: String,
 
-    @Json(name = "invoices_recipient_id")
+    @SerializedName("invoices_recipient_id")
     val invoicesRecipientID: Long,
 
-    @Json(name = "invoices_recipient_type")
+    @SerializedName("invoices_recipient_type")
     val invoicesRecipientType: String,
 
     val name: String,
 
-    @Json(name = "allow_teams")
+    @SerializedName("allow_teams")
     val allowTeams: Long,
 
-    @Json(name = "teams_registration_fee")
+    @SerializedName("teams_registration_fee")
     val teamsRegistrationFee: Long,
 
     val website: String,
 
-    @Json(name = "contact_name")
+    @SerializedName("contact_name")
     val contactName: String,
 
-    @Json(name = "contact_venue")
+    @SerializedName("contact_venue")
     val contactVenue: String,
 
-    @Json(name = "contact_city")
+    @SerializedName("contact_city")
     val contactCity: String,
 
     val lat: Double,
     val lng: Double,
 
-    @Json(name = "contact_email")
+    @SerializedName("contact_email")
     val contactEmail: String,
 
-    @Json(name = "contact_telephone")
+    @SerializedName("contact_telephone")
     val contactTelephone: String,
 
-    @Json(name = "google_maps")
+    @SerializedName("google_maps")
     val googleMaps: String,
 
     val description: String,
 
-    @Json(name = "results_type")
+    @SerializedName("results_type")
     val resultsType: String,
 
-    @Json(name = "results_prices")
+    @SerializedName("results_prices")
     val resultsPrices: Long,
 
-    @Json(name = "results_comment")
+    @SerializedName("results_comment")
     val resultsComment: String,
 
     val date: String,
 
-    @Json(name = "signups_opening_date")
+    @SerializedName("signups_opening_date")
     val signupsOpeningDate: String,
 
-    @Json(name = "signups_closing_date")
+    @SerializedName("signups_closing_date")
     val signupsClosingDate: String,
 
-    @Json(name = "allow_signups_after_closing_date")
+    @SerializedName("allow_signups_after_closing_date")
     val allowSignupsAfterClosingDate: Long,
 
-    @Json(name = "price_signups_after_closing_date")
+    @SerializedName("price_signups_after_closing_date")
     val priceSignupsAfterClosingDate: Long,
 
-    @Json(name = "approval_signups_after_closing_date")
+    @SerializedName("approval_signups_after_closing_date")
     val approvalSignupsAfterClosingDate: Long,
 
-    @Json(name = "final_time")
+    @SerializedName("final_time")
     val finalTime: String,
 
-    @Json(name = "created_by")
+    @SerializedName("created_by")
     val createdBy: Long,
 
-    @Json(name = "pdf_logo")
+    @SerializedName("pdf_logo")
     val pdfLogo: Logo,
 
-    @Json(name = "closed_at")
+    @SerializedName("closed_at")
     val closedAt: Any? = null,
 
     val weapongroups: List<Weapongroup>,
 
-    @Json(name = "signups_count")
+    @SerializedName("signups_count")
     val signupsCount: Long,
 
-    @Json(name = "patrols_count")
+    @SerializedName("patrols_count")
     val patrolsCount: Long,
 
-    @Json(name = "status")
+    @SerializedName("status")
     val status: String,
 
-    @Json(name = "status_human")
+    @SerializedName("status_human")
     val statusHuman: String,
 
-    @Json(name = "start_time_human")
+    @SerializedName("start_time_human")
     val startTimeHuman: String,
 
-    @Json(name = "final_time_human")
+    @SerializedName("final_time_human")
     val finalTimeHuman: String,
 
-    @Json(name = "allow_signups_after_closing_date_human")
+    @SerializedName("allow_signups_after_closing_date_human")
     val allowSignupsAfterClosingDateHuman: String,
 
     val translations: Translations,
 
-    @Json(name = "results_type_human")
+    @SerializedName("results_type_human")
     val resultsTypeHuman: String,
 
-    @Json(name = "available_logos")
+    @SerializedName("available_logos")
     val availableLogos: List<Logo>,
 
-    @Json(name = "pdf_logo_path")
+    @SerializedName("pdf_logo_path")
     val pdfLogoPath: String,
 
-    @Json(name = "pdf_logo_url")
+    @SerializedName("pdf_logo_url")
     val pdfLogoURL: String,
 
     val championship: Any? = null,
@@ -241,32 +221,32 @@ enum class Logo(val value: String) {
 data class Club (
     val id: Long,
 
-    @Json(name = "disable_personal_invoices")
+    @SerializedName("disable_personal_invoices")
     val disablePersonalInvoices: Long,
 
-    @Json(name = "districts_id")
+    @SerializedName("districts_id")
     val districtsID: Long,
 
-    @Json(name = "clubs_nr")
+    @SerializedName("clubs_nr")
     val clubsNr: String,
 
     val name: String,
     val email: String,
     val phone: String? = null,
 
-    @Json(name = "address_street")
+    @SerializedName("address_street")
     val addressStreet: String,
 
-    @Json(name = "address_street_2")
+    @SerializedName("address_street_2")
     val addressStreet2: String? = null,
 
-    @Json(name = "address_zipcode")
+    @SerializedName("address_zipcode")
     val addressZipcode: String,
 
-    @Json(name = "address_city")
+    @SerializedName("address_city")
     val addressCity: String,
 
-    @Json(name = "address_country")
+    @SerializedName("address_country")
     val addressCountry: String? = null,
 
     val bankgiro: String? = null,
@@ -274,54 +254,54 @@ data class Club (
     val swish: String,
     val logo: String? = null,
 
-    @Json(name = "user_has_role")
+    @SerializedName("user_has_role")
     val userHasRole: Any? = null,
 
-    @Json(name = "address_combined")
+    @SerializedName("address_combined")
     val addressCombined: String,
 
-    @Json(name = "address_incomplete")
+    @SerializedName("address_incomplete")
     val addressIncomplete: Boolean,
 
-    @Json(name = "logo_url")
+    @SerializedName("logo_url")
     val logoURL: String,
 
-    @Json(name = "logo_path")
+    @SerializedName("logo_path")
     val logoPath: String
 )
 
 data class Translations (
-    @Json(name = "patrols_name_singular")
+    @SerializedName("patrols_name_singular")
     val patrolsNameSingular: String,
 
-    @Json(name = "patrols_name_plural")
+    @SerializedName("patrols_name_plural")
     val patrolsNamePlural: String,
 
-    @Json(name = "patrols_list_singular")
+    @SerializedName("patrols_list_singular")
     val patrolsListSingular: String,
 
-    @Json(name = "patrols_list_plural")
+    @SerializedName("patrols_list_plural")
     val patrolsListPlural: String,
 
-    @Json(name = "patrols_size")
+    @SerializedName("patrols_size")
     val patrolsSize: String,
 
-    @Json(name = "patrols_lane_singular")
+    @SerializedName("patrols_lane_singular")
     val patrolsLaneSingular: String,
 
-    @Json(name = "patrols_lane_plural")
+    @SerializedName("patrols_lane_plural")
     val patrolsLanePlural: String,
 
-    @Json(name = "stations_name_singular")
+    @SerializedName("stations_name_singular")
     val stationsNameSingular: String,
 
-    @Json(name = "stations_name_plural")
+    @SerializedName("stations_name_plural")
     val stationsNamePlural: String,
 
-    @Json(name = "results_list_singular")
+    @SerializedName("results_list_singular")
     val resultsListSingular: String,
 
-    @Json(name = "results_list_plural")
+    @SerializedName("results_list_plural")
     val resultsListPlural: String,
 
     val shootingcard: String,
@@ -332,105 +312,105 @@ data class Translations (
 data class Usersignup (
     val id: Long,
 
-    @Json(name = "competitions_id")
+    @SerializedName("competitions_id")
     val competitionsID: Long,
 
-    @Json(name = "patrols_id")
+    @SerializedName("patrols_id")
     val patrolsID: Long,
 
-    @Json(name = "patrols_finals_id")
+    @SerializedName("patrols_finals_id")
     val patrolsFinalsID: Long,
 
-    @Json(name = "lane_finals")
+    @SerializedName("lane_finals")
     val laneFinals: Long,
 
-    @Json(name = "patrols_distinguish_id")
+    @SerializedName("patrols_distinguish_id")
     val patrolsDistinguishID: Long,
 
-    @Json(name = "lane_distinguish")
+    @SerializedName("lane_distinguish")
     val laneDistinguish: Long,
 
-    @Json(name = "start_time")
+    @SerializedName("start_time")
     val startTime: String? = null,
 
-    @Json(name = "end_time")
+    @SerializedName("end_time")
     val endTime: String? = null,
 
     val lane: Long,
 
-    @Json(name = "weaponclasses_id")
+    @SerializedName("weaponclasses_id")
     val weaponclassesID: Long,
 
-    @Json(name = "registration_fee")
+    @SerializedName("registration_fee")
     val registrationFee: Long,
 
-    @Json(name = "invoices_id")
+    @SerializedName("invoices_id")
     val invoicesID: Any? = null,
 
-    @Json(name = "clubs_id")
+    @SerializedName("clubs_id")
     val clubsID: Long,
 
-    @Json(name = "start_before")
+    @SerializedName("start_before")
     val startBefore: String,
 
-    @Json(name = "start_after")
+    @SerializedName("start_after")
     val startAfter: String,
 
-    @Json(name = "first_last_patrol")
+    @SerializedName("first_last_patrol")
     val firstLastPatrol: Any? = null,
 
-    @Json(name = "share_weapon_with")
+    @SerializedName("share_weapon_with")
     val shareWeaponWith: Long,
 
-    @Json(name = "participate_out_of_competition")
+    @SerializedName("participate_out_of_competition")
     val participateOutOfCompetition: Any? = null,
 
-    @Json(name = "exclude_from_standardmedal")
+    @SerializedName("exclude_from_standardmedal")
     val excludeFromStandardmedal: Any? = null,
 
-    @Json(name = "share_patrol_with")
+    @SerializedName("share_patrol_with")
     val sharePatrolWith: Long,
 
-    @Json(name = "shoot_not_simultaneously_with")
+    @SerializedName("shoot_not_simultaneously_with")
     val shootNotSimultaneouslyWith: Long,
 
     val note: String? = null,
 
-    @Json(name = "requires_approval")
+    @SerializedName("requires_approval")
     val requiresApproval: Long,
 
-    @Json(name = "is_approved_by")
+    @SerializedName("is_approved_by")
     val isApprovedBy: Long,
 
-    @Json(name = "created_by")
+    @SerializedName("created_by")
     val createdBy: Long,
 
-    @Json(name = "created_at")
+    @SerializedName("created_at")
     val createdAt: String,
 
-    @Json(name = "special_wishes")
+    @SerializedName("special_wishes")
     val specialWishes: String,
 
-    @Json(name = "first_last_patrol_human")
+    @SerializedName("first_last_patrol_human")
     val firstLastPatrolHuman: String,
 
-    @Json(name = "start_time_human")
+    @SerializedName("start_time_human")
     val startTimeHuman: String,
 
-    @Json(name = "end_time_human")
+    @SerializedName("end_time_human")
     val endTimeHuman: String
 )
 
 data class Weaponclass (
     val id: Long,
 
-    @Json(name = "weapongroups_id")
+    @SerializedName("weapongroups_id")
     val weapongroupsID: Long,
 
     val classname: String,
     val championship: Long,
 
-    @Json(name = "classname_general")
+    @SerializedName("classname_general")
     val classnameGeneral: ClassnameGeneral,
 
     val pivot: Pivot
@@ -466,13 +446,13 @@ enum class ClassnameGeneral(val value: String) {
 }
 
 data class Pivot (
-    @Json(name = "competitions_id")
+    @SerializedName("competitions_id")
     val competitionsID: Long,
 
-    @Json(name = "weaponclasses_id")
+    @SerializedName("weaponclasses_id")
     val weaponclassesID: Long,
 
-    @Json(name = "registration_fee")
+    @SerializedName("registration_fee")
     val registrationFee: Long
 )
 

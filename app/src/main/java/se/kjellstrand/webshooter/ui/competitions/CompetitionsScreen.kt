@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
@@ -38,13 +39,14 @@ fun MainScreen() {
     val navController = rememberNavController()
     NavHost(navController, startDestination = Screen.CompetitionsList.route) {
         composable(Screen.CompetitionsList.route) {
-            CompetitionsScreen(navController)
+            val competitionsViewModel: CompetitionsViewModel = hiltViewModel()
+            val competitionsState by competitionsViewModel.uiState.collectAsState()
+            CompetitionsScreen(navController, competitionsState)
         }
         composable(
             route = Screen.CompetitionDetail.route,
             arguments = listOf(navArgument("competitionId") { type = NavType.LongType })
         ) { backStackEntry ->
-            // Get the parent back stack entry for the competitions list
             val parentEntry = remember(backStackEntry) {
                 navController.getBackStackEntry(Screen.CompetitionsList.route)
             }
@@ -59,24 +61,23 @@ fun MainScreen() {
 
 @Composable
 fun CompetitionsScreen(
-    navController: NavController, competitionsViewModel: ICompetitionsViewModel = hiltViewModel()
+    navController: NavController, competitionsState: CompetitionsUiState
 ) {
-    val competitionsState by competitionsViewModel.uiState.collectAsState()
-
     competitionsState.competitions?.let { competitions ->
         LazyColumn(
-            modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(16.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding(),
+            contentPadding = PaddingValues(16.dp)
         ) {
             items(competitions.data) { competition ->
                 CompetitionItem(competition = competition, onItemClick = {
-                    // Navigate to the detail screen, passing the competition ID
                     navController.navigate(Screen.CompetitionDetail.createRoute(competition.id))
                 })
                 Divider(modifier = Modifier.padding(vertical = 8.dp))
             }
         }
     } ?: run {
-        // Show loading indicator
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
@@ -89,34 +90,57 @@ fun CompetitionItem(
 ) {
     Column(modifier = Modifier
         .fillMaxWidth()
-        .clickable { onItemClick() } // Make the item clickable
+        .clickable { onItemClick() }
         .padding(8.dp)) {
         Text(
             text = competition.name,
-            style = MaterialTheme.typography.labelMedium
+            style = MaterialTheme.typography.labelLarge
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = "Date: ${competition.date}",
+            text = "Datum: ${competition.date}",
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text =  competition.status,
+            text = "Öppnas för anmälan: ${competition.signupsOpeningDate}",
+            style = MaterialTheme.typography.bodySmall
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = "Sista anmälningsdag: ${competition.signupsClosingDate}",
+            style = MaterialTheme.typography.bodySmall
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = "Efteranmälan: ${competition.allowSignupsAfterClosingDateHuman}",
+            style = MaterialTheme.typography.bodySmall
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = "Lagtävling: ${if (competition.allowTeams == 1L) "Ja" else "Nej"}",
+            style = MaterialTheme.typography.bodySmall
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = "Tävlingstyp: ${competition.competitiontype.name}",
+            style = MaterialTheme.typography.bodySmall
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = "Resultatberäkning: ${competition.resultsTypeHuman}",
             style = MaterialTheme.typography.bodySmall
         )
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun CompetitionsScreenPreview() {
     val navController = rememberNavController()
-    val fakeViewModel = MockCompetitionsViewModelForPreview()
 
     CompetitionsScreen(
         navController = navController,
-        competitionsViewModel = fakeViewModel
+        competitionsState = MockCompetitionsUiState().uiState
     )
 }

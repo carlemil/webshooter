@@ -7,6 +7,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.ResponseBody
+import okhttp3.ResponseBody.Companion.toResponseBody
 import se.kjellstrand.webshooter.R
 import java.io.IOException
 import javax.inject.Inject
@@ -26,12 +27,10 @@ open class MockInterceptor @Inject constructor(
             else -> throw IllegalArgumentException("Unknown request path: ${request.url.encodedPath}")
         }
 
-        // byt till riktig mock för login samt stoppa in competitions å gör sen ui för dom två, med nav? eller vad är senaste där?
-
         return Response.Builder()
             .code(200)
             .message(responseString)
-            .body(ResponseBody.create("application/json".toMediaType(), responseString))
+            .body(responseString.toResponseBody("application/json".toMediaType()))
             .request(request)
             .protocol(Protocol.HTTP_1_1)
             .build()
