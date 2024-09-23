@@ -7,6 +7,7 @@ import se.kjellstrand.webshooter.data.competitions.remote.Competitiontype
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.data.competitions.remote.Logo
 import se.kjellstrand.webshooter.data.competitions.remote.Translations
+import se.kjellstrand.webshooter.data.competitions.remote.Usersignup
 import se.kjellstrand.webshooter.data.competitions.remote.Weapongroup
 
 class MockCompetitionsUiState {
@@ -101,7 +102,74 @@ class MockCompetitionsUiState {
                         deletedAt = null
                     ),
                     weaponclasses = listOf(),
-                    usersignups = listOf(),
+                    usersignups = listOf(
+                        Usersignup(
+                            id = 1L,
+                            competitionsID = 101L,
+                            patrolsID = 201L,
+                            patrolsFinalsID = 301L,
+                            laneFinals = 1L,
+                            patrolsDistinguishID = 401L,
+                            laneDistinguish = 2L,
+                            startTime = "2023-10-15T08:00:00Z",
+                            endTime = "2023-10-15T10:00:00Z",
+                            lane = 5L,
+                            weaponclassesID = 1L,
+                            registrationFee = 100L,
+                            invoicesID = null,
+                            clubsID = 601L,
+                            startBefore = "2023-10-15T07:30:00Z",
+                            startAfter = "2023-10-15T08:30:00Z",
+                            firstLastPatrol = null,
+                            shareWeaponWith = 0L,
+                            participateOutOfCompetition = null,
+                            excludeFromStandardmedal = null,
+                            sharePatrolWith = 0L,
+                            shootNotSimultaneouslyWith = 0L,
+                            note = "Prefer morning slot",
+                            requiresApproval = 0L,
+                            isApprovedBy = 0L,
+                            createdBy = 701L,
+                            createdAt = "2023-09-15T12:00:00Z",
+                            specialWishes = "Vegetarian meal",
+                            firstLastPatrolHuman = "First Patrol",
+                            startTimeHuman = "08:00 AM",
+                            endTimeHuman = "10:00 AM"
+                        ),
+                        Usersignup(
+                            id = 2L,
+                            competitionsID = 102L,
+                            patrolsID = 202L,
+                            patrolsFinalsID = 302L,
+                            laneFinals = 2L,
+                            patrolsDistinguishID = 402L,
+                            laneDistinguish = 3L,
+                            startTime = "2023-10-16T09:00:00Z",
+                            endTime = "2023-10-16T11:00:00Z",
+                            lane = 6L,
+                            weaponclassesID = 21L,
+                            registrationFee = 150L,
+                            invoicesID = null,
+                            clubsID = 602L,
+                            startBefore = "2023-10-16T08:30:00Z",
+                            startAfter = "2023-10-16T09:30:00Z",
+                            firstLastPatrol = null,
+                            shareWeaponWith = 1L,
+                            participateOutOfCompetition = null,
+                            excludeFromStandardmedal = null,
+                            sharePatrolWith = 1L,
+                            shootNotSimultaneouslyWith = 0L,
+                            note = "Will arrive late",
+                            requiresApproval = 1L,
+                            isApprovedBy = 0L,
+                            createdBy = 702L,
+                            createdAt = "2023-09-16T13:00:00Z",
+                            specialWishes = "Need wheelchair access",
+                            firstLastPatrolHuman = "Last Patrol",
+                            startTimeHuman = "09:00 AM",
+                            endTimeHuman = "11:00 AM"
+                        )
+                    ),
                     club = Club(
                         id = 1,
                         disablePersonalInvoices = 0,
