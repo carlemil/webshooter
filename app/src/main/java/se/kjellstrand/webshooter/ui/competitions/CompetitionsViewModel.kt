@@ -13,12 +13,12 @@ import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import javax.inject.Inject
 
 @HiltViewModel
-open class CompetitionsViewModel @Inject constructor(
+class CompetitionsViewModel @Inject constructor(
     private val competitionsRepository: CompetitionsRepository
-) : ViewModel(), ICompetitionsViewModel {
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(CompetitionsUiState())
-    override val uiState: StateFlow<CompetitionsUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<CompetitionsUiState> = _uiState.asStateFlow()
 
     init {
         _uiState.value = CompetitionsUiState()
@@ -39,7 +39,6 @@ open class CompetitionsViewModel @Inject constructor(
                     }
 
                     else -> {
-                        // Handle other states
                         println("getCompetitions other state")
                     }
                 }
