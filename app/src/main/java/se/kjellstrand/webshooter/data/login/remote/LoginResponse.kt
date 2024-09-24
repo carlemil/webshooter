@@ -1,25 +1,17 @@
 package se.kjellstrand.webshooter.data.login.remote
 
-import com.beust.klaxon.*
-
-private val klaxon = Klaxon()
+import com.google.gson.annotations.SerializedName
 
 data class LoginResponse (
-    @Json(name = "token_type")
+    @SerializedName("token_type")
     val tokenType: String,
 
-    @Json(name = "expires_in")
+    @SerializedName("expires_in")
     val expiresIn: Long,
 
-    @Json(name = "access_token")
+    @SerializedName("access_token")
     val accessToken: String,
 
-    @Json(name = "refresh_token")
+    @SerializedName("refresh_token")
     val refreshToken: String
-) {
-    public fun toJson() = klaxon.toJsonString(this)
-
-    companion object {
-        public fun fromJson(json: String) = klaxon.parse<LoginResponse>(json)
-    }
-}
+)
