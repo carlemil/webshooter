@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Dp
 
-class Helpers {
+class Common {
 
     companion object {
         @Composable

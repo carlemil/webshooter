@@ -14,7 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
-import se.kjellstrand.webshooter.ui.SharedComposables.Helpers.Companion.getStatusBarAndHeight
+import se.kjellstrand.webshooter.ui.SharedComposables.Common.Companion.getStatusBarAndHeight
 import se.kjellstrand.webshooter.ui.SharedComposables.WeaponGroupBadges
 
 @Composable
