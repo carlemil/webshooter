@@ -53,7 +53,8 @@ fun MainScreen() {
             }
             val competitionId = backStackEntry.arguments?.getLong("competitionId") ?: -1
             val competitionsViewModel: CompetitionsViewModel = hiltViewModel(parentEntry)
-            CompetitionDetailScreen(competitionsViewModel.getCompetitionById(competitionId))
+            val competitionsState by competitionsViewModel.uiState.collectAsState()
+            CompetitionDetailScreen(competitionsState, competitionId)
         }
     }
 }
