@@ -32,7 +32,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.ui.Screen
-import se.kjellstrand.webshooter.ui.SharedComposables.Helpers.Companion.getStatusBarAndHeight
+import se.kjellstrand.webshooter.ui.SharedComposables.Common.Companion.getStatusBarAndHeight
 import se.kjellstrand.webshooter.ui.SharedComposables.WeaponGroupBadges
 
 @Composable
