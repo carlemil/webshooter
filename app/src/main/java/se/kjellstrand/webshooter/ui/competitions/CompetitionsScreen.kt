@@ -5,14 +5,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
@@ -36,6 +32,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.ui.Screen
+import se.kjellstrand.webshooter.ui.SharedComposables.Helpers.Companion.getStatusBarAndHeight
 import se.kjellstrand.webshooter.ui.SharedComposables.WeaponGroupBadges
 
 @Composable
@@ -65,15 +62,12 @@ fun MainScreen() {
 fun CompetitionsScreen(
     navController: NavController, competitionsState: CompetitionsUiState
 ) {
-    val statusBarPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
-    val displayCutoutPadding = WindowInsets.displayCutout.asPaddingValues().calculateTopPadding()
-
     competitionsState.competitions?.let { competitions ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize(),
             contentPadding = PaddingValues(
-                top = statusBarPadding + displayCutoutPadding + 16.dp,
+                top = getStatusBarAndHeight() + 16.dp,
                 start = 16.dp,
                 end = 16.dp,
                 bottom = 16.dp
