@@ -37,7 +37,9 @@ class MockCompetitionsUiState {
                     contactEmail = "contact@archerycompetition.com",
                     contactTelephone = "555-1234",
                     googleMaps = "",
-                    description = "Join us for the annual archery competition!",
+                    description = "Kullens PK hälsar välkomna till kretsfält med mästerskap i C.\n" +
+                            "Se mer info i separat inbjudan. (klicka på webbplatsen till höger)\n" +
+                            "Max 3 starter.",
                     resultsType = "Standard",
                     resultsPrices = 1,
                     resultsComment = "",
