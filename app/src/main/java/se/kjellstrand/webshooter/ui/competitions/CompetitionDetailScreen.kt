@@ -19,8 +19,10 @@ import se.kjellstrand.webshooter.ui.SharedComposables.WeaponGroupBadges
 
 @Composable
 fun CompetitionDetailScreen(
-    competition: Datum?
+    competitionsState: CompetitionsUiState,
+    competitionId: Long
 ) {
+    val competition = competitionsState.competitions?.data?.find { it.id == competitionId }
     if (competition != null) {
         // Display the competition details
         CompetitionDetail(competition)
@@ -111,6 +113,7 @@ fun CompetitionDetail(competition: Datum) {
 @Composable
 fun CompetitionDetailScreenPreview() {
     CompetitionDetailScreen(
-        competition = MockCompetitionsUiState().uiState.competitions!!.data[0]
+        competitionsState = MockCompetitionsUiState().uiState,
+        1
     )
 }
