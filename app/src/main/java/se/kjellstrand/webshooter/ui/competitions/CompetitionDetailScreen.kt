@@ -3,13 +3,9 @@ package se.kjellstrand.webshooter.ui.competitions
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.displayCutout
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +14,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
+import se.kjellstrand.webshooter.ui.SharedComposables.Helpers.Companion.getStatusBarAndHeight
 import se.kjellstrand.webshooter.ui.SharedComposables.WeaponGroupBadges
 
 @Composable
@@ -35,15 +32,12 @@ fun CompetitionDetailScreen(
 
 @Composable
 fun CompetitionDetail(competition: Datum) {
-    val statusBarPadding = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
-    val displayCutoutPadding = WindowInsets.displayCutout.asPaddingValues().calculateTopPadding()
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(
                 PaddingValues(
-                    top = statusBarPadding + displayCutoutPadding + 16.dp,
+                    top = getStatusBarAndHeight() + 16.dp,
                     start = 16.dp,
                     end = 16.dp,
                     bottom = 16.dp
