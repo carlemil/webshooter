@@ -62,6 +62,11 @@ fun CompetitionDetail(competition: Datum) {
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
+            text = "Status: ${competition.statusHuman}",
+            style = MaterialTheme.typography.bodySmall
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
             text = "Öppnas för anmälan: ${competition.signupsOpeningDate}",
             style = MaterialTheme.typography.bodySmall
         )

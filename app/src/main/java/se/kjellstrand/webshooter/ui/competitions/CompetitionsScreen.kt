@@ -107,32 +107,12 @@ fun CompetitionItem(
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = "Öppnas för anmälan: ${competition.signupsOpeningDate}",
-            style = MaterialTheme.typography.bodySmall
-        )
-        Spacer(modifier = Modifier.height(2.dp))
-        Text(
-            text = "Sista anmälningsdag: ${competition.signupsClosingDate}",
-            style = MaterialTheme.typography.bodySmall
-        )
-        Spacer(modifier = Modifier.height(2.dp))
-        Text(
-            text = "Efteranmälan: ${competition.allowSignupsAfterClosingDateHuman}",
-            style = MaterialTheme.typography.bodySmall
-        )
-        Spacer(modifier = Modifier.height(2.dp))
-        Text(
-            text = "Lagtävling: ${if (competition.allowTeams == 1L) "Ja" else "Nej"}",
+            text = "Status: ${competition.statusHuman}",
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
             text = "Tävlingstyp: ${competition.competitiontype.name}",
-            style = MaterialTheme.typography.bodySmall
-        )
-        Spacer(modifier = Modifier.height(2.dp))
-        Text(
-            text = "Resultatberäkning: ${competition.resultsTypeHuman}",
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(modifier = Modifier.height(6.dp))
