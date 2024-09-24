@@ -18,9 +18,9 @@ open class CompetitionsRepository @Inject constructor(
     fun get(): Flow<Resource<CompetitionsResponse, UserError>> {
         return flow {
             emit(Resource.Loading(true))
-
+            val auth = "Bearer eyJ0eXA"
             val result = try {
-                competitionsRemoteDataSource.getCompetitions()
+                competitionsRemoteDataSource.getCompetitions(auth,1,10,"open",0)
             } catch (e: IOException) {
                 e.printStackTrace()
                 emit(Resource.Error(UserError.IOError))

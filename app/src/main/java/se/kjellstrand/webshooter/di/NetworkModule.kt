@@ -18,7 +18,7 @@ import javax.inject.Singleton
 class NetworkModule {
 
     private val httpLoggingInterceptor: HttpLoggingInterceptor = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY
+        level = HttpLoggingInterceptor.Level.HEADERS
     }
 
     @Provides
@@ -26,10 +26,14 @@ class NetworkModule {
     fun provideOkHttpClient(
         mockInterceptor: MockInterceptor // Injected from Hilt
     ): OkHttpClient {
-        return OkHttpClient.Builder()
+        val currentFlavor = BuildConfig.FLAVOR
+
+        val builder = OkHttpClient.Builder()
             .addInterceptor(httpLoggingInterceptor)
-            .addInterceptor(mockInterceptor) // Add the injected mockInterceptor
-            .build()
+        if (currentFlavor == "mock") {
+            builder.addInterceptor(mockInterceptor).build()
+        }
+        return builder.build()
     }
 
     @Provides
