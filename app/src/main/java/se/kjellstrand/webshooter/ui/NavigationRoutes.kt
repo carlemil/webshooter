@@ -1,7 +1,5 @@
 package se.kjellstrand.webshooter.ui
 
-import se.kjellstrand.webshooter.ui.landingpage.LandingScreen
-
 sealed class Screen(val route: String) {
     object LoginScreen : Screen("login_screen")
     object LandingScreen : Screen("landing_screen")
