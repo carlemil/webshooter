@@ -55,9 +55,7 @@ fun WeaponGroupBadge(weaponGroup: Weapongroup, isHighlighted: Boolean) {
         shape = RoundedCornerShape(4.dp),
         modifier = Modifier.padding(end = 4.dp).then(borderModifier)
     ) {
-        // Do not remove ? below, it will crash the app with a null pointer exception.
-        // java.lang.NullPointerException: Attempt to invoke virtual method 'java.lang.String se.kjellstrand.webshooter.data.competitions.remote.ClassnameGeneral.getValue()' on a null object reference
-        // 	at se.kjellstrand.webshooter.ui.SharedComposables.WeaponGroupBadgesKt$WeaponGroupBadge$1.invoke(WeaponGroupBadges.kt:61)
+        @Suppress("UNNECESSARY_SAFE_CALL")
         weaponGroup.name?.let { weaponGroupName ->
             Text(
                 text = weaponGroupName.value,
