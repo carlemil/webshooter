@@ -11,17 +11,43 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import kotlinx.coroutines.flow.collectLatest
+import se.kjellstrand.webshooter.ui.Screen
+import se.kjellstrand.webshooter.ui.UiEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(loginViewModel: LoginViewModel = viewModel()) {
+fun LoginScreen(
+    navController: NavController,
+    loginViewModel: LoginViewModel = hiltViewModel()) {
     // State variables for username and password
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
-    // UI elements
+    val uiState by loginViewModel.uiState.collectAsState()
+
+    val eventFlow = loginViewModel.eventFlow
+
+    LaunchedEffect(Unit) {
+        eventFlow.collectLatest { event ->
+            when (event) {
+                is UiEvent.NavigateToLandingPage -> {
+                    navController.navigate(Screen.LandingScreen.route) {
+                        popUpTo("login") { inclusive = true }
+                    }
+                }
+                is UiEvent.ShowErrorMessage -> {
+                    println("Error: ${event.message}")
+                }
+            }
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -33,21 +59,16 @@ fun LoginScreen(loginViewModel: LoginViewModel = viewModel()) {
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
-
         Spacer(modifier = Modifier.height(32.dp))
-
-        // Username TextField
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
             label = { Text("Username") },
             singleLine = true,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !uiState.isLoading
         )
-
         Spacer(modifier = Modifier.height(16.dp))
-
-        // Password TextField
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
@@ -64,20 +85,34 @@ fun LoginScreen(loginViewModel: LoginViewModel = viewModel()) {
                     Icon(imageVector = image, contentDescription = null)
                 }
             },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            enabled = !uiState.isLoading
         )
-
         Spacer(modifier = Modifier.height(24.dp))
 
-        // Login Button
         Button(
             onClick = {
                 loginViewModel.login(username, password)
             },
             modifier = Modifier.fillMaxWidth(),
-            enabled = username.isNotEmpty() && password.isNotEmpty()
+            enabled = username.isNotEmpty() && password.isNotEmpty() && !uiState.isLoading
         ) {
-            Text("Login")
+            if (uiState.isLoading) {
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    modifier = Modifier.size(20.dp)
+                )
+            } else {
+                Text("Login")
+            }
+        }
+        uiState.errorMessage?.let { errorMessage ->
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = errorMessage,
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
         }
     }
 }
@@ -86,6 +121,7 @@ fun LoginScreen(loginViewModel: LoginViewModel = viewModel()) {
 @Composable
 fun LoginScreenPreview() {
     MaterialTheme {
-        LoginScreen()
+        val navController = rememberNavController()
+        LoginScreen(navController)
     }
 }

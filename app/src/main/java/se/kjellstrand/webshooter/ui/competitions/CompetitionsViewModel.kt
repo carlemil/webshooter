@@ -21,8 +21,8 @@ class CompetitionsViewModel @Inject constructor(
     val uiState: StateFlow<CompetitionsUiState> = _uiState.asStateFlow()
 
     init {
-        _uiState.value = CompetitionsUiState()
         getCompetitions()
+        _uiState.value = CompetitionsUiState()
     }
 
     private fun getCompetitions() {

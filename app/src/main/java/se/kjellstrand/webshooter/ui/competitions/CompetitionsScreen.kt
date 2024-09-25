@@ -16,48 +16,16 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavType
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.ui.Screen
-import se.kjellstrand.webshooter.ui.SharedComposables.Common.Companion.getStatusBarAndHeight
-import se.kjellstrand.webshooter.ui.SharedComposables.WeaponGroupBadges
-
-@Composable
-fun MainScreen() {
-    val navController = rememberNavController()
-    NavHost(navController, startDestination = Screen.CompetitionsList.route) {
-        composable(Screen.CompetitionsList.route) {
-            val competitionsViewModel: CompetitionsViewModel = hiltViewModel()
-            val competitionsState by competitionsViewModel.uiState.collectAsState()
-            CompetitionsScreen(navController, competitionsState)
-        }
-        composable(
-            route = Screen.CompetitionDetail.route,
-            arguments = listOf(navArgument("competitionId") { type = NavType.LongType })
-        ) { backStackEntry ->
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(Screen.CompetitionsList.route)
-            }
-            val competitionId = backStackEntry.arguments?.getLong("competitionId") ?: -1
-            val competitionsViewModel: CompetitionsViewModel = hiltViewModel(parentEntry)
-            val competitionsState by competitionsViewModel.uiState.collectAsState()
-            CompetitionDetailScreen(competitionsState, competitionId)
-        }
-    }
-}
+import se.kjellstrand.webshooter.ui.sharedcomposables.Common.Companion.getStatusBarOrCutOutHeight
+import se.kjellstrand.webshooter.ui.sharedcomposables.WeaponGroupBadges
 
 @Composable
 fun CompetitionsScreen(
@@ -68,7 +36,7 @@ fun CompetitionsScreen(
             modifier = Modifier
                 .fillMaxSize(),
             contentPadding = PaddingValues(
-                top = getStatusBarAndHeight() + 16.dp,
+                top = getStatusBarOrCutOutHeight() + 16.dp,
                 start = 16.dp,
                 end = 16.dp,
                 bottom = 16.dp

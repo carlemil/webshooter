@@ -1,7 +1,7 @@
 package se.kjellstrand.webshooter.ui.login
 
-import se.kjellstrand.webshooter.data.login.remote.LoginResponse
-
 data class LoginUiState(
-    val loginResponse: LoginResponse? = null
+    val isLoading: Boolean = false,
+    val isSuccess: Boolean = false,
+    val errorMessage: String? = null
 )

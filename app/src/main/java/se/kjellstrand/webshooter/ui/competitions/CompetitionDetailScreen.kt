@@ -14,8 +14,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
-import se.kjellstrand.webshooter.ui.SharedComposables.Common.Companion.getStatusBarAndHeight
-import se.kjellstrand.webshooter.ui.SharedComposables.WeaponGroupBadges
+import se.kjellstrand.webshooter.ui.sharedcomposables.Common.Companion.getStatusBarOrCutOutHeight
+import se.kjellstrand.webshooter.ui.sharedcomposables.WeaponGroupBadges
 
 @Composable
 fun CompetitionDetailScreen(
@@ -39,7 +39,7 @@ fun CompetitionDetail(competition: Datum) {
             .fillMaxWidth()
             .padding(
                 PaddingValues(
-                    top = getStatusBarAndHeight() + 16.dp,
+                    top = getStatusBarOrCutOutHeight() + 16.dp,
                     start = 16.dp,
                     end = 16.dp,
                     bottom = 16.dp
