@@ -9,9 +9,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import se.kjellstrand.webshooter.data.Resource
+import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.login.LoginRepository
-import se.kjellstrand.webshooter.ui.UiEvent
+import se.kjellstrand.webshooter.ui.common.UiEvent
 import javax.inject.Inject
 
 @HiltViewModel

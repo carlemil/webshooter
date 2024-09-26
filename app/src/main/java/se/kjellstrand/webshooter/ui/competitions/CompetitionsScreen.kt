@@ -23,9 +23,9 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
-import se.kjellstrand.webshooter.ui.Screen
-import se.kjellstrand.webshooter.ui.sharedcomposables.Common.Companion.getStatusBarOrCutOutHeight
-import se.kjellstrand.webshooter.ui.sharedcomposables.WeaponGroupBadges
+import se.kjellstrand.webshooter.ui.navigation.Screen
+import se.kjellstrand.webshooter.ui.common.Common.Companion.getStatusBarOrCutOutHeight
+import se.kjellstrand.webshooter.ui.common.WeaponGroupBadges
 
 @Composable
 fun CompetitionsScreen(

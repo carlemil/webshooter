@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui
+package se.kjellstrand.webshooter.ui.common
 
 sealed class UiEvent {
     object NavigateToLandingPage : UiEvent()

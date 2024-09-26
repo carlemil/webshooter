@@ -4,8 +4,8 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okio.IOException
 import retrofit2.HttpException
-import se.kjellstrand.webshooter.data.Resource
-import se.kjellstrand.webshooter.data.UserError
+import se.kjellstrand.webshooter.data.common.Resource
+import se.kjellstrand.webshooter.data.common.UserError
 import se.kjellstrand.webshooter.data.login.remote.LoginRemoteDataSource
 import se.kjellstrand.webshooter.data.login.remote.LoginRequest
 import se.kjellstrand.webshooter.data.login.remote.LoginResponse

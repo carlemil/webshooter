@@ -14,8 +14,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
-import se.kjellstrand.webshooter.ui.sharedcomposables.Common.Companion.getStatusBarOrCutOutHeight
-import se.kjellstrand.webshooter.ui.sharedcomposables.WeaponGroupBadges
+import se.kjellstrand.webshooter.ui.common.Common.Companion.getStatusBarOrCutOutHeight
+import se.kjellstrand.webshooter.ui.common.WeaponGroupBadges
 
 @Composable
 fun CompetitionDetailScreen(

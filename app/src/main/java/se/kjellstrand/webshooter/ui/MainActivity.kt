@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.rememberNavController
 import dagger.hilt.android.AndroidEntryPoint
+import se.kjellstrand.webshooter.ui.navigation.AppNavHost
 import se.kjellstrand.webshooter.ui.theme.WebShooterTheme
 
 @AndroidEntryPoint

@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import se.kjellstrand.webshooter.data.Resource
+import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.competitions.CompetitionsRepository
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import javax.inject.Inject
