@@ -3,6 +3,7 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("com.google.dagger.hilt.android")
     id("kotlin-kapt")
+    alias(libs.plugins.compose.compiler)
 }
 
 android {
@@ -98,7 +99,7 @@ dependencies {
     implementation(libs.accompanist.systemuicontroller)
 
     // Test
-    androidTestImplementation(platform(libs.androidx.compose.bom.v20230300))
+    androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
