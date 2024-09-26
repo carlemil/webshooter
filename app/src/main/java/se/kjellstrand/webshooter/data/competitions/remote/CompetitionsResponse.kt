@@ -45,11 +45,15 @@ data class Competitions (
     val clubsID: Any? = null,
 
     val type: Long,
-    val usersignup: Any? = null,
-    val competitiontypes: List<Competitiontype>
+
+    @SerializedName("usersignup")
+    val userSignup: Any? = null,
+
+    @SerializedName("competitiontypes")
+    val competitionTypes: List<CompetitionType>
 )
 
-data class Competitiontype (
+data class CompetitionType (
     val id: Long,
     val name: String,
 
@@ -161,7 +165,8 @@ data class Datum (
     @SerializedName("closed_at")
     val closedAt: Any? = null,
 
-    val weapongroups: List<Weapongroup>,
+    @SerializedName("weapongroups")
+    val weaponGroups: List<Weapongroup>,
 
     @SerializedName("signups_count")
     val signupsCount: Long,
@@ -199,9 +204,16 @@ data class Datum (
     val pdfLogoURL: String,
 
     val championship: Any? = null,
-    val competitiontype: Competitiontype,
-    val weaponclasses: List<Weaponclass>,
-    val usersignups: List<Usersignup>,
+
+    @SerializedName("competitiontype")
+    val competitionType: CompetitionType,
+
+    @SerializedName("weaponclasses")
+    val weaponClasses: List<Weaponclass>,
+
+    @SerializedName("usersignups")
+    val userSignups: List<Usersignup>,
+
     val club: Club
 )
 
@@ -304,8 +316,12 @@ data class Translations (
     @SerializedName("results_list_plural")
     val resultsListPlural: String,
 
-    val shootingcard: String,
-    val shootingcards: String,
+    @SerializedName("shootingcard")
+    val shootingCard: String,
+
+    @SerializedName("shootingcards")
+    val shootingCards: String,
+
     val signups: String
 )
 
