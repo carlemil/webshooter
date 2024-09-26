@@ -3,7 +3,7 @@ package se.kjellstrand.webshooter.ui.competitions
 import se.kjellstrand.webshooter.data.competitions.remote.ClassnameGeneral
 import se.kjellstrand.webshooter.data.competitions.remote.Club
 import se.kjellstrand.webshooter.data.competitions.remote.Competitions
-import se.kjellstrand.webshooter.data.competitions.remote.Competitiontype
+import se.kjellstrand.webshooter.data.competitions.remote.CompetitionType
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.data.competitions.remote.Logo
 import se.kjellstrand.webshooter.data.competitions.remote.Translations
@@ -53,7 +53,7 @@ class MockCompetitionsUiState {
                     createdBy = 1,
                     pdfLogo = Logo.Club,
                     closedAt = null,
-                    weapongroups = listOf(
+                    weaponGroups = listOf(
                         Weapongroup(
                             id = 1, name = ClassnameGeneral.A
                         ), Weapongroup(
@@ -87,8 +87,8 @@ class MockCompetitionsUiState {
                         stationsNamePlural = "Stations",
                         resultsListSingular = "Result",
                         resultsListPlural = "Results",
-                        shootingcard = "Shooting Card",
-                        shootingcards = "Shooting Cards",
+                        shootingCard = "Shooting Card",
+                        shootingCards = "Shooting Cards",
                         signups = "Registrations"
                     ),
                     resultsTypeHuman = "Fält",
@@ -96,15 +96,15 @@ class MockCompetitionsUiState {
                     pdfLogoPath = "",
                     pdfLogoURL = "",
                     championship = null,
-                    competitiontype = Competitiontype(
+                    competitionType = CompetitionType(
                         id = 1,
                         name = "Fält",
                         createdAt = "2023-01-01",
                         updatedAt = "2023-01-01",
                         deletedAt = null
                     ),
-                    weaponclasses = listOf(),
-                    usersignups = listOf(
+                    weaponClasses = listOf(),
+                    userSignups = listOf(
                         Usersignup(
                             id = 1L,
                             competitionsID = 101L,
@@ -213,9 +213,9 @@ class MockCompetitionsUiState {
             status = "Open",
             clubsID = null,
             type = 1,
-            usersignup = null,
-            competitiontypes = listOf(
-                Competitiontype(
+            userSignup = null,
+            competitionTypes = listOf(
+                CompetitionType(
                     id = 1,
                     name = "Indoor",
                     createdAt = "2023-01-01",

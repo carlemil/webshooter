@@ -87,7 +87,7 @@ fun CompetitionDetail(competition: Datum) {
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = "Tävlingstyp: ${competition.competitiontype.name}",
+            text = "Tävlingstyp: ${competition.competitionType.name}",
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(modifier = Modifier.height(2.dp))
@@ -107,8 +107,8 @@ fun CompetitionDetail(competition: Datum) {
         )
         Spacer(modifier = Modifier.height(6.dp))
         WeaponGroupBadges(
-            weaponGroups = competition.weapongroups,
-            userSignups = competition.usersignups
+            weaponGroups = competition.weaponGroups,
+            userSignups = competition.userSignups
         )
         // Add more details as needed
     }
