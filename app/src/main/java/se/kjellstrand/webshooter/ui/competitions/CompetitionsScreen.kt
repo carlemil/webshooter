@@ -63,7 +63,7 @@ fun CompetitionItem(
     Column(modifier = Modifier
         .fillMaxWidth()
         .clickable { onItemClick() }
-        .padding(8.dp)) {
+        ) {
         Text(
             text = competition.name,
             style = MaterialTheme.typography.labelLarge
