@@ -2,7 +2,6 @@
 accompanistSystemuicontroller = "0.27.0"
 activityCompose = "1.9.2"
 composeBom = "2024.09.02"
-composeBomVersion = "2023.03.00"
 converterGson = "2.9.0"
 coreKtx = "1.13.1"
 espressoCore = "3.6.1"
@@ -18,11 +17,15 @@ mockwebserver = "4.12.0"
 navigationCompose = "2.8.1"
 okhttp = "4.12.0"
 retrofit = "2.9.0"
+kotlin = "2.0.20"
+
+[plugins]
+compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
 [libraries]
 accompanist-systemuicontroller = { module = "com.google.accompanist:accompanist-systemuicontroller", version.ref = "accompanistSystemuicontroller" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { module = "androidx.compose:compose-bom", version.ref = "composeBom" }
-androidx-compose-bom-v20230300 = { module = "androidx.compose:compose-bom", version.ref = "composeBomVersion" }
 androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "coreKtx" }
 androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }
 androidx-hilt-compiler = { module = "androidx.hilt:hilt-compiler", version.ref = "hiltCompilerVersion" }
