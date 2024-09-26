@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui
+package se.kjellstrand.webshooter.ui.navigation
 
 sealed class Screen(val route: String) {
     object LoginScreen : Screen("login_screen")

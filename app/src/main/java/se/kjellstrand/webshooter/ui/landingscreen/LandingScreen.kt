@@ -28,7 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.launch
-import se.kjellstrand.webshooter.ui.Screen
+import se.kjellstrand.webshooter.ui.navigation.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

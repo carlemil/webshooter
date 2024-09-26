@@ -12,12 +12,11 @@ import androidx.compose.ui.text.input.*
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.flow.collectLatest
-import se.kjellstrand.webshooter.ui.Screen
-import se.kjellstrand.webshooter.ui.UiEvent
+import se.kjellstrand.webshooter.ui.navigation.Screen
+import se.kjellstrand.webshooter.ui.common.UiEvent
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

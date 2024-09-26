@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.sharedcomposables
+package se.kjellstrand.webshooter.ui.common
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.horizontalScroll

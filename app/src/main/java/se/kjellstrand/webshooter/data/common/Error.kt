@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.data
+package se.kjellstrand.webshooter.data.common
 
 sealed interface Error
 
