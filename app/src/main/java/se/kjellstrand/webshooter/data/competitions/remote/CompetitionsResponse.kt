@@ -1,6 +1,11 @@
 package se.kjellstrand.webshooter.data.competitions.remote
 
 import com.google.gson.annotations.SerializedName
+import se.kjellstrand.webshooter.data.common.Club
+import se.kjellstrand.webshooter.data.common.CompetitionType
+import se.kjellstrand.webshooter.data.common.Weaponclass
+import se.kjellstrand.webshooter.data.common.Weapongroup
+import se.kjellstrand.webshooter.data.common.Logo
 
 data class CompetitionsResponse (
     val competitions: Competitions
@@ -51,20 +56,6 @@ data class Competitions (
 
     @SerializedName("competitiontypes")
     val competitionTypes: List<CompetitionType>
-)
-
-data class CompetitionType (
-    val id: Long,
-    val name: String,
-
-    @SerializedName("created_at")
-    val createdAt: String,
-
-    @SerializedName("updated_at")
-    val updatedAt: String,
-
-    @SerializedName("deleted_at")
-    val deletedAt: Any? = null
 )
 
 data class Datum (
@@ -217,71 +208,6 @@ data class Datum (
     val club: Club
 )
 
-enum class Logo(val value: String) {
-    Club("club"),
-    Webshooter("webshooter");
-
-    companion object {
-        public fun fromValue(value: String): Logo = when (value) {
-            "club"       -> Club
-            "webshooter" -> Webshooter
-            else         -> throw IllegalArgumentException()
-        }
-    }
-}
-
-data class Club (
-    val id: Long,
-
-    @SerializedName("disable_personal_invoices")
-    val disablePersonalInvoices: Long,
-
-    @SerializedName("districts_id")
-    val districtsID: Long,
-
-    @SerializedName("clubs_nr")
-    val clubsNr: String,
-
-    val name: String,
-    val email: String,
-    val phone: String? = null,
-
-    @SerializedName("address_street")
-    val addressStreet: String,
-
-    @SerializedName("address_street_2")
-    val addressStreet2: String? = null,
-
-    @SerializedName("address_zipcode")
-    val addressZipcode: String,
-
-    @SerializedName("address_city")
-    val addressCity: String,
-
-    @SerializedName("address_country")
-    val addressCountry: String? = null,
-
-    val bankgiro: String? = null,
-    val postgiro: String? = null,
-    val swish: String,
-    val logo: String? = null,
-
-    @SerializedName("user_has_role")
-    val userHasRole: Any? = null,
-
-    @SerializedName("address_combined")
-    val addressCombined: String,
-
-    @SerializedName("address_incomplete")
-    val addressIncomplete: Boolean,
-
-    @SerializedName("logo_url")
-    val logoURL: String,
-
-    @SerializedName("logo_path")
-    val logoPath: String
-)
-
 data class Translations (
     @SerializedName("patrols_name_singular")
     val patrolsNameSingular: String,
@@ -355,7 +281,7 @@ data class Usersignup (
     val lane: Long,
 
     @SerializedName("weaponclasses_id")
-    val weaponclassesID: Long,
+    val weaponClassesID: Long,
 
     @SerializedName("registration_fee")
     val registrationFee: Long,
@@ -417,50 +343,6 @@ data class Usersignup (
     val endTimeHuman: String
 )
 
-data class Weaponclass (
-    val id: Long,
-
-    @SerializedName("weapongroups_id")
-    val weapongroupsID: Long,
-
-    val classname: String,
-    val championship: Long,
-
-    @SerializedName("classname_general")
-    val classnameGeneral: ClassnameGeneral,
-
-    val pivot: Pivot
-)
-
-enum class ClassnameGeneral(val value: String) {
-    A("A"),
-    B("B"),
-    C("C"),
-    CD("CD"),
-    CJun("CJun"),
-    Cvy("CVY"),
-    Cvä("CVÄ"),
-    M1("M1"),
-    M2("M2"),
-    R("R");
-
-    companion object {
-        public fun fromValue(value: String): ClassnameGeneral = when (value) {
-            "A"    -> A
-            "B"    -> B
-            "C"    -> C
-            "CD"   -> CD
-            "CJun" -> CJun
-            "CVY"  -> Cvy
-            "CVÄ"  -> Cvä
-            "M1"   -> M1
-            "M2"   -> M2
-            "R"    -> R
-            else   -> throw IllegalArgumentException()
-        }
-    }
-}
-
 data class Pivot (
     @SerializedName("competitions_id")
     val competitionsID: Long,
@@ -470,11 +352,6 @@ data class Pivot (
 
     @SerializedName("registration_fee")
     val registrationFee: Long
-)
-
-data class Weapongroup (
-    val id: Long,
-    val name: ClassnameGeneral
 )
 
 data class Link (

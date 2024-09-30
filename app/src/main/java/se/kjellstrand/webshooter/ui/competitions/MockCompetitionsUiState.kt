@@ -1,14 +1,14 @@
 package se.kjellstrand.webshooter.ui.competitions
 
-import se.kjellstrand.webshooter.data.competitions.remote.ClassnameGeneral
-import se.kjellstrand.webshooter.data.competitions.remote.Club
+import se.kjellstrand.webshooter.data.common.ClassnameGeneral
+import se.kjellstrand.webshooter.data.common.Club
+import se.kjellstrand.webshooter.data.common.CompetitionType
+import se.kjellstrand.webshooter.data.common.Logo
+import se.kjellstrand.webshooter.data.common.Weapongroup
 import se.kjellstrand.webshooter.data.competitions.remote.Competitions
-import se.kjellstrand.webshooter.data.competitions.remote.CompetitionType
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
-import se.kjellstrand.webshooter.data.competitions.remote.Logo
 import se.kjellstrand.webshooter.data.competitions.remote.Translations
 import se.kjellstrand.webshooter.data.competitions.remote.Usersignup
-import se.kjellstrand.webshooter.data.competitions.remote.Weapongroup
 
 class MockCompetitionsUiState {
     val uiState = CompetitionsUiState(
@@ -64,8 +64,6 @@ class MockCompetitionsUiState {
                             id = 4, name = ClassnameGeneral.R
                         ), Weapongroup(
                             id = 5, name = ClassnameGeneral.Cvä
-                        ), Weapongroup(
-                            id = 6, name = ClassnameGeneral.M2
                         )
                     ),
                     signupsCount = 150,
@@ -116,7 +114,7 @@ class MockCompetitionsUiState {
                             startTime = "2023-10-15T08:00:00Z",
                             endTime = "2023-10-15T10:00:00Z",
                             lane = 5L,
-                            weaponclassesID = 1L,
+                            weaponClassesID = 1L,
                             registrationFee = 100L,
                             invoicesID = null,
                             clubsID = 601L,
@@ -149,7 +147,7 @@ class MockCompetitionsUiState {
                             startTime = "2023-10-16T09:00:00Z",
                             endTime = "2023-10-16T11:00:00Z",
                             lane = 6L,
-                            weaponclassesID = 21L,
+                            weaponClassesID = 21L,
                             registrationFee = 150L,
                             invoicesID = null,
                             clubsID = 602L,
