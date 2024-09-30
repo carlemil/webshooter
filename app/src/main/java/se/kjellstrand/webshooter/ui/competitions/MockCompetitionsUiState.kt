@@ -4,7 +4,7 @@ import se.kjellstrand.webshooter.data.common.ClassnameGeneral
 import se.kjellstrand.webshooter.data.common.Club
 import se.kjellstrand.webshooter.data.common.CompetitionType
 import se.kjellstrand.webshooter.data.common.Logo
-import se.kjellstrand.webshooter.data.common.Weapongroup
+import se.kjellstrand.webshooter.data.common.WeaponGroup
 import se.kjellstrand.webshooter.data.competitions.remote.Competitions
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.data.competitions.remote.Translations
@@ -54,15 +54,15 @@ class MockCompetitionsUiState {
                     pdfLogo = Logo.Club,
                     closedAt = null,
                     weaponGroups = listOf(
-                        Weapongroup(
+                        WeaponGroup(
                             id = 1, name = ClassnameGeneral.A
-                        ), Weapongroup(
+                        ), WeaponGroup(
                             id = 2, name = ClassnameGeneral.B
-                        ), Weapongroup(
+                        ), WeaponGroup(
                             id = 3, name = ClassnameGeneral.C
-                        ), Weapongroup(
+                        ), WeaponGroup(
                             id = 4, name = ClassnameGeneral.R
-                        ), Weapongroup(
+                        ), WeaponGroup(
                             id = 5, name = ClassnameGeneral.Cvä
                         )
                     ),

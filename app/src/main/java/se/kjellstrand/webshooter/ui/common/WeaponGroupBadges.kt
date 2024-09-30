@@ -14,12 +14,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import se.kjellstrand.webshooter.data.common.Weapongroup
+import se.kjellstrand.webshooter.data.common.WeaponGroup
 import se.kjellstrand.webshooter.data.competitions.remote.Usersignup
 
 @Composable
 fun WeaponGroupBadges(
-    weaponGroups: List<Weapongroup>,
+    weaponGroups: List<WeaponGroup>,
     userSignups: List<Usersignup>
 ) {
     val userSignedUpForWeaponClassesIDs = userSignups.map { it.weaponClassesID }.toSet()
