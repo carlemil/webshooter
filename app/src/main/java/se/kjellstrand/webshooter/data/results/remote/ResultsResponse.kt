@@ -168,7 +168,7 @@ data class Signup(
     val endTimeHuman: String,
 
     val user: User,
-    val club: Club
+    val club: Club?
 )
 
 

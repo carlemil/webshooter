@@ -38,7 +38,11 @@ fun WeaponGroupBadges(
 }
 
 @Composable
-fun WeaponGroupBadge(weaponGroupName: String, isHighlighted: Boolean) {
+fun WeaponGroupBadge(
+    modifier: Modifier = Modifier,
+    weaponGroupName: String,
+    isHighlighted: Boolean
+) {
     val borderModifier = if (isHighlighted) {
         Modifier.border(
             width = 0.6.dp,
@@ -56,7 +60,7 @@ fun WeaponGroupBadge(weaponGroupName: String, isHighlighted: Boolean) {
     Surface(
         color = MaterialTheme.colorScheme.surfaceVariant,
         shape = RoundedCornerShape(4.dp),
-        modifier = Modifier
+        modifier = modifier
             .padding(end = 4.dp)
             .then(borderModifier)
     ) {

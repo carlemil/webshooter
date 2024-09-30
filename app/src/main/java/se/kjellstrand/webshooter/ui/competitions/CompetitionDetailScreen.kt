@@ -18,6 +18,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.ui.common.WeaponGroupBadges
+import se.kjellstrand.webshooter.ui.mock.MockCompetitionsUiState
 import se.kjellstrand.webshooter.ui.navigation.Screen
 
 @Composable

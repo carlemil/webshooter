@@ -1,12 +1,12 @@
 package se.kjellstrand.webshooter.ui.results
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -21,6 +21,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import se.kjellstrand.webshooter.data.results.remote.Result
 import se.kjellstrand.webshooter.ui.common.WeaponGroupBadge
+import se.kjellstrand.webshooter.ui.mock.MockResultsUiState
 
 @Composable
 fun CompetitionResultsScreen(
@@ -53,28 +54,33 @@ fun CompetitionResultsScreen(
 fun ResultItem(
     result: Result
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = result.placement.toString(),
+                style = MaterialTheme.typography.labelLarge
+            )
+            Text(
+                text = "${result.signup.user.name} ${result.signup.user.lastname}",
+                style = MaterialTheme.typography.labelLarge
+            )
+            Text(
+                text = "T: ${result.hits}, F: ${result.figureHits}, P: ${result.points}",
+                style = MaterialTheme.typography.bodySmall
+            )
+            Text(
+                text = result.weaponClass.classname,
+                style = MaterialTheme.typography.bodySmall
+            )
+        }
         Text(
-            text = result.signup.user.name + " " + result.signup.user.lastname,
-            style = MaterialTheme.typography.labelLarge
-        )
-        Spacer(modifier = Modifier.height(2.dp))
-        Text(
-            text = "Status: ${result.signup.club.name}",
+            text = result.signup.club?.name ?: "Unknown club",
             style = MaterialTheme.typography.bodySmall
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = "T/F: ${result.hits}/${result.figureHits}/${result.points}",
-            style = MaterialTheme.typography.bodySmall
-        )
-        Spacer(modifier = Modifier.height(6.dp))
-        WeaponGroupBadge(
-            weaponGroupName = result.weaponClass.classname,
-            isHighlighted = true
         )
     }
 }
