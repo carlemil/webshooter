@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,6 +24,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.ui.common.WeaponGroupBadges
+import se.kjellstrand.webshooter.ui.mock.MockCompetitionsUiState
 import se.kjellstrand.webshooter.ui.navigation.Screen
 
 @Composable

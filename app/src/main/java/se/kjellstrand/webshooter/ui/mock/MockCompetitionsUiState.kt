@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.competitions
+package se.kjellstrand.webshooter.ui.mock
 
 import se.kjellstrand.webshooter.data.common.ClassnameGeneral
 import se.kjellstrand.webshooter.data.common.Club
@@ -9,6 +9,7 @@ import se.kjellstrand.webshooter.data.competitions.remote.Competitions
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.data.competitions.remote.Translations
 import se.kjellstrand.webshooter.data.competitions.remote.Usersignup
+import se.kjellstrand.webshooter.ui.competitions.CompetitionsUiState
 
 class MockCompetitionsUiState {
     val uiState = CompetitionsUiState(
