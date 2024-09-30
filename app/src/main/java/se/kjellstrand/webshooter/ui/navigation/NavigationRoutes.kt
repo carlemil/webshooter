@@ -7,4 +7,7 @@ sealed class Screen(val route: String) {
     object CompetitionDetail : Screen("competition_detail/{competitionId}") {
         fun createRoute(competitionId: Long) = "competition_detail/$competitionId"
     }
+    object CompetitionResults : Screen("competition_results/{competitionId}") {
+        fun createRoute(competitionId: Long) = "competition_results/$competitionId"
+    }
 }

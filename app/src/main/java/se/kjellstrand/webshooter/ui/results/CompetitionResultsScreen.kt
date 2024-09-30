@@ -1,6 +1,5 @@
 package se.kjellstrand.webshooter.ui.results
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -20,15 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import se.kjellstrand.webshooter.data.results.remote.Result
 import se.kjellstrand.webshooter.ui.common.WeaponGroupBadge
-import se.kjellstrand.webshooter.ui.navigation.Screen
 
 @Composable
-fun ResultsScreen(
-    navController: NavController, resultsState: ResultsUiState
+fun CompetitionResultsScreen(
+    resultsState: ResultsUiState
 ) {
     resultsState.results?.let { results ->
         LazyColumn(
@@ -42,9 +38,7 @@ fun ResultsScreen(
             )
         ) {
             items(results) { result ->
-                ResultItem(result = result, onItemClick = {
-                    navController.navigate(Screen.CompetitionDetail.createRoute(result.id))
-                })
+                ResultItem(result = result)
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
             }
         }
@@ -57,11 +51,11 @@ fun ResultsScreen(
 
 @Composable
 fun ResultItem(
-    result: Result, onItemClick: () -> Unit
+    result: Result
 ) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .clickable { onItemClick() }
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
     ) {
         Text(
             text = result.signup.user.name + " " + result.signup.user.lastname,
@@ -88,10 +82,7 @@ fun ResultItem(
 @Preview(showBackground = true)
 @Composable
 fun ResultsScreenPreview() {
-    val navController = rememberNavController()
-
-    ResultsScreen(
-        navController = navController,
+    CompetitionResultsScreen(
         resultsState = MockResultsUiState().uiState
     )
 }

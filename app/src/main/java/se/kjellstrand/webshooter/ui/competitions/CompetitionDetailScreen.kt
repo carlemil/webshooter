@@ -1,5 +1,6 @@
 package se.kjellstrand.webshooter.ui.competitions
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -13,18 +14,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.ui.common.WeaponGroupBadges
+import se.kjellstrand.webshooter.ui.navigation.Screen
 
 @Composable
 fun CompetitionDetailScreen(
+    navController: NavController,
     competitionsState: CompetitionsUiState,
     competitionId: Long
 ) {
     val competition = competitionsState.competitions?.data?.find { it.id == competitionId }
     if (competition != null) {
         // Display the competition details
-        CompetitionDetail(competition)
+        CompetitionDetail(competition, onItemClick = {
+            navController.navigate(Screen.CompetitionResults.createRoute(competition.id))
+        })
     } else {
         // Show a loading indicator or error message
         Text("Competition not found.")
@@ -32,10 +39,11 @@ fun CompetitionDetailScreen(
 }
 
 @Composable
-fun CompetitionDetail(competition: Datum) {
+fun CompetitionDetail(competition: Datum, onItemClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .clickable { onItemClick() }
             .padding(
                 PaddingValues(
                     top = 16.dp,
@@ -116,7 +124,10 @@ fun CompetitionDetail(competition: Datum) {
 @Preview(showBackground = true)
 @Composable
 fun CompetitionDetailScreenPreview() {
+    val navController = rememberNavController()
+
     CompetitionDetailScreen(
+        navController,
         competitionsState = MockCompetitionsUiState().uiState,
         1
     )
