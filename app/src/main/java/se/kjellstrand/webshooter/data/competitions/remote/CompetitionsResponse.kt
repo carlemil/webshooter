@@ -4,7 +4,7 @@ import com.google.gson.annotations.SerializedName
 import se.kjellstrand.webshooter.data.common.Club
 import se.kjellstrand.webshooter.data.common.CompetitionType
 import se.kjellstrand.webshooter.data.common.Weaponclass
-import se.kjellstrand.webshooter.data.common.Weapongroup
+import se.kjellstrand.webshooter.data.common.WeaponGroup
 import se.kjellstrand.webshooter.data.common.Logo
 
 data class CompetitionsResponse (
@@ -157,7 +157,7 @@ data class Datum (
     val closedAt: Any? = null,
 
     @SerializedName("weapongroups")
-    val weaponGroups: List<Weapongroup>,
+    val weaponGroups: List<WeaponGroup>,
 
     @SerializedName("signups_count")
     val signupsCount: Long,
