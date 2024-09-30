@@ -14,28 +14,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import se.kjellstrand.webshooter.data.common.Weapongroup
 import se.kjellstrand.webshooter.data.competitions.remote.Usersignup
-import se.kjellstrand.webshooter.data.competitions.remote.Weapongroup
 
 @Composable
 fun WeaponGroupBadges(
     weaponGroups: List<Weapongroup>,
     userSignups: List<Usersignup>
 ) {
-    val userSignedUpForWeaponclassesIDs = userSignups.map { it.weaponclassesID }.toSet()
+    val userSignedUpForWeaponClassesIDs = userSignups.map { it.weaponClassesID }.toSet()
     Row(modifier = Modifier.horizontalScroll(rememberScrollState())) {
         weaponGroups.forEach { weaponGroup ->
-            val isHighlighted = weaponGroup.id in userSignedUpForWeaponclassesIDs
-            WeaponGroupBadge(
-                weaponGroup = weaponGroup,
-                isHighlighted = isHighlighted
-            )
+            val isHighlighted = weaponGroup.id in userSignedUpForWeaponClassesIDs
+            @Suppress("UNNECESSARY_SAFE_CALL")
+            weaponGroup.name?.value?.let {
+                WeaponGroupBadge(
+                    weaponGroupName = it,
+                    isHighlighted = isHighlighted
+                )
+            }
         }
     }
 }
 
 @Composable
-fun WeaponGroupBadge(weaponGroup: Weapongroup, isHighlighted: Boolean) {
+fun WeaponGroupBadge(weaponGroupName: String, isHighlighted: Boolean) {
     val borderModifier = if (isHighlighted) {
         Modifier.border(
             width = 0.6.dp,
@@ -53,19 +56,18 @@ fun WeaponGroupBadge(weaponGroup: Weapongroup, isHighlighted: Boolean) {
     Surface(
         color = MaterialTheme.colorScheme.surfaceVariant,
         shape = RoundedCornerShape(4.dp),
-        modifier = Modifier.padding(end = 4.dp).then(borderModifier)
+        modifier = Modifier
+            .padding(end = 4.dp)
+            .then(borderModifier)
     ) {
-        @Suppress("UNNECESSARY_SAFE_CALL")
-        weaponGroup.name?.let { weaponGroupName ->
-            Text(
-                text = weaponGroupName.value,
-                style = MaterialTheme.typography.bodySmall.copy(
-                    fontSize = 10.sp,
-                    fontWeight = fontWeight
-                ),
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-            )
-        }
+        Text(
+            text = weaponGroupName,
+            style = MaterialTheme.typography.bodySmall.copy(
+                fontSize = 10.sp,
+                fontWeight = fontWeight
+            ),
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+        )
     }
 }

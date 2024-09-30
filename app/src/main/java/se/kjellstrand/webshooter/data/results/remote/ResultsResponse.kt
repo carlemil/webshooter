@@ -1,9 +1,11 @@
 package se.kjellstrand.webshooter.data.results.remote
 
 import com.google.gson.annotations.SerializedName
+import se.kjellstrand.webshooter.data.common.Club
+import se.kjellstrand.webshooter.data.common.Weaponclass
 
 data class ResultsResponse(
-    val competitions: Result
+    val results: List<Result>
 )
 
 data class Result(
@@ -34,7 +36,7 @@ data class Result(
 
     @SerializedName("weaponclass")
     val weaponClass: Weaponclass,
-    val results: List<ResultResult>,
+    val results: List<StationResult>,
 
     @SerializedName("results_distinguish")
     val resultsDistinguish: List<Any?>,
@@ -43,7 +45,7 @@ data class Result(
     val resultsFinals: List<Any?>
 )
 
-data class ResultResult(
+data class StationResult(
     val id: Long,
 
     @SerializedName("signups_id")
@@ -169,57 +171,6 @@ data class Signup(
     val club: Club
 )
 
-data class Club(
-    val id: Long,
-
-    @SerializedName("disable_personal_invoices")
-    val disablePersonalInvoices: Long,
-
-    @SerializedName("districts_id")
-    val districtsID: Long,
-
-    @SerializedName("clubs_nr")
-    val clubsNr: String,
-
-    val name: String,
-    val email: String,
-    val phone: String? = null,
-
-    @SerializedName("address_street")
-    val addressStreet: String? = null,
-
-    @SerializedName("address_street_2")
-    val addressStreet2: String? = null,
-
-    @SerializedName("address_zipcode")
-    val addressZipcode: String? = null,
-
-    @SerializedName("address_city")
-    val addressCity: String? = null,
-
-    @SerializedName("address_country")
-    val addressCountry: String? = null,
-
-    val bankgiro: String? = null,
-    val postgiro: String? = null,
-    val swish: String,
-    val logo: String? = null,
-
-    @SerializedName("user_has_role")
-    val userHasRole: Any? = null,
-
-    @SerializedName("address_combined")
-    val addressCombined: String,
-
-    @SerializedName("address_incomplete")
-    val addressIncomplete: Boolean,
-
-    @SerializedName("logo_url")
-    val logoURL: String,
-
-    @SerializedName("logo_path")
-    val logoPath: String
-)
 
 data class User(
     val name: String,
@@ -272,44 +223,6 @@ enum class StdMedal(val value: String) {
         public fun fromValue(value: String): StdMedal = when (value) {
             "B" -> B
             "S" -> S
-            else -> throw IllegalArgumentException()
-        }
-    }
-}
-
-data class Weaponclass(
-    val id: Long,
-
-    @SerializedName("weapongroups_id")
-    val weapongroupsID: Long,
-
-    val classname: String,
-    val championship: Long,
-
-    @SerializedName("classname_general")
-    val classnameGeneral: ClassnameGeneral
-)
-
-enum class ClassnameGeneral(val value: String) {
-    A("A"),
-    B("B"),
-    C("C"),
-    CD("CD"),
-    CJun("CJun"),
-    Cvy("CVY"),
-    Cvä("CVÄ"),
-    R("R");
-
-    companion object {
-        public fun fromValue(value: String): ClassnameGeneral = when (value) {
-            "A" -> A
-            "B" -> B
-            "C" -> C
-            "CD" -> CD
-            "CJun" -> CJun
-            "CVY" -> Cvy
-            "CVÄ" -> Cvä
-            "R" -> R
             else -> throw IllegalArgumentException()
         }
     }

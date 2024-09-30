@@ -13,7 +13,7 @@ import se.kjellstrand.webshooter.BuildConfig
 import se.kjellstrand.webshooter.data.login.remote.LoginRequest
 import se.kjellstrand.webshooter.data.login.remote.LoginRemoteDataSource
 
-class ResultsRemoteDataSourceTest {
+class StationResultRemoteDataSourceTest {
 
     private lateinit var mockWebServer: MockWebServer
     private lateinit var loginApi: LoginRemoteDataSource
