@@ -17,6 +17,8 @@ import se.kjellstrand.webshooter.ui.competitions.CompetitionsScreen
 import se.kjellstrand.webshooter.ui.competitions.CompetitionsViewModel
 import se.kjellstrand.webshooter.ui.landingscreen.LandingScreen
 import se.kjellstrand.webshooter.ui.login.LoginScreen
+import se.kjellstrand.webshooter.ui.results.CompetitionResultsScreen
+import se.kjellstrand.webshooter.ui.results.ResultsViewModel
 
 @Composable
 fun AppNavHost(navController: NavHostController) {
@@ -51,7 +53,18 @@ fun AppNavHost(navController: NavHostController) {
             val competitionId = backStackEntry.arguments?.getLong("competitionId") ?: -1
             val competitionsViewModel: CompetitionsViewModel = hiltViewModel(parentEntry)
             val competitionsState by competitionsViewModel.uiState.collectAsState()
-            CompetitionDetailScreen(competitionsState, competitionId)
+            CompetitionDetailScreen(navController, competitionsState, competitionId)
+        }
+        composable(
+            route = Screen.CompetitionDetail.route,
+            arguments = listOf(navArgument("competitionId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(Screen.CompetitionDetail.route)
+            }
+            val resultsViewModel: ResultsViewModel = hiltViewModel(parentEntry)
+            val resultsUiState by resultsViewModel.uiState.collectAsState()
+            CompetitionResultsScreen(resultsUiState)
         }
     }
 }
