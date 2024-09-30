@@ -3,11 +3,11 @@ package se.kjellstrand.webshooter.data.common
 import com.google.gson.annotations.SerializedName
 import se.kjellstrand.webshooter.data.competitions.remote.Pivot
 
-data class Weaponclass (
+data class WeaponClass (
     val id: Long,
 
     @SerializedName("weapongroups_id")
-    val weapongroupsID: Long,
+    val weaponGroupsID: Long,
 
     val classname: String,
     val championship: Long,

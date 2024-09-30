@@ -2,7 +2,7 @@ package se.kjellstrand.webshooter.data.results.remote
 
 import com.google.gson.annotations.SerializedName
 import se.kjellstrand.webshooter.data.common.Club
-import se.kjellstrand.webshooter.data.common.Weaponclass
+import se.kjellstrand.webshooter.data.common.WeaponClass
 
 data class ResultsResponse(
     val results: List<Result>
@@ -35,7 +35,7 @@ data class Result(
     val signup: Signup,
 
     @SerializedName("weaponclass")
-    val weaponClass: Weaponclass,
+    val weaponClass: WeaponClass,
     val results: List<StationResult>,
 
     @SerializedName("results_distinguish")
