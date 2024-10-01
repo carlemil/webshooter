@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -18,15 +20,17 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.ui.common.WeaponGroupBadges
-import se.kjellstrand.webshooter.ui.mock.MockCompetitionsUiState
+import se.kjellstrand.webshooter.ui.mock.CompetitionsViewModelMock
+import se.kjellstrand.webshooter.ui.mock.MockCompetitions
 import se.kjellstrand.webshooter.ui.navigation.Screen
 
 @Composable
 fun CompetitionDetailScreen(
     navController: NavController,
-    competitionsState: CompetitionsUiState,
+    competitionsViewModel: CompetitionsViewModel,
     competitionId: Long
 ) {
+    val competitionsState by competitionsViewModel.uiState.collectAsState()
     val competition = competitionsState.competitions?.data?.find { it.id == competitionId }
     if (competition != null) {
         // Display the competition details
@@ -129,7 +133,7 @@ fun CompetitionDetailScreenPreview() {
 
     CompetitionDetailScreen(
         navController,
-        competitionsState = MockCompetitionsUiState().uiState,
+        competitionsViewModel = CompetitionsViewModelMock(),
         1
     )
 }

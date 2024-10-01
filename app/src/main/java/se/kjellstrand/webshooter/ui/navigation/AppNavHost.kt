@@ -14,16 +14,15 @@ import androidx.navigation.navArgument
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import se.kjellstrand.webshooter.ui.competitions.CompetitionDetailScreen
 import se.kjellstrand.webshooter.ui.competitions.CompetitionsScreen
-import se.kjellstrand.webshooter.ui.competitions.CompetitionsViewModel
+import se.kjellstrand.webshooter.ui.competitions.CompetitionsViewModelImpl
 import se.kjellstrand.webshooter.ui.landingscreen.LandingScreen
 import se.kjellstrand.webshooter.ui.login.LoginScreen
 import se.kjellstrand.webshooter.ui.results.CompetitionResultsScreen
-import se.kjellstrand.webshooter.ui.results.ResultsViewModel
+import se.kjellstrand.webshooter.ui.results.ResultsViewModelImpl
 
 @Composable
 fun AppNavHost(navController: NavHostController) {
     val systemUiController = rememberSystemUiController()
-    // Hide the status bar and navigation bar
     SideEffect {
         systemUiController.isStatusBarVisible = false
         systemUiController.isNavigationBarVisible = false
@@ -37,11 +36,8 @@ fun AppNavHost(navController: NavHostController) {
             LandingScreen(navController)
         }
         composable(Screen.CompetitionsList.route) {
-            // Should we move these two out of the composable? looks like it is the reasonable thing to do
-            val competitionsViewModel: CompetitionsViewModel = hiltViewModel()
-            val competitionsState by competitionsViewModel.uiState.collectAsState()
-
-            CompetitionsScreen(navController, competitionsState)
+            val competitionsViewModel: CompetitionsViewModelImpl = hiltViewModel()
+            CompetitionsScreen(navController, competitionsViewModel)
         }
         composable(
             route = Screen.CompetitionDetail.route,
@@ -51,9 +47,8 @@ fun AppNavHost(navController: NavHostController) {
                 navController.getBackStackEntry(Screen.CompetitionsList.route)
             }
             val competitionId = backStackEntry.arguments?.getLong("competitionId") ?: -1
-            val competitionsViewModel: CompetitionsViewModel = hiltViewModel(parentEntry)
-            val competitionsState by competitionsViewModel.uiState.collectAsState()
-            CompetitionDetailScreen(navController, competitionsState, competitionId)
+            val competitionsViewModel: CompetitionsViewModelImpl = hiltViewModel(parentEntry)
+            CompetitionDetailScreen(navController, competitionsViewModel, competitionId)
         }
         composable(
             route = Screen.CompetitionResults.route,
@@ -62,9 +57,8 @@ fun AppNavHost(navController: NavHostController) {
             val parentEntry = remember(backStackEntry) {
                 navController.getBackStackEntry(Screen.CompetitionResults.route)
             }
-            val resultsViewModel: ResultsViewModel = hiltViewModel(parentEntry)
-            val resultsUiState by resultsViewModel.uiState.collectAsState()
-            CompetitionResultsScreen(resultsUiState)
+            val resultsViewModel: ResultsViewModelImpl = hiltViewModel(parentEntry)
+            CompetitionResultsScreen(resultsViewModel)
         }
     }
 }
