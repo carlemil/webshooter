@@ -5,14 +5,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -31,20 +31,29 @@ fun CompetitionResultsScreen(
     resultsViewModel: ResultsViewModel
 ) {
     val resultsUiState by resultsViewModel.uiState.collectAsState()
-    resultsUiState.results?.let { results ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentPadding = PaddingValues(
-                top = 16.dp,
-                start = 16.dp,
-                end = 16.dp,
-                bottom = 16.dp
-            )
-        ) {
-            items(results) { result ->
-                ResultItem(result = result)
-                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize(),
+        contentPadding = PaddingValues(
+            top = 16.dp,
+            start = 16.dp,
+            end = 16.dp,
+            bottom = 16.dp
+        )
+    ) {
+        resultsUiState.groupedResults?.forEach { group ->
+            item {
+                Text(
+                    text = "Vapengrupp: " + group.header,
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.padding(16.dp)
+                )
+            }
+            group.items.forEach { result ->
+                item {
+                    ResultItem(resultsViewModel, result = result)
+                    Spacer(modifier = Modifier.height(2.dp))
+                }
             }
         }
     } ?: run {
@@ -56,8 +65,10 @@ fun CompetitionResultsScreen(
 
 @Composable
 fun ResultItem(
+    resultsViewModel: ResultsViewModel,
     result: Result
 ) {
+    val resultsUiState by resultsViewModel.uiState.collectAsState()
     Column {
         Row(
             modifier = Modifier
@@ -86,11 +97,13 @@ fun ResultItem(
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            Text(
-                text = result.weaponClass.classname,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.weight(2f)
-            )
+            if (resultsUiState.showClassname) {
+                Text(
+                    text = result.weaponClass.classname,
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.weight(2f)
+                )
+            }
             Box(
                 modifier = Modifier
                     .wrapContentWidth(Alignment.End)
