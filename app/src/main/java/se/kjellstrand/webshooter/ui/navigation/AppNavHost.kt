@@ -29,7 +29,7 @@ fun AppNavHost(navController: NavHostController) {
         systemUiController.isNavigationBarVisible = false
     }
 
-    NavHost(navController, startDestination = Screen.LandingScreen.route) {
+    NavHost(navController, startDestination = Screen.CompetitionsList.route) {
         composable(Screen.LoginScreen.route) {
             LoginScreen(navController)
         }
@@ -56,11 +56,11 @@ fun AppNavHost(navController: NavHostController) {
             CompetitionDetailScreen(navController, competitionsState, competitionId)
         }
         composable(
-            route = Screen.CompetitionDetail.route,
+            route = Screen.CompetitionResults.route,
             arguments = listOf(navArgument("competitionId") { type = NavType.LongType })
         ) { backStackEntry ->
             val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(Screen.CompetitionDetail.route)
+                navController.getBackStackEntry(Screen.CompetitionResults.route)
             }
             val resultsViewModel: ResultsViewModel = hiltViewModel(parentEntry)
             val resultsUiState by resultsViewModel.uiState.collectAsState()
