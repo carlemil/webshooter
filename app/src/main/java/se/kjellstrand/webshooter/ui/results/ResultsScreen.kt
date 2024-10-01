@@ -16,20 +16,22 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import se.kjellstrand.webshooter.data.results.remote.Result
-import se.kjellstrand.webshooter.ui.mock.MockResultsUiState
+import se.kjellstrand.webshooter.ui.mock.ResultsViewModelMock
 
 @Composable
 fun CompetitionResultsScreen(
-    resultsState: ResultsUiState
+    resultsViewModel: ResultsViewModel
 ) {
-    resultsState.results?.let { results ->
+    val resultsUiState by resultsViewModel.uiState.collectAsState()
+    resultsUiState.results?.let { results ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize(),
@@ -107,6 +109,6 @@ fun ResultItem(
 @Composable
 fun ResultsScreenPreview() {
     CompetitionResultsScreen(
-        resultsState = MockResultsUiState().uiState
+        resultsViewModel = ResultsViewModelMock()
     )
 }

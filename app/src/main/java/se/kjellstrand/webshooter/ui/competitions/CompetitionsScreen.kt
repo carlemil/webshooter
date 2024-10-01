@@ -16,21 +16,25 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.ui.common.WeaponGroupBadges
-import se.kjellstrand.webshooter.ui.mock.MockCompetitionsUiState
+import se.kjellstrand.webshooter.ui.mock.CompetitionsViewModelMock
 import se.kjellstrand.webshooter.ui.navigation.Screen
 
 @Composable
 fun CompetitionsScreen(
-    navController: NavController, competitionsState: CompetitionsUiState
+    navController: NavController, competitionsViewModel: CompetitionsViewModel
 ) {
+    val competitionsState by competitionsViewModel.uiState.collectAsState()
     competitionsState.competitions?.let { competitions ->
         LazyColumn(
             modifier = Modifier
@@ -95,9 +99,8 @@ fun CompetitionItem(
 @Composable
 fun CompetitionsScreenPreview() {
     val navController = rememberNavController()
-
     CompetitionsScreen(
         navController = navController,
-        competitionsState = MockCompetitionsUiState().uiState
+        competitionsViewModel = CompetitionsViewModelMock()
     )
 }
