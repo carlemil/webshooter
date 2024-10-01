@@ -31,34 +31,37 @@ fun CompetitionResultsScreen(
     resultsViewModel: ResultsViewModel
 ) {
     val resultsUiState by resultsViewModel.uiState.collectAsState()
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize(),
-        contentPadding = PaddingValues(
-            top = 16.dp,
-            start = 16.dp,
-            end = 16.dp,
-            bottom = 16.dp
-        )
-    ) {
-        resultsUiState.groupedResults?.forEach { group ->
-            item {
-                Text(
-                    text = "Vapengrupp: " + group.header,
-                    style = MaterialTheme.typography.headlineMedium,
-                    modifier = Modifier.padding(16.dp)
-                )
-            }
-            group.items.forEach { result ->
+    Box(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(
+                top = 16.dp,
+                start = 16.dp,
+                end = 16.dp,
+                bottom = 16.dp
+            )
+        ) {
+            resultsUiState.groupedResults?.forEach { group ->
                 item {
-                    ResultItem(resultsViewModel, result = result)
-                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = "Vapengrupp: " + group.header,
+                        style = MaterialTheme.typography.headlineMedium,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                }
+                group.items.forEach { result ->
+                    item {
+                        ResultItem(resultsViewModel, result = result)
+                        Spacer(modifier = Modifier.height(2.dp))
+                    }
                 }
             }
         }
-    } ?: run {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
+
+        if (resultsUiState.groupedResults == null) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
         }
     }
 }
