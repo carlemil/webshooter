@@ -22,7 +22,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
@@ -37,13 +36,8 @@ fun CompetitionsScreen(
     val competitionsState by competitionsViewModel.uiState.collectAsState()
     competitionsState.competitions?.let { competitions ->
         LazyColumn(
-            modifier = Modifier
-                .fillMaxSize(),
-            contentPadding = PaddingValues(
-                top = 16.dp,
-                start = 16.dp,
-                end = 16.dp,
-                bottom = 16.dp
+            modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(
+                top = 16.dp, start = 16.dp, end = 16.dp, bottom = 16.dp
             )
         ) {
             items(competitions.data) { competition ->
@@ -66,21 +60,17 @@ fun CompetitionItem(
 ) {
     Column(modifier = Modifier
         .fillMaxWidth()
-        .clickable { onItemClick() }
-        ) {
+        .clickable { onItemClick() }) {
         Text(
-            text = competition.name,
-            style = MaterialTheme.typography.labelLarge
+            text = competition.name, style = MaterialTheme.typography.labelLarge
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = "Datum: ${competition.date}",
-            style = MaterialTheme.typography.bodySmall
+            text = "Datum: ${competition.date}", style = MaterialTheme.typography.bodySmall
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = "Status: ${competition.statusHuman}",
-            style = MaterialTheme.typography.bodySmall
+            text = "Status: ${competition.statusHuman}", style = MaterialTheme.typography.bodySmall
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
@@ -89,8 +79,7 @@ fun CompetitionItem(
         )
         Spacer(modifier = Modifier.height(6.dp))
         WeaponGroupBadges(
-            weaponGroups = competition.weaponGroups,
-            userSignups = competition.userSignups
+            weaponGroups = competition.weaponGroups, userSignups = competition.userSignups
         )
     }
 }
@@ -100,7 +89,6 @@ fun CompetitionItem(
 fun CompetitionsScreenPreview() {
     val navController = rememberNavController()
     CompetitionsScreen(
-        navController = navController,
-        competitionsViewModel = CompetitionsViewModelMock()
+        navController = navController, competitionsViewModel = CompetitionsViewModelMock()
     )
 }
