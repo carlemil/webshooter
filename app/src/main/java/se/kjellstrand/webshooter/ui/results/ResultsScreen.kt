@@ -13,14 +13,25 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.material.icons.filled.Group
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,24 +46,38 @@ fun CompetitionResultsScreen(
     resultsViewModel: ResultsViewModel
 ) {
     val resultsUiState by resultsViewModel.uiState.collectAsState()
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(
-                PaddingValues(
-                    top = 16.dp,
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 16.dp
-                )
-            )
-    ) {
-        // Chips på toppen för å filtrera samt switch för å välja filter/standard grouping
-        FilterAndSwitch(resultsViewModel)
 
-        when (resultsUiState.layoutType) {
-            LayoutType.GROUP -> StandardGroupingLayout(resultsUiState)
-            LayoutType.FILTER -> FilterLayout(resultsUiState)
+    var currentMode by remember { mutableStateOf(Mode.GROUP) }
+    var filterState by remember { mutableStateOf(FilterState()) }
+
+    Scaffold(
+        modifier = Modifier.padding(16.dp),
+        floatingActionButton = {
+            ModeSwitcher(
+                currentMode = currentMode,
+                onModeChange = { mode -> currentMode = mode }
+            )
+        }
+    ) { paddingValues ->
+        // Main content goes here
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            // Conditionally show filter options
+            if (currentMode == Mode.FILTER) {
+                FilterOptions(
+                    filterState = filterState,
+                    onFilterChange = { newState -> filterState = newState }
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            if (currentMode == Mode.GROUP) {
+                StandardGroupingLayout(resultsUiState)
+            } else {
+                FilterLayout(resultsUiState)
+            }
         }
     }
 }
@@ -66,9 +91,9 @@ fun FilterAndSwitch(
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(text = "FILTER")
         Switch(
-            checked = resultsUiState.layoutType == LayoutType.GROUP,
+            checked = resultsUiState.mode == Mode.GROUP,
             onCheckedChange = { isChecked ->
-                resultsViewModel.setLayoutType(if (isChecked) LayoutType.GROUP else LayoutType.FILTER)
+                resultsViewModel.setLayoutType(if (isChecked) Mode.GROUP else Mode.FILTER)
             },
             colors = SwitchDefaults.colors(
                 checkedThumbColor = Color.Green,
@@ -152,7 +177,7 @@ fun ResultItem(
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            if (resultsUiState.layoutType == LayoutType.FILTER) {
+            if (resultsUiState.mode == Mode.FILTER) {
                 Text(
                     text = result.weaponClass.classname,
                     style = MaterialTheme.typography.bodySmall,
@@ -208,10 +233,48 @@ fun FilterLayout(
     }
 }
 
-data class GroupedItem(
-    val header: String,
-    val items: List<Result>
-)
+@Composable
+fun ModeSwitcher(
+    currentMode: Mode,
+    onModeChange: (Mode) -> Unit
+) {
+    // Determine the icon and label based on the current mode
+    val icon = if (currentMode == Mode.GROUP) Icons.Default.FilterList else Icons.Default.Group
+    val contentDescription = if (currentMode == Mode.GROUP) "Switch to Filter Mode" else "Switch to Group Mode"
+
+    // Floating Action Button
+    FloatingActionButton(
+        onClick = {
+            // Toggle the mode when FAB is clicked
+            val newMode = if (currentMode == Mode.GROUP) Mode.FILTER else Mode.GROUP
+            onModeChange(newMode)
+        },
+        content = {
+            Icon(imageVector = icon, contentDescription = contentDescription)
+        }
+    )
+}
+
+@Composable
+fun FilterOptions(
+    filterState: FilterState,
+    onFilterChange: (FilterState) -> Unit
+) {
+    Column {
+        Text("Filter Options:")
+        Checkbox(
+            checked = filterState.option1,
+            onCheckedChange = { onFilterChange(filterState.copy(option1 = it)) }
+        )
+        Text("Option 1")
+        Checkbox(
+            checked = filterState.option2,
+            onCheckedChange = { onFilterChange(filterState.copy(option2 = it)) }
+        )
+        Text("Option 2")
+        // Repeat for other options...
+    }
+}
 
 @Preview(showBackground = true)
 @Composable

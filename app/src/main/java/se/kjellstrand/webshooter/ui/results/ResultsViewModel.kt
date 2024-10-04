@@ -4,5 +4,5 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface ResultsViewModel {
     val uiState: StateFlow<ResultsUiState>
-    fun setLayoutType(layoutType: LayoutType)
+    fun setLayoutType(mode: Mode)
 }

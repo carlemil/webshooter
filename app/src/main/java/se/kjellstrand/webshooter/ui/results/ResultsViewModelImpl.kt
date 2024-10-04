@@ -50,9 +50,9 @@ open class ResultsViewModelImpl @Inject constructor(
         }
     }
 
-    override fun setLayoutType(layoutType: LayoutType){
+    override fun setLayoutType(mode: Mode){
         _uiState.update { currentState ->
-            currentState.copy(layoutType = layoutType)
+            currentState.copy(mode = mode)
         }
     }
 
