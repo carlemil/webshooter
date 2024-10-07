@@ -4,7 +4,10 @@ import se.kjellstrand.webshooter.data.results.remote.Result
 
 data class ResultsUiState(
     val results: List<Result> = listOf(),
+    val filterResults: List<Result> = listOf(),
     val groupedResults: List<GroupedItem> = listOf(),
+    val allWeaponGroups: List<String> = listOf(),
+    val selectedWeaponGroups: Set<String> = emptySet(),
     var mode: Mode = Mode.GROUP
 )
 
@@ -14,9 +17,7 @@ data class GroupedItem(
 )
 
 data class FilterState(
-    val option1: Boolean = false,
-    val option2: Boolean = false
-    // Add more options as needed
+    val selectedWeaponGroups: Set<String> = emptySet()
 )
 
 enum class Mode {

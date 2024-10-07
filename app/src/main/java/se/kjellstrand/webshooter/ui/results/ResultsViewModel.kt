@@ -4,5 +4,6 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface ResultsViewModel {
     val uiState: StateFlow<ResultsUiState>
-    fun setLayoutType(mode: Mode)
+    fun setMode(mode: Mode)
+    fun setSelectedWeaponGroups(selectedWeaponGroups: Set<String>)
 }

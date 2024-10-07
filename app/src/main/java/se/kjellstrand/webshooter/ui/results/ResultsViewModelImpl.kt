@@ -34,7 +34,10 @@ open class ResultsViewModelImpl @Inject constructor(
                         println("getResults Success: ${resource.data}")
                         _uiState.value = ResultsUiState(
                             resource.data.results,
-                            groupResults(resource.data.results)
+                            filterResults(resource.data.results),
+                            groupResults(resource.data.results),
+                            getWeaponGroups(resource.data.results).toList().sorted(),
+                            getWeaponGroups(resource.data.results)
                         )
                     }
 
@@ -50,9 +53,27 @@ open class ResultsViewModelImpl @Inject constructor(
         }
     }
 
-    override fun setLayoutType(mode: Mode){
+    override fun setMode(mode: Mode) {
         _uiState.update { currentState ->
             currentState.copy(mode = mode)
+        }
+    }
+
+    override fun setSelectedWeaponGroups(selectedWeaponGroups: Set<String>) {
+        _uiState.update { currentState ->
+            currentState.copy(selectedWeaponGroups = selectedWeaponGroups)
+        }
+
+        val selectedGroups = _uiState.value.selectedWeaponGroups
+        val filtered = if (selectedGroups.isEmpty()) {
+            _uiState.value.results
+        } else {
+            _uiState.value.results.filter { result ->
+                selectedGroups.contains(result.weaponClass.classname)
+            }
+        }.sortedByDescending { calculateSortOrder(it) }
+        _uiState.update { currentState ->
+            currentState.copy(filterResults = filtered)
         }
     }
 
@@ -64,12 +85,31 @@ open class ResultsViewModelImpl @Inject constructor(
 
             weaponClasses.forEach { weaponClass ->
                 val groupedResults =
-                    results.filter { it.weaponClass.classname == weaponClass }.sortedBy { it.placement }
+                    results.filter { it.weaponClass.classname == weaponClass }
+                        .sortedBy { it.placement }
                 if (groupedResults.isNotEmpty()) {
                     listOfGroupedItems.add(GroupedItem(weaponClass, groupedResults))
                 }
             }
             return listOfGroupedItems
+        }
+
+        fun filterResults(results: List<Result>): List<Result> {
+            val weaponClasses = getWeaponGroups(results)
+
+            val listOfFilteredItems =
+                results.filter {
+                    it.weaponClass.classname in weaponClasses
+                }.sortedByDescending { calculateSortOrder(it) }
+            return listOfFilteredItems
+        }
+
+        fun getWeaponGroups(results: List<Result>): Set<String> {
+            return results.map { it.weaponClass.classname }.toSet()
+        }
+
+        private fun calculateSortOrder(it: Result): Int {
+            return (it.hits * 1000000 + it.figureHits * 1000 + it.points).toInt()
         }
     }
 }
