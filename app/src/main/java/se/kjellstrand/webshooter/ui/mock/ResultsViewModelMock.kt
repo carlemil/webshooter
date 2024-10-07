@@ -15,13 +15,20 @@ class ResultsViewModelMock() : ViewModel(),
             return MutableStateFlow(
                 ResultsUiState(
                     MockResults().results,
+                    ResultsViewModelImpl.filterResults(MockResults().results),
                     ResultsViewModelImpl.groupResults(MockResults().results),
+                    ResultsViewModelImpl.getWeaponGroups(MockResults().results).toList().sorted(),
+                    ResultsViewModelImpl.getWeaponGroups(MockResults().results),
                     Mode.FILTER
                 )
             )
         }
 
-    override fun setLayoutType(mode: Mode) {
+    override fun setMode(mode: Mode) {
+        TODO("Not yet implemented")
+    }
+
+    override fun setSelectedWeaponGroups(selectedWeaponGroups: Set<String>) {
         TODO("Not yet implemented")
     }
 }
