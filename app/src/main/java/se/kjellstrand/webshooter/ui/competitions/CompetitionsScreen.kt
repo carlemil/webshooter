@@ -1,9 +1,10 @@
 package se.kjellstrand.webshooter.ui.competitions
 
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -41,9 +43,13 @@ fun CompetitionsScreen(
             )
         ) {
             items(competitions.data) { competition ->
-                CompetitionItem(competition = competition, onItemClick = {
-                    navController.navigate(Screen.CompetitionDetail.createRoute(competition.id))
-                })
+                CompetitionItem(competition = competition,
+                    onDetailsClick = {
+                        navController.navigate(Screen.CompetitionDetail.createRoute(competition.id))
+                    },
+                    onBullseyeClick = {
+                        navController.navigate(Screen.CompetitionResults.createRoute(competition.id))
+                    })
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
             }
         }
@@ -56,31 +62,59 @@ fun CompetitionsScreen(
 
 @Composable
 fun CompetitionItem(
-    competition: Datum, onItemClick: () -> Unit
+    competition: Datum,
+    onDetailsClick: () -> Unit,
+    onBullseyeClick: () -> Unit
 ) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .clickable { onItemClick() }) {
-        Text(
-            text = competition.name, style = MaterialTheme.typography.labelLarge
-        )
-        Spacer(modifier = Modifier.height(4.dp))
-        Text(
-            text = "Datum: ${competition.date}", style = MaterialTheme.typography.bodySmall
-        )
-        Spacer(modifier = Modifier.height(2.dp))
-        Text(
-            text = "Status: ${competition.statusHuman}", style = MaterialTheme.typography.bodySmall
-        )
-        Spacer(modifier = Modifier.height(2.dp))
-        Text(
-            text = "Tävlingstyp: ${competition.competitionType.name}",
-            style = MaterialTheme.typography.bodySmall
-        )
-        Spacer(modifier = Modifier.height(6.dp))
-        WeaponGroupBadges(
-            weaponGroups = competition.weaponGroups, userSignups = competition.userSignups
-        )
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Main content on the left
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Text(
+                text = competition.name,
+                style = MaterialTheme.typography.labelLarge
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "Datum: ${competition.date}",
+                style = MaterialTheme.typography.bodySmall
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = "Status: ${competition.statusHuman}",
+                style = MaterialTheme.typography.bodySmall
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = "Tävlingstyp: ${competition.competitionType.name}",
+                style = MaterialTheme.typography.bodySmall
+            )
+            Spacer(modifier = Modifier.height(6.dp))
+            WeaponGroupBadges(
+                weaponGroups = competition.weaponGroups,
+                userSignups = competition.userSignups
+            )
+        }
+
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(start = 8.dp)
+        ) {
+            Button(onClick = { onDetailsClick() }) {
+                Text("Detaljer")
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Button(onClick = { onBullseyeClick() }) {
+                Text("Resultat")
+            }
+        }
     }
 }
 

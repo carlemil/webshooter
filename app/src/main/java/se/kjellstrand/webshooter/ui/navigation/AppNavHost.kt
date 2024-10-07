@@ -48,7 +48,7 @@ fun AppNavHost(navController: NavHostController) {
             }
             val competitionId = backStackEntry.arguments?.getLong("competitionId") ?: -1
             val competitionsViewModel: CompetitionsViewModelImpl = hiltViewModel(parentEntry)
-            CompetitionDetailScreen(navController, competitionsViewModel, competitionId)
+            CompetitionDetailScreen(competitionsViewModel, competitionId)
         }
         composable(
             route = Screen.CompetitionResults.route,
