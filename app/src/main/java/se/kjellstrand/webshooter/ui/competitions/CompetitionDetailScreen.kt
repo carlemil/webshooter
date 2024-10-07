@@ -26,29 +26,23 @@ import se.kjellstrand.webshooter.ui.navigation.Screen
 
 @Composable
 fun CompetitionDetailScreen(
-    navController: NavController,
     competitionsViewModel: CompetitionsViewModel,
     competitionId: Long
 ) {
     val competitionsState by competitionsViewModel.uiState.collectAsState()
     val competition = competitionsState.competitions?.data?.find { it.id == competitionId }
     if (competition != null) {
-        // Display the competition details
-        CompetitionDetail(competition, onItemClick = {
-            navController.navigate(Screen.CompetitionResults.createRoute(competition.id))
-        })
+        CompetitionDetail(competition)
     } else {
-        // Show a loading indicator or error message
         Text("Competition not found.")
     }
 }
 
 @Composable
-fun CompetitionDetail(competition: Datum, onItemClick: () -> Unit) {
+fun CompetitionDetail(competition: Datum) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onItemClick() }
             .padding(
                 PaddingValues(
                     top = 16.dp,
@@ -129,10 +123,8 @@ fun CompetitionDetail(competition: Datum, onItemClick: () -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun CompetitionDetailScreenPreview() {
-    val navController = rememberNavController()
 
     CompetitionDetailScreen(
-        navController,
         competitionsViewModel = CompetitionsViewModelMock(),
         1
     )
