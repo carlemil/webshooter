@@ -28,7 +28,7 @@ fun AppNavHost(navController: NavHostController) {
         systemUiController.isNavigationBarVisible = false
     }
 
-    NavHost(navController, startDestination = Screen.CompetitionsList.route) {
+    NavHost(navController, startDestination = Screen.LoginScreen.route) {
         composable(Screen.LoginScreen.route) {
             LoginScreen(navController)
         }

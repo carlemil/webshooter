@@ -47,7 +47,7 @@ fun CompetitionsScreen(
                     onDetailsClick = {
                         navController.navigate(Screen.CompetitionDetail.createRoute(competition.id))
                     },
-                    onBullseyeClick = {
+                    onResultsClick = {
                         navController.navigate(Screen.CompetitionResults.createRoute(competition.id))
                     })
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
@@ -64,7 +64,7 @@ fun CompetitionsScreen(
 fun CompetitionItem(
     competition: Datum,
     onDetailsClick: () -> Unit,
-    onBullseyeClick: () -> Unit
+    onResultsClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -111,7 +111,7 @@ fun CompetitionItem(
                 Text("Detaljer")
             }
             Spacer(modifier = Modifier.height(8.dp))
-            Button(onClick = { onBullseyeClick() }) {
+            Button(onClick = { onResultsClick() }) {
                 Text("Resultat")
             }
         }

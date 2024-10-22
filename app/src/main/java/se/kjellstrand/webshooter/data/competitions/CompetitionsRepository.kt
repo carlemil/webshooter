@@ -4,6 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okio.IOException
 import retrofit2.HttpException
+import se.kjellstrand.webshooter.data.AuthTokenManager
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
 import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsRemoteDataSource
@@ -13,25 +14,34 @@ import javax.inject.Singleton
 
 @Singleton
 open class CompetitionsRepository @Inject constructor(
-    private val competitionsRemoteDataSource: CompetitionsRemoteDataSource
+    private val competitionsRemoteDataSource: CompetitionsRemoteDataSource,
+    private val authTokenManager: AuthTokenManager
+
 ) {
     fun get(): Flow<Resource<CompetitionsResponse, UserError>> {
         return flow {
             emit(Resource.Loading(true))
-            val auth = "Bearer eyJ0eXA"
             val result = try {
-                competitionsRemoteDataSource.getCompetitions(auth,1,10,"open",0)
+                competitionsRemoteDataSource.getCompetitions(
+                    1,
+                    10,
+                    "open",
+                    0
+                )
             } catch (e: IOException) {
                 e.printStackTrace()
                 emit(Resource.Error(UserError.IOError))
+                emit(Resource.Loading(false))
                 return@flow
             } catch (e: HttpException) {
                 e.printStackTrace()
                 emit(Resource.Error(UserError.HttpError))
+                emit(Resource.Loading(false))
                 return@flow
             } catch (e: Exception) {
                 e.printStackTrace()
                 emit(Resource.Error(UserError.UnknownError))
+                emit(Resource.Loading(false))
                 return@flow
             }
             emit(Resource.Success(result))
