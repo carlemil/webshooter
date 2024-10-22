@@ -46,7 +46,7 @@ open class ResultsViewModelImpl @Inject constructor(
                     }
 
                     else -> {
-                        println("getResults other state")
+                        println("getResults resource: $resource")
                     }
                 }
             }

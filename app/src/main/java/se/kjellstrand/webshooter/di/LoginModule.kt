@@ -5,9 +5,9 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
+import se.kjellstrand.webshooter.data.AuthTokenManager
 import se.kjellstrand.webshooter.data.login.LoginRepository
 import se.kjellstrand.webshooter.data.login.remote.LoginRemoteDataSource
-import javax.inject.Inject
 import javax.inject.Singleton
 
 @Module
@@ -16,13 +16,16 @@ class LoginModule {
 
     @Provides
     @Singleton
-    fun providesLoginRemoteDataSource(retrofit: Retrofit) : LoginRemoteDataSource {
+    fun providesLoginRemoteDataSource(retrofit: Retrofit): LoginRemoteDataSource {
         return retrofit.create(LoginRemoteDataSource::class.java)
     }
 
     @Provides
     @Singleton
-    fun providesLoginRepository(loginRemoteDataSource: LoginRemoteDataSource) : LoginRepository {
-        return LoginRepository(loginRemoteDataSource)
+    fun providesLoginRepository(
+        loginRemoteDataSource: LoginRemoteDataSource,
+        authTokenManager: AuthTokenManager
+    ): LoginRepository {
+        return LoginRepository(loginRemoteDataSource, authTokenManager)
     }
 }

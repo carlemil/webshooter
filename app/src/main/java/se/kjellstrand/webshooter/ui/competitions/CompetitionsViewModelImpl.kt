@@ -39,7 +39,7 @@ class CompetitionsViewModelImpl @Inject constructor(
                     }
 
                     else -> {
-                        println("getCompetitions other state")
+                        println("getCompetitions resource: $resource")
                     }
                 }
             }

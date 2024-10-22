@@ -17,7 +17,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginRepository: LoginRepository
-) :  ViewModel() {
+) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
@@ -31,29 +31,52 @@ class LoginViewModel @Inject constructor(
 
     fun login(username: String, password: String) {
         viewModelScope.launch {
-            loginRepository.login(username,username,password).collect { resource ->
-                when (resource) {
-                    is Resource.Success -> {
-                        println("getCompetitions Success: ${resource.data}")
-                        _uiState.value = LoginUiState(isSuccess = true)
-                        _eventFlow.emit(UiEvent.NavigateToLandingPage)
-                    }
+            loginRepository.login(username, username, password)
+                .collect { resource ->
+                    when (resource) {
+                        is Resource.Success -> {
+                            println("login Success: ${resource.data}")
+                            _uiState.value = LoginUiState(isSuccess = true)
+                            _eventFlow.emit(UiEvent.NavigateToLandingPage)
+                        }
 
-                    is Resource.Error -> {
-                        println("getCompetitions Failed: ${resource.error}")
-                        _uiState.value = LoginUiState(
-                            isLoading = false,
-                            errorMessage = resource.error.toString()
-                        )
-                        _eventFlow.emit(UiEvent.ShowErrorMessage(resource.error.toString()))
-                    }
+                        is Resource.Error -> {
+                            println("login Failed: ${resource.error}")
+                            _uiState.value = LoginUiState(
+                                isLoading = false,
+                                errorMessage = resource.error.toString()
+                            )
+                            _eventFlow.emit(UiEvent.ShowErrorMessage(resource.error.toString()))
+                        }
 
-                    else -> {
-                        println("getCompetitions other state")
-                        _uiState.value = LoginUiState(isLoading = true)
+                        else -> {
+                            println("login isLoading = true")
+                            _uiState.value = LoginUiState(isLoading = true)
+                        }
                     }
                 }
-            }
+        }
+    }
+
+    fun getCookies() {
+        viewModelScope.launch {
+            loginRepository.getCookies()
+                .collect { resource ->
+                    when (resource) {
+                        is Resource.Success -> {
+                            println("getCookies Success: ${resource.data}")
+                        }
+
+                        is Resource.Error -> {
+                            println("getCookies Failed: ${resource.error}")
+                            _eventFlow.emit(UiEvent.ShowErrorMessage(resource.error.toString()))
+                        }
+
+                        else -> {
+                            println("getCookies isLoading = true")
+                        }
+                    }
+                }
         }
     }
 }
