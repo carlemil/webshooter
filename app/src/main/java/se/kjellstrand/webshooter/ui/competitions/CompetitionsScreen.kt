@@ -111,7 +111,8 @@ fun CompetitionItem(
                 Text("Detaljer")
             }
             Spacer(modifier = Modifier.height(8.dp))
-            Button(onClick = { onResultsClick() }) {
+            Button(enabled = competition.status == "completed",
+                onClick = { onResultsClick() }) {
                 Text("Resultat")
             }
         }
