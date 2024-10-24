@@ -5,17 +5,17 @@
     <string name="login">Login</string>
     <string name="competition_not_found">Competition not found.</string>
     <string name="contact_name">Contact Name: %1$s</string>
-    <string name="datum">Datum: %1$s</string>
+    <string name="date">Datum: %1$s</string>
     <string name="status">Status: %1$s</string>
-    <string name="ppnas_f_r_anm_lan">Öppnas för anmälan: %1$s</string>
-    <string name="sista_anm_lningsdag">Sista anmälningsdag: %1$s</string>
-    <string name="efteranm_lan">Efteranmälan: %1$s</string>
-    <string name="lagt_vling">Lagtävling: %1$s</string>
-    <string name="t_vlingstyp">Tävlingstyp: %1$s</string>
-    <string name="resultatber_kning">Resultatberäkning: %1$s</string>
+    <string name="open_for_team_signup">Öppnas för anmälan: %1$s</string>
+    <string name="last_signup_date">Sista anmälningsdag: %1$s</string>
+    <string name="late_signup">Efteranmälan: %1$s</string>
+    <string name="team_signup">Lagtävling: %1$s</string>
+    <string name="competition_type">Tävlingstyp: %1$s</string>
+    <string name="result_calculation">Resultatberäkning: %1$s</string>
     <string name="description">Description:</string>
-    <string name="detaljer">Detaljer</string>
-    <string name="resultat">Resultat</string>
+    <string name="details">Detaljer</string>
+    <string name="result">Resultat</string>
     <string name="landing_screen">Landing Screen</string>
     <string name="menu_content_description">Menu</string>
     <string name="select_weapon_groups">Select Weapon Groups</string>
@@ -25,7 +25,7 @@
     <string name="competitions">Competitions</string>
     <string name="profile">Profile</string>
     <string name="settings">Settings</string>
-    <string name="vapengrupp">"Vapengrupp: "</string>
+    <string name="weapon_group">"Vapengrupp: "</string>
     <string name="unknown_club">Unknown club</string>
-    <string name="t_f_p">T:%1$s F:%2$s P:%3$s</string>
+    <string name="hits_figures_points">T:%1$s F:%2$s P:%3$s</string>
 </resources>
