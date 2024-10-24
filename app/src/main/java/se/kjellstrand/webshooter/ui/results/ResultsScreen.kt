@@ -37,9 +37,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.results.remote.Result
 import se.kjellstrand.webshooter.ui.mock.ResultsViewModelMock
 
@@ -107,7 +109,7 @@ fun GroupList(
                 resultsUiState.groupedResults.forEach { group ->
                     item {
                         Text(
-                            text = "Vapengrupp: " + group.header,
+                            text = stringResource(R.string.vapengrupp) + group.header,
                             style = MaterialTheme.typography.headlineMedium,
                             modifier = Modifier.padding(top = 16.dp, bottom = 16.dp)
                         )
@@ -187,7 +189,7 @@ fun ResultItem(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = result.signup.club?.name ?: "Unknown club",
+                    text = result.signup.club?.name ?: stringResource(R.string.unknown_club),
                     style = MaterialTheme.typography.bodySmall,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -206,7 +208,12 @@ fun ResultItem(
                     .weight(6f)
             ) {
                 Text(
-                    text = "T:${result.hits} F:${result.figureHits} P:${result.points}",
+                    text = stringResource(
+                        R.string.t_f_p,
+                        result.hits,
+                        result.figureHits,
+                        result.points
+                    ),
                     style = MaterialTheme.typography.bodySmall
                 )
             }
@@ -228,7 +235,7 @@ fun FilterBottomSheet(
         sheetState = bottomSheetState,
         content = {
             Column(modifier = Modifier.padding(16.dp)) {
-                Text("Select Weapon Groups", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.select_weapon_groups), style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(8.dp))
                 FilterOptionsContent(
                     weaponGroups = allWeaponGroups,
@@ -243,10 +250,10 @@ fun FilterBottomSheet(
                     TextButton(onClick = {
                         onFilterChange(filterState.copy(selectedWeaponGroups = allWeaponGroups.toSet()))
                     }) {
-                        Text("Clear")
+                        Text(stringResource(R.string.clear))
                     }
                     Button(onClick = onDismissRequest) {
-                        Text("Done")
+                        Text(stringResource(R.string.done_button))
                     }
                 }
             }

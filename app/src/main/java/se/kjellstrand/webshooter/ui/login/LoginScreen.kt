@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,6 +37,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.flow.collectLatest
+import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.ui.common.UiEvent
 import se.kjellstrand.webshooter.ui.navigation.Screen
 
@@ -66,6 +68,7 @@ fun LoginScreen(
                         popUpTo("login") { inclusive = true }
                     }
                 }
+
                 is UiEvent.ShowErrorMessage -> {
                     println("Error: ${event.message}")
                 }
@@ -80,7 +83,7 @@ fun LoginScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Login",
+            text = stringResource(R.string.login),
             style = MaterialTheme.typography.headlineMedium,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
@@ -88,7 +91,7 @@ fun LoginScreen(
         OutlinedTextField(
             value = username,
             onValueChange = { username = it },
-            label = { Text("Username") },
+            label = { Text(stringResource(R.string.username)) },
             singleLine = true,
             modifier = Modifier.fillMaxWidth(),
             enabled = !uiState.isLoading
@@ -97,7 +100,7 @@ fun LoginScreen(
         OutlinedTextField(
             value = password,
             onValueChange = { password = it },
-            label = { Text("Password") },
+            label = { Text(stringResource(R.string.password)) },
             singleLine = true,
             visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
@@ -128,7 +131,7 @@ fun LoginScreen(
                     modifier = Modifier.size(20.dp)
                 )
             } else {
-                Text("Login")
+                Text(stringResource(R.string.login))
             }
         }
         uiState.errorMessage?.let { errorMessage ->
