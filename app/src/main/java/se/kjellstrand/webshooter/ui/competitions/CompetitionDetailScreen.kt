@@ -60,7 +60,7 @@ fun CompetitionDetail(competition: Datum) {
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = stringResource(R.string.datum, competition.date),
+            text = stringResource(R.string.date, competition.date),
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(modifier = Modifier.height(2.dp))
@@ -70,18 +70,18 @@ fun CompetitionDetail(competition: Datum) {
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = stringResource(R.string.ppnas_f_r_anm_lan, competition.signupsOpeningDate),
+            text = stringResource(R.string.open_for_team_signup, competition.signupsOpeningDate),
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = stringResource(R.string.sista_anm_lningsdag, competition.signupsClosingDate),
+            text = stringResource(R.string.last_signup_date, competition.signupsClosingDate),
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
             text = stringResource(
-                R.string.efteranm_lan,
+                R.string.late_signup,
                 competition.allowSignupsAfterClosingDateHuman
             ),
             style = MaterialTheme.typography.bodySmall
@@ -89,19 +89,19 @@ fun CompetitionDetail(competition: Datum) {
         Spacer(modifier = Modifier.height(2.dp))
         Text(
             text = stringResource(
-                R.string.lagt_vling,
+                R.string.team_signup,
                 if (competition.allowTeams == 1L) "Ja" else "Nej"
             ),
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = stringResource(R.string.t_vlingstyp, competition.competitionType.name),
+            text = stringResource(R.string.competition_type, competition.competitionType.name),
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = stringResource(R.string.resultatber_kning, competition.resultsTypeHuman),
+            text = stringResource(R.string.result_calculation, competition.resultsTypeHuman),
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(modifier = Modifier.height(2.dp))

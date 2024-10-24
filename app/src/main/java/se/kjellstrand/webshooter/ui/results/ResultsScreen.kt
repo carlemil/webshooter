@@ -109,7 +109,7 @@ fun GroupList(
                 resultsUiState.groupedResults.forEach { group ->
                     item {
                         Text(
-                            text = stringResource(R.string.vapengrupp) + group.header,
+                            text = stringResource(R.string.weapon_group) + group.header,
                             style = MaterialTheme.typography.headlineMedium,
                             modifier = Modifier.padding(top = 16.dp, bottom = 16.dp)
                         )
@@ -209,7 +209,7 @@ fun ResultItem(
             ) {
                 Text(
                     text = stringResource(
-                        R.string.t_f_p,
+                        R.string.hits_figures_points,
                         result.hits,
                         result.figureHits,
                         result.points

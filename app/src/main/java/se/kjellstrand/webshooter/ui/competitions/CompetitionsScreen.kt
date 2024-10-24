@@ -84,7 +84,7 @@ fun CompetitionItem(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = stringResource(R.string.datum, competition.date),
+                text = stringResource(R.string.date, competition.date),
                 style = MaterialTheme.typography.bodySmall
             )
             Spacer(modifier = Modifier.height(2.dp))
@@ -94,7 +94,7 @@ fun CompetitionItem(
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = stringResource(R.string.t_vlingstyp, competition.competitionType.name),
+                text = stringResource(R.string.competition_type, competition.competitionType.name),
                 style = MaterialTheme.typography.bodySmall
             )
             Spacer(modifier = Modifier.height(6.dp))
@@ -110,12 +110,12 @@ fun CompetitionItem(
             modifier = Modifier.padding(start = 8.dp)
         ) {
             Button(onClick = { onDetailsClick() }) {
-                Text(stringResource(R.string.detaljer))
+                Text(stringResource(R.string.details))
             }
             Spacer(modifier = Modifier.height(8.dp))
             Button(enabled = competition.status == "completed",
                 onClick = { onResultsClick() }) {
-                Text(stringResource(R.string.resultat))
+                Text(stringResource(R.string.result))
             }
         }
     }
