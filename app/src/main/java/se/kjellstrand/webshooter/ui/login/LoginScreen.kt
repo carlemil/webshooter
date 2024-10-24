@@ -41,7 +41,6 @@ import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.ui.common.UiEvent
 import se.kjellstrand.webshooter.ui.navigation.Screen
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     navController: NavController,
@@ -65,7 +64,7 @@ fun LoginScreen(
             when (event) {
                 is UiEvent.NavigateToLandingPage -> {
                     navController.navigate(Screen.LandingScreen.route) {
-                        popUpTo("login") { inclusive = true }
+                        popUpTo(Screen.LoginScreen.route) { inclusive = true }
                     }
                 }
 
