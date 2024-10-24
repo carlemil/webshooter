@@ -124,7 +124,7 @@ class NetworkModule {
         okHttpClient.addInterceptor(headersInterceptor)
         okHttpClient.addInterceptor(httpLoggingInterceptor)
         if (currentFlavor == "mock") {
-            okHttpClient.addNetworkInterceptor(mockInterceptor)
+            okHttpClient.addInterceptor(mockInterceptor)
         }
 
         return okHttpClient.build()

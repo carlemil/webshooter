@@ -9,7 +9,6 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
-import okhttp3.internal.http2.Header
 import se.kjellstrand.webshooter.R
 import java.io.IOException
 import javax.inject.Inject
@@ -25,8 +24,9 @@ open class MockInterceptor @Inject constructor(
         // Intercept request and provide mock data for certain endpoints
         val responseString = when (request.url.encodedPath) {
             "/" -> "No data available"
+            "/app/" -> "No data available"
             "/api/v4.1.9/oauth/token" -> getTextFromRaw(R.raw.api_v4_1_9_oauth_token)
-            "/app/competitions" -> getTextFromRaw(R.raw.competitions)
+            "/api/v4.1.9/competitions" -> getTextFromRaw(R.raw.competitions)
             "/api/v4.1.9/competitions/196/results" -> getTextFromRaw(R.raw.api_v4_1_9_competitions_196_results)
             else -> throw IllegalArgumentException("Unknown request path: ${request.url.encodedPath}")
         }
