@@ -1,6 +1,5 @@
 package se.kjellstrand.webshooter.ui.competitions
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -13,16 +12,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
+import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.ui.common.WeaponGroupBadges
 import se.kjellstrand.webshooter.ui.mock.CompetitionsViewModelMock
-import se.kjellstrand.webshooter.ui.mock.MockCompetitions
-import se.kjellstrand.webshooter.ui.navigation.Screen
 
 @Composable
 fun CompetitionDetailScreen(
@@ -34,7 +31,7 @@ fun CompetitionDetailScreen(
     if (competition != null) {
         CompetitionDetail(competition)
     } else {
-        Text("Competition not found.")
+        Text(stringResource(R.string.competition_not_found))
     }
 }
 
@@ -58,52 +55,58 @@ fun CompetitionDetail(competition: Datum) {
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = "Contact Name: ${competition.contactName}",
+            text = stringResource(R.string.contact_name, competition.contactName),
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = "Datum: ${competition.date}",
+            text = stringResource(R.string.datum, competition.date),
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = "Status: ${competition.statusHuman}",
+            text = stringResource(R.string.status, competition.statusHuman),
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = "Öppnas för anmälan: ${competition.signupsOpeningDate}",
+            text = stringResource(R.string.ppnas_f_r_anm_lan, competition.signupsOpeningDate),
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = "Sista anmälningsdag: ${competition.signupsClosingDate}",
+            text = stringResource(R.string.sista_anm_lningsdag, competition.signupsClosingDate),
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = "Efteranmälan: ${competition.allowSignupsAfterClosingDateHuman}",
+            text = stringResource(
+                R.string.efteranm_lan,
+                competition.allowSignupsAfterClosingDateHuman
+            ),
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = "Lagtävling: ${if (competition.allowTeams == 1L) "Ja" else "Nej"}",
+            text = stringResource(
+                R.string.lagt_vling,
+                if (competition.allowTeams == 1L) "Ja" else "Nej"
+            ),
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = "Tävlingstyp: ${competition.competitionType.name}",
+            text = stringResource(R.string.t_vlingstyp, competition.competitionType.name),
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = "Resultatberäkning: ${competition.resultsTypeHuman}",
+            text = stringResource(R.string.resultatber_kning, competition.resultsTypeHuman),
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = "Description:",
+            text = stringResource(R.string.description),
             style = MaterialTheme.typography.bodySmall
         )
         Spacer(modifier = Modifier.height(2.dp))

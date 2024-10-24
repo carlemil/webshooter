@@ -24,11 +24,13 @@ import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
+import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.ui.navigation.Screen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -38,9 +40,9 @@ fun LandingScreen(navController: NavController) {
     val scope = rememberCoroutineScope()
 
     val navigationItems = listOf(
-        NavigationItem("Competitions", Screen.CompetitionsList.route),
-        NavigationItem("Profile", "profile_screen"),
-        NavigationItem("Settings", "settings_screen")
+        NavigationItem(stringResource(R.string.competitions), Screen.CompetitionsList.route),
+        NavigationItem(stringResource(R.string.profile), "profile_screen"),
+        NavigationItem(stringResource(R.string.settings), "settings_screen")
     )
 
     ModalNavigationDrawer(
@@ -48,7 +50,7 @@ fun LandingScreen(navController: NavController) {
             ModalDrawerSheet {
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    text = "Menu",
+                    text = stringResource(R.string.menu),
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(16.dp)
                 )
@@ -77,7 +79,7 @@ fun LandingScreen(navController: NavController) {
             Column(
                 modifier = Modifier.fillMaxSize()
             ) {
-                TopAppBar(title = { Text("Landing Screen") },
+                TopAppBar(title = { Text(stringResource(R.string.landing_screen)) },
                     navigationIcon = {
                         IconButton(
                             onClick = {
@@ -88,7 +90,7 @@ fun LandingScreen(navController: NavController) {
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Menu,
-                                contentDescription = "Menu"
+                                contentDescription = stringResource(R.string.menu_content_description)
                             )
                         }
                     }
