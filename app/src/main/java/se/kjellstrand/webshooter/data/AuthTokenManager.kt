@@ -17,13 +17,13 @@ class AuthTokenManager(context: Context) {
         EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
     )
 
-    fun storeToken(token: String) {
+    fun storeToken(newToken: String) {
         with(sharedPreferences.edit()) {
-            putString(AUTH_TOKEN_KEY, token)
+            putString(AUTH_TOKEN_KEY, newToken)
             apply()
         }
-        println("$AUTH_TOKEN_KEY stored: $token")
-        readToken()
+        println("$AUTH_TOKEN_KEY stored: $newToken")
+        token = newToken
     }
 
     fun readToken(): String? {

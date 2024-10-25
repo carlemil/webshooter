@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import se.kjellstrand.webshooter.data.AuthTokenManager
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.login.LoginRepository
 import se.kjellstrand.webshooter.ui.common.UiEvent
@@ -16,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val loginRepository: LoginRepository
+    private val loginRepository: LoginRepository,
+    private val authTokenManager: AuthTokenManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(LoginUiState())
@@ -36,6 +38,7 @@ class LoginViewModel @Inject constructor(
                     when (resource) {
                         is Resource.Success -> {
                             println("login Success: ${resource.data}")
+                            resource.data.body()?.accessToken?.let { authTokenManager.storeToken(it) }
                             _uiState.value = LoginUiState(isSuccess = true)
                             _eventFlow.emit(UiEvent.NavigateToLandingPage)
                         }
