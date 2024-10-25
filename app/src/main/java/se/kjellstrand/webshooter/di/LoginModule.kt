@@ -23,9 +23,8 @@ class LoginModule {
     @Provides
     @Singleton
     fun providesLoginRepository(
-        loginRemoteDataSource: LoginRemoteDataSource,
-        authTokenManager: AuthTokenManager
+        loginRemoteDataSource: LoginRemoteDataSource
     ): LoginRepository {
-        return LoginRepository(loginRemoteDataSource, authTokenManager)
+        return LoginRepository(loginRemoteDataSource)
     }
 }

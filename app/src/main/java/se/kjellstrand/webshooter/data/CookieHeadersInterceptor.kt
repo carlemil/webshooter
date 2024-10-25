@@ -10,10 +10,10 @@ class CookieHeadersInterceptor @Inject constructor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
 
-        val allCookies = cookieJar.getAllCookies()
+        val sessionCookies = cookieJar.getSessionCookies()
 
         val requestBuilder = originalRequest.newBuilder()
-        requestBuilder.header("Cookie", allCookies)
+        requestBuilder.header("Cookie", sessionCookies)
 
         val newRequest = requestBuilder.build()
         return chain.proceed(newRequest)

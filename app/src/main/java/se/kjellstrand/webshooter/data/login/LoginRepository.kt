@@ -16,8 +16,7 @@ import javax.inject.Singleton
 
 @Singleton
 open class LoginRepository @Inject constructor(
-    private val loginRemoteDataSource: LoginRemoteDataSource,
-    private val authTokenManager: AuthTokenManager
+    private val loginRemoteDataSource: LoginRemoteDataSource
 ) {
 
     fun getCookies(): Flow<Resource<Response<Unit>, UserError>> {
@@ -74,7 +73,6 @@ open class LoginRepository @Inject constructor(
                 emit(Resource.Error(UserError.UnknownError))
                 return@flow
             }
-            result.body()?.let { authTokenManager.storeToken(it.accessToken) }
             emit(Resource.Success(result))
             emit(Resource.Loading(false))
         }
