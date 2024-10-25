@@ -8,14 +8,15 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
+import okhttp3.logging.HttpLoggingInterceptor.Level.BODY
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import se.kjellstrand.webshooter.BuildConfig
 import se.kjellstrand.webshooter.data.AuthCookieJar
 import se.kjellstrand.webshooter.data.AuthInterceptor
 import se.kjellstrand.webshooter.data.AuthTokenManager
-import se.kjellstrand.webshooter.data.GeneralHeadersInterceptor
 import se.kjellstrand.webshooter.data.CookieHeadersInterceptor
+import se.kjellstrand.webshooter.data.GeneralHeadersInterceptor
 import se.kjellstrand.webshooter.data.MockInterceptor
 import javax.inject.Singleton
 
@@ -41,9 +42,7 @@ class NetworkModule {
         okHttpClient.addInterceptor(generalHeadersInterceptor)
         okHttpClient.addInterceptor(authInterceptor)
         okHttpClient.addInterceptor(cookieHeadersInterceptor)
-        okHttpClient.addInterceptor(HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BODY
-        })
+        okHttpClient.addInterceptor(HttpLoggingInterceptor().apply { level = BODY })
 
         if (currentFlavor == "mock") {
             okHttpClient.addInterceptor(mockInterceptor)
