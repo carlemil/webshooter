@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.data.AuthTokenManager
 import se.kjellstrand.webshooter.data.common.Resource
+import se.kjellstrand.webshooter.data.cookies.CookiesRepository
 import se.kjellstrand.webshooter.data.login.LoginRepository
 import se.kjellstrand.webshooter.ui.common.UiEvent
 import javax.inject.Inject
@@ -18,6 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val loginRepository: LoginRepository,
+    private val cookiesRepository: CookiesRepository,
     private val authTokenManager: AuthTokenManager
 ) : ViewModel() {
 
@@ -63,7 +65,7 @@ class LoginViewModel @Inject constructor(
 
     fun getCookies() {
         viewModelScope.launch {
-            loginRepository.getCookies()
+            cookiesRepository.getCookies()
                 .collect { resource ->
                     when (resource) {
                         is Resource.Success -> {

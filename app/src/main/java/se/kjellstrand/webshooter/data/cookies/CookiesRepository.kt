@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.data.login
+package se.kjellstrand.webshooter.data.cookies
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -7,35 +7,19 @@ import retrofit2.HttpException
 import retrofit2.Response
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
-import se.kjellstrand.webshooter.data.AuthTokenManager
-import se.kjellstrand.webshooter.data.login.remote.LoginRemoteDataSource
-import se.kjellstrand.webshooter.data.login.remote.LoginRequest
-import se.kjellstrand.webshooter.data.login.remote.LoginResponse
+import se.kjellstrand.webshooter.data.cookies.remote.CookiesRemoteDataSource
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-open class LoginRepository @Inject constructor(
-    private val loginRemoteDataSource: LoginRemoteDataSource
+open class CookiesRepository @Inject constructor(
+    private val cookiesRemoteDataSource: CookiesRemoteDataSource
 ) {
-    fun login(
-        email: String,
-        username: String,
-        password: String
-    ): Flow<Resource<Response<LoginResponse>, UserError>> {
+    fun getCookies(): Flow<Resource<Response<Unit>, UserError>> {
         return flow {
             emit(Resource.Loading(true))
             val result = try {
-                loginRemoteDataSource.login(
-                    LoginRequest(
-                        1,
-                        "52FphTYzOrmuqH30ltL7LrBzhSEURIJiMFNp6Qt0",
-                        email,
-                        "password",
-                        password,
-                        username
-                    )
-                )
+                cookiesRemoteDataSource.getCookies()
             } catch (e: IOException) {
                 e.printStackTrace()
                 emit(Resource.Error(UserError.IOError))
