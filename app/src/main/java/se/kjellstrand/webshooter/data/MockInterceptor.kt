@@ -2,7 +2,6 @@ package se.kjellstrand.webshooter.data
 
 import android.content.Context
 import dagger.hilt.android.qualifiers.ApplicationContext
-import okhttp3.Headers
 import okhttp3.Headers.Companion.headersOf
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
@@ -21,7 +20,6 @@ open class MockInterceptor @Inject constructor(
     override fun intercept(chain: Interceptor.Chain): Response {
         val request = chain.request()
 
-        // Intercept request and provide mock data for certain endpoints
         val responseString = when (request.url.encodedPath) {
             "/" -> "No data available"
             "/app/" -> "No data available"
@@ -45,14 +43,12 @@ open class MockInterceptor @Inject constructor(
             .build()
     }
 
-
     private fun getTextFromRaw(raw: Int): String {
         try {
             val inputStream = context.resources.openRawResource(raw)
             return inputStream.bufferedReader().use { it.readText() }
         } catch (e: IOException) {
             throw e
-            // Handle the exception
         }
     }
 }

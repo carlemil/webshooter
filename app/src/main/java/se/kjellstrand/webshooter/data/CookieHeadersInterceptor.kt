@@ -8,7 +8,6 @@ class CookieHeadersInterceptor @Inject constructor(
     private val cookieJar: AuthCookieJar
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
-
         val originalRequest = chain.request()
 
         val allCookies = cookieJar.getAllCookies()
