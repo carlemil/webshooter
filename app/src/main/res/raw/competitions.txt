@@ -3,11 +3,358 @@
         "current_page": 1,
         "data": [
             {
-                "id": 208,
+                "id": 209,
                 "championships_id": 0,
                 "is_public": 1,
                 "results_is_public": 0,
                 "patrols_is_public": 0,
+                "organizer_id": 92,
+                "organizer_type": "App\\Models\\Club",
+                "invoices_recipient_id": 92,
+                "invoices_recipient_type": "App\\Models\\Club",
+                "name": "Kretsf\u00e4lt 7 + KM A - M-kretsen",
+                "allow_teams": 0,
+                "teams_registration_fee": 0,
+                "website": "http:\/\/www.malmopistolklubb.se",
+                "contact_name": "Leif Gustafsson",
+                "contact_venue": "Spillepengen",
+                "contact_city": "Malm\u00f6, Sweden",
+                "lat": 55.63,
+                "lng": 13.05,
+                "contact_email": "leifgus@hotmail.com",
+                "contact_telephone": "0733-919107",
+                "google_maps": "https:\/\/www.google.com\/maps\/embed?pb=!1m18!1m12!1m3!1d2252.190095823691!2d13.047590239161599!3d55.633507040374745!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0xbd7b8a7f1dca685f!2sMalm%C3%B6%20Skyttegille!5e0!3m2!1ssv!2sse!4v1667056471598!5m2!1ssv!2sse",
+                "description": "M\u00e4sterskap i vapengrupp A. Inbjudan: http:\/\/www.malmopistolklubb.se\/wp-content\/uploads\/2024\/10\/Inbjudan-kretsfalt-7-2024.pdf",
+                "results_type": "field",
+                "results_prices": 0,
+                "results_comment": "",
+                "date": "2024-11-10",
+                "signups_opening_date": "2024-10-24",
+                "signups_closing_date": "2024-11-03",
+                "allow_signups_after_closing_date": 1,
+                "price_signups_after_closing_date": 20,
+                "approval_signups_after_closing_date": 1,
+                "final_time": "18:00:00",
+                "created_by": 369,
+                "pdf_logo": "webshooter",
+                "closed_at": null,
+                "weapongroups": [
+                    {
+                        "id": 1,
+                        "name": "A"
+                    },
+                    {
+                        "id": 11,
+                        "name": "B"
+                    },
+                    {
+                        "id": 21,
+                        "name": "C"
+                    },
+                    {
+                        "id": 24,
+                        "name": "CD"
+                    },
+                    {
+                        "id": 27,
+                        "name": "CJun"
+                    },
+                    {
+                        "id": 29,
+                        "name": "CV\u00c4"
+                    },
+                    {
+                        "id": 31,
+                        "name": "R"
+                    }
+                ],
+                "signups_count": 90,
+                "patrols_count": 0,
+                "status": "open",
+                "status_human": "\u00d6ppen f\u00f6r anm\u00e4lan",
+                "start_time_human": "08:30",
+                "final_time_human": "18:00",
+                "allow_signups_after_closing_date_human": "Beh\u00f6ver godk\u00e4nnas. 20 kr avgift",
+                "translations": {
+                    "patrols_name_singular": "patrull",
+                    "patrols_name_plural": "patruller",
+                    "patrols_list_singular": "patrullista",
+                    "patrols_list_plural": "patrullistor",
+                    "patrols_size": "Patrullstorlek",
+                    "patrols_lane_singular": "figur",
+                    "patrols_lane_plural": "figurer",
+                    "stations_name_singular": "station",
+                    "stations_name_plural": "stationer",
+                    "results_list_singular": "resultatlista",
+                    "results_list_plural": "resultatlistor",
+                    "shootingcard": "skjutkort",
+                    "shootingcards": "skjutkort",
+                    "signups": "anm\u00e4lningar"
+                },
+                "results_type_human": "F\u00e4lt",
+                "available_logos": [
+                    "webshooter",
+                    "club"
+                ],
+                "pdf_logo_path": "\/var\/www\/html\/public\/img\/webshooter-new.jpg",
+                "pdf_logo_url": "\/img\/webshooter-new.jpg",
+                "championship": null,
+                "competitiontype": {
+                    "id": 2,
+                    "name": "F\u00e4lt",
+                    "created_at": "2021-12-30T12:19:23.000000Z",
+                    "updated_at": "2021-12-30T12:19:23.000000Z",
+                    "deleted_at": null
+                },
+                "weaponclasses": [
+                    {
+                        "id": 1,
+                        "weapongroups_id": 1,
+                        "classname": "A1",
+                        "championship": 0,
+                        "classname_general": "A",
+                        "pivot": {
+                            "competitions_id": 209,
+                            "weaponclasses_id": 1,
+                            "registration_fee": 120
+                        }
+                    },
+                    {
+                        "id": 2,
+                        "weapongroups_id": 1,
+                        "classname": "A2",
+                        "championship": 0,
+                        "classname_general": "A",
+                        "pivot": {
+                            "competitions_id": 209,
+                            "weaponclasses_id": 2,
+                            "registration_fee": 120
+                        }
+                    },
+                    {
+                        "id": 3,
+                        "weapongroups_id": 1,
+                        "classname": "A3",
+                        "championship": 1,
+                        "classname_general": "A",
+                        "pivot": {
+                            "competitions_id": 209,
+                            "weaponclasses_id": 3,
+                            "registration_fee": 120
+                        }
+                    },
+                    {
+                        "id": 11,
+                        "weapongroups_id": 2,
+                        "classname": "B1",
+                        "championship": 0,
+                        "classname_general": "B",
+                        "pivot": {
+                            "competitions_id": 209,
+                            "weaponclasses_id": 11,
+                            "registration_fee": 100
+                        }
+                    },
+                    {
+                        "id": 12,
+                        "weapongroups_id": 2,
+                        "classname": "B2",
+                        "championship": 0,
+                        "classname_general": "B",
+                        "pivot": {
+                            "competitions_id": 209,
+                            "weaponclasses_id": 12,
+                            "registration_fee": 100
+                        }
+                    },
+                    {
+                        "id": 13,
+                        "weapongroups_id": 2,
+                        "classname": "B3",
+                        "championship": 1,
+                        "classname_general": "B",
+                        "pivot": {
+                            "competitions_id": 209,
+                            "weaponclasses_id": 13,
+                            "registration_fee": 100
+                        }
+                    },
+                    {
+                        "id": 21,
+                        "weapongroups_id": 3,
+                        "classname": "C1",
+                        "championship": 0,
+                        "classname_general": "C",
+                        "pivot": {
+                            "competitions_id": 209,
+                            "weaponclasses_id": 21,
+                            "registration_fee": 100
+                        }
+                    },
+                    {
+                        "id": 22,
+                        "weapongroups_id": 3,
+                        "classname": "C2",
+                        "championship": 0,
+                        "classname_general": "C",
+                        "pivot": {
+                            "competitions_id": 209,
+                            "weaponclasses_id": 22,
+                            "registration_fee": 100
+                        }
+                    },
+                    {
+                        "id": 23,
+                        "weapongroups_id": 3,
+                        "classname": "C3",
+                        "championship": 1,
+                        "classname_general": "C",
+                        "pivot": {
+                            "competitions_id": 209,
+                            "weaponclasses_id": 23,
+                            "registration_fee": 100
+                        }
+                    },
+                    {
+                        "id": 24,
+                        "weapongroups_id": 4,
+                        "classname": "CD1",
+                        "championship": 0,
+                        "classname_general": "CD",
+                        "pivot": {
+                            "competitions_id": 209,
+                            "weaponclasses_id": 24,
+                            "registration_fee": 100
+                        }
+                    },
+                    {
+                        "id": 25,
+                        "weapongroups_id": 4,
+                        "classname": "CD2",
+                        "championship": 0,
+                        "classname_general": "CD",
+                        "pivot": {
+                            "competitions_id": 209,
+                            "weaponclasses_id": 25,
+                            "registration_fee": 100
+                        }
+                    },
+                    {
+                        "id": 26,
+                        "weapongroups_id": 4,
+                        "classname": "CD3",
+                        "championship": 1,
+                        "classname_general": "CD",
+                        "pivot": {
+                            "competitions_id": 209,
+                            "weaponclasses_id": 26,
+                            "registration_fee": 100
+                        }
+                    },
+                    {
+                        "id": 27,
+                        "weapongroups_id": 5,
+                        "classname": "CJun",
+                        "championship": 1,
+                        "classname_general": "CJun",
+                        "pivot": {
+                            "competitions_id": 209,
+                            "weaponclasses_id": 27,
+                            "registration_fee": 100
+                        }
+                    },
+                    {
+                        "id": 29,
+                        "weapongroups_id": 6,
+                        "classname": "CV\u00c4",
+                        "championship": 1,
+                        "classname_general": "CV\u00c4",
+                        "pivot": {
+                            "competitions_id": 209,
+                            "weaponclasses_id": 29,
+                            "registration_fee": 100
+                        }
+                    },
+                    {
+                        "id": 28,
+                        "weapongroups_id": 6,
+                        "classname": "CVY",
+                        "championship": 0,
+                        "classname_general": "CVY",
+                        "pivot": {
+                            "competitions_id": 209,
+                            "weaponclasses_id": 28,
+                            "registration_fee": 100
+                        }
+                    },
+                    {
+                        "id": 31,
+                        "weapongroups_id": 7,
+                        "classname": "R1",
+                        "championship": 0,
+                        "classname_general": "R",
+                        "pivot": {
+                            "competitions_id": 209,
+                            "weaponclasses_id": 31,
+                            "registration_fee": 100
+                        }
+                    },
+                    {
+                        "id": 32,
+                        "weapongroups_id": 7,
+                        "classname": "R2",
+                        "championship": 0,
+                        "classname_general": "R",
+                        "pivot": {
+                            "competitions_id": 209,
+                            "weaponclasses_id": 32,
+                            "registration_fee": 100
+                        }
+                    },
+                    {
+                        "id": 33,
+                        "weapongroups_id": 7,
+                        "classname": "R3",
+                        "championship": 1,
+                        "classname_general": "R",
+                        "pivot": {
+                            "competitions_id": 209,
+                            "weaponclasses_id": 33,
+                            "registration_fee": 100
+                        }
+                    }
+                ],
+                "usersignups": [],
+                "club": {
+                    "id": 92,
+                    "disable_personal_invoices": 0,
+                    "districts_id": 12,
+                    "clubs_nr": "149",
+                    "name": "Malm\u00f6 Pistolklubb",
+                    "email": "info@malmopistolklubb.se",
+                    "phone": "040 \u2013 18 62 67",
+                    "address_street": "Box 3002, Malm\u00f6",
+                    "address_street_2": "Flygf\u00e4ltsv\u00e4gen",
+                    "address_zipcode": "20022",
+                    "address_city": "MALM\u00d6",
+                    "address_country": null,
+                    "bankgiro": "352- 3370",
+                    "postgiro": null,
+                    "swish": "",
+                    "logo": "malmoe-pistolklubb-logo.jpg",
+                    "user_has_role": null,
+                    "address_combined": "Box 3002, Malm\u00f6\nFlygf\u00e4ltsv\u00e4gen\n20022 MALM\u00d6\n",
+                    "address_incomplete": false,
+                    "logo_url": "\/storage\/clubs\/92\/malmoe-pistolklubb-logo.jpg",
+                    "logo_path": "\/var\/www\/html\/storage\/app\/public\/clubs\/92\/malmoe-pistolklubb-logo.jpg"
+                }
+            },
+            {
+                "id": 208,
+                "championships_id": 0,
+                "is_public": 1,
+                "results_is_public": 1,
+                "patrols_is_public": 1,
                 "organizer_id": 11,
                 "organizer_type": "App\\Models\\District",
                 "invoices_recipient_id": 11,
@@ -60,10 +407,10 @@
                         "name": "CV\u00c4"
                     }
                 ],
-                "signups_count": 9,
-                "patrols_count": 0,
-                "status": "open",
-                "status_human": "\u00d6ppen f\u00f6r anm\u00e4lan",
+                "signups_count": 85,
+                "patrols_count": 20,
+                "status": "after_signups_closing_date",
+                "status_human": "Efteranm\u00e4lan",
                 "start_time_human": "09:00",
                 "final_time_human": "18:00",
                 "allow_signups_after_closing_date_human": "Beh\u00f6ver godk\u00e4nnas. 20 kr avgift",
@@ -267,1875 +614,6 @@
                     "logo_url": "",
                     "logo_path": ""
                 }
-            },
-            {
-                "id": 207,
-                "championships_id": 0,
-                "is_public": 1,
-                "results_is_public": 0,
-                "patrols_is_public": 0,
-                "organizer_id": 353,
-                "organizer_type": "App\\Models\\Club",
-                "invoices_recipient_id": 353,
-                "invoices_recipient_type": "App\\Models\\Club",
-                "name": "KF6 med KM C",
-                "allow_teams": 0,
-                "teams_registration_fee": null,
-                "website": "https:\/\/www.kullenspk.se\/wp-content\/uploads\/2024\/09\/Inbjudan-KF6-2024.pdf",
-                "contact_name": "Eric Sk\u00f6ldmark",
-                "contact_venue": "Skjutbanan- Kullens PK",
-                "contact_city": "H\u00f6gan\u00e4s",
-                "lat": 56.22,
-                "lng": 12.55,
-                "contact_email": "erisko78@gmail.com",
-                "contact_telephone": "0704253852",
-                "google_maps": "https:\/\/www.google.com\/maps\/embed?pb=!1m18!1m12!1m3!1d2218.4855061882367!2d12.55352737647187!3d56.217848556076696!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4652265d231b7fbb%3A0x5472fd4d7af065c4!2sKullens%20Pk!5e0!3m2!1ssv!2sse!4v1726644310475!5m2!1ssv!2sse",
-                "description": "Kullens PK h\u00e4lsar v\u00e4lkomna till kretsf\u00e4lt med m\u00e4sterskap i C.\nSe mer info i separat inbjudan. (klicka p\u00e5 webbplatsen till h\u00f6ger)\nMax 3 starter.",
-                "results_type": "field",
-                "results_prices": 1,
-                "results_comment": "",
-                "date": "2024-10-20",
-                "signups_opening_date": "2024-09-20",
-                "signups_closing_date": "2024-10-13",
-                "allow_signups_after_closing_date": 1,
-                "price_signups_after_closing_date": 0,
-                "approval_signups_after_closing_date": 1,
-                "final_time": "16:00:00",
-                "created_by": 707,
-                "pdf_logo": "club",
-                "closed_at": null,
-                "weapongroups": [
-                    {
-                        "id": 1,
-                        "name": "A"
-                    },
-                    {
-                        "id": 11,
-                        "name": "B"
-                    },
-                    {
-                        "id": 21,
-                        "name": "C"
-                    },
-                    {
-                        "id": 24,
-                        "name": "CD"
-                    },
-                    {
-                        "id": 27,
-                        "name": "CJun"
-                    },
-                    {
-                        "id": 29,
-                        "name": "CV\u00c4"
-                    },
-                    {
-                        "id": 31,
-                        "name": "R"
-                    }
-                ],
-                "signups_count": 64,
-                "patrols_count": 0,
-                "status": "open",
-                "status_human": "\u00d6ppen f\u00f6r anm\u00e4lan",
-                "start_time_human": "08:30",
-                "final_time_human": "16:00",
-                "allow_signups_after_closing_date_human": "Beh\u00f6ver godk\u00e4nnas. 0 kr avgift",
-                "translations": {
-                    "patrols_name_singular": "patrull",
-                    "patrols_name_plural": "patruller",
-                    "patrols_list_singular": "patrullista",
-                    "patrols_list_plural": "patrullistor",
-                    "patrols_size": "Patrullstorlek",
-                    "patrols_lane_singular": "figur",
-                    "patrols_lane_plural": "figurer",
-                    "stations_name_singular": "station",
-                    "stations_name_plural": "stationer",
-                    "results_list_singular": "resultatlista",
-                    "results_list_plural": "resultatlistor",
-                    "shootingcard": "skjutkort",
-                    "shootingcards": "skjutkort",
-                    "signups": "anm\u00e4lningar"
-                },
-                "results_type_human": "F\u00e4lt",
-                "available_logos": [
-                    "webshooter",
-                    "club"
-                ],
-                "pdf_logo_path": "\/var\/www\/html\/storage\/app\/public\/clubs\/353\/kullens-pistolskytteklubb-logo.jpg",
-                "pdf_logo_url": "\/storage\/clubs\/353\/kullens-pistolskytteklubb-logo.jpg",
-                "championship": null,
-                "competitiontype": {
-                    "id": 2,
-                    "name": "F\u00e4lt",
-                    "created_at": "2021-12-30T12:19:23.000000Z",
-                    "updated_at": "2021-12-30T12:19:23.000000Z",
-                    "deleted_at": null
-                },
-                "weaponclasses": [
-                    {
-                        "id": 1,
-                        "weapongroups_id": 1,
-                        "classname": "A1",
-                        "championship": 0,
-                        "classname_general": "A",
-                        "pivot": {
-                            "competitions_id": 207,
-                            "weaponclasses_id": 1,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 2,
-                        "weapongroups_id": 1,
-                        "classname": "A2",
-                        "championship": 0,
-                        "classname_general": "A",
-                        "pivot": {
-                            "competitions_id": 207,
-                            "weaponclasses_id": 2,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 3,
-                        "weapongroups_id": 1,
-                        "classname": "A3",
-                        "championship": 1,
-                        "classname_general": "A",
-                        "pivot": {
-                            "competitions_id": 207,
-                            "weaponclasses_id": 3,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 11,
-                        "weapongroups_id": 2,
-                        "classname": "B1",
-                        "championship": 0,
-                        "classname_general": "B",
-                        "pivot": {
-                            "competitions_id": 207,
-                            "weaponclasses_id": 11,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 12,
-                        "weapongroups_id": 2,
-                        "classname": "B2",
-                        "championship": 0,
-                        "classname_general": "B",
-                        "pivot": {
-                            "competitions_id": 207,
-                            "weaponclasses_id": 12,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 13,
-                        "weapongroups_id": 2,
-                        "classname": "B3",
-                        "championship": 1,
-                        "classname_general": "B",
-                        "pivot": {
-                            "competitions_id": 207,
-                            "weaponclasses_id": 13,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 21,
-                        "weapongroups_id": 3,
-                        "classname": "C1",
-                        "championship": 0,
-                        "classname_general": "C",
-                        "pivot": {
-                            "competitions_id": 207,
-                            "weaponclasses_id": 21,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 22,
-                        "weapongroups_id": 3,
-                        "classname": "C2",
-                        "championship": 0,
-                        "classname_general": "C",
-                        "pivot": {
-                            "competitions_id": 207,
-                            "weaponclasses_id": 22,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 23,
-                        "weapongroups_id": 3,
-                        "classname": "C3",
-                        "championship": 1,
-                        "classname_general": "C",
-                        "pivot": {
-                            "competitions_id": 207,
-                            "weaponclasses_id": 23,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 24,
-                        "weapongroups_id": 4,
-                        "classname": "CD1",
-                        "championship": 0,
-                        "classname_general": "CD",
-                        "pivot": {
-                            "competitions_id": 207,
-                            "weaponclasses_id": 24,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 25,
-                        "weapongroups_id": 4,
-                        "classname": "CD2",
-                        "championship": 0,
-                        "classname_general": "CD",
-                        "pivot": {
-                            "competitions_id": 207,
-                            "weaponclasses_id": 25,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 26,
-                        "weapongroups_id": 4,
-                        "classname": "CD3",
-                        "championship": 1,
-                        "classname_general": "CD",
-                        "pivot": {
-                            "competitions_id": 207,
-                            "weaponclasses_id": 26,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 27,
-                        "weapongroups_id": 5,
-                        "classname": "CJun",
-                        "championship": 1,
-                        "classname_general": "CJun",
-                        "pivot": {
-                            "competitions_id": 207,
-                            "weaponclasses_id": 27,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 29,
-                        "weapongroups_id": 6,
-                        "classname": "CV\u00c4",
-                        "championship": 1,
-                        "classname_general": "CV\u00c4",
-                        "pivot": {
-                            "competitions_id": 207,
-                            "weaponclasses_id": 29,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 28,
-                        "weapongroups_id": 6,
-                        "classname": "CVY",
-                        "championship": 0,
-                        "classname_general": "CVY",
-                        "pivot": {
-                            "competitions_id": 207,
-                            "weaponclasses_id": 28,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 31,
-                        "weapongroups_id": 7,
-                        "classname": "R1",
-                        "championship": 0,
-                        "classname_general": "R",
-                        "pivot": {
-                            "competitions_id": 207,
-                            "weaponclasses_id": 31,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 32,
-                        "weapongroups_id": 7,
-                        "classname": "R2",
-                        "championship": 0,
-                        "classname_general": "R",
-                        "pivot": {
-                            "competitions_id": 207,
-                            "weaponclasses_id": 32,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 33,
-                        "weapongroups_id": 7,
-                        "classname": "R3",
-                        "championship": 1,
-                        "classname_general": "R",
-                        "pivot": {
-                            "competitions_id": 207,
-                            "weaponclasses_id": 33,
-                            "registration_fee": 100
-                        }
-                    }
-                ],
-                "usersignups": [
-                    {
-                        "id": 20044,
-                        "competitions_id": 207,
-                        "patrols_id": 0,
-                        "patrols_finals_id": 0,
-                        "lane_finals": 0,
-                        "patrols_distinguish_id": 0,
-                        "lane_distinguish": 0,
-                        "start_time": null,
-                        "end_time": null,
-                        "lane": 0,
-                        "weaponclasses_id": 21,
-                        "registration_fee": 120,
-                        "invoices_id": null,
-                        "clubs_id": 274,
-                        "start_before": "00:00:00",
-                        "start_after": "00:00:00",
-                        "first_last_patrol": null,
-                        "share_weapon_with": 0,
-                        "participate_out_of_competition": null,
-                        "exclude_from_standardmedal": null,
-                        "share_patrol_with": 0,
-                        "shoot_not_simultaneously_with": 0,
-                        "note": null,
-                        "requires_approval": 0,
-                        "is_approved_by": 0,
-                        "created_by": 2249,
-                        "created_at": "2024-09-21T18:09:36.000000Z",
-                        "special_wishes": "",
-                        "first_last_patrol_human": "-",
-                        "start_time_human": "01:00",
-                        "end_time_human": "01:00"
-                    },
-                    {
-                        "id": 20045,
-                        "competitions_id": 207,
-                        "patrols_id": 0,
-                        "patrols_finals_id": 0,
-                        "lane_finals": 0,
-                        "patrols_distinguish_id": 0,
-                        "lane_distinguish": 0,
-                        "start_time": null,
-                        "end_time": null,
-                        "lane": 0,
-                        "weaponclasses_id": 31,
-                        "registration_fee": 100,
-                        "invoices_id": null,
-                        "clubs_id": 274,
-                        "start_before": "00:00:00",
-                        "start_after": "00:00:00",
-                        "first_last_patrol": null,
-                        "share_weapon_with": 0,
-                        "participate_out_of_competition": null,
-                        "exclude_from_standardmedal": null,
-                        "share_patrol_with": 0,
-                        "shoot_not_simultaneously_with": 0,
-                        "note": null,
-                        "requires_approval": 0,
-                        "is_approved_by": 0,
-                        "created_by": 2249,
-                        "created_at": "2024-09-21T18:09:37.000000Z",
-                        "special_wishes": "",
-                        "first_last_patrol_human": "-",
-                        "start_time_human": "01:00",
-                        "end_time_human": "01:00"
-                    }
-                ],
-                "club": {
-                    "id": 353,
-                    "disable_personal_invoices": 0,
-                    "districts_id": 12,
-                    "clubs_nr": "567",
-                    "name": "Kullens Pistolskytteklubb",
-                    "email": "info@kullenspk.se",
-                    "phone": "0768754065",
-                    "address_street": "Skjutbanev\u00e4gen 50",
-                    "address_street_2": null,
-                    "address_zipcode": "26339",
-                    "address_city": "H\u00f6gan\u00e4s",
-                    "address_country": "null",
-                    "bankgiro": "175-1122",
-                    "postgiro": "-",
-                    "swish": "1235557251",
-                    "logo": "kullens-pistolskytteklubb-logo.jpg",
-                    "user_has_role": null,
-                    "address_combined": "Skjutbanev\u00e4gen 50\n26339 H\u00f6gan\u00e4s\nnull",
-                    "address_incomplete": false,
-                    "logo_url": "\/storage\/clubs\/353\/kullens-pistolskytteklubb-logo.jpg",
-                    "logo_path": "\/var\/www\/html\/storage\/app\/public\/clubs\/353\/kullens-pistolskytteklubb-logo.jpg"
-                }
-            },
-            {
-                "id": 205,
-                "championships_id": 0,
-                "is_public": 1,
-                "results_is_public": 0,
-                "patrols_is_public": 0,
-                "organizer_id": 86,
-                "organizer_type": "App\\Models\\Club",
-                "invoices_recipient_id": 86,
-                "invoices_recipient_type": "App\\Models\\Club",
-                "name": "Kretsf\u00e4lt 5 + KM F\u00e4lt R Trollen\u00e4s",
-                "allow_teams": 0,
-                "teams_registration_fee": 0,
-                "website": "https:\/\/drive.google.com\/file\/d\/1BByTqI39aJZjU9iS4d16zMuZ5trmUPES\/view?usp=sharing",
-                "contact_name": "Jonas Ezzi",
-                "contact_venue": "Trollen\u00e4s slott - Lunds Pistolklubb",
-                "contact_city": "Trollen\u00e4s",
-                "lat": 55.87,
-                "lng": 13.25,
-                "contact_email": "info@lundspk.se",
-                "contact_telephone": "0733-916900",
-                "google_maps": "https:\/\/www.google.com\/maps\/embed?pb=!1m18!1m12!1m3!1d494.4933237447662!2d13.247427340354383!3d55.8665485489085!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4653c0197426cc91%3A0xa0bcaf4da4c4f330!2sTrollen%C3%A4s%20slott!5e0!3m2!1ssv!2sse!4v1725744175969!5m2!1ssv!2sse",
-                "description": "Dags f\u00f6r Kretsf\u00e4lt igen i terr\u00e4ngen kring Trollen\u00e4s slott och i \u00e5r \u00e4r det samtidigt Kretsm\u00e4sterskap i Vapengrupp R p\u00e5 denna t\u00e4vling.",
-                "results_type": "field",
-                "results_prices": 0,
-                "results_comment": "",
-                "date": "2024-10-13",
-                "signups_opening_date": "2024-09-07",
-                "signups_closing_date": "2024-10-06",
-                "allow_signups_after_closing_date": 1,
-                "price_signups_after_closing_date": 0,
-                "approval_signups_after_closing_date": 1,
-                "final_time": "17:00:00",
-                "created_by": 55,
-                "pdf_logo": "webshooter",
-                "closed_at": null,
-                "weapongroups": [
-                    {
-                        "id": 1,
-                        "name": "A"
-                    },
-                    {
-                        "id": 11,
-                        "name": "B"
-                    },
-                    {
-                        "id": 21,
-                        "name": "C"
-                    },
-                    {
-                        "id": 24,
-                        "name": "CD"
-                    },
-                    {
-                        "id": 27,
-                        "name": "CJun"
-                    },
-                    {
-                        "id": 29,
-                        "name": "CV\u00c4"
-                    },
-                    {
-                        "id": 31,
-                        "name": "R"
-                    }
-                ],
-                "signups_count": 217,
-                "patrols_count": 0,
-                "status": "open",
-                "status_human": "\u00d6ppen f\u00f6r anm\u00e4lan",
-                "start_time_human": "08:00",
-                "final_time_human": "17:00",
-                "allow_signups_after_closing_date_human": "Beh\u00f6ver godk\u00e4nnas. 0 kr avgift",
-                "translations": {
-                    "patrols_name_singular": "patrull",
-                    "patrols_name_plural": "patruller",
-                    "patrols_list_singular": "patrullista",
-                    "patrols_list_plural": "patrullistor",
-                    "patrols_size": "Patrullstorlek",
-                    "patrols_lane_singular": "figur",
-                    "patrols_lane_plural": "figurer",
-                    "stations_name_singular": "station",
-                    "stations_name_plural": "stationer",
-                    "results_list_singular": "resultatlista",
-                    "results_list_plural": "resultatlistor",
-                    "shootingcard": "skjutkort",
-                    "shootingcards": "skjutkort",
-                    "signups": "anm\u00e4lningar"
-                },
-                "results_type_human": "F\u00e4lt",
-                "available_logos": [
-                    "webshooter",
-                    "club"
-                ],
-                "pdf_logo_path": "\/var\/www\/html\/public\/img\/webshooter-new.jpg",
-                "pdf_logo_url": "\/img\/webshooter-new.jpg",
-                "championship": null,
-                "competitiontype": {
-                    "id": 2,
-                    "name": "F\u00e4lt",
-                    "created_at": "2021-12-30T12:19:23.000000Z",
-                    "updated_at": "2021-12-30T12:19:23.000000Z",
-                    "deleted_at": null
-                },
-                "weaponclasses": [
-                    {
-                        "id": 1,
-                        "weapongroups_id": 1,
-                        "classname": "A1",
-                        "championship": 0,
-                        "classname_general": "A",
-                        "pivot": {
-                            "competitions_id": 205,
-                            "weaponclasses_id": 1,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 2,
-                        "weapongroups_id": 1,
-                        "classname": "A2",
-                        "championship": 0,
-                        "classname_general": "A",
-                        "pivot": {
-                            "competitions_id": 205,
-                            "weaponclasses_id": 2,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 3,
-                        "weapongroups_id": 1,
-                        "classname": "A3",
-                        "championship": 1,
-                        "classname_general": "A",
-                        "pivot": {
-                            "competitions_id": 205,
-                            "weaponclasses_id": 3,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 11,
-                        "weapongroups_id": 2,
-                        "classname": "B1",
-                        "championship": 0,
-                        "classname_general": "B",
-                        "pivot": {
-                            "competitions_id": 205,
-                            "weaponclasses_id": 11,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 12,
-                        "weapongroups_id": 2,
-                        "classname": "B2",
-                        "championship": 0,
-                        "classname_general": "B",
-                        "pivot": {
-                            "competitions_id": 205,
-                            "weaponclasses_id": 12,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 13,
-                        "weapongroups_id": 2,
-                        "classname": "B3",
-                        "championship": 1,
-                        "classname_general": "B",
-                        "pivot": {
-                            "competitions_id": 205,
-                            "weaponclasses_id": 13,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 21,
-                        "weapongroups_id": 3,
-                        "classname": "C1",
-                        "championship": 0,
-                        "classname_general": "C",
-                        "pivot": {
-                            "competitions_id": 205,
-                            "weaponclasses_id": 21,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 22,
-                        "weapongroups_id": 3,
-                        "classname": "C2",
-                        "championship": 0,
-                        "classname_general": "C",
-                        "pivot": {
-                            "competitions_id": 205,
-                            "weaponclasses_id": 22,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 23,
-                        "weapongroups_id": 3,
-                        "classname": "C3",
-                        "championship": 1,
-                        "classname_general": "C",
-                        "pivot": {
-                            "competitions_id": 205,
-                            "weaponclasses_id": 23,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 24,
-                        "weapongroups_id": 4,
-                        "classname": "CD1",
-                        "championship": 0,
-                        "classname_general": "CD",
-                        "pivot": {
-                            "competitions_id": 205,
-                            "weaponclasses_id": 24,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 25,
-                        "weapongroups_id": 4,
-                        "classname": "CD2",
-                        "championship": 0,
-                        "classname_general": "CD",
-                        "pivot": {
-                            "competitions_id": 205,
-                            "weaponclasses_id": 25,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 26,
-                        "weapongroups_id": 4,
-                        "classname": "CD3",
-                        "championship": 1,
-                        "classname_general": "CD",
-                        "pivot": {
-                            "competitions_id": 205,
-                            "weaponclasses_id": 26,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 27,
-                        "weapongroups_id": 5,
-                        "classname": "CJun",
-                        "championship": 1,
-                        "classname_general": "CJun",
-                        "pivot": {
-                            "competitions_id": 205,
-                            "weaponclasses_id": 27,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 29,
-                        "weapongroups_id": 6,
-                        "classname": "CV\u00c4",
-                        "championship": 1,
-                        "classname_general": "CV\u00c4",
-                        "pivot": {
-                            "competitions_id": 205,
-                            "weaponclasses_id": 29,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 28,
-                        "weapongroups_id": 6,
-                        "classname": "CVY",
-                        "championship": 0,
-                        "classname_general": "CVY",
-                        "pivot": {
-                            "competitions_id": 205,
-                            "weaponclasses_id": 28,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 31,
-                        "weapongroups_id": 7,
-                        "classname": "R1",
-                        "championship": 0,
-                        "classname_general": "R",
-                        "pivot": {
-                            "competitions_id": 205,
-                            "weaponclasses_id": 31,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 32,
-                        "weapongroups_id": 7,
-                        "classname": "R2",
-                        "championship": 0,
-                        "classname_general": "R",
-                        "pivot": {
-                            "competitions_id": 205,
-                            "weaponclasses_id": 32,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 33,
-                        "weapongroups_id": 7,
-                        "classname": "R3",
-                        "championship": 1,
-                        "classname_general": "R",
-                        "pivot": {
-                            "competitions_id": 205,
-                            "weaponclasses_id": 33,
-                            "registration_fee": 120
-                        }
-                    }
-                ],
-                "usersignups": [],
-                "club": {
-                    "id": 86,
-                    "disable_personal_invoices": 1,
-                    "districts_id": 12,
-                    "clubs_nr": "142",
-                    "name": "Lunds Pistolklubb",
-                    "email": "Info@lundspk.se",
-                    "phone": "0733-916900",
-                    "address_street": "Stora R\u00e5by 952",
-                    "address_street_2": "null",
-                    "address_zipcode": "22480",
-                    "address_city": "Lund",
-                    "address_country": "null",
-                    "bankgiro": "Finns inte",
-                    "postgiro": "43 45 97-1",
-                    "swish": "1236432306",
-                    "logo": "lunds-pistolklubb-logo.pdf",
-                    "user_has_role": null,
-                    "address_combined": "Stora R\u00e5by 952\nnull\n22480 Lund\nnull",
-                    "address_incomplete": false,
-                    "logo_url": "\/storage\/clubs\/86\/lunds-pistolklubb-logo.pdf",
-                    "logo_path": "\/var\/www\/html\/storage\/app\/public\/clubs\/86\/lunds-pistolklubb-logo.pdf"
-                }
-            },
-            {
-                "id": 197,
-                "championships_id": 0,
-                "is_public": 1,
-                "results_is_public": 0,
-                "patrols_is_public": 0,
-                "organizer_id": 373,
-                "organizer_type": "App\\Models\\Club",
-                "invoices_recipient_id": 373,
-                "invoices_recipient_type": "App\\Models\\Club",
-                "name": "Lerg\u00f6katr\u00e4ffen",
-                "allow_teams": 0,
-                "teams_registration_fee": 0,
-                "website": "https:\/\/www.svenskalag.se\/engelholmspk",
-                "contact_name": "Conni Hansen",
-                "contact_venue": "\u00c4ngelholms Pistolskytteklubb",
-                "contact_city": "\u00c4ngelholm",
-                "lat": 56.23,
-                "lng": 12.8,
-                "contact_email": "conni.hansen@engelholmspk.se",
-                "contact_telephone": "0709707245",
-                "google_maps": "https:\/\/www.google.com\/maps\/embed?pb=!1m18!1m12!1m3!1d20304.327130129266!2d12.803149223327635!3d56.234227502061046!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x46522a8aa69fa91b%3A0x6cf049fddd351687!2s%C3%84ngelholms%20Pistolskytteklubb!5e1!3m2!1sen!2sse!4v1724427195725!5m2!1sen!2sse",
-                "description": "F\u00e4ltskjutning omfattande 10 stationer med 6 skott p\u00e5 varje station. Max 4 starter p\u00e5 2 rundor. Max 2 vapengrupper i samma patrull.",
-                "results_type": "pointfield",
-                "results_prices": 0,
-                "results_comment": "",
-                "date": "2024-10-06",
-                "signups_opening_date": "2024-08-30",
-                "signups_closing_date": "2024-10-01",
-                "allow_signups_after_closing_date": 0,
-                "price_signups_after_closing_date": 0,
-                "approval_signups_after_closing_date": 0,
-                "final_time": "18:00:00",
-                "created_by": 4,
-                "pdf_logo": "webshooter",
-                "closed_at": null,
-                "weapongroups": [
-                    {
-                        "id": 1,
-                        "name": "A"
-                    },
-                    {
-                        "id": 11,
-                        "name": "B"
-                    },
-                    {
-                        "id": 21,
-                        "name": "C"
-                    },
-                    {
-                        "id": 24,
-                        "name": "CD"
-                    },
-                    {
-                        "id": 27,
-                        "name": "CJun"
-                    },
-                    {
-                        "id": 29,
-                        "name": "CV\u00c4"
-                    },
-                    {
-                        "id": 31,
-                        "name": "R"
-                    }
-                ],
-                "signups_count": 78,
-                "patrols_count": 0,
-                "status": "open",
-                "status_human": "\u00d6ppen f\u00f6r anm\u00e4lan",
-                "start_time_human": "09:00",
-                "final_time_human": "18:00",
-                "allow_signups_after_closing_date_human": "Till\u00e5ts ej",
-                "translations": {
-                    "patrols_name_singular": "patrull",
-                    "patrols_name_plural": "patruller",
-                    "patrols_list_singular": "patrullista",
-                    "patrols_list_plural": "patrullistor",
-                    "patrols_size": "Patrullstorlek",
-                    "patrols_lane_singular": "figur",
-                    "patrols_lane_plural": "figurer",
-                    "stations_name_singular": "station",
-                    "stations_name_plural": "stationer",
-                    "results_list_singular": "resultatlista",
-                    "results_list_plural": "resultatlistor",
-                    "shootingcard": "skjutkort",
-                    "shootingcards": "skjutkort",
-                    "signups": "anm\u00e4lningar"
-                },
-                "results_type_human": "Po\u00e4ngf\u00e4lt",
-                "available_logos": [
-                    "webshooter",
-                    "club"
-                ],
-                "pdf_logo_path": "\/var\/www\/html\/public\/img\/webshooter-new.jpg",
-                "pdf_logo_url": "\/img\/webshooter-new.jpg",
-                "championship": null,
-                "competitiontype": {
-                    "id": 2,
-                    "name": "F\u00e4lt",
-                    "created_at": "2021-12-30T12:19:23.000000Z",
-                    "updated_at": "2021-12-30T12:19:23.000000Z",
-                    "deleted_at": null
-                },
-                "weaponclasses": [
-                    {
-                        "id": 1,
-                        "weapongroups_id": 1,
-                        "classname": "A1",
-                        "championship": 0,
-                        "classname_general": "A",
-                        "pivot": {
-                            "competitions_id": 197,
-                            "weaponclasses_id": 1,
-                            "registration_fee": 150
-                        }
-                    },
-                    {
-                        "id": 2,
-                        "weapongroups_id": 1,
-                        "classname": "A2",
-                        "championship": 0,
-                        "classname_general": "A",
-                        "pivot": {
-                            "competitions_id": 197,
-                            "weaponclasses_id": 2,
-                            "registration_fee": 150
-                        }
-                    },
-                    {
-                        "id": 3,
-                        "weapongroups_id": 1,
-                        "classname": "A3",
-                        "championship": 1,
-                        "classname_general": "A",
-                        "pivot": {
-                            "competitions_id": 197,
-                            "weaponclasses_id": 3,
-                            "registration_fee": 150
-                        }
-                    },
-                    {
-                        "id": 11,
-                        "weapongroups_id": 2,
-                        "classname": "B1",
-                        "championship": 0,
-                        "classname_general": "B",
-                        "pivot": {
-                            "competitions_id": 197,
-                            "weaponclasses_id": 11,
-                            "registration_fee": 150
-                        }
-                    },
-                    {
-                        "id": 12,
-                        "weapongroups_id": 2,
-                        "classname": "B2",
-                        "championship": 0,
-                        "classname_general": "B",
-                        "pivot": {
-                            "competitions_id": 197,
-                            "weaponclasses_id": 12,
-                            "registration_fee": 150
-                        }
-                    },
-                    {
-                        "id": 13,
-                        "weapongroups_id": 2,
-                        "classname": "B3",
-                        "championship": 1,
-                        "classname_general": "B",
-                        "pivot": {
-                            "competitions_id": 197,
-                            "weaponclasses_id": 13,
-                            "registration_fee": 150
-                        }
-                    },
-                    {
-                        "id": 21,
-                        "weapongroups_id": 3,
-                        "classname": "C1",
-                        "championship": 0,
-                        "classname_general": "C",
-                        "pivot": {
-                            "competitions_id": 197,
-                            "weaponclasses_id": 21,
-                            "registration_fee": 150
-                        }
-                    },
-                    {
-                        "id": 22,
-                        "weapongroups_id": 3,
-                        "classname": "C2",
-                        "championship": 0,
-                        "classname_general": "C",
-                        "pivot": {
-                            "competitions_id": 197,
-                            "weaponclasses_id": 22,
-                            "registration_fee": 150
-                        }
-                    },
-                    {
-                        "id": 23,
-                        "weapongroups_id": 3,
-                        "classname": "C3",
-                        "championship": 1,
-                        "classname_general": "C",
-                        "pivot": {
-                            "competitions_id": 197,
-                            "weaponclasses_id": 23,
-                            "registration_fee": 150
-                        }
-                    },
-                    {
-                        "id": 24,
-                        "weapongroups_id": 4,
-                        "classname": "CD1",
-                        "championship": 0,
-                        "classname_general": "CD",
-                        "pivot": {
-                            "competitions_id": 197,
-                            "weaponclasses_id": 24,
-                            "registration_fee": 150
-                        }
-                    },
-                    {
-                        "id": 25,
-                        "weapongroups_id": 4,
-                        "classname": "CD2",
-                        "championship": 0,
-                        "classname_general": "CD",
-                        "pivot": {
-                            "competitions_id": 197,
-                            "weaponclasses_id": 25,
-                            "registration_fee": 150
-                        }
-                    },
-                    {
-                        "id": 26,
-                        "weapongroups_id": 4,
-                        "classname": "CD3",
-                        "championship": 1,
-                        "classname_general": "CD",
-                        "pivot": {
-                            "competitions_id": 197,
-                            "weaponclasses_id": 26,
-                            "registration_fee": 150
-                        }
-                    },
-                    {
-                        "id": 27,
-                        "weapongroups_id": 5,
-                        "classname": "CJun",
-                        "championship": 1,
-                        "classname_general": "CJun",
-                        "pivot": {
-                            "competitions_id": 197,
-                            "weaponclasses_id": 27,
-                            "registration_fee": 150
-                        }
-                    },
-                    {
-                        "id": 29,
-                        "weapongroups_id": 6,
-                        "classname": "CV\u00c4",
-                        "championship": 1,
-                        "classname_general": "CV\u00c4",
-                        "pivot": {
-                            "competitions_id": 197,
-                            "weaponclasses_id": 29,
-                            "registration_fee": 150
-                        }
-                    },
-                    {
-                        "id": 28,
-                        "weapongroups_id": 6,
-                        "classname": "CVY",
-                        "championship": 0,
-                        "classname_general": "CVY",
-                        "pivot": {
-                            "competitions_id": 197,
-                            "weaponclasses_id": 28,
-                            "registration_fee": 150
-                        }
-                    },
-                    {
-                        "id": 31,
-                        "weapongroups_id": 7,
-                        "classname": "R1",
-                        "championship": 0,
-                        "classname_general": "R",
-                        "pivot": {
-                            "competitions_id": 197,
-                            "weaponclasses_id": 31,
-                            "registration_fee": 150
-                        }
-                    },
-                    {
-                        "id": 32,
-                        "weapongroups_id": 7,
-                        "classname": "R2",
-                        "championship": 0,
-                        "classname_general": "R",
-                        "pivot": {
-                            "competitions_id": 197,
-                            "weaponclasses_id": 32,
-                            "registration_fee": 150
-                        }
-                    },
-                    {
-                        "id": 33,
-                        "weapongroups_id": 7,
-                        "classname": "R3",
-                        "championship": 1,
-                        "classname_general": "R",
-                        "pivot": {
-                            "competitions_id": 197,
-                            "weaponclasses_id": 33,
-                            "registration_fee": 150
-                        }
-                    }
-                ],
-                "usersignups": [],
-                "club": {
-                    "id": 373,
-                    "disable_personal_invoices": 0,
-                    "districts_id": 11,
-                    "clubs_nr": "600",
-                    "name": "\u00c4ngelholms Pistolskytteklubb",
-                    "email": "info@engelholmspk.se",
-                    "phone": "",
-                    "address_street": "Sibirienv\u00e4gen",
-                    "address_street_2": "",
-                    "address_zipcode": "26254",
-                    "address_city": "\u00c4ngelholm",
-                    "address_country": "null",
-                    "bankgiro": "503-0903",
-                    "postgiro": "",
-                    "swish": "123 576 74 70",
-                    "logo": "aengelholms-pistolskytteklubb-logo.jpg",
-                    "user_has_role": null,
-                    "address_combined": "Sibirienv\u00e4gen\n26254 \u00c4ngelholm\nnull",
-                    "address_incomplete": false,
-                    "logo_url": "\/storage\/clubs\/373\/aengelholms-pistolskytteklubb-logo.jpg",
-                    "logo_path": "\/var\/www\/html\/storage\/app\/public\/clubs\/373\/aengelholms-pistolskytteklubb-logo.jpg"
-                }
-            },
-            {
-                "id": 206,
-                "championships_id": 0,
-                "is_public": 1,
-                "results_is_public": 0,
-                "patrols_is_public": 0,
-                "organizer_id": 434,
-                "organizer_type": "App\\Models\\Club",
-                "invoices_recipient_id": 434,
-                "invoices_recipient_type": "App\\Models\\Club",
-                "name": "Figurskjutning K\u00e4vlinge PK",
-                "allow_teams": 0,
-                "teams_registration_fee": 0,
-                "website": null,
-                "contact_name": "Henrik Lindblad",
-                "contact_venue": "K\u00e4vlinge Pistolklubb",
-                "contact_city": "Furulund, K\u00e4vlinge",
-                "lat": 55.77,
-                "lng": 13.07,
-                "contact_email": "kavlingepk@gmail.com",
-                "contact_telephone": "0735-333757",
-                "google_maps": "https:\/\/www.google.com\/maps\/embed?pb=!1m18!1m12!1m3!1d2244.3403614826634!2d13.06980041274745!3d55.76996029055679!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4653bbff3b116ee9%3A0x83ff6cb9e07349a6!2sSt%C3%A4vie%20skjutbana!5e0!3m2!1sen!2sse!4v1725787113564!5m2!1sen!2sse",
-                "description": "K\u00e4vlinge Pistolklubb inbjuder till\nFIGURSKJUTNING\nL\u00f6rdagen den 5\u2019e Oktober 2024\nPlats: K\u00e4vlinge Pistolklubbs skjutbana i St\u00e4vie",
-                "results_type": "field",
-                "results_prices": 0,
-                "results_comment": "",
-                "date": "2024-10-05",
-                "signups_opening_date": "2024-09-08",
-                "signups_closing_date": "2024-09-29",
-                "allow_signups_after_closing_date": 1,
-                "price_signups_after_closing_date": 0,
-                "approval_signups_after_closing_date": 1,
-                "final_time": "18:00:00",
-                "created_by": 71,
-                "pdf_logo": "webshooter",
-                "closed_at": null,
-                "weapongroups": [
-                    {
-                        "id": 1,
-                        "name": "A"
-                    },
-                    {
-                        "id": 11,
-                        "name": "B"
-                    },
-                    {
-                        "id": 21,
-                        "name": "C"
-                    },
-                    {
-                        "id": 24,
-                        "name": "CD"
-                    },
-                    {
-                        "id": 27,
-                        "name": "CJun"
-                    },
-                    {
-                        "id": 29,
-                        "name": "CV\u00c4"
-                    },
-                    {
-                        "id": 31,
-                        "name": "R"
-                    }
-                ],
-                "signups_count": 104,
-                "patrols_count": 5,
-                "status": "open",
-                "status_human": "\u00d6ppen f\u00f6r anm\u00e4lan",
-                "start_time_human": "08:30",
-                "final_time_human": "18:00",
-                "allow_signups_after_closing_date_human": "Beh\u00f6ver godk\u00e4nnas. 0 kr avgift",
-                "translations": {
-                    "patrols_name_singular": "patrull",
-                    "patrols_name_plural": "patruller",
-                    "patrols_list_singular": "patrullista",
-                    "patrols_list_plural": "patrullistor",
-                    "patrols_size": "Patrullstorlek",
-                    "patrols_lane_singular": "figur",
-                    "patrols_lane_plural": "figurer",
-                    "stations_name_singular": "station",
-                    "stations_name_plural": "stationer",
-                    "results_list_singular": "resultatlista",
-                    "results_list_plural": "resultatlistor",
-                    "shootingcard": "skjutkort",
-                    "shootingcards": "skjutkort",
-                    "signups": "anm\u00e4lningar"
-                },
-                "results_type_human": "F\u00e4lt",
-                "available_logos": [
-                    "webshooter",
-                    "club"
-                ],
-                "pdf_logo_path": "\/var\/www\/html\/public\/img\/webshooter-new.jpg",
-                "pdf_logo_url": "\/img\/webshooter-new.jpg",
-                "championship": null,
-                "competitiontype": {
-                    "id": 2,
-                    "name": "F\u00e4lt",
-                    "created_at": "2021-12-30T12:19:23.000000Z",
-                    "updated_at": "2021-12-30T12:19:23.000000Z",
-                    "deleted_at": null
-                },
-                "weaponclasses": [
-                    {
-                        "id": 1,
-                        "weapongroups_id": 1,
-                        "classname": "A1",
-                        "championship": 0,
-                        "classname_general": "A",
-                        "pivot": {
-                            "competitions_id": 206,
-                            "weaponclasses_id": 1,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 2,
-                        "weapongroups_id": 1,
-                        "classname": "A2",
-                        "championship": 0,
-                        "classname_general": "A",
-                        "pivot": {
-                            "competitions_id": 206,
-                            "weaponclasses_id": 2,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 3,
-                        "weapongroups_id": 1,
-                        "classname": "A3",
-                        "championship": 1,
-                        "classname_general": "A",
-                        "pivot": {
-                            "competitions_id": 206,
-                            "weaponclasses_id": 3,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 11,
-                        "weapongroups_id": 2,
-                        "classname": "B1",
-                        "championship": 0,
-                        "classname_general": "B",
-                        "pivot": {
-                            "competitions_id": 206,
-                            "weaponclasses_id": 11,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 12,
-                        "weapongroups_id": 2,
-                        "classname": "B2",
-                        "championship": 0,
-                        "classname_general": "B",
-                        "pivot": {
-                            "competitions_id": 206,
-                            "weaponclasses_id": 12,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 13,
-                        "weapongroups_id": 2,
-                        "classname": "B3",
-                        "championship": 1,
-                        "classname_general": "B",
-                        "pivot": {
-                            "competitions_id": 206,
-                            "weaponclasses_id": 13,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 21,
-                        "weapongroups_id": 3,
-                        "classname": "C1",
-                        "championship": 0,
-                        "classname_general": "C",
-                        "pivot": {
-                            "competitions_id": 206,
-                            "weaponclasses_id": 21,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 22,
-                        "weapongroups_id": 3,
-                        "classname": "C2",
-                        "championship": 0,
-                        "classname_general": "C",
-                        "pivot": {
-                            "competitions_id": 206,
-                            "weaponclasses_id": 22,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 23,
-                        "weapongroups_id": 3,
-                        "classname": "C3",
-                        "championship": 1,
-                        "classname_general": "C",
-                        "pivot": {
-                            "competitions_id": 206,
-                            "weaponclasses_id": 23,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 24,
-                        "weapongroups_id": 4,
-                        "classname": "CD1",
-                        "championship": 0,
-                        "classname_general": "CD",
-                        "pivot": {
-                            "competitions_id": 206,
-                            "weaponclasses_id": 24,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 25,
-                        "weapongroups_id": 4,
-                        "classname": "CD2",
-                        "championship": 0,
-                        "classname_general": "CD",
-                        "pivot": {
-                            "competitions_id": 206,
-                            "weaponclasses_id": 25,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 26,
-                        "weapongroups_id": 4,
-                        "classname": "CD3",
-                        "championship": 1,
-                        "classname_general": "CD",
-                        "pivot": {
-                            "competitions_id": 206,
-                            "weaponclasses_id": 26,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 27,
-                        "weapongroups_id": 5,
-                        "classname": "CJun",
-                        "championship": 1,
-                        "classname_general": "CJun",
-                        "pivot": {
-                            "competitions_id": 206,
-                            "weaponclasses_id": 27,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 29,
-                        "weapongroups_id": 6,
-                        "classname": "CV\u00c4",
-                        "championship": 1,
-                        "classname_general": "CV\u00c4",
-                        "pivot": {
-                            "competitions_id": 206,
-                            "weaponclasses_id": 29,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 28,
-                        "weapongroups_id": 6,
-                        "classname": "CVY",
-                        "championship": 0,
-                        "classname_general": "CVY",
-                        "pivot": {
-                            "competitions_id": 206,
-                            "weaponclasses_id": 28,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 31,
-                        "weapongroups_id": 7,
-                        "classname": "R1",
-                        "championship": 0,
-                        "classname_general": "R",
-                        "pivot": {
-                            "competitions_id": 206,
-                            "weaponclasses_id": 31,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 32,
-                        "weapongroups_id": 7,
-                        "classname": "R2",
-                        "championship": 0,
-                        "classname_general": "R",
-                        "pivot": {
-                            "competitions_id": 206,
-                            "weaponclasses_id": 32,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 33,
-                        "weapongroups_id": 7,
-                        "classname": "R3",
-                        "championship": 1,
-                        "classname_general": "R",
-                        "pivot": {
-                            "competitions_id": 206,
-                            "weaponclasses_id": 33,
-                            "registration_fee": 120
-                        }
-                    }
-                ],
-                "usersignups": [],
-                "club": {
-                    "id": 434,
-                    "disable_personal_invoices": 1,
-                    "districts_id": 12,
-                    "clubs_nr": "722",
-                    "name": "K\u00e4vlinge Pistolklubb",
-                    "email": "kavlingepk@gmail.com",
-                    "phone": "0735-333757",
-                    "address_street": "S\u00f6derv\u00e5ngsv\u00e4gen 41b",
-                    "address_street_2": "c\/o Henrik Lindblad",
-                    "address_zipcode": "24636",
-                    "address_city": "L\u00f6ddek\u00f6pinge",
-                    "address_country": "null",
-                    "bankgiro": "",
-                    "postgiro": "588315-2",
-                    "swish": "",
-                    "logo": "kaevlinge-pistolklubb-logo.png",
-                    "user_has_role": null,
-                    "address_combined": "S\u00f6derv\u00e5ngsv\u00e4gen 41b\nc\/o Henrik Lindblad\n24636 L\u00f6ddek\u00f6pinge\nnull",
-                    "address_incomplete": false,
-                    "logo_url": "\/storage\/clubs\/434\/kaevlinge-pistolklubb-logo.png",
-                    "logo_path": "\/var\/www\/html\/storage\/app\/public\/clubs\/434\/kaevlinge-pistolklubb-logo.png"
-                }
-            },
-            {
-                "id": 196,
-                "championships_id": 0,
-                "is_public": 1,
-                "results_is_public": 1,
-                "patrols_is_public": 1,
-                "organizer_id": 39,
-                "organizer_type": "App\\Models\\Club",
-                "invoices_recipient_id": 39,
-                "invoices_recipient_type": "App\\Models\\Club",
-                "name": "KF4 + KMF i B",
-                "allow_teams": 0,
-                "teams_registration_fee": 0,
-                "website": "https:\/\/lillabedinge.se\/",
-                "contact_name": "Thomas Rydstr\u00f6m",
-                "contact_venue": "Lilla Bedinge Skg i Maglarps Skyttecenter",
-                "contact_city": "Trelleborg",
-                "lat": 55.38,
-                "lng": 13.07,
-                "contact_email": "ordforanden@lillabedinge.nu",
-                "contact_telephone": "0707-200133",
-                "google_maps": "https:\/\/www.google.com\/maps\/embed?pb=!1m18!1m12!1m3!1d3053.637637411184!2d13.074536797360985!3d55.379355504388904!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4653730862b12285%3A0xff8984d255b2e641!2sMaglarps%20skjutbana!5e1!3m2!1ssv!2sdk!4v1724311799173!5m2!1ssv!2sdk",
-                "description": "Lilla Bedinge inbjuder till Krets F\u00e4lt 4 samt Krets M\u00e4sterskap F\u00e4lt i B.\n\nUPPDATERING:\nSTATION 9 \u00e4r struken",
-                "results_type": "field",
-                "results_prices": 0,
-                "results_comment": "",
-                "date": "2024-09-29",
-                "signups_opening_date": "2024-08-23",
-                "signups_closing_date": "2024-09-20",
-                "allow_signups_after_closing_date": 1,
-                "price_signups_after_closing_date": 0,
-                "approval_signups_after_closing_date": 1,
-                "final_time": "17:00:00",
-                "created_by": 1330,
-                "pdf_logo": "club",
-                "closed_at": null,
-                "weapongroups": [
-                    {
-                        "id": 1,
-                        "name": "A"
-                    },
-                    {
-                        "id": 11,
-                        "name": "B"
-                    },
-                    {
-                        "id": 21,
-                        "name": "C"
-                    },
-                    {
-                        "id": 31,
-                        "name": "R"
-                    },
-                    {
-                        "id": 24,
-                        "name": "CD"
-                    },
-                    {
-                        "id": 27,
-                        "name": "CJun"
-                    },
-                    {
-                        "id": 28,
-                        "name": "CVY"
-                    }
-                ],
-                "signups_count": 213,
-                "patrols_count": 47,
-                "status": "after_signups_closing_date",
-                "status_human": "Efteranm\u00e4lan",
-                "start_time_human": "09:00",
-                "final_time_human": "17:00",
-                "allow_signups_after_closing_date_human": "Beh\u00f6ver godk\u00e4nnas. 0 kr avgift",
-                "translations": {
-                    "patrols_name_singular": "patrull",
-                    "patrols_name_plural": "patruller",
-                    "patrols_list_singular": "patrullista",
-                    "patrols_list_plural": "patrullistor",
-                    "patrols_size": "Patrullstorlek",
-                    "patrols_lane_singular": "figur",
-                    "patrols_lane_plural": "figurer",
-                    "stations_name_singular": "station",
-                    "stations_name_plural": "stationer",
-                    "results_list_singular": "resultatlista",
-                    "results_list_plural": "resultatlistor",
-                    "shootingcard": "skjutkort",
-                    "shootingcards": "skjutkort",
-                    "signups": "anm\u00e4lningar"
-                },
-                "results_type_human": "F\u00e4lt",
-                "available_logos": [
-                    "webshooter",
-                    "club"
-                ],
-                "pdf_logo_path": "\/var\/www\/html\/storage\/app\/public\/clubs\/39\/lilla-bedinge-skyttegille-logo.png",
-                "pdf_logo_url": "\/storage\/clubs\/39\/lilla-bedinge-skyttegille-logo.png",
-                "championship": null,
-                "competitiontype": {
-                    "id": 2,
-                    "name": "F\u00e4lt",
-                    "created_at": "2021-12-30T12:19:23.000000Z",
-                    "updated_at": "2021-12-30T12:19:23.000000Z",
-                    "deleted_at": null
-                },
-                "weaponclasses": [
-                    {
-                        "id": 1,
-                        "weapongroups_id": 1,
-                        "classname": "A1",
-                        "championship": 0,
-                        "classname_general": "A",
-                        "pivot": {
-                            "competitions_id": 196,
-                            "weaponclasses_id": 1,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 11,
-                        "weapongroups_id": 2,
-                        "classname": "B1",
-                        "championship": 0,
-                        "classname_general": "B",
-                        "pivot": {
-                            "competitions_id": 196,
-                            "weaponclasses_id": 11,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 21,
-                        "weapongroups_id": 3,
-                        "classname": "C1",
-                        "championship": 0,
-                        "classname_general": "C",
-                        "pivot": {
-                            "competitions_id": 196,
-                            "weaponclasses_id": 21,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 31,
-                        "weapongroups_id": 7,
-                        "classname": "R1",
-                        "championship": 0,
-                        "classname_general": "R",
-                        "pivot": {
-                            "competitions_id": 196,
-                            "weaponclasses_id": 31,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 2,
-                        "weapongroups_id": 1,
-                        "classname": "A2",
-                        "championship": 0,
-                        "classname_general": "A",
-                        "pivot": {
-                            "competitions_id": 196,
-                            "weaponclasses_id": 2,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 3,
-                        "weapongroups_id": 1,
-                        "classname": "A3",
-                        "championship": 1,
-                        "classname_general": "A",
-                        "pivot": {
-                            "competitions_id": 196,
-                            "weaponclasses_id": 3,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 12,
-                        "weapongroups_id": 2,
-                        "classname": "B2",
-                        "championship": 0,
-                        "classname_general": "B",
-                        "pivot": {
-                            "competitions_id": 196,
-                            "weaponclasses_id": 12,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 13,
-                        "weapongroups_id": 2,
-                        "classname": "B3",
-                        "championship": 1,
-                        "classname_general": "B",
-                        "pivot": {
-                            "competitions_id": 196,
-                            "weaponclasses_id": 13,
-                            "registration_fee": 120
-                        }
-                    },
-                    {
-                        "id": 22,
-                        "weapongroups_id": 3,
-                        "classname": "C2",
-                        "championship": 0,
-                        "classname_general": "C",
-                        "pivot": {
-                            "competitions_id": 196,
-                            "weaponclasses_id": 22,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 23,
-                        "weapongroups_id": 3,
-                        "classname": "C3",
-                        "championship": 1,
-                        "classname_general": "C",
-                        "pivot": {
-                            "competitions_id": 196,
-                            "weaponclasses_id": 23,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 24,
-                        "weapongroups_id": 4,
-                        "classname": "CD1",
-                        "championship": 0,
-                        "classname_general": "CD",
-                        "pivot": {
-                            "competitions_id": 196,
-                            "weaponclasses_id": 24,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 25,
-                        "weapongroups_id": 4,
-                        "classname": "CD2",
-                        "championship": 0,
-                        "classname_general": "CD",
-                        "pivot": {
-                            "competitions_id": 196,
-                            "weaponclasses_id": 25,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 26,
-                        "weapongroups_id": 4,
-                        "classname": "CD3",
-                        "championship": 1,
-                        "classname_general": "CD",
-                        "pivot": {
-                            "competitions_id": 196,
-                            "weaponclasses_id": 26,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 27,
-                        "weapongroups_id": 5,
-                        "classname": "CJun",
-                        "championship": 1,
-                        "classname_general": "CJun",
-                        "pivot": {
-                            "competitions_id": 196,
-                            "weaponclasses_id": 27,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 28,
-                        "weapongroups_id": 6,
-                        "classname": "CVY",
-                        "championship": 0,
-                        "classname_general": "CVY",
-                        "pivot": {
-                            "competitions_id": 196,
-                            "weaponclasses_id": 28,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 29,
-                        "weapongroups_id": 6,
-                        "classname": "CV\u00c4",
-                        "championship": 1,
-                        "classname_general": "CV\u00c4",
-                        "pivot": {
-                            "competitions_id": 196,
-                            "weaponclasses_id": 29,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 32,
-                        "weapongroups_id": 7,
-                        "classname": "R2",
-                        "championship": 0,
-                        "classname_general": "R",
-                        "pivot": {
-                            "competitions_id": 196,
-                            "weaponclasses_id": 32,
-                            "registration_fee": 100
-                        }
-                    },
-                    {
-                        "id": 33,
-                        "weapongroups_id": 7,
-                        "classname": "R3",
-                        "championship": 1,
-                        "classname_general": "R",
-                        "pivot": {
-                            "competitions_id": 196,
-                            "weaponclasses_id": 33,
-                            "registration_fee": 100
-                        }
-                    }
-                ],
-                "usersignups": [
-                    {
-                        "id": 19285,
-                        "competitions_id": 196,
-                        "patrols_id": 4120,
-                        "patrols_finals_id": 0,
-                        "lane_finals": 0,
-                        "patrols_distinguish_id": 0,
-                        "lane_distinguish": 0,
-                        "start_time": "2024-09-29 10:36:00",
-                        "end_time": "2024-09-29 12:21:00",
-                        "lane": 2,
-                        "weaponclasses_id": 21,
-                        "registration_fee": 100,
-                        "invoices_id": null,
-                        "clubs_id": 274,
-                        "start_before": "00:00:00",
-                        "start_after": "00:00:00",
-                        "first_last_patrol": null,
-                        "share_weapon_with": 0,
-                        "participate_out_of_competition": null,
-                        "exclude_from_standardmedal": null,
-                        "share_patrol_with": 29903,
-                        "shoot_not_simultaneously_with": 0,
-                        "note": "Skjuter g\u00e4rna i samma patrull som Mats Andersson - Torna H\u00e4llestads Pistolskytteklubb, l\u00e5nar klubbvapen med \u00f6versikt utl\u00e5ning via honom.",
-                        "requires_approval": 0,
-                        "is_approved_by": 0,
-                        "created_by": 2249,
-                        "created_at": "2024-08-31T13:23:44.000000Z",
-                        "special_wishes": "G\u00e4rna samma patrull som: 29903<br>",
-                        "first_last_patrol_human": "-",
-                        "start_time_human": "10:36",
-                        "end_time_human": "12:21"
-                    },
-                    {
-                        "id": 20055,
-                        "competitions_id": 196,
-                        "patrols_id": 4146,
-                        "patrols_finals_id": 0,
-                        "lane_finals": 0,
-                        "patrols_distinguish_id": 0,
-                        "lane_distinguish": 0,
-                        "start_time": "2024-09-29 14:04:00",
-                        "end_time": "2024-09-29 15:49:00",
-                        "lane": 5,
-                        "weaponclasses_id": 31,
-                        "registration_fee": 100,
-                        "invoices_id": null,
-                        "clubs_id": 274,
-                        "start_before": "00:00:00",
-                        "start_after": "00:00:00",
-                        "first_last_patrol": null,
-                        "share_weapon_with": 0,
-                        "participate_out_of_competition": null,
-                        "exclude_from_standardmedal": null,
-                        "share_patrol_with": 29903,
-                        "shoot_not_simultaneously_with": 0,
-                        "note": "Skjuter g\u00e4rna i samma patrull som Mats Andersson - Torna H\u00e4llestads Pistolskytteklubb, l\u00e5nar klubbvapen med \u00f6versikt utl\u00e5ning via honom.",
-                        "requires_approval": 1,
-                        "is_approved_by": 127,
-                        "created_by": 2249,
-                        "created_at": "2024-09-22T08:39:55.000000Z",
-                        "special_wishes": "G\u00e4rna samma patrull som: 29903<br>",
-                        "first_last_patrol_human": "-",
-                        "start_time_human": "14:04",
-                        "end_time_human": "15:49"
-                    }
-                ],
-                "club": {
-                    "id": 39,
-                    "disable_personal_invoices": 1,
-                    "districts_id": 12,
-                    "clubs_nr": "72",
-                    "name": "Lilla Bedinge Skyttegille",
-                    "email": "kassor@lillabedinge.nu",
-                    "phone": "0761-800711",
-                    "address_street": "Hyllie Kyrkov\u00e4g 79",
-                    "address_street_2": "Magnus Herner",
-                    "address_zipcode": "21617",
-                    "address_city": "Limhamn",
-                    "address_country": null,
-                    "bankgiro": null,
-                    "postgiro": "174101-6",
-                    "swish": "1232279024",
-                    "logo": "lilla-bedinge-skyttegille-logo.png",
-                    "user_has_role": null,
-                    "address_combined": "Hyllie Kyrkov\u00e4g 79\nMagnus Herner\n21617 Limhamn\n",
-                    "address_incomplete": false,
-                    "logo_url": "\/storage\/clubs\/39\/lilla-bedinge-skyttegille-logo.png",
-                    "logo_path": "\/var\/www\/html\/storage\/app\/public\/clubs\/39\/lilla-bedinge-skyttegille-logo.png"
-                }
             }
         ],
         "first_page_url": "http:\/\/webshooter.se\/api\/v4.1.9\/competitions?page=1",
@@ -2163,8 +641,8 @@
         "path": "http:\/\/webshooter.se\/api\/v4.1.9\/competitions",
         "per_page": 10,
         "prev_page_url": null,
-        "to": 6,
-        "total": 6,
+        "to": 2,
+        "total": 2,
         "search": null,
         "status": "open",
         "clubs_id": null,
