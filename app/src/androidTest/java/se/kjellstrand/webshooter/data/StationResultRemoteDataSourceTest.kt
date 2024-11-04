@@ -69,8 +69,8 @@ class StationResultRemoteDataSourceTest {
 
         // Then
         // You can assert more on the actual content if you know what to expect.
-        assert(response.accessToken?.length!! > 9)
-        assertEquals("Bearer", response.tokenType)
-        assertEquals(31536000, response.expiresIn)
+        assert(response.body()?.accessToken?.length!! > 9)
+        assertEquals("Bearer", response.body()?.tokenType)
+        assertEquals(31536000, response.body()?.expiresIn)
     }
 }
