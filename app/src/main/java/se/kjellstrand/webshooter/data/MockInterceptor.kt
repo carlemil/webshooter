@@ -25,7 +25,8 @@ open class MockInterceptor @Inject constructor(
             "/app/" -> "No data available"
             "/api/v4.1.9/oauth/token" -> getTextFromRaw(R.raw.api_v4_1_9_oauth_token)
             "/api/v4.1.9/competitions" -> getTextFromRaw(R.raw.competitions)
-            "/api/v4.1.9/competitions/196/results" -> getTextFromRaw(R.raw.api_v4_1_9_competitions_196_results)
+            "/api/v4.1.9/competitions/196/results" -> getTextFromRaw(R.raw.results_196)
+            "/api/v4.1.9/competitions/208/results" -> getTextFromRaw(R.raw.results_208)
             else -> throw IllegalArgumentException("Unknown request path: ${request.url.encodedPath}")
         }
 
