@@ -1,19 +1,26 @@
-package se.kjellstrand.webshooter.ui.login
+package se.kjellstrand.webshooter.data.secure
 
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
 
-object SecurePrefs {
-    private const val FILE_NAME = "secure_prefs"
-    private const val KEY_USERNAME = "username"
-    private const val KEY_PASSWORD = "password"
+@Singleton
+class SecurePrefs @Inject constructor(@ApplicationContext context: Context) {
 
-    private lateinit var sharedPrefs: SharedPreferences
+    companion object {
+        private const val FILE_NAME = "secure_prefs"
+        private const val KEY_USERNAME = "username"
+        private const val KEY_PASSWORD = "password"
+    }
 
-    fun init(context: Context) {
+    private val sharedPrefs: SharedPreferences
+
+    init {
         val masterKey = MasterKey.Builder(context)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
@@ -30,7 +37,7 @@ object SecurePrefs {
     fun saveCredentials(username: String, password: String) {
         sharedPrefs.edit {
             putString(KEY_USERNAME, username)
-                .putString(KEY_PASSWORD, password)
+            putString(KEY_PASSWORD, password)
         }
     }
 

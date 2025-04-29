@@ -13,6 +13,7 @@ import se.kjellstrand.webshooter.data.AuthTokenManager
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.cookies.CookiesRepository
 import se.kjellstrand.webshooter.data.login.LoginRepository
+import se.kjellstrand.webshooter.data.secure.SecurePrefs
 import se.kjellstrand.webshooter.ui.common.UiEvent
 import javax.inject.Inject
 
@@ -20,8 +21,12 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val loginRepository: LoginRepository,
     private val cookiesRepository: CookiesRepository,
-    private val authTokenManager: AuthTokenManager
+    private val authTokenManager: AuthTokenManager,
+    internal val securePrefs: SecurePrefs
 ) : ViewModel() {
+
+    val savedUsername = securePrefs.getUsername()
+    val savedPassword = securePrefs.getPassword()
 
     private val _uiState = MutableStateFlow(LoginUiState())
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
@@ -43,7 +48,7 @@ class LoginViewModel @Inject constructor(
                             resource.data.body()?.accessToken?.let { authTokenManager.storeToken(it) }
                             _uiState.value = LoginUiState(isSuccess = true)
                             _eventFlow.emit(UiEvent.NavigateToLandingPage)
-                            SecurePrefs.saveCredentials(username, password)
+                            securePrefs.saveCredentials(username, password)
                         }
 
                         is Resource.Error -> {
