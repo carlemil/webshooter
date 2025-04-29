@@ -47,8 +47,8 @@ fun LoginScreen(
     loginViewModel: LoginViewModel = hiltViewModel()
 ) {
     // State variables for username and password
-    var username by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf(SecurePrefs.getUsername()) }
+    var password by remember { mutableStateOf(SecurePrefs.getPassword()) }
     var passwordVisible by remember { mutableStateOf(false) }
 
     val uiState by loginViewModel.uiState.collectAsState()

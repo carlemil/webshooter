@@ -43,6 +43,7 @@ class LoginViewModel @Inject constructor(
                             resource.data.body()?.accessToken?.let { authTokenManager.storeToken(it) }
                             _uiState.value = LoginUiState(isSuccess = true)
                             _eventFlow.emit(UiEvent.NavigateToLandingPage)
+                            SecurePrefs.saveCredentials(username, password)
                         }
 
                         is Resource.Error -> {

@@ -79,6 +79,8 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    implementation(libs.androidx.security.crypto.v110alpha06)
+
     // Navigation
     implementation(libs.androidx.navigation.compose)
 
