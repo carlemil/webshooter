@@ -38,17 +38,23 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.flow.collectLatest
 import se.kjellstrand.webshooter.R
+import se.kjellstrand.webshooter.data.secure.SecurePrefs
 import se.kjellstrand.webshooter.ui.common.UiEvent
 import se.kjellstrand.webshooter.ui.navigation.Screen
 
 @Composable
 fun LoginScreen(
     navController: NavController,
-    loginViewModel: LoginViewModel = hiltViewModel()
+    loginViewModel: LoginViewModel = hiltViewModel(),
+    securePrefs: SecurePrefs = hiltViewModel<LoginViewModel>().securePrefs
 ) {
     // State variables for username and password
-    var username by remember { mutableStateOf(SecurePrefs.getUsername()) }
-    var password by remember { mutableStateOf(SecurePrefs.getPassword()) }
+    val savedUsername = loginViewModel.savedUsername
+    val savedPassword = loginViewModel.savedPassword
+
+    var username by remember { mutableStateOf(savedUsername) }
+    var password by remember { mutableStateOf(savedPassword) }
+
     var passwordVisible by remember { mutableStateOf(false) }
 
     val uiState by loginViewModel.uiState.collectAsState()
