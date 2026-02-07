@@ -35,34 +35,46 @@ class LoginViewModel @Inject constructor(
     val eventFlow = _eventFlow.asSharedFlow()
 
     init {
-        _uiState.value = LoginUiState()
+        attemptAutoLogin()
     }
 
-    fun login(username: String, password: String) {
+    private fun attemptAutoLogin() {
+        if (savedUsername.isNotEmpty() && savedPassword.isNotEmpty()) {
+            login(savedUsername, savedPassword, isAutoLogin = true)
+        } else {
+            _uiState.value = _uiState.value.copy(autoLoginAttempted = true)
+        }
+    }
+
+    fun login(username: String, password: String, isAutoLogin: Boolean = false) {
         viewModelScope.launch {
             loginRepository.login(username, username, password)
                 .collect { resource ->
                     when (resource) {
                         is Resource.Success -> {
-                            println("login Success: ${resource.data}")
                             resource.data.body()?.accessToken?.let { authTokenManager.storeToken(it) }
-                            _uiState.value = LoginUiState(isSuccess = true)
+                            _uiState.value = _uiState.value.copy(
+                                isLoading = false,
+                                isSuccess = true,
+                                autoLoginAttempted = true
+                            )
                             _eventFlow.emit(UiEvent.NavigateToLandingPage)
                             securePrefs.saveCredentials(username, password)
                         }
 
                         is Resource.Error -> {
-                            println("login Failed: ${resource.error}")
-                            _uiState.value = LoginUiState(
+                            _uiState.value = _uiState.value.copy(
                                 isLoading = false,
-                                errorMessage = resource.error.toString()
+                                errorMessage = resource.error.toString(),
+                                autoLoginAttempted = true
                             )
-                            _eventFlow.emit(UiEvent.ShowErrorMessage(resource.error.toString()))
+                            if (!isAutoLogin) {
+                                _eventFlow.emit(UiEvent.ShowErrorMessage(resource.error.toString()))
+                            }
                         }
 
-                        else -> {
-                            println("login isLoading = true")
-                            _uiState.value = LoginUiState(isLoading = true)
+                        is Resource.Loading -> {
+                            _uiState.value = _uiState.value.copy(isLoading = true)
                         }
                     }
                 }
@@ -83,7 +95,7 @@ class LoginViewModel @Inject constructor(
                             _eventFlow.emit(UiEvent.ShowErrorMessage(resource.error.toString()))
                         }
 
-                        else -> {
+                        is Resource.Loading -> {
                             println("getCookies isLoading = true")
                         }
                     }
