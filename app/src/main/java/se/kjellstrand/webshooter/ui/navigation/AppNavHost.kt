@@ -2,8 +2,6 @@ package se.kjellstrand.webshooter.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -44,7 +42,7 @@ fun AppNavHost(navController: NavHostController) {
             arguments = listOf(navArgument("competitionId") { type = NavType.LongType })
         ) { backStackEntry ->
             val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(Screen.CompetitionsList.route)
+                navController.getBackStackEntry(Screen.LandingScreen.route)
             }
             val competitionId = backStackEntry.arguments?.getLong("competitionId") ?: -1
             val competitionsViewModel: CompetitionsViewModelImpl = hiltViewModel(parentEntry)
