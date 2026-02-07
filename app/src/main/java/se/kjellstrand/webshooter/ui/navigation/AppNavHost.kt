@@ -13,7 +13,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import se.kjellstrand.webshooter.ui.competitions.CompetitionDetailScreen
 import se.kjellstrand.webshooter.ui.competitions.CompetitionsScreen
 import se.kjellstrand.webshooter.ui.competitions.CompetitionsViewModelImpl
-import se.kjellstrand.webshooter.ui.landingscreen.LandingScreen
+import se.kjellstrand.webshooter.ui.landingscreen.WebShooterScreen
 import se.kjellstrand.webshooter.ui.login.LoginScreen
 import se.kjellstrand.webshooter.ui.results.CompetitionResultsScreen
 import se.kjellstrand.webshooter.ui.results.ResultsViewModelImpl
@@ -31,7 +31,7 @@ fun AppNavHost(navController: NavHostController) {
             LoginScreen(navController)
         }
         composable(Screen.LandingScreen.route) {
-            LandingScreen(navController)
+            WebShooterScreen(navController)
         }
         composable(Screen.CompetitionsList.route) {
             val competitionsViewModel: CompetitionsViewModelImpl = hiltViewModel()
