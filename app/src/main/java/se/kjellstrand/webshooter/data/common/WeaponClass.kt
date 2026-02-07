@@ -26,7 +26,17 @@ enum class ClassnameGeneral(val value: String) {
     CJun("CJun"),
     Cvy("CVY"),
     Cvä("CVÄ"),
-    R("R");
+    R("R"),
+    M1("M1"),
+    M2("M2"),
+    M3("M3"),
+    M4("M4"),
+    M5("M5"),
+    M6("M6"),
+    M7("M7"),
+    M8("M8"),
+    M9("M9"),
+    OptR("OptR");
 
     companion object {
         public fun fromValue(value: String): ClassnameGeneral = when (value) {
@@ -38,6 +48,16 @@ enum class ClassnameGeneral(val value: String) {
             "CVY" -> Cvy
             "CVÄ" -> Cvä
             "R" -> R
+            "M1" -> M1
+            "M2" -> M2
+            "M3" -> M3
+            "M4" -> M4
+            "M5" -> M5
+            "M6" -> M6
+            "M7" -> M7
+            "M8" -> M8
+            "M9" -> M9
+            "OptR" -> OptR
             else -> throw IllegalArgumentException()
         }
     }
