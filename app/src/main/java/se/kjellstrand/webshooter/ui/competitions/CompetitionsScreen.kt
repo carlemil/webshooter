@@ -29,7 +29,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
-import se.kjellstrand.webshooter.ui.common.WeaponGroupBadges
+import se.kjellstrand.webshooter.ui.common.WeaponClassBadges
 import se.kjellstrand.webshooter.ui.mock.CompetitionsViewModelMock
 import se.kjellstrand.webshooter.ui.navigation.Screen
 
@@ -98,8 +98,8 @@ fun CompetitionItem(
                 style = MaterialTheme.typography.bodySmall
             )
             Spacer(modifier = Modifier.height(6.dp))
-            WeaponGroupBadges(
-                weaponGroups = competition.weaponGroups,
+            WeaponClassBadges(
+                weaponClasses = competition.weaponClasses,
                 userSignups = competition.userSignups
             )
         }

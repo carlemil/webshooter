@@ -14,21 +14,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import se.kjellstrand.webshooter.data.common.WeaponGroup
+import se.kjellstrand.webshooter.data.common.WeaponClass
 import se.kjellstrand.webshooter.data.competitions.remote.Usersignup
 
 @Composable
-fun WeaponGroupBadges(
-    weaponGroups: List<WeaponGroup>,
+fun WeaponClassBadges(
+    weaponClasses: List<WeaponClass>,
     userSignups: List<Usersignup>
 ) {
     val userSignedUpForWeaponClassesIDs = userSignups.map { it.weaponClassesID }.toSet()
     Row(modifier = Modifier.horizontalScroll(rememberScrollState())) {
-        weaponGroups.forEach { weaponGroup ->
-            val isHighlighted = weaponGroup.id in userSignedUpForWeaponClassesIDs
+        weaponClasses.forEach { weaponClass ->
+            val isHighlighted = weaponClass.id in userSignedUpForWeaponClassesIDs
             @Suppress("UNNECESSARY_SAFE_CALL")
-            weaponGroup.name?.value?.let {
-                WeaponGroupBadge(
+            weaponClass.classname?.let {
+                WeaponClassBadge(
                     weaponGroupName = it,
                     isHighlighted = isHighlighted
                 )
@@ -38,7 +38,7 @@ fun WeaponGroupBadges(
 }
 
 @Composable
-fun WeaponGroupBadge(
+fun WeaponClassBadge(
     modifier: Modifier = Modifier,
     weaponGroupName: String,
     isHighlighted: Boolean

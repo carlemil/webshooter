@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
-import se.kjellstrand.webshooter.ui.common.WeaponGroupBadges
+import se.kjellstrand.webshooter.ui.common.WeaponClassBadges
 import se.kjellstrand.webshooter.ui.mock.CompetitionsViewModelMock
 
 @Composable
@@ -115,8 +115,8 @@ fun CompetitionDetail(competition: Datum) {
             style = MaterialTheme.typography.bodySmall.copy(fontSize = 10.sp),
         )
         Spacer(modifier = Modifier.height(6.dp))
-        WeaponGroupBadges(
-            weaponGroups = competition.weaponGroups,
+        WeaponClassBadges(
+            weaponClasses = competition.weaponClasses,
             userSignups = competition.userSignups
         )
         // Add more details as needed
