@@ -43,7 +43,7 @@ import se.kjellstrand.webshooter.ui.settings.SettingsScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LandingScreen(navController: NavController) {
+fun WebShooterScreen(navController: NavController) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -86,7 +86,7 @@ fun LandingScreen(navController: NavController) {
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            TopAppBar(title = { Text(stringResource(R.string.landing_screen)) },
+            TopAppBar(title = { Text(stringResource(R.string.app_name)) },
                 navigationIcon = {
                     IconButton(
                         onClick = {
@@ -118,10 +118,10 @@ data class NavigationItem(val label: String, val route: String)
 
 @Preview(showBackground = true)
 @Composable
-fun LandingScreenPreview() {
+fun WebShooterScreenPreview() {
     val navController = rememberNavController()
 
-    LandingScreen(
+    WebShooterScreen(
         navController = navController
     )
 }
