@@ -12,12 +12,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -38,8 +40,11 @@ fun CompetitionsScreen(
     navController: NavController, competitionsViewModel: CompetitionsViewModel
 ) {
     val competitionsState by competitionsViewModel.uiState.collectAsState()
+    val listState = rememberLazyListState()
+
     competitionsState.competitions?.let { competitions ->
         LazyColumn(
+            state = listState,
             modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(
                 top = 16.dp, start = 16.dp, end = 16.dp, bottom = 16.dp
             )
@@ -50,11 +55,20 @@ fun CompetitionsScreen(
                         navController.navigate(Screen.CompetitionDetail.createRoute(competition.id))
                     },
                     onResultsClick = {
-                        navController.navigate(Screen.CompetitionResults.createRoute(competition.id))
+                        navController.navigate(Screen.CompetitionResults.createRoute(competition.id.toInt()))
                     })
                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
             }
         }
+
+        // Load more items when reaching the end of the list
+        LaunchedEffect(listState) {
+            val lastVisibleItemIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+            if (lastVisibleItemIndex != null && lastVisibleItemIndex >= competitions.data.size - 5) {
+                competitionsViewModel.loadNextPage()
+            }
+        }
+
     } ?: run {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()

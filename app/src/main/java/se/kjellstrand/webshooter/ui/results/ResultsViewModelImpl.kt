@@ -1,5 +1,6 @@
 package se.kjellstrand.webshooter.ui.results
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,20 +16,23 @@ import javax.inject.Inject
 
 @HiltViewModel
 open class ResultsViewModelImpl @Inject constructor(
-    private val resultsRepository: ResultsRepository
+    private val resultsRepository: ResultsRepository,
+    savedStateHandle: SavedStateHandle
 ) : ViewModel(), ResultsViewModel {
+
+    private val competitionId: Int = checkNotNull(savedStateHandle["competitionId"])
 
     private val _uiState = MutableStateFlow(ResultsUiState())
     override val uiState: StateFlow<ResultsUiState> = _uiState.asStateFlow()
 
     init {
-        getResults()
+        getResults(competitionId)
         _uiState.value = ResultsUiState()
     }
 
-    private fun getResults() {
+    private fun getResults(competitionId: Int) {
         viewModelScope.launch {
-            resultsRepository.get().collect { resource ->
+            resultsRepository.get(competitionId).collect { resource ->
                 when (resource) {
                     is Resource.Success -> {
                         println("getResults Success: ${resource.data}")

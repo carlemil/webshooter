@@ -50,12 +50,9 @@ fun AppNavHost(navController: NavHostController) {
         }
         composable(
             route = Screen.CompetitionResults.route,
-            arguments = listOf(navArgument("competitionId") { type = NavType.LongType })
-        ) { backStackEntry ->
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(Screen.CompetitionResults.route)
-            }
-            val resultsViewModel: ResultsViewModelImpl = hiltViewModel(parentEntry)
+            arguments = listOf(navArgument("competitionId") { type = NavType.IntType })
+        ) {
+            val resultsViewModel: ResultsViewModelImpl = hiltViewModel()
             CompetitionResultsScreen(resultsViewModel)
         }
     }

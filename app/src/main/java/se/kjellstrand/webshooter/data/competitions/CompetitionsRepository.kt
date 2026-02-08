@@ -18,14 +18,14 @@ open class CompetitionsRepository @Inject constructor(
     private val authTokenManager: AuthTokenManager
 
 ) {
-    fun get(): Flow<Resource<CompetitionsResponse, UserError>> {
+    fun get(page: Int, pageSize: Int): Flow<Resource<CompetitionsResponse, UserError>> {
         return flow {
             emit(Resource.Loading(true))
             val result = try {
                 competitionsRemoteDataSource.getCompetitions(
-                    1,
-                    10,
-                    "open",
+                    page,
+                    pageSize,
+                    "completed", // could also be "all", "open", "upcoming", "closed"
                     0
                 )
             } catch (e: IOException) {

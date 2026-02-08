@@ -20,24 +20,48 @@ class CompetitionsViewModelImpl @Inject constructor(
     private val _uiState = MutableStateFlow(CompetitionsUiState())
     override val uiState: StateFlow<CompetitionsUiState> = _uiState.asStateFlow()
 
+    private var currentPage = 1
+    private var isLoading = false
+
     init {
-        getCompetitions()
-        _uiState.value = CompetitionsUiState()
+        loadInitialPages()
     }
 
-    private fun getCompetitions() {
+    private fun loadInitialPages() {
+        loadCompetitions(1, 20)
+        currentPage = 2
+    }
+    
+    override fun loadNextPage() {
+        if (isLoading) return
+        currentPage++
+        loadCompetitions(currentPage, 10)
+    }
+
+    private fun loadCompetitions(page: Int, pageSize: Int) {
+        if (isLoading) return
+        isLoading = true
+
         viewModelScope.launch {
-            competitionsRepository.get().collect { resource ->
+            competitionsRepository.get(page, pageSize).collect { resource ->
                 when (resource) {
                     is Resource.Success -> {
-                        println("getCompetitions Success: ${resource.data}")
-                        _uiState.value = CompetitionsUiState(resource.data.competitions)
+                        val currentCompetitions = _uiState.value.competitions?.data ?: emptyList()
+                        val newCompetitions = resource.data.competitions.data
+                        val allCompetitions = currentCompetitions + newCompetitions
+                        _uiState.value = _uiState.value.copy(
+                            competitions = resource.data.competitions.copy(data = allCompetitions)
+                        )
+                        isLoading = false
                     }
 
                     is Resource.Error -> {
-                        println("getCompetitions Failed: ${resource.error}")
+                        isLoading = false
                     }
 
+                    is Resource.Loading -> {
+                        // Optional: Handle loading state in UI
+                    }
                     else -> {
                         println("getCompetitions resource: $resource")
                     }
