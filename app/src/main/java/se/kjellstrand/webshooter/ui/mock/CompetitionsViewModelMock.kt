@@ -19,4 +19,8 @@ class CompetitionsViewModelMock() : ViewModel(),
     override fun getCompetitionById(competitionId: Long): Datum? {
         return MockCompetitions().competitions.data.find { it.id == competitionId }
     }
+
+    override fun loadNextPage() {
+        // Do nothing in mock.
+    }
 }

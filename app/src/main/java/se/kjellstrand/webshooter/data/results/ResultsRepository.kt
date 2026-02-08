@@ -15,12 +15,12 @@ import javax.inject.Singleton
 open class ResultsRepository @Inject constructor(
     private val resultsRemoteDataSource: ResultsRemoteDataSource
 ) {
-    fun get(): Flow<Resource<ResultsResponse, UserError>> {
+    fun get(competitionId: Int): Flow<Resource<ResultsResponse, UserError>> {
         return flow {
             emit(Resource.Loading(true))
             val auth = "Bearer eyJ0eXA"
             val result = try {
-                resultsRemoteDataSource.getResults(auth, 196)
+                resultsRemoteDataSource.getResults(auth, competitionId)
             } catch (e: IOException) {
                 e.printStackTrace()
                 emit(Resource.Error(UserError.IOError))
