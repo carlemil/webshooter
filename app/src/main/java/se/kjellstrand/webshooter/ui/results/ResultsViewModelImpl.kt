@@ -90,7 +90,7 @@ open class ResultsViewModelImpl @Inject constructor(
             weaponClasses.forEach { weaponClass ->
                 val groupedResults =
                     results.filter { it.weaponClass.classname == weaponClass }
-                        .sortedBy { it.placement }
+                        .sortedByDescending { calculateSortOrder(it) }
                 if (groupedResults.isNotEmpty()) {
                     listOfGroupedItems.add(GroupedItem(weaponClass, groupedResults))
                 }
