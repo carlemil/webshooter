@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okio.IOException
 import retrofit2.HttpException
-import se.kjellstrand.webshooter.data.AuthTokenManager
+import se.kjellstrand.webshooter.data.common.CompetitionStatus
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
 import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsRemoteDataSource
@@ -14,18 +14,20 @@ import javax.inject.Singleton
 
 @Singleton
 open class CompetitionsRepository @Inject constructor(
-    private val competitionsRemoteDataSource: CompetitionsRemoteDataSource,
-    private val authTokenManager: AuthTokenManager
-
+    private val competitionsRemoteDataSource: CompetitionsRemoteDataSource
 ) {
-    fun get(page: Int, pageSize: Int): Flow<Resource<CompetitionsResponse, UserError>> {
+    fun get(
+        page: Int,
+        pageSize: Int,
+        status: CompetitionStatus
+    ): Flow<Resource<CompetitionsResponse, UserError>> {
         return flow {
             emit(Resource.Loading(true))
             val result = try {
                 competitionsRemoteDataSource.getCompetitions(
                     page,
                     pageSize,
-                    "completed", // could also be "all", "open", "upcoming", "closed"
+                    status.status,
                     0
                 )
             } catch (e: IOException) {

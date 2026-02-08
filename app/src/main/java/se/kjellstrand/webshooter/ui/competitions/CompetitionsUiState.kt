@@ -1,7 +1,9 @@
 package se.kjellstrand.webshooter.ui.competitions
 
+import se.kjellstrand.webshooter.data.common.CompetitionStatus
 import se.kjellstrand.webshooter.data.competitions.remote.Competitions
 
 data class CompetitionsUiState(
-    val competitions: Competitions? = null
+    val competitions: Competitions? = null,
+    val competitionStatus: CompetitionStatus = CompetitionStatus.COMPLETED
 )
