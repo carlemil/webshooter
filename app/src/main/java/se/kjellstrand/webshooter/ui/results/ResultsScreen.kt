@@ -29,6 +29,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -66,11 +67,7 @@ fun CompetitionResultsScreen(
                 .padding(horizontal = 16.dp)
         ) {
             Spacer(modifier = Modifier.height(16.dp))
-            if (resultsUiState.selectedWeaponGroups.toSet().containsAll(resultsUiState.allWeaponGroups.toSet())) {
-                GroupList(resultsUiState)
-            } else {
-                FilterList(resultsUiState)
-            }
+            ResultsList(resultsUiState)
         }
     }
 
@@ -87,46 +84,7 @@ fun CompetitionResultsScreen(
 }
 
 @Composable
-fun GroupList(
-    resultsUiState: ResultsUiState
-) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        LazyColumn(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            if (resultsUiState.groupedResults.isEmpty()) {
-                item {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp, bottom = 16.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
-            } else {
-                resultsUiState.groupedResults.forEach { group ->
-                    item {
-                        Text(
-                            text = stringResource(R.string.weapon_group) + group.header,
-                            style = MaterialTheme.typography.headlineMedium,
-                            modifier = Modifier.padding(top = 16.dp, bottom = 16.dp)
-                        )
-                    }
-                    // Display the results for each group
-                    items(group.items) { result ->
-                        ResultItem(result = result, showGroupView = true)
-                        Spacer(modifier = Modifier.height(2.dp))
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun FilterList(
+fun ResultsList(
     resultsUiState: ResultsUiState
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -139,7 +97,15 @@ fun FilterList(
                 bottom = 16.dp
             )
         ) {
-            if (resultsUiState.filterResults.isEmpty()) {
+            val allGroupsSelected = resultsUiState.selectedWeaponGroups.toSet().containsAll(resultsUiState.allWeaponGroups.toSet())
+            
+            val isLoading = if (allGroupsSelected) {
+                resultsUiState.groupedResults.isEmpty()
+            } else {
+                resultsUiState.filterResults.isEmpty()
+            }
+
+            if (isLoading) {
                 item {
                     Box(
                         modifier = Modifier
@@ -150,9 +116,21 @@ fun FilterList(
                         CircularProgressIndicator()
                     }
                 }
+            } else if (allGroupsSelected) {
+                // GROUPED VIEW with separators
+                resultsUiState.groupedResults.forEach { group ->
+                    item(key = "separator-${group.header}") {
+                        WeaponGroupSeparator(group.header)
+                    }
+                    items(group.items, key = { it.id }) { result ->
+                        ResultItem(result = result)
+                        Spacer(modifier = Modifier.height(2.dp))
+                    }
+                }
             } else {
-                items(resultsUiState.filterResults) { result ->
-                    ResultItem(result = result, showGroupView = false)
+                // FILTERED VIEW (flat list)
+                items(resultsUiState.filterResults, key = { it.id }) { result ->
+                    ResultItem(result = result)
                     Spacer(modifier = Modifier.height(2.dp))
                 }
             }
@@ -161,62 +139,95 @@ fun FilterList(
 }
 
 @Composable
+fun WeaponGroupSeparator(groupName: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Left Divider
+        HorizontalDivider(
+            modifier = Modifier.weight(1f),
+            thickness = 1.dp,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+        )
+        // Group Name Text
+        Text(
+            text = groupName,
+            style = MaterialTheme.typography.labelLarge,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(horizontal = 8.dp)
+        )
+        // Right Divider
+        HorizontalDivider(
+            modifier = Modifier.weight(1f),
+            thickness = 1.dp,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+        )
+    }
+}
+
+@Composable
 fun ResultItem(
-    result: Result,
-    showGroupView: Boolean = false
+    result: Result
 ) {
-    Column {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        // 1. Placement (Left side)
+        Text(
+            text = result.placement.toString(),
+            style = MaterialTheme.typography.labelLarge,
+            modifier = Modifier.weight(1.5f)
+        )
+
+        // 2. Name & Club (Left center)
+        Column(
+            modifier = Modifier.weight(10f)
         ) {
-            if (showGroupView) {
-                Text(
-                    text = result.placement.toString(),
-                    style = MaterialTheme.typography.labelLarge,
-                    modifier = Modifier.weight(2f)
-                )
-            }
-            Column(
-                modifier = Modifier.weight(16f)
-            ) {
-                Text(
-                    text = "${result.signup.user.name} ${result.signup.user.lastname}",
-                    style = MaterialTheme.typography.labelLarge,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = result.signup.club?.name ?: stringResource(R.string.unknown_club),
-                    style = MaterialTheme.typography.bodySmall,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-            if (!showGroupView) {
-                Text(
-                    text = result.weaponClass.classname,
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.weight(2f)
-                )
-            }
-            Box(
-                modifier = Modifier
-                    .wrapContentWidth(Alignment.End)
-                    .weight(6f)
-            ) {
-                Text(
-                    text = stringResource(
-                        R.string.hits_figures_points,
-                        result.hits,
-                        result.figureHits,
-                        result.points
-                    ),
-                    style = MaterialTheme.typography.bodySmall
-                )
-            }
+            Text(
+                text = "${result.signup.user.name} ${result.signup.user.lastname}",
+                style = MaterialTheme.typography.labelLarge,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            Text(
+                text = result.signup.club?.name ?: stringResource(R.string.unknown_club),
+                style = MaterialTheme.typography.bodySmall,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+
+        // 3. Weapon Class / Group (Center right)
+        Text(
+            text = result.weaponClass.classname,
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.weight(2f),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+
+        // 4. Score (Right side)
+        Box(
+            modifier = Modifier
+                .wrapContentWidth(Alignment.End)
+                .weight(5f)
+        ) {
+            Text(
+                text = stringResource(
+                    R.string.hits_figures_points,
+                    result.hits,
+                    result.figureHits,
+                    result.points
+                ),
+                style = MaterialTheme.typography.bodySmall
+            )
         }
     }
 }
