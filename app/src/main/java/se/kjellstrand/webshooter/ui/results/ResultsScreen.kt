@@ -1,5 +1,6 @@
 package se.kjellstrand.webshooter.ui.results
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.Button
@@ -117,20 +119,22 @@ fun ResultsList(
                     }
                 }
             } else if (allGroupsSelected) {
-                // GROUPED VIEW with separators
+                // GROUPED VIEW with separators and running index
+                var totalItemCount = 0
                 resultsUiState.groupedResults.forEach { group ->
                     item(key = "separator-${group.header}") {
                         WeaponGroupSeparator(group.header)
                     }
                     items(group.items, key = { it.id }) { result ->
-                        ResultItem(result = result)
+                        ResultItem(result = result, index = totalItemCount)
                         Spacer(modifier = Modifier.height(2.dp))
+                        totalItemCount++
                     }
                 }
             } else {
-                // FILTERED VIEW (flat list)
-                items(resultsUiState.filterResults, key = { it.id }) { result ->
-                    ResultItem(result = result)
+                // FILTERED VIEW (flat list) using itemsIndexed
+                itemsIndexed(resultsUiState.filterResults, key = { _, it -> it.id }) { index, result ->
+                    ResultItem(result = result, index = index)
                     Spacer(modifier = Modifier.height(2.dp))
                 }
             }
@@ -171,11 +175,19 @@ fun WeaponGroupSeparator(groupName: String) {
 
 @Composable
 fun ResultItem(
-    result: Result
+    result: Result,
+    index: Int
 ) {
+    val backgroundColor = if (index % 2 != 0) {
+        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)
+    } else {
+        MaterialTheme.colorScheme.surface
+    }
+
     Row(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .background(backgroundColor),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -183,7 +195,9 @@ fun ResultItem(
         Text(
             text = result.placement.toString(),
             style = MaterialTheme.typography.labelLarge,
-            modifier = Modifier.weight(1.5f)
+            modifier = Modifier
+                .weight(1.5f)
+                .padding(start = 16.dp)
         )
 
         // 2. Name & Club (Left center)
@@ -218,6 +232,7 @@ fun ResultItem(
             modifier = Modifier
                 .wrapContentWidth(Alignment.End)
                 .weight(5f)
+                .padding(end = 16.dp)
         ) {
             Text(
                 text = stringResource(
