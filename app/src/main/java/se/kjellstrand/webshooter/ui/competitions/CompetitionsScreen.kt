@@ -15,63 +15,121 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import se.kjellstrand.webshooter.R
+import se.kjellstrand.webshooter.data.common.CompetitionStatus
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadges
 import se.kjellstrand.webshooter.ui.mock.CompetitionsViewModelMock
 import se.kjellstrand.webshooter.ui.navigation.Screen
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CompetitionsScreen(
-    navController: NavController, competitionsViewModel: CompetitionsViewModel
+    navController: NavController,
+    competitionsViewModel: CompetitionsViewModel = hiltViewModel<CompetitionsViewModelImpl>()
 ) {
     val competitionsState by competitionsViewModel.uiState.collectAsState()
     val listState = rememberLazyListState()
 
-    competitionsState.competitions?.let { competitions ->
-        LazyColumn(
-            state = listState,
-            modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(
-                top = 16.dp, start = 16.dp, end = 16.dp, bottom = 16.dp
-            )
+    var expanded by remember { mutableStateOf(false) }
+    var selectedStatus by remember { mutableStateOf(competitionsState.competitionStatus) }
+
+    Column {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
         ) {
-            items(competitions.data) { competition ->
-                CompetitionItem(competition = competition,
-                    onDetailsClick = {
-                        navController.navigate(Screen.CompetitionDetail.createRoute(competition.id))
-                    },
-                    onResultsClick = {
-                        navController.navigate(Screen.CompetitionResults.createRoute(competition.id.toInt()))
-                    })
-                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = {
+                    expanded = !expanded
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                TextField(
+                    value = selectedStatus.status,
+                    onValueChange = {},
+                    readOnly = true,
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                    modifier = Modifier
+                        .menuAnchor()
+                        .fillMaxWidth()
+                )
+
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false }
+                ) {
+                    CompetitionStatus.values().forEach { status ->
+                        DropdownMenuItem(
+                            text = { Text(text = status.status) },
+                            onClick = {
+                                selectedStatus = status
+                                competitionsViewModel.setCompetitionStatus(status)
+                                expanded = false
+                            }
+                        )
+                    }
+                }
             }
         }
 
-        // Load more items when reaching the end of the list
-        LaunchedEffect(listState) {
-            val lastVisibleItemIndex = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
-            if (lastVisibleItemIndex != null && lastVisibleItemIndex >= competitions.data.size - 5) {
-                competitionsViewModel.loadNextPage()
+        competitionsState.competitions?.let { competitions ->
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.fillMaxSize(), contentPadding = PaddingValues(
+                    top = 16.dp, start = 16.dp, end = 16.dp, bottom = 16.dp
+                )
+            ) {
+                items(competitions.data) { competition ->
+                    CompetitionItem(competition = competition,
+                        onDetailsClick = {
+                            navController.navigate(Screen.CompetitionDetail.createRoute(competition.id))
+                        },
+                        onResultsClick = {
+                            navController.navigate(Screen.CompetitionResults.createRoute(competition.id.toInt()))
+                        })
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                }
             }
-        }
 
-    } ?: run {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
+            // Load more items when reaching the end of the list
+            LaunchedEffect(listState) {
+                val lastVisibleItemIndex =
+                    listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+                if (lastVisibleItemIndex != null && lastVisibleItemIndex >= competitions.data.size - 5) {
+                    competitionsViewModel.loadNextPage()
+                }
+            }
+
+        } ?: run {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
+            }
         }
     }
 }
@@ -108,7 +166,10 @@ fun CompetitionItem(
             )
             Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = stringResource(R.string.competition_type, competition.competitionType.name),
+                text = stringResource(
+                    R.string.competition_type,
+                    competition.competitionType.name
+                ),
                 style = MaterialTheme.typography.bodySmall
             )
             Spacer(modifier = Modifier.height(6.dp))

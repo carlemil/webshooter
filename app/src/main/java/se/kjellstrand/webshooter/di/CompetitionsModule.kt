@@ -22,8 +22,8 @@ class CompetitionsModule {
 
     @Provides
     @Singleton
-    fun providesCompetitionsRepository(competitionsRemoteDataSource: CompetitionsRemoteDataSource,        authTokenManager: AuthTokenManager
+    fun providesCompetitionsRepository(competitionsRemoteDataSource: CompetitionsRemoteDataSource
     ) : CompetitionsRepository {
-        return CompetitionsRepository(competitionsRemoteDataSource, authTokenManager)
+        return CompetitionsRepository(competitionsRemoteDataSource)
     }
 }
