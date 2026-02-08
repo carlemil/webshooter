@@ -127,7 +127,7 @@ fun ResultsList(
                         WeaponGroupSeparator(group.header)
                     }
                     items(group.items, key = { it.id }) { result ->
-                        ResultItem(result = result, index = totalItemCount)
+                        ResultItem(result = result, index = totalItemCount, isGrouped = true)
                         Spacer(modifier = Modifier.height(2.dp))
                         totalItemCount++
                     }
@@ -135,7 +135,7 @@ fun ResultsList(
             } else {
                 // FILTERED VIEW (flat list) using itemsIndexed
                 itemsIndexed(resultsUiState.filterResults, key = { _, it -> it.id }) { index, result ->
-                    ResultItem(result = result, index = index)
+                    ResultItem(result = result, index = index, isGrouped = false)
                     Spacer(modifier = Modifier.height(2.dp))
                 }
             }
@@ -177,7 +177,8 @@ fun WeaponGroupSeparator(groupName: String) {
 @Composable
 fun ResultItem(
     result: Result,
-    index: Int
+    index: Int,
+    isGrouped: Boolean
 ) {
     val backgroundColor = if (index % 2 != 0) {
         MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)
@@ -196,9 +197,12 @@ fun ResultItem(
         Text(
             text = result.placement.toString(),
             style = MaterialTheme.typography.labelLarge,
+            maxLines = 1,
+            softWrap = false, // Prevents wrapping to a second line
+            overflow = TextOverflow.Clip, // Cuts it off instead of using "..."
             modifier = Modifier
-                .weight(1.5f)
-                .padding(start = 16.dp)
+                .weight(2f)
+                .padding(start = 16.dp, end = 8.dp)
         )
 
         // 2. Name & Club (Left center)
@@ -220,13 +224,17 @@ fun ResultItem(
         }
 
         // 3. Weapon Class / Group (Center right)
-        Text(
-            text = result.weaponClass.classname,
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.weight(2f),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
+        if (!isGrouped) {
+            Text(
+                text = result.weaponClass.classname,
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.weight(2f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+        } else {
+            Spacer(modifier = Modifier.weight(2f))
+        }
 
         // 4. Score (Right side) - Now split into 3 columns
         Row(
