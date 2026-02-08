@@ -42,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import se.kjellstrand.webshooter.R
@@ -227,21 +228,34 @@ fun ResultItem(
             overflow = TextOverflow.Ellipsis
         )
 
-        // 4. Score (Right side)
-        Box(
+        // 4. Score (Right side) - Now split into 3 columns
+        Row(
             modifier = Modifier
-                .wrapContentWidth(Alignment.End)
                 .weight(5f)
-                .padding(end = 16.dp)
+                .padding(end = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            // Hits
             Text(
-                text = stringResource(
-                    R.string.hits_figures_points,
-                    result.hits,
-                    result.figureHits,
-                    result.points
-                ),
-                style = MaterialTheme.typography.bodySmall
+                text = result.hits.toString(),
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.weight(1f)
+            )
+            // Figure Hits
+            Text(
+                text = result.figureHits.toString(),
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.weight(1f)
+            )
+            // Points
+            Text(
+                text = result.points.toString(),
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.weight(1f)
             )
         }
     }
