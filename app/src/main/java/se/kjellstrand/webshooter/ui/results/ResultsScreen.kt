@@ -44,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -146,15 +147,17 @@ fun ResultsList(
                 }
             } else if (allGroupsSelected) {
                 // GROUPED VIEW with separators and running index
-                var totalItemCount = 0
                 resultsUiState.groupedResults.forEach { group ->
                     item(key = "separator-${group.header}") {
                         WeaponGroupSeparator(group.header)
                     }
-                    items(group.items, key = { it.id }) { result ->
+                    item {
+                        ResultsListHeader(isGrouped = true)
+                    }
+                    itemsIndexed(group.items, key = { _, item -> item.id }) { index, result ->
                         ResultItem(
                             result = result,
-                            index = totalItemCount,
+                            index = index,
                             isGrouped = true,
                             onItemClick = {
                                 navController.navigate(
@@ -165,11 +168,13 @@ fun ResultsList(
                                 )
                             })
                         Spacer(modifier = Modifier.height(2.dp))
-                        totalItemCount++
                     }
                 }
             } else {
                 // FILTERED VIEW (flat list) using itemsIndexed
+                item {
+                    ResultsListHeader(isGrouped = false)
+                }
                 itemsIndexed(resultsUiState.filterResults, key = { _, it -> it.id }) { index, result ->
                     ResultItem(
                         result = result,
@@ -186,6 +191,66 @@ fun ResultsList(
                     Spacer(modifier = Modifier.height(2.dp))
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun ResultsListHeader(isGrouped: Boolean) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = stringResource(R.string.placement),
+            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+            modifier = Modifier
+                .weight(2f)
+                .padding(start = 16.dp, end = 8.dp)
+        )
+        Text(
+            text = stringResource(R.string.name),
+            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+            modifier = Modifier.weight(10f)
+        )
+        if (!isGrouped) {
+            Text(
+                text = stringResource(R.string.weapon_class_short),
+                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                modifier = Modifier.weight(2f)
+            )
+        } else {
+            Spacer(modifier = Modifier.weight(2f))
+        }
+        Row(
+            modifier = Modifier
+                .weight(5f)
+                .padding(end = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = stringResource(R.string.hits_short),
+                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.weight(1f)
+            )
+            Text(
+                text = stringResource(R.string.figures_short),
+                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.weight(1f)
+            )
+            Text(
+                text = stringResource(R.string.points_short),
+                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.weight(1f)
+            )
         }
     }
 }
@@ -228,10 +293,10 @@ fun ResultItem(
     isGrouped: Boolean,
     onItemClick: () -> Unit
 ) {
-    val backgroundColor = if (index % 2 != 0) {
-        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)
-    } else {
+    val backgroundColor = if (index % 2 == 0) {
         MaterialTheme.colorScheme.surface
+    } else {
+        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)
     }
 
     Row(

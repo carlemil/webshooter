@@ -80,13 +80,13 @@ fun StationResultsGrid(stationResults: List<StationResult>) {
                 modifier = Modifier.weight(1f)
             )
             Text(
-                text = stringResource(R.string.hits),
+                text = stringResource(R.string.figure_hits),
                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.weight(1f),
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
             )
             Text(
-                text = stringResource(R.string.figure_hits),
+                text = stringResource(R.string.hits),
                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.weight(1f),
                 textAlign = androidx.compose.ui.text.style.TextAlign.Center
@@ -107,13 +107,13 @@ fun StationResultsGrid(stationResults: List<StationResult>) {
                     modifier = Modifier.weight(1f)
                 )
                 Text(
-                    text = stationResult.hits.toString(),
+                    text = stationResult.figureHits.toString(),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.weight(1f),
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center
                 )
                 Text(
-                    text = stationResult.figureHits.toString(),
+                    text = stationResult.hits.toString(),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.weight(1f),
                     textAlign = androidx.compose.ui.text.style.TextAlign.Center
