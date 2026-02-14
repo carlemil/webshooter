@@ -158,9 +158,10 @@ fun ResultsList(
                             isGrouped = true,
                             onItemClick = {
                                 navController.navigate(
-                                    Screen.ShooterResult.route
-                                        .replace("{competitionId}", competitionId.toString())
-                                        .replace("{shooterId}", result.signup.user.userID.toString())
+                                    Screen.ShooterResult.createRoute(
+                                        competitionId,
+                                        result.signup.user.userID.toInt()
+                                    )
                                 )
                             })
                         Spacer(modifier = Modifier.height(2.dp))
@@ -176,9 +177,10 @@ fun ResultsList(
                         isGrouped = false,
                         onItemClick = {
                             navController.navigate(
-                                Screen.ShooterResult.route
-                                    .replace("{competitionId}", competitionId.toString())
-                                    .replace("{shooterId}", result.signup.user.userID.toString())
+                                Screen.ShooterResult.createRoute(
+                                    competitionId,
+                                    result.signup.user.userID.toInt()
+                                )
                             )
                         })
                     Spacer(modifier = Modifier.height(2.dp))
