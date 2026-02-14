@@ -119,7 +119,7 @@ data class Datum (
     val description: String,
 
     @SerializedName("results_type")
-    val resultsType: String,
+    val resultsType: ResultsType,
 
     @SerializedName("results_prices")
     val resultsPrices: Long,
@@ -207,6 +207,17 @@ data class Datum (
 
     val club: Club
 )
+
+enum class ResultsType {
+    @SerializedName("precision")
+    PRECISION,
+
+    @SerializedName("military")
+    MILITARY,
+
+    @SerializedName("field")
+    FIELD,
+}
 
 data class Translations (
     @SerializedName("patrols_name_singular")
