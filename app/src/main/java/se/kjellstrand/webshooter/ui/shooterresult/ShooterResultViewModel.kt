@@ -19,19 +19,20 @@ class ShooterResultViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
+    private val competitionId: Int = checkNotNull(savedStateHandle["competitionId"])
     private val shooterId: Int = checkNotNull(savedStateHandle["shooterId"])
 
-    private val _uiState = MutableStateFlow(ShooterResultUiState())
+    private val _uiState = MutableStateFlow(ShooterResultUiState(isLoading = true))
     val uiState: StateFlow<ShooterResultUiState> = _uiState.asStateFlow()
 
     init {
-        Log.d("ShooterResultViewModel", "shooterId: $shooterId")
-        getShooterResults(shooterId)
+        Log.d("ShooterResultViewModel", "competitionId: $competitionId, shooterId: $shooterId")
+        getShooterResults(competitionId, shooterId)
     }
 
-    private fun getShooterResults(shooterId: Int) {
+    private fun getShooterResults(competitionId: Int, shooterId: Int) {
         viewModelScope.launch {
-            resultsRepository.getShooterResults(shooterId).collect { resource ->
+            resultsRepository.getShooterResults(competitionId, shooterId).collect { resource ->
                 Log.d("ShooterResultViewModel", "resource: $resource")
                 when (resource) {
                     is Resource.Success -> {
@@ -49,9 +50,7 @@ class ShooterResultViewModel @Inject constructor(
                             error = resource.error.name
                         )
                     }
-                    is Resource.Loading -> {
-                        _uiState.value = ShooterResultUiState(isLoading = true)
-                    }
+                    else -> {}
                 }
             }
         }
