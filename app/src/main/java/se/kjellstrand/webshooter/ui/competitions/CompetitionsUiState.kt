@@ -5,5 +5,6 @@ import se.kjellstrand.webshooter.data.competitions.remote.Competitions
 
 data class CompetitionsUiState(
     val competitions: Competitions? = null,
-    val competitionStatus: CompetitionStatus = CompetitionStatus.COMPLETED
+    val competitionStatus: CompetitionStatus = CompetitionStatus.COMPLETED,
+    val isLoading: Boolean = false
 )
