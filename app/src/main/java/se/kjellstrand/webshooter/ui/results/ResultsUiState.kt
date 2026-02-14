@@ -8,7 +8,8 @@ data class ResultsUiState(
     val groupedResults: List<GroupedItem> = listOf(),
     val allWeaponGroups: List<String> = listOf(),
     val selectedWeaponGroups: Set<String> = emptySet(),
-    var mode: Mode = Mode.GROUP
+    var mode: Mode = Mode.GROUP,
+    val isLoading: Boolean = false
 )
 
 data class GroupedItem(

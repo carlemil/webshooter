@@ -33,22 +33,17 @@ open class CompetitionsRepository @Inject constructor(
             } catch (e: IOException) {
                 e.printStackTrace()
                 emit(Resource.Error(UserError.IOError))
-                emit(Resource.Loading(false))
                 return@flow
             } catch (e: HttpException) {
                 e.printStackTrace()
                 emit(Resource.Error(UserError.HttpError))
-                emit(Resource.Loading(false))
                 return@flow
             } catch (e: Exception) {
                 e.printStackTrace()
                 emit(Resource.Error(UserError.UnknownError))
-                emit(Resource.Loading(false))
                 return@flow
             }
             emit(Resource.Success(result))
-
-            emit(Resource.Loading(false))
         }
     }
 }

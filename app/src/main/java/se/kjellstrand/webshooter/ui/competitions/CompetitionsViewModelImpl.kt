@@ -20,11 +20,10 @@ class CompetitionsViewModelImpl @Inject constructor(
     private val securePrefs: SecurePrefs
 ) : ViewModel(), CompetitionsViewModel {
 
-    private val _uiState = MutableStateFlow(CompetitionsUiState())
+    private val _uiState = MutableStateFlow(CompetitionsUiState(isLoading = true))
     override val uiState: StateFlow<CompetitionsUiState> = _uiState.asStateFlow()
 
     private var currentPage = 1
-    private var isLoading = false
     private var competitionStatus = CompetitionStatus.COMPLETED
 
     init {
@@ -39,7 +38,7 @@ class CompetitionsViewModelImpl @Inject constructor(
     }
 
     override fun loadNextPage() {
-        if (isLoading) return
+        if (_uiState.value.isLoading) return
         currentPage++
         loadCompetitions(currentPage, 10)
     }
@@ -47,15 +46,12 @@ class CompetitionsViewModelImpl @Inject constructor(
     override fun setCompetitionStatus(status: CompetitionStatus) {
         competitionStatus = status
         securePrefs.saveCompetitionStatus(status)
-        _uiState.value = _uiState.value.copy(competitions = null, competitionStatus = status)
+        _uiState.value = _uiState.value.copy(competitions = null, competitionStatus = status, isLoading = true)
         currentPage = 1
         loadInitialPages()
     }
 
     private fun loadCompetitions(page: Int, pageSize: Int) {
-        if (isLoading) return
-        isLoading = true
-
         viewModelScope.launch {
             competitionsRepository.get(page, pageSize, competitionStatus).collect { resource ->
                 when (resource) {
@@ -64,18 +60,15 @@ class CompetitionsViewModelImpl @Inject constructor(
                         val newCompetitions = resource.data.competitions.data
                         val allCompetitions = currentCompetitions + newCompetitions
                         _uiState.value = _uiState.value.copy(
-                            competitions = resource.data.competitions.copy(data = allCompetitions)
+                            competitions = resource.data.competitions.copy(data = allCompetitions),
+                            isLoading = false
                         )
-                        isLoading = false
                     }
 
                     is Resource.Error -> {
-                        isLoading = false
+                        _uiState.value = _uiState.value.copy(isLoading = false)
                     }
 
-                    is Resource.Loading -> {
-                        // Optional: Handle loading state in UI
-                    }
                     else -> {
                         println("getCompetitions resource: $resource")
                     }
