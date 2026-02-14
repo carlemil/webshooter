@@ -7,6 +7,7 @@ import se.kjellstrand.webshooter.data.common.Logo
 import se.kjellstrand.webshooter.data.common.WeaponGroup
 import se.kjellstrand.webshooter.data.competitions.remote.Competitions
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
+import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.competitions.remote.Translations
 import se.kjellstrand.webshooter.data.competitions.remote.Usersignup
 
@@ -39,7 +40,7 @@ class MockCompetitions {
                 description = "Kullens PK hälsar välkomna till kretsfält med mästerskap i C.\n" +
                         "Se mer info i separat inbjudan. (klicka på webbplatsen till höger)\n" +
                         "Max 3 starter.",
-                resultsType = "Standard",
+                resultsType = ResultsType.FIELD,
                 resultsPrices = 1,
                 resultsComment = "",
                 date = "2023-12-15",
