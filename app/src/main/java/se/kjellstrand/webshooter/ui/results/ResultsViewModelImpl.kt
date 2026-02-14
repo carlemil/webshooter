@@ -4,8 +4,11 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -20,10 +23,13 @@ open class ResultsViewModelImpl @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel(), ResultsViewModel {
 
-    private val competitionId: Int = checkNotNull(savedStateHandle["competitionId"])
+    override val competitionId: Int = checkNotNull(savedStateHandle["competitionId"])
 
     private val _uiState = MutableStateFlow(ResultsUiState())
     override val uiState: StateFlow<ResultsUiState> = _uiState.asStateFlow()
+
+    private val _resultsEvent = MutableSharedFlow<ResultsEvent>()
+    override val resultsEvent: SharedFlow<ResultsEvent> = _resultsEvent.asSharedFlow()
 
     init {
         getResults(competitionId)
@@ -35,14 +41,18 @@ open class ResultsViewModelImpl @Inject constructor(
             resultsRepository.get(competitionId).collect { resource ->
                 when (resource) {
                     is Resource.Success -> {
-                        println("getResults Success: ${resource.data}")
-                        _uiState.value = ResultsUiState(
-                            resource.data.results,
-                            filterResults(resource.data.results),
-                            groupResults(resource.data.results),
-                            getWeaponGroups(resource.data.results).toList().sorted(),
-                            getWeaponGroups(resource.data.results)
-                        )
+                        if (resource.data.results.isEmpty()) {
+                            _resultsEvent.emit(ResultsEvent.Empty)
+                        } else {
+                            println("getResults Success: ${resource.data}")
+                            _uiState.value = ResultsUiState(
+                                resource.data.results,
+                                filterResults(resource.data.results),
+                                groupResults(resource.data.results),
+                                getWeaponGroups(resource.data.results).toList().sorted(),
+                                getWeaponGroups(resource.data.results)
+                            )
+                        }
                     }
 
                     is Resource.Error -> {

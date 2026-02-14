@@ -15,8 +15,10 @@ import se.kjellstrand.webshooter.ui.competitions.CompetitionsScreen
 import se.kjellstrand.webshooter.ui.competitions.CompetitionsViewModelImpl
 import se.kjellstrand.webshooter.ui.landingscreen.WebShooterScreen
 import se.kjellstrand.webshooter.ui.login.LoginScreen
+import se.kjellstrand.webshooter.ui.navigation.Screen
 import se.kjellstrand.webshooter.ui.results.CompetitionResultsScreen
 import se.kjellstrand.webshooter.ui.results.ResultsViewModelImpl
+import se.kjellstrand.webshooter.ui.shooterresult.ShooterResultScreen
 
 @Composable
 fun AppNavHost(navController: NavHostController) {
@@ -53,7 +55,16 @@ fun AppNavHost(navController: NavHostController) {
             arguments = listOf(navArgument("competitionId") { type = NavType.IntType })
         ) {
             val resultsViewModel: ResultsViewModelImpl = hiltViewModel()
-            CompetitionResultsScreen(resultsViewModel)
+            CompetitionResultsScreen(resultsViewModel, navController)
+        }
+        composable(
+            route = Screen.ShooterResult.route,
+            arguments = listOf(
+                navArgument("competitionId") { type = NavType.IntType },
+                navArgument("shooterId") { type = NavType.IntType }
+            )
+        ) {
+            ShooterResultScreen()
         }
     }
 }

@@ -108,10 +108,10 @@ fun CompetitionsScreen(
                 items(competitions.data) { competition ->
                     CompetitionItem(competition = competition,
                         onDetailsClick = {
-                            navController.navigate(Screen.CompetitionDetail.createRoute(competition.id))
+                            navController.navigate("competition_detail/${competition.id}")
                         },
                         onResultsClick = {
-                            navController.navigate(Screen.CompetitionResults.createRoute(competition.id.toInt()))
+                            navController.navigate("competition_results/${competition.id.toInt()}")
                         })
                     HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                 }
