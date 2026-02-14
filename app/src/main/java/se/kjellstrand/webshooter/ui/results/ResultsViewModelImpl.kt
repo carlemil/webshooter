@@ -25,7 +25,7 @@ open class ResultsViewModelImpl @Inject constructor(
 
     override val competitionId: Int = checkNotNull(savedStateHandle["competitionId"])
 
-    private val _uiState = MutableStateFlow(ResultsUiState())
+    private val _uiState = MutableStateFlow(ResultsUiState(isLoading = true))
     override val uiState: StateFlow<ResultsUiState> = _uiState.asStateFlow()
 
     private val _resultsEvent = MutableSharedFlow<ResultsEvent>()
@@ -33,7 +33,6 @@ open class ResultsViewModelImpl @Inject constructor(
 
     init {
         getResults(competitionId)
-        _uiState.value = ResultsUiState()
     }
 
     private fun getResults(competitionId: Int) {
@@ -46,17 +45,19 @@ open class ResultsViewModelImpl @Inject constructor(
                         } else {
                             println("getResults Success: ${resource.data}")
                             _uiState.value = ResultsUiState(
-                                resource.data.results,
-                                filterResults(resource.data.results),
-                                groupResults(resource.data.results),
-                                getWeaponGroups(resource.data.results).toList().sorted(),
-                                getWeaponGroups(resource.data.results)
+                                results = resource.data.results,
+                                filterResults = filterResults(resource.data.results),
+                                groupedResults = groupResults(resource.data.results),
+                                allWeaponGroups = getWeaponGroups(resource.data.results).toList().sorted(),
+                                selectedWeaponGroups = getWeaponGroups(resource.data.results),
+                                isLoading = false
                             )
                         }
                     }
 
                     is Resource.Error -> {
                         println("getResults Failed: ${resource.error}")
+                        _uiState.value = _uiState.value.copy(isLoading = false)
                     }
 
                     else -> {
