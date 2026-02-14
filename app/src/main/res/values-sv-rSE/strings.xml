@@ -28,4 +28,8 @@
     <string name="weapon_group">Vapengrupp: </string>
     <string name="unknown_club">Okänd klubb</string>
     <string name="hits_figures_points">T:%1$s F:%2$s P:%3$s</string>
+    <string name="no_results_found">Inga resultat hittade</string>
+    <string name="station">Station</string>
+    <string name="figure_hits">Figur</string>
+    <string name="hits">Träfar</string>
 </resources>
