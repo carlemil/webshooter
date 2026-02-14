@@ -1,6 +1,8 @@
 package se.kjellstrand.webshooter.ui.results
 
+import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -33,6 +34,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,21 +42,41 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.results.remote.Result
 import se.kjellstrand.webshooter.ui.mock.ResultsViewModelMock
+import se.kjellstrand.webshooter.ui.navigation.Screen
 
 @Composable
 fun CompetitionResultsScreen(
-    resultsViewModel: ResultsViewModel
+    resultsViewModel: ResultsViewModel,
+    navController: NavController
 ) {
     val resultsUiState by resultsViewModel.uiState.collectAsState()
-    var isFilterBottomSheetOpen  by remember { mutableStateOf(false) }
+    var isFilterBottomSheetOpen by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        resultsViewModel.resultsEvent.collect { event ->
+            when (event) {
+                is ResultsEvent.Empty -> {
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.no_results_found),
+                        Toast.LENGTH_LONG
+                    ).show()
+                    navController.popBackStack()
+                }
+            }
+        }
+    }
 
     Scaffold(
         floatingActionButton = {
@@ -70,7 +92,7 @@ fun CompetitionResultsScreen(
                 .padding(horizontal = 16.dp)
         ) {
             Spacer(modifier = Modifier.height(16.dp))
-            ResultsList(resultsUiState)
+            ResultsList(resultsUiState, resultsViewModel.competitionId, navController)
         }
     }
 
@@ -88,7 +110,9 @@ fun CompetitionResultsScreen(
 
 @Composable
 fun ResultsList(
-    resultsUiState: ResultsUiState
+    resultsUiState: ResultsUiState,
+    competitionId: Int,
+    navController: NavController
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
@@ -100,8 +124,9 @@ fun ResultsList(
                 bottom = 16.dp
             )
         ) {
-            val allGroupsSelected = resultsUiState.selectedWeaponGroups.toSet().containsAll(resultsUiState.allWeaponGroups.toSet())
-            
+            val allGroupsSelected =
+                resultsUiState.selectedWeaponGroups.toSet().containsAll(resultsUiState.allWeaponGroups.toSet())
+
             val isLoading = if (allGroupsSelected) {
                 resultsUiState.groupedResults.isEmpty()
             } else {
@@ -127,7 +152,17 @@ fun ResultsList(
                         WeaponGroupSeparator(group.header)
                     }
                     items(group.items, key = { it.id }) { result ->
-                        ResultItem(result = result, index = totalItemCount, isGrouped = true)
+                        ResultItem(
+                            result = result,
+                            index = totalItemCount,
+                            isGrouped = true,
+                            onItemClick = {
+                                navController.navigate(
+                                    Screen.ShooterResult.route
+                                        .replace("{competitionId}", competitionId.toString())
+                                        .replace("{shooterId}", result.signup.user.userID.toString())
+                                )
+                            })
                         Spacer(modifier = Modifier.height(2.dp))
                         totalItemCount++
                     }
@@ -135,7 +170,17 @@ fun ResultsList(
             } else {
                 // FILTERED VIEW (flat list) using itemsIndexed
                 itemsIndexed(resultsUiState.filterResults, key = { _, it -> it.id }) { index, result ->
-                    ResultItem(result = result, index = index, isGrouped = false)
+                    ResultItem(
+                        result = result,
+                        index = index,
+                        isGrouped = false,
+                        onItemClick = {
+                            navController.navigate(
+                                Screen.ShooterResult.route
+                                    .replace("{competitionId}", competitionId.toString())
+                                    .replace("{shooterId}", result.signup.user.userID.toString())
+                            )
+                        })
                     Spacer(modifier = Modifier.height(2.dp))
                 }
             }
@@ -178,7 +223,8 @@ fun WeaponGroupSeparator(groupName: String) {
 fun ResultItem(
     result: Result,
     index: Int,
-    isGrouped: Boolean
+    isGrouped: Boolean,
+    onItemClick: () -> Unit
 ) {
     val backgroundColor = if (index % 2 != 0) {
         MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)
@@ -189,7 +235,8 @@ fun ResultItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(backgroundColor),
+            .background(backgroundColor)
+            .clickable(onClick = onItemClick),
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
@@ -316,8 +363,7 @@ fun FilterOptionsContent(
     filterState: FilterState,
     onFilterChange: (FilterState) -> Unit
 ) {
-    FlowRow(
-    ) {
+    FlowRow {
         weaponGroups.forEach { weaponGroup ->
             val isSelected = filterState.selectedWeaponGroups.contains(weaponGroup)
             FilterChip(
@@ -340,6 +386,7 @@ fun FilterOptionsContent(
 @Composable
 fun ResultsScreenPreview() {
     CompetitionResultsScreen(
-        resultsViewModel = ResultsViewModelMock()
+        resultsViewModel = ResultsViewModelMock(),
+        navController = NavController(LocalContext.current)
     )
 }

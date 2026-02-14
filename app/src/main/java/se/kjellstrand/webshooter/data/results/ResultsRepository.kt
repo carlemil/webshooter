@@ -15,6 +15,8 @@ import javax.inject.Singleton
 open class ResultsRepository @Inject constructor(
     private val resultsRemoteDataSource: ResultsRemoteDataSource
 ) {
+    private var resultsCache = null as? ResultsResponse
+
     fun get(competitionId: Int): Flow<Resource<ResultsResponse, UserError>> {
         return flow {
             emit(Resource.Loading(true))
@@ -34,7 +36,23 @@ open class ResultsRepository @Inject constructor(
                 emit(Resource.Error(UserError.UnknownError))
                 return@flow
             }
+            resultsCache = result
             emit(Resource.Success(result))
+            emit(Resource.Loading(false))
+        }
+    }
+
+    fun getShooterResults(shooterId: Int): Flow<Resource<ResultsResponse, UserError>> {
+        return flow {
+            emit(Resource.Loading(true))
+
+            val cachedResults = resultsCache
+            if (cachedResults != null) {
+                val filteredResults = cachedResults.results.filter { it.signup.user.userID == shooterId.toLong() }
+                emit(Resource.Success(cachedResults.copy(results = filteredResults)))
+                emit(Resource.Loading(false))
+                return@flow
+            }
 
             emit(Resource.Loading(false))
         }
