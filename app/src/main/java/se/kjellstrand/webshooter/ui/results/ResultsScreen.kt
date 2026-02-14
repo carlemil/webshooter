@@ -202,15 +202,14 @@ fun ResultsListHeader(isGrouped: Boolean) {
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
             .padding(horizontal = 8.dp, vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = stringResource(R.string.placement),
             style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
             modifier = Modifier
                 .weight(2f)
-                .padding(start = 16.dp, end = 8.dp)
+                .padding(start = 8.dp)
         )
         Text(
             text = stringResource(R.string.name),
@@ -229,7 +228,7 @@ fun ResultsListHeader(isGrouped: Boolean) {
         Row(
             modifier = Modifier
                 .weight(5f)
-                .padding(end = 16.dp),
+                .padding(end = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -303,9 +302,9 @@ fun ResultItem(
         modifier = Modifier
             .fillMaxWidth()
             .background(backgroundColor)
-            .clickable(onClick = onItemClick),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+            .clickable(onClick = onItemClick)
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         // 1. Placement (Left side)
         Text(
@@ -316,7 +315,7 @@ fun ResultItem(
             overflow = TextOverflow.Clip, // Cuts it off instead of using "..."
             modifier = Modifier
                 .weight(2f)
-                .padding(start = 16.dp, end = 8.dp)
+                .padding(start = 8.dp)
         )
 
         // 2. Name & Club (Left center)
@@ -354,7 +353,7 @@ fun ResultItem(
         Row(
             modifier = Modifier
                 .weight(5f)
-                .padding(end = 16.dp),
+                .padding(end = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
