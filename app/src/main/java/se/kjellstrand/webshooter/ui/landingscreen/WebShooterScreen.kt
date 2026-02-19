@@ -86,7 +86,8 @@ fun WebShooterScreen(navController: NavController) {
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            TopAppBar(title = { Text(stringResource(R.string.app_name)) },
+            val title = navigationItems.find { it.route == selectedRoute }?.label ?: stringResource(R.string.app_name)
+            TopAppBar(title = { Text(title) },
                 navigationIcon = {
                     IconButton(
                         onClick = {
