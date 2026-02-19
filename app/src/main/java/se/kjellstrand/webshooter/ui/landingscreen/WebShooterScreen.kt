@@ -39,7 +39,6 @@ import se.kjellstrand.webshooter.ui.competitions.CompetitionsScreen
 import se.kjellstrand.webshooter.ui.competitions.CompetitionsViewModelImpl
 import se.kjellstrand.webshooter.ui.myentries.MyEntriesScreen
 import se.kjellstrand.webshooter.ui.navigation.Screen
-import se.kjellstrand.webshooter.ui.profile.ProfileScreen
 import se.kjellstrand.webshooter.ui.settings.SettingsScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,9 +49,8 @@ fun WebShooterScreen(navController: NavController) {
 
     val navigationItems = listOf(
         NavigationItem(stringResource(R.string.competitions), Screen.CompetitionsList.route),
-        NavigationItem(stringResource(R.string.my_entries), "my_entries_screen"),
-        NavigationItem(stringResource(R.string.profile), "profile_screen"),
-        NavigationItem(stringResource(R.string.settings), "settings_screen")
+        NavigationItem(stringResource(R.string.my_entries),  Screen.MyEntries.route),
+        NavigationItem(stringResource(R.string.settings),  Screen.Settings.route)
     )
 
     var selectedRoute by remember { mutableStateOf(Screen.CompetitionsList.route) }
@@ -108,10 +106,8 @@ fun WebShooterScreen(navController: NavController) {
                 Screen.CompetitionsList.route -> {
                     CompetitionsScreen(navController, competitionsViewModel)
                 }
-
-                "my_entries_screen" -> MyEntriesScreen(navController)
-                "profile_screen" -> ProfileScreen()
-                "settings_screen" -> SettingsScreen()
+                Screen.MyEntries.route -> MyEntriesScreen(navController)
+                Screen.Settings.route -> SettingsScreen()
             }
         }
     }
