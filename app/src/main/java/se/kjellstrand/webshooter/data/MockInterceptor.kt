@@ -27,7 +27,14 @@ open class MockInterceptor @Inject constructor(
             "/api/v4.1.9/competitions" -> getTextFromRaw(R.raw.competitions)
             "/api/v4.1.9/competitions/196/results" -> getTextFromRaw(R.raw.results_196)
             "/api/v4.1.9/competitions/208/results" -> getTextFromRaw(R.raw.results_208)
-            else -> throw IllegalArgumentException("Unknown request path: ${request.url.encodedPath}")
+            "/api/v4.1.9/authenticate/user" -> getTextFromRaw(R.raw.authenticate_user)
+            "/api/v4.1.9/authenticate/updatePassword" -> "{}"
+            else -> ""
+        }
+
+        val responseCode = when {
+            responseString.isEmpty() -> 404
+            else -> 200
         }
 
         val responseHeaders = when (request.url.encodedPath) {
@@ -35,7 +42,7 @@ open class MockInterceptor @Inject constructor(
             else -> headersOf()
         }
         return Response.Builder()
-            .code(200)
+            .code(responseCode)
             .message(responseString)
             .body(responseString.toResponseBody("application/json".toMediaType()))
             .headers(responseHeaders)
