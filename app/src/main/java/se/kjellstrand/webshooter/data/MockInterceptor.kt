@@ -24,7 +24,13 @@ open class MockInterceptor @Inject constructor(
             "/" -> "No data available"
             "/app/" -> "No data available"
             "/api/v4.1.9/oauth/token" -> getTextFromRaw(R.raw.api_v4_1_9_oauth_token)
-            "/api/v4.1.9/competitions" -> getTextFromRaw(R.raw.competitions)
+            "/api/v4.1.9/competitions" -> {
+                if (request.url.queryParameter("usersignup") == "1") {
+                    getTextFromRaw(R.raw.myentries)
+                } else {
+                    getTextFromRaw(R.raw.competitions)
+                }
+            }
             "/api/v4.1.9/competitions/196/results" -> getTextFromRaw(R.raw.results_196)
             "/api/v4.1.9/competitions/208/results" -> getTextFromRaw(R.raw.results_208)
             "/api/v4.1.9/authenticate/user" -> getTextFromRaw(R.raw.authenticate_user)
