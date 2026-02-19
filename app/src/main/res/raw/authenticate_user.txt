@@ -1,0 +1,45 @@
+{
+  "user": {
+    "name": "Test",
+    "lastname": "User",
+    "email": "test@example.com",
+    "shooting_card_number": "12345",
+    "no_shooting_card_number": null,
+    "birthday": "1990-01-01",
+    "gender": "male",
+    "phone": null,
+    "mobile": "0700000000",
+    "grade_field": "1",
+    "grade_trackshooting": "1",
+    "api_token": "",
+    "user_id": 1,
+    "fullname": "Test User",
+    "clubs_id": 1,
+    "status": "active",
+    "clubs": [
+      {
+        "id": 1,
+        "disable_personal_invoices": 1,
+        "districts_id": 12,
+        "clubs_nr": 100,
+        "name": "Test Pistolskytteklubb",
+        "email": "info@testclub.se",
+        "phone": null,
+        "address_street": "Test Street 1",
+        "address_street_2": null,
+        "address_zipcode": "12345",
+        "address_city": "Teststad",
+        "address_country": null,
+        "bankgiro": "123-4567",
+        "postgiro": null,
+        "swish": "",
+        "logo": "test-club-logo.png",
+        "user_has_role": "",
+        "address_combined": "Test Street 1\nnull\n12345 Teststad\nnull",
+        "address_incomplete": false,
+        "logo_url": "/storage/clubs/1/test-club-logo.png",
+        "logo_path": "/var/www/html/storage/app/public/clubs/1/test-club-logo.png"
+      }
+    ]
+  }
+}
