@@ -12,4 +12,12 @@ interface CompetitionsRemoteDataSource {
         @Query("status") status: String,
         @Query("type") type: Int,
     ): CompetitionsResponse
+
+    @GET("/api/v4.1.9/competitions")
+    suspend fun getCompetitionsWithSignups(
+        @Query("page") page: Int,
+        @Query("per_page") perPage: Int,
+        @Query("status") status: String,
+        @Query("usersignup") userSignup: Int,
+    ): CompetitionsResponse
 }
