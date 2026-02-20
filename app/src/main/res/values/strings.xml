@@ -41,4 +41,9 @@
     <string name="weapon_class">Class</string>
     <string name="weapon_class_short">C</string>
     <string name="weapon_group">Weapon group: </string>
+    <string name="competition_status_open">Open</string>
+    <string name="competition_status_all">All</string>
+    <string name="competition_status_completed">Completed</string>
+    <string name="competition_status_upcoming">Upcoming</string>
+    <string name="competition_status_closed">Closed</string>
 </resources>

@@ -71,7 +71,7 @@ fun CompetitionsScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 TextField(
-                    value = selectedStatus.status,
+                    value = stringResource(selectedStatus.labelRes),
                     onValueChange = {},
                     readOnly = true,
                     trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
@@ -84,9 +84,9 @@ fun CompetitionsScreen(
                     expanded = expanded,
                     onDismissRequest = { expanded = false }
                 ) {
-                    CompetitionStatus.values().forEach { status ->
+                    CompetitionStatus.entries.forEach { status ->
                         DropdownMenuItem(
-                            text = { Text(text = status.status) },
+                            text = { Text(text = stringResource(status.labelRes)) },
                             onClick = {
                                 selectedStatus = status
                                 competitionsViewModel.setCompetitionStatus(status)
