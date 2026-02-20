@@ -46,4 +46,6 @@
     <string name="competition_status_completed">Completed</string>
     <string name="competition_status_upcoming">Upcoming</string>
     <string name="competition_status_closed">Closed</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

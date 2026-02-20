@@ -45,4 +45,6 @@
     <string name="competition_status_completed">Avslutad</string>
     <string name="competition_status_upcoming">Kommande</string>
     <string name="competition_status_closed">Stängd</string>
+    <string name="yes">Ja</string>
+    <string name="no">Nej</string>
 </resources>
