@@ -40,4 +40,9 @@
     <string name="weapon_class">Klass</string>
     <string name="weapon_class_short">K</string>
     <string name="weapon_group">Vapengrupp: </string>
+    <string name="competition_status_open">Öppen</string>
+    <string name="competition_status_all">Alla</string>
+    <string name="competition_status_completed">Avslutad</string>
+    <string name="competition_status_upcoming">Kommande</string>
+    <string name="competition_status_closed">Stängd</string>
 </resources>
