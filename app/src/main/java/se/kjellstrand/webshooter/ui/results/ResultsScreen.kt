@@ -23,7 +23,6 @@ import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -408,7 +407,12 @@ fun FilterBottomSheet(
                     TextButton(onClick = {
                         onFilterChange(filterState.copy(selectedWeaponGroups = allWeaponGroups.toSet()))
                     }) {
-                        Text(stringResource(R.string.clear))
+                        Text(stringResource(R.string.filter_all))
+                    }
+                    TextButton(onClick = {
+                        onFilterChange(filterState.copy(selectedWeaponGroups = emptySet()))
+                    }) {
+                        Text(stringResource(R.string.filter_none))
                     }
                     Button(onClick = onDismissRequest) {
                         Text(stringResource(R.string.done_button))
@@ -429,17 +433,18 @@ fun FilterOptionsContent(
     FlowRow {
         weaponGroups.forEach { weaponGroup ->
             val isSelected = filterState.selectedWeaponGroups.contains(weaponGroup)
-            FilterChip(
-                selected = isSelected,
-                onClick = {
+            WeaponClassBadge(
+                weaponGroupName = weaponGroup,
+                isHighlighted = isSelected,
+                size = WeaponClassBadgeSize.Large,
+                modifier = Modifier.clickable {
                     val newSelectedGroups = if (isSelected) {
                         filterState.selectedWeaponGroups - weaponGroup
                     } else {
                         filterState.selectedWeaponGroups + weaponGroup
                     }
                     onFilterChange(filterState.copy(selectedWeaponGroups = newSelectedGroups))
-                },
-                label = { Text(weaponGroup) }
+                }
             )
         }
     }

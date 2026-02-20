@@ -47,4 +47,6 @@
     <string name="competition_status_closed">Stängd</string>
     <string name="yes">Ja</string>
     <string name="no">Nej</string>
+    <string name="filter_all">Alla</string>
+    <string name="filter_none">Ingen</string>
 </resources>
