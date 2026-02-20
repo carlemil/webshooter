@@ -126,16 +126,20 @@ fun ResultsList(
                 bottom = 16.dp
             )
         ) {
+            val noneSelected = resultsUiState.selectedWeaponGroups.isEmpty()
+
             val allGroupsSelected =
                 resultsUiState.selectedWeaponGroups.toSet().containsAll(resultsUiState.allWeaponGroups.toSet())
 
-            val isLoading = if (allGroupsSelected) {
+            val isLoading = if (noneSelected || allGroupsSelected) {
                 resultsUiState.groupedResults.isEmpty()
             } else {
                 resultsUiState.filterResults.isEmpty()
             }
 
-            if (isLoading) {
+            if (noneSelected) {
+                // empty — nothing to show
+            } else if (isLoading) {
                 item {
                     Box(
                         modifier = Modifier
