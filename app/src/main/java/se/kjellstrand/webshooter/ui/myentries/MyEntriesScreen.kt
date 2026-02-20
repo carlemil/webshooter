@@ -31,6 +31,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
+import se.kjellstrand.webshooter.ui.common.WeaponClassBadges
 import se.kjellstrand.webshooter.ui.navigation.Screen
 
 @Composable
@@ -122,15 +123,12 @@ private fun MyEntryItem(competition: Datum, onResultsClick: () -> Unit) {
                 text = stringResource(R.string.status, competition.statusHuman),
                 style = MaterialTheme.typography.bodySmall
             )
+            Spacer(modifier = Modifier.height(2.dp))
+            WeaponClassBadges(
+                weaponClasses = competition.weaponClasses,
+                userSignups = competition.userSignups
+            )
             competition.userSignups.forEach { signup ->
-                val weaponClass = competition.weaponClasses.find { it.id == signup.weaponClassesID }
-                if (weaponClass != null) {
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = stringResource(R.string.weapon_class) + weaponClass.classname,
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
                 if (signup.startTime != null) {
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
