@@ -43,6 +43,8 @@ import androidx.navigation.compose.rememberNavController
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.common.CompetitionStatus
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
+import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
+import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadges
 import se.kjellstrand.webshooter.ui.mock.CompetitionsViewModelMock
 import se.kjellstrand.webshooter.ui.navigation.Screen
@@ -88,12 +90,19 @@ fun CompetitionsScreen(
                 ) {
                     CompetitionStatus.entries.forEach { status ->
                         DropdownMenuItem(
-                            text = { Text(text = stringResource(status.labelRes)) },
+                            text = {
+                                WeaponClassBadge(
+                                    weaponGroupName = stringResource(status.labelRes),
+                                    isHighlighted = status == selectedStatus,
+                                    size = WeaponClassBadgeSize.Medium
+                                )
+                            },
                             onClick = {
                                 selectedStatus = status
                                 competitionsViewModel.setCompetitionStatus(status)
                                 expanded = false
-                            }
+                            },
+                            modifier = Modifier.padding(vertical = 2.dp)
                         )
                     }
                 }
