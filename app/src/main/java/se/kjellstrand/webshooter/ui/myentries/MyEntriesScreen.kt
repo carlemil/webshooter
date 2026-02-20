@@ -12,14 +12,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -36,33 +39,64 @@ fun MyEntriesScreen(
     viewModel: MyEntriesViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index }
+            .collect { lastVisible ->
+                if (lastVisible != null && lastVisible >= uiState.entries.size - 5) {
+                    viewModel.loadMore()
+                }
+            }
+    }
 
     when {
-        uiState.isLoading -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-        uiState.errorMessage != null -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(uiState.errorMessage!!)
-                Spacer(modifier = Modifier.height(8.dp))
-                Button(onClick = { viewModel.load() }) { Text("Retry") }
+        uiState.isLoading && uiState.entries.isEmpty() -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator()
             }
         }
-        uiState.entries.isEmpty() -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("No entries found")
+        uiState.errorMessage != null && uiState.entries.isEmpty() -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(uiState.errorMessage!!)
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Button(onClick = { viewModel.retry() }) { Text("Retry") }
+                }
+            }
         }
-        else -> LazyColumn(
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(16.dp)
-        ) {
-            items(uiState.entries) { competition ->
-                MyEntryItem(
-                    competition = competition,
-                    onResultsClick = {
-                        navController.navigate(Screen.CompetitionResults.createRoute(competition.id.toInt()))
+        uiState.entries.isEmpty() && !uiState.isLoading -> {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Text("No entries found")
+            }
+        }
+        else -> {
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.fillMaxSize(),
+                contentPadding = PaddingValues(16.dp)
+            ) {
+                items(uiState.entries) { competition ->
+                    MyEntryItem(
+                        competition = competition,
+                        onResultsClick = {
+                            navController.navigate(Screen.CompetitionResults.createRoute(competition.id.toInt()))
+                        }
+                    )
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                }
+                if (uiState.isLoading) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
+                        }
                     }
-                )
-                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                }
             }
         }
     }

@@ -19,26 +19,67 @@ class MyEntriesViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(MyEntriesUiState())
     val uiState: StateFlow<MyEntriesUiState> = _uiState.asStateFlow()
 
+    private var nextApiPage = 1
+    private var lastApiPage = Int.MAX_VALUE
+    private var isFetching = false
+
     init {
-        load()
+        fetchPages(targetNewEntries = 20)
     }
 
-    fun load() {
-        _uiState.value = MyEntriesUiState(isLoading = true)
+    fun loadMore() {
+        if (isFetching || nextApiPage > lastApiPage) return
+        fetchPages(targetNewEntries = 10)
+    }
+
+    fun retry() {
+        _uiState.value = MyEntriesUiState()
+        nextApiPage = 1
+        lastApiPage = Int.MAX_VALUE
+        isFetching = false
+        fetchPages(targetNewEntries = 20)
+    }
+
+    private fun fetchPages(targetNewEntries: Int) {
+        isFetching = true
         viewModelScope.launch {
-            competitionsRepository.getMyEntries().collect { resource ->
-                when (resource) {
-                    is Resource.Loading -> _uiState.value = _uiState.value.copy(isLoading = resource.isLoading)
-                    is Resource.Success -> _uiState.value = _uiState.value.copy(
-                        entries = resource.data,
-                        isLoading = false
-                    )
-                    is Resource.Error -> _uiState.value = _uiState.value.copy(
-                        isLoading = false,
-                        errorMessage = "Failed to load entries"
-                    )
+            _uiState.value = _uiState.value.copy(isLoading = true, errorMessage = null)
+            val accumulated = _uiState.value.entries.toMutableList()
+            val startSize = accumulated.size
+
+            while (accumulated.size - startSize < targetNewEntries && nextApiPage <= lastApiPage) {
+                var errorOccurred = false
+                competitionsRepository.getMyEntriesPage(nextApiPage).collect { resource ->
+                    when (resource) {
+                        is Resource.Success -> {
+                            lastApiPage = resource.data.competitions.lastPage.toInt()
+                            accumulated.addAll(
+                                resource.data.competitions.data.filter { it.userSignups.isNotEmpty() }
+                            )
+                            nextApiPage++
+                        }
+                        is Resource.Error -> {
+                            _uiState.value = _uiState.value.copy(
+                                isLoading = false,
+                                errorMessage = "Failed to load entries"
+                            )
+                            errorOccurred = true
+                        }
+                        is Resource.Loading -> {}
+                    }
+                }
+                if (errorOccurred) {
+                    isFetching = false
+                    return@launch
                 }
             }
+
+            _uiState.value = _uiState.value.copy(
+                entries = accumulated.sortedByDescending { it.date },
+                isLoading = false,
+                hasMore = nextApiPage <= lastApiPage
+            )
+            isFetching = false
         }
     }
 }
