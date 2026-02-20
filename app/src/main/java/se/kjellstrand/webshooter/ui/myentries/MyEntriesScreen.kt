@@ -13,9 +13,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -75,7 +77,8 @@ fun MyEntriesScreen(
             LazyColumn(
                 state = listState,
                 modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(16.dp)
+                contentPadding = PaddingValues(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(uiState.entries) { competition ->
                     MyEntryItem(
@@ -84,7 +87,6 @@ fun MyEntriesScreen(
                             navController.navigate(Screen.CompetitionResults.createRoute(competition.id.toInt()))
                         }
                     )
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                 }
                 if (uiState.isLoading) {
                     item {
@@ -105,49 +107,54 @@ fun MyEntriesScreen(
 
 @Composable
 private fun MyEntryItem(competition: Datum, onResultsClick: () -> Unit) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
+    Card(
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Column(modifier = Modifier.weight(1f)) {
-            Text(text = competition.name, style = MaterialTheme.typography.labelLarge)
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = stringResource(R.string.date, competition.date),
-                style = MaterialTheme.typography.bodySmall
-            )
-            Spacer(modifier = Modifier.height(2.dp))
-            Text(
-                text = stringResource(R.string.status, competition.statusHuman),
-                style = MaterialTheme.typography.bodySmall
-            )
-            Spacer(modifier = Modifier.height(2.dp))
-            WeaponClassBadges(
-                weaponClasses = competition.weaponClasses,
-                userSignups = competition.userSignups
-            )
-            competition.userSignups.forEach { signup ->
-                if (signup.startTime != null) {
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = "Start: ${signup.startTimeHuman}",
-                        style = MaterialTheme.typography.bodySmall
-                    )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(text = competition.name, style = MaterialTheme.typography.titleSmall)
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "${competition.date}  •  ${competition.statusHuman}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                WeaponClassBadges(
+                    weaponClasses = competition.weaponClasses,
+                    userSignups = competition.userSignups
+                )
+                competition.userSignups.forEach { signup ->
+                    if (signup.startTime != null) {
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = "Start: ${signup.startTimeHuman}",
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    }
                 }
             }
-        }
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(start = 8.dp)
-        ) {
-            Button(
-                enabled = competition.status == "completed",
-                onClick = onResultsClick
+            Column(
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(start = 8.dp)
             ) {
-                Text(stringResource(R.string.result))
+                Button(
+                    enabled = competition.status == "completed",
+                    onClick = onResultsClick
+                ) {
+                    Text(stringResource(R.string.result))
+                }
             }
         }
     }

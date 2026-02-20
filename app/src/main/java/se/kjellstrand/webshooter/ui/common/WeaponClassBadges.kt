@@ -10,11 +10,15 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import se.kjellstrand.webshooter.data.common.WeaponClass
 import se.kjellstrand.webshooter.data.competitions.remote.Usersignup
+
+enum class WeaponClassBadgeSize { Small, Medium, Large }
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -30,7 +34,8 @@ fun WeaponClassBadges(
             weaponClass.classname?.let {
                 WeaponClassBadge(
                     weaponGroupName = it,
-                    isHighlighted = isHighlighted
+                    isHighlighted = isHighlighted,
+                    size = WeaponClassBadgeSize.Small
                 )
             }
         }
@@ -41,37 +46,52 @@ fun WeaponClassBadges(
 fun WeaponClassBadge(
     modifier: Modifier = Modifier,
     weaponGroupName: String,
-    isHighlighted: Boolean
+    isHighlighted: Boolean,
+    size: WeaponClassBadgeSize = WeaponClassBadgeSize.Small
 ) {
-    val borderModifier = if (isHighlighted) {
-        Modifier.border(
-            width = 0.6.dp,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            shape = RoundedCornerShape(4.dp)
-        )
+    val shape = RoundedCornerShape(50)
+    val fontWeight = if (isHighlighted) FontWeight.Bold else FontWeight.Normal
+
+    val textStyle: TextStyle
+    val horizontalPadding: Dp
+    val verticalPadding: Dp
+    when (size) {
+        WeaponClassBadgeSize.Small -> {
+            textStyle = MaterialTheme.typography.labelSmall.copy(fontWeight = fontWeight)
+            horizontalPadding = 6.dp
+            verticalPadding = 2.dp
+        }
+        WeaponClassBadgeSize.Medium -> {
+            textStyle = MaterialTheme.typography.labelMedium.copy(fontWeight = fontWeight)
+            horizontalPadding = 8.dp
+            verticalPadding = 3.dp
+        }
+        WeaponClassBadgeSize.Large -> {
+            textStyle = MaterialTheme.typography.labelLarge.copy(fontWeight = fontWeight)
+            horizontalPadding = 12.dp
+            verticalPadding = 4.dp
+        }
+    }
+
+    val outlineModifier = if (isHighlighted) {
+        Modifier.border(width = 2.dp, color = MaterialTheme.colorScheme.onPrimaryContainer, shape = shape)
     } else {
         Modifier
     }
-    val fontWeight = if (isHighlighted) {
-        FontWeight.Bold
-    } else {
-        FontWeight.Normal
-    }
+
     Surface(
-        color = MaterialTheme.colorScheme.surfaceVariant,
-        shape = RoundedCornerShape(4.dp),
+        color = MaterialTheme.colorScheme.primaryContainer,
+        shape = shape,
         modifier = modifier
             .padding(end = 4.dp, bottom = 4.dp)
-            .then(borderModifier)
+            .then(outlineModifier)
     ) {
         Text(
             text = weaponGroupName,
-            style = MaterialTheme.typography.bodySmall.copy(
-                fontSize = 10.sp,
-                fontWeight = fontWeight
-            ),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
+            style = textStyle,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier.padding(horizontal = horizontalPadding, vertical = verticalPadding)
         )
     }
 }
