@@ -48,4 +48,6 @@
     <string name="competition_status_closed">Closed</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="filter_all">All</string>
+    <string name="filter_none">None</string>
 </resources>
