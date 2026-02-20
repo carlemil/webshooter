@@ -45,13 +45,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.results.remote.Result
+import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
+import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
 import se.kjellstrand.webshooter.ui.mock.ResultsViewModelMock
 import se.kjellstrand.webshooter.ui.navigation.Screen
 
@@ -200,8 +202,8 @@ fun ResultsListHeader(isGrouped: Boolean) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f))
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+            .padding(horizontal = 8.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -262,21 +264,16 @@ fun WeaponGroupSeparator(groupName: String) {
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Left Divider
         HorizontalDivider(
             modifier = Modifier.weight(1f),
             thickness = 1.dp,
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
         )
-        // Group Name Text
-        Text(
-            text = groupName,
-            style = MaterialTheme.typography.labelLarge,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.padding(horizontal = 8.dp)
+        WeaponClassBadge(
+            weaponGroupName = groupName,
+            isHighlighted = false,
+            size = WeaponClassBadgeSize.Large
         )
-        // Right Divider
         HorizontalDivider(
             modifier = Modifier.weight(1f),
             thickness = 1.dp,
@@ -295,7 +292,7 @@ fun ResultItem(
     val backgroundColor = if (index % 2 == 0) {
         MaterialTheme.colorScheme.surface
     } else {
-        MaterialTheme.colorScheme.onSurface.copy(alpha = 0.05f)
+        MaterialTheme.colorScheme.surfaceContainerLow
     }
 
     Row(
@@ -303,7 +300,7 @@ fun ResultItem(
             .fillMaxWidth()
             .background(backgroundColor)
             .clickable(onClick = onItemClick)
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+            .padding(horizontal = 8.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // 1. Placement (Left side)
