@@ -124,7 +124,12 @@ fun CompetitionsScreen(
                             navController.navigate(Screen.CompetitionDetail.createRoute(competition.id))
                         },
                         onResultsClick = {
-                            navController.navigate(Screen.CompetitionResults.createRoute(competition.id.toInt()))
+                            navController.navigate(
+                                Screen.CompetitionResults.createRoute(
+                                    competition.id.toInt(),
+                                    competition.resultsType.name
+                                )
+                            )
                         })
                 }
             }

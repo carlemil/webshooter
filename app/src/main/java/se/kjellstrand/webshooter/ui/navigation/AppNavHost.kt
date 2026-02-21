@@ -51,7 +51,10 @@ fun AppNavHost(navController: NavHostController) {
         }
         composable(
             route = Screen.CompetitionResults.route,
-            arguments = listOf(navArgument("competitionId") { type = NavType.IntType })
+            arguments = listOf(
+                navArgument("competitionId") { type = NavType.IntType },
+                navArgument("resultsType") { type = NavType.StringType }
+            )
         ) {
             val resultsViewModel: ResultsViewModelImpl = hiltViewModel()
             CompetitionResultsScreen(resultsViewModel, navController)
