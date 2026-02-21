@@ -130,6 +130,7 @@ fun ResultsList(
             )
         ) {
             val noneSelected = resultsUiState.selectedWeaponGroups.isEmpty()
+                    && resultsUiState.allWeaponGroups.isNotEmpty()
 
             val allGroupsSelected =
                 resultsUiState.selectedWeaponGroups.toSet().containsAll(resultsUiState.allWeaponGroups.toSet())
