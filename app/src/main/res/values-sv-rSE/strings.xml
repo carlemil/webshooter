@@ -1,6 +1,11 @@
 <resources>
     <string name="clear">Återställ</string>
     <string name="competition_not_found">Tävling ej hittad.</string>
+    <string name="competition_status_all">Alla</string>
+    <string name="competition_status_closed">Stängd</string>
+    <string name="competition_status_completed">Avslutad</string>
+    <string name="competition_status_open">Öppen</string>
+    <string name="competition_status_upcoming">Kommande</string>
     <string name="competition_type">Tävlingstyp: %1$s</string>
     <string name="competitions">Tävlingar</string>
     <string name="contact_name">Kontakt person: %1$s</string>
@@ -10,16 +15,20 @@
     <string name="done_button">Klar</string>
     <string name="figure_hits">Figurträffar</string>
     <string name="figures_short">F</string>
+    <string name="filter_all">Alla</string>
+    <string name="filter_none">Ingen</string>
     <string name="hits">Träff</string>
     <string name="hits_short">T</string>
     <string name="landing_screen">Startsida</string>
     <string name="last_signup_date">Sista anmälningsdag: %1$s</string>
     <string name="late_signup">Efteranmälan: %1$s</string>
     <string name="login">Inloggning</string>
+    <string name="medal_short">Mdlj</string>
     <string name="menu">Meny</string>
     <string name="menu_content_description">Meny</string>
     <string name="my_entries">Mina anmälningar</string>
     <string name="name">Namn</string>
+    <string name="no">Nej</string>
     <string name="no_results_found">Inga resultat hittade</string>
     <string name="open_for_team_signup">Öppnen för laganmälan: %1$s</string>
     <string name="password">Lösenord</string>
@@ -40,14 +49,6 @@
     <string name="weapon_class">Klass</string>
     <string name="weapon_class_short">K</string>
     <string name="weapon_group">Vapengrupp: </string>
-    <string name="competition_status_open">Öppen</string>
-    <string name="competition_status_all">Alla</string>
-    <string name="competition_status_completed">Avslutad</string>
-    <string name="competition_status_upcoming">Kommande</string>
-    <string name="competition_status_closed">Stängd</string>
+    <string name="x">X</string>
     <string name="yes">Ja</string>
-    <string name="no">Nej</string>
-    <string name="filter_all">Alla</string>
-    <string name="filter_none">Ingen</string>
-    <string name="medal_short">Mdlj</string>
 </resources>
