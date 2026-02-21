@@ -56,7 +56,7 @@ fun ShooterResultScreen(
             Spacer(modifier = Modifier.height(16.dp))
             LazyColumn {
                 items(uiState.results) { result ->
-                    ResultItem(result = result, index = 0, isGrouped = false, onItemClick = {})
+                    ResultItem(result = result, index = 0, isGrouped = false, resultsType = uiState.resultsType, onItemClick = {})
                     StationResultsGrid(stationResults = result.results)
                 }
             }
