@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.data.common.Resource
+import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.results.ResultsRepository
 import javax.inject.Inject
 
@@ -21,6 +22,11 @@ class ShooterResultViewModel @Inject constructor(
 
     private val competitionId: Int = checkNotNull(savedStateHandle["competitionId"])
     private val shooterId: Int = checkNotNull(savedStateHandle["shooterId"])
+    private val resultsType: ResultsType = try {
+        ResultsType.valueOf(checkNotNull(savedStateHandle["resultsType"]))
+    } catch (e: Exception) {
+        ResultsType.FIELD
+    }
 
     private val _uiState = MutableStateFlow(ShooterResultUiState(isLoading = true))
     val uiState: StateFlow<ShooterResultUiState> = _uiState.asStateFlow()
@@ -41,7 +47,8 @@ class ShooterResultViewModel @Inject constructor(
                         _uiState.value = ShooterResultUiState(
                             isLoading = false,
                             shooterName = shooterName,
-                            results = results
+                            results = results,
+                            resultsType = resultsType
                         )
                     }
                     is Resource.Error -> {
