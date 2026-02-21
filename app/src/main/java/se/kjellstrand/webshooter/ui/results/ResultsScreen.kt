@@ -50,7 +50,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import se.kjellstrand.webshooter.R
+import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.results.remote.Result
+import se.kjellstrand.webshooter.data.results.remote.StdMedal
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
 import se.kjellstrand.webshooter.ui.mock.ResultsViewModelMock
@@ -94,7 +96,7 @@ fun CompetitionResultsScreen(
                 .padding(horizontal = 16.dp)
         ) {
             Spacer(modifier = Modifier.height(16.dp))
-            ResultsList(resultsUiState, resultsViewModel.competitionId, navController)
+            ResultsList(resultsUiState, resultsViewModel.competitionId, navController, resultsUiState.resultsType)
         }
     }
 
@@ -114,7 +116,8 @@ fun CompetitionResultsScreen(
 fun ResultsList(
     resultsUiState: ResultsUiState,
     competitionId: Int,
-    navController: NavController
+    navController: NavController,
+    resultsType: ResultsType = ResultsType.FIELD
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
@@ -157,13 +160,14 @@ fun ResultsList(
                         WeaponGroupSeparator(group.header)
                     }
                     item {
-                        ResultsListHeader(isGrouped = true)
+                        ResultsListHeader(isGrouped = true, resultsType = resultsType)
                     }
                     itemsIndexed(group.items, key = { _, item -> item.id }) { index, result ->
                         ResultItem(
                             result = result,
                             index = index,
                             isGrouped = true,
+                            resultsType = resultsType,
                             onItemClick = {
                                 navController.navigate(
                                     Screen.ShooterResult.createRoute(
@@ -178,13 +182,14 @@ fun ResultsList(
             } else {
                 // FILTERED VIEW (flat list) using itemsIndexed
                 item {
-                    ResultsListHeader(isGrouped = false)
+                    ResultsListHeader(isGrouped = false, resultsType = resultsType)
                 }
                 itemsIndexed(resultsUiState.filterResults, key = { _, it -> it.id }) { index, result ->
                     ResultItem(
                         result = result,
                         index = index,
                         isGrouped = false,
+                        resultsType = resultsType,
                         onItemClick = {
                             navController.navigate(
                                 Screen.ShooterResult.createRoute(
@@ -201,7 +206,7 @@ fun ResultsList(
 }
 
 @Composable
-fun ResultsListHeader(isGrouped: Boolean) {
+fun ResultsListHeader(isGrouped: Boolean, resultsType: ResultsType = ResultsType.FIELD) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -237,18 +242,27 @@ fun ResultsListHeader(isGrouped: Boolean) {
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = stringResource(R.string.hits_short),
-                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.weight(1f)
-            )
-            Text(
-                text = stringResource(R.string.figures_short),
-                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.weight(1f)
-            )
+            if (resultsType != ResultsType.FIELD) {
+                Text(
+                    text = stringResource(R.string.medal_short),
+                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(1f)
+                )
+            } else {
+                Text(
+                    text = stringResource(R.string.hits_short),
+                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = stringResource(R.string.figures_short),
+                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(1f)
+                )
+            }
             Text(
                 text = stringResource(R.string.points_short),
                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
@@ -290,6 +304,7 @@ fun ResultItem(
     result: Result,
     index: Int,
     isGrouped: Boolean,
+    resultsType: ResultsType = ResultsType.FIELD,
     onItemClick: () -> Unit
 ) {
     val backgroundColor = if (index % 2 == 0) {
@@ -357,20 +372,29 @@ fun ResultItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Hits
-            Text(
-                text = result.hits.toString(),
-                style = MaterialTheme.typography.bodySmall,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.weight(1f)
-            )
-            // Figure Hits
-            Text(
-                text = result.figureHits.toString(),
-                style = MaterialTheme.typography.bodySmall,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.weight(1f)
-            )
+            if (resultsType != ResultsType.FIELD) {
+                // Medal only — no hits column for precision
+                Text(
+                    text = result.stdMedal?.value ?: "-",
+                    style = MaterialTheme.typography.bodySmall,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(1f)
+                )
+            } else {
+                // Hits + Figure Hits for field/military
+                Text(
+                    text = result.hits.toString(),
+                    style = MaterialTheme.typography.bodySmall,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = result.figureHits.toString(),
+                    style = MaterialTheme.typography.bodySmall,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(1f)
+                )
+            }
             // Points
             Text(
                 text = result.points.toString(),

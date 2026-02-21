@@ -84,7 +84,12 @@ fun MyEntriesScreen(
                     MyEntryItem(
                         competition = competition,
                         onResultsClick = {
-                            navController.navigate(Screen.CompetitionResults.createRoute(competition.id.toInt()))
+                            navController.navigate(
+                                Screen.CompetitionResults.createRoute(
+                                    competition.id.toInt(),
+                                    competition.resultsType.name
+                                )
+                            )
                         }
                     )
                 }
