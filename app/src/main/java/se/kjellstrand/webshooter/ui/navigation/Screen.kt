@@ -13,7 +13,8 @@ sealed class Screen(val route: String) {
     }
     object MyEntries : Screen("my_entries")
     object Settings : Screen("settings")
-    object ShooterResult : Screen("shooter_result/{competitionId}/{shooterId}") {
-        fun createRoute(competitionId: Int, shooterId: Int) = "shooter_result/$competitionId/$shooterId"
+    object ShooterResult : Screen("shooter_result/{competitionId}/{shooterId}/{resultsType}") {
+        fun createRoute(competitionId: Int, shooterId: Int, resultsType: String) =
+            "shooter_result/$competitionId/$shooterId/$resultsType"
     }
 }

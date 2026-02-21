@@ -177,7 +177,8 @@ fun ResultsList(
                                 navController.navigate(
                                     Screen.ShooterResult.createRoute(
                                         competitionId,
-                                        result.signup.user.userID.toInt()
+                                        result.signup.user.userID.toInt(),
+                                        resultsType.name
                                     )
                                 )
                             })
@@ -201,7 +202,8 @@ fun ResultsList(
                             navController.navigate(
                                 Screen.ShooterResult.createRoute(
                                     competitionId,
-                                    result.signup.user.userID.toInt()
+                                    result.signup.user.userID.toInt(),
+                                    resultsType.name
                                 )
                             )
                         })

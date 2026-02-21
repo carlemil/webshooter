@@ -63,7 +63,8 @@ fun AppNavHost(navController: NavHostController) {
             route = Screen.ShooterResult.route,
             arguments = listOf(
                 navArgument("competitionId") { type = NavType.IntType },
-                navArgument("shooterId") { type = NavType.IntType }
+                navArgument("shooterId") { type = NavType.IntType },
+                navArgument("resultsType") { type = NavType.StringType }
             )
         ) {
             ShooterResultScreen()
