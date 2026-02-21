@@ -242,14 +242,7 @@ fun ResultsListHeader(isGrouped: Boolean, resultsType: ResultsType = ResultsType
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (resultsType != ResultsType.FIELD) {
-                Text(
-                    text = stringResource(R.string.medal_short),
-                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(1f)
-                )
-            } else {
+            if (resultsType == ResultsType.FIELD) {
                 Text(
                     text = stringResource(R.string.hits_short),
                     style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
@@ -263,6 +256,12 @@ fun ResultsListHeader(isGrouped: Boolean, resultsType: ResultsType = ResultsType
                     modifier = Modifier.weight(1f)
                 )
             }
+            Text(
+                text = stringResource(R.string.medal_short),
+                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.weight(1f)
+            )
             Text(
                 text = stringResource(R.string.points_short),
                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
@@ -372,16 +371,7 @@ fun ResultItem(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (resultsType != ResultsType.FIELD) {
-                // Medal only — no hits column for precision
-                Text(
-                    text = result.stdMedal?.value ?: "-",
-                    style = MaterialTheme.typography.bodySmall,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(1f)
-                )
-            } else {
-                // Hits + Figure Hits for field/military
+            if (resultsType == ResultsType.FIELD) {
                 Text(
                     text = result.hits.toString(),
                     style = MaterialTheme.typography.bodySmall,
@@ -395,6 +385,12 @@ fun ResultItem(
                     modifier = Modifier.weight(1f)
                 )
             }
+            Text(
+                text = result.stdMedal?.value ?: "-",
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.weight(1f)
+            )
             // Points
             Text(
                 text = result.points.toString(),

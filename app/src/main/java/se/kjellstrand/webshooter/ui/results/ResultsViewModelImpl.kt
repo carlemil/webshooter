@@ -133,7 +133,7 @@ open class ResultsViewModelImpl @Inject constructor(
 
         fun calculateSortOrder(result: Result, resultsType: ResultsType): Int {
             return when (resultsType) {
-                ResultsType.PRECISION -> (result.points * 1000000 + result.hits * 1000).toInt()
+                ResultsType.PRECISION -> (result.points).toInt()
                 else -> (result.hits * 1000000 + result.figureHits * 1000 + result.points).toInt()
             }
         }
