@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.data.common.Resource
+import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.results.ResultsRepository
 import se.kjellstrand.webshooter.data.results.remote.Result
 import javax.inject.Inject
@@ -24,6 +25,12 @@ open class ResultsViewModelImpl @Inject constructor(
 ) : ViewModel(), ResultsViewModel {
 
     override val competitionId: Int = checkNotNull(savedStateHandle["competitionId"])
+
+    private val resultsType: ResultsType = try {
+        ResultsType.valueOf(checkNotNull(savedStateHandle["resultsType"]))
+    } catch (e: Exception) {
+        ResultsType.FIELD
+    }
 
     private val _uiState = MutableStateFlow(ResultsUiState(isLoading = true))
     override val uiState: StateFlow<ResultsUiState> = _uiState.asStateFlow()
@@ -46,11 +53,12 @@ open class ResultsViewModelImpl @Inject constructor(
                             println("getResults Success: ${resource.data}")
                             _uiState.value = ResultsUiState(
                                 results = resource.data.results,
-                                filterResults = filterResults(resource.data.results),
-                                groupedResults = groupResults(resource.data.results),
+                                filterResults = filterResults(resource.data.results, resultsType),
+                                groupedResults = groupResults(resource.data.results, resultsType),
                                 allWeaponGroups = getWeaponGroups(resource.data.results).toList().sorted(),
                                 selectedWeaponGroups = getWeaponGroups(resource.data.results),
-                                isLoading = false
+                                isLoading = false,
+                                resultsType = resultsType
                             )
                         }
                     }
@@ -86,14 +94,14 @@ open class ResultsViewModelImpl @Inject constructor(
             _uiState.value.results.filter { result ->
                 selectedGroups.contains(result.weaponClass.classname)
             }
-        }.sortedByDescending { calculateSortOrder(it) }
+        }.sortedByDescending { calculateSortOrder(it, resultsType) }
         _uiState.update { currentState ->
             currentState.copy(filterResults = filtered)
         }
     }
 
     companion object {
-        fun groupResults(results: List<Result>): List<GroupedItem> {
+        fun groupResults(results: List<Result>, resultsType: ResultsType): List<GroupedItem> {
             val listOfGroupedItems = mutableListOf<GroupedItem>()
 
             val weaponClasses = results.map { it.weaponClass.classname }.distinct().sorted()
@@ -101,7 +109,7 @@ open class ResultsViewModelImpl @Inject constructor(
             weaponClasses.forEach { weaponClass ->
                 val groupedResults =
                     results.filter { it.weaponClass.classname == weaponClass }
-                        .sortedByDescending { calculateSortOrder(it) }
+                        .sortedByDescending { calculateSortOrder(it, resultsType) }
                 if (groupedResults.isNotEmpty()) {
                     listOfGroupedItems.add(GroupedItem(weaponClass, groupedResults))
                 }
@@ -109,13 +117,13 @@ open class ResultsViewModelImpl @Inject constructor(
             return listOfGroupedItems
         }
 
-        fun filterResults(results: List<Result>): List<Result> {
+        fun filterResults(results: List<Result>, resultsType: ResultsType): List<Result> {
             val weaponClasses = getWeaponGroups(results)
 
             val listOfFilteredItems =
                 results.filter {
                     it.weaponClass.classname in weaponClasses
-                }.sortedByDescending { calculateSortOrder(it) }
+                }.sortedByDescending { calculateSortOrder(it, resultsType) }
             return listOfFilteredItems
         }
 
@@ -123,8 +131,11 @@ open class ResultsViewModelImpl @Inject constructor(
             return results.map { it.weaponClass.classname }.toSet()
         }
 
-        private fun calculateSortOrder(it: Result): Int {
-            return (it.hits * 1000000 + it.figureHits * 1000 + it.points).toInt()
+        fun calculateSortOrder(result: Result, resultsType: ResultsType): Int {
+            return when (resultsType) {
+                ResultsType.PRECISION -> (result.points * 1000000 + result.hits * 1000).toInt()
+                else -> (result.hits * 1000000 + result.figureHits * 1000 + result.points).toInt()
+            }
         }
     }
 }

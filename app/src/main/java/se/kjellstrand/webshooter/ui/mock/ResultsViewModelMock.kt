@@ -5,6 +5,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.ui.results.Mode
 import se.kjellstrand.webshooter.ui.results.ResultsEvent
 import se.kjellstrand.webshooter.ui.results.ResultsUiState
@@ -19,8 +20,8 @@ class ResultsViewModelMock() : ViewModel(),
             return MutableStateFlow(
                 ResultsUiState(
                     MockResults().results,
-                    ResultsViewModelImpl.filterResults(MockResults().results),
-                    ResultsViewModelImpl.groupResults(MockResults().results),
+                    ResultsViewModelImpl.filterResults(MockResults().results, ResultsType.FIELD),
+                    ResultsViewModelImpl.groupResults(MockResults().results, ResultsType.FIELD),
                     ResultsViewModelImpl.getWeaponGroups(MockResults().results).toList().sorted(),
                     ResultsViewModelImpl.getWeaponGroups(MockResults().results),
                     Mode.FILTER

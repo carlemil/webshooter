@@ -1,5 +1,6 @@
 package se.kjellstrand.webshooter.ui.results
 
+import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.results.remote.Result
 
 data class ResultsUiState(
@@ -9,7 +10,8 @@ data class ResultsUiState(
     val allWeaponGroups: List<String> = listOf(),
     val selectedWeaponGroups: Set<String> = emptySet(),
     var mode: Mode = Mode.GROUP,
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val resultsType: ResultsType = ResultsType.FIELD
 )
 
 data class GroupedItem(
