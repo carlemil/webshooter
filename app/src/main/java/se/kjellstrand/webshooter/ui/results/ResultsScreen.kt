@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
@@ -24,6 +23,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -31,7 +31,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -52,7 +51,6 @@ import androidx.navigation.NavController
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.results.remote.Result
-import se.kjellstrand.webshooter.data.results.remote.StdMedal
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
 import se.kjellstrand.webshooter.ui.mock.ResultsViewModelMock
@@ -96,7 +94,12 @@ fun CompetitionResultsScreen(
                 .padding(horizontal = 16.dp)
         ) {
             Spacer(modifier = Modifier.height(16.dp))
-            ResultsList(resultsUiState, resultsViewModel.competitionId, navController, resultsUiState.resultsType)
+            ResultsList(
+                resultsUiState,
+                resultsViewModel.competitionId,
+                navController,
+                resultsUiState.resultsType
+            )
         }
     }
 
@@ -133,7 +136,8 @@ fun ResultsList(
                     && resultsUiState.allWeaponGroups.isNotEmpty()
 
             val allGroupsSelected =
-                resultsUiState.selectedWeaponGroups.toSet().containsAll(resultsUiState.allWeaponGroups.toSet())
+                resultsUiState.selectedWeaponGroups.toSet()
+                    .containsAll(resultsUiState.allWeaponGroups.toSet())
 
             val isLoading = if (noneSelected || allGroupsSelected) {
                 resultsUiState.groupedResults.isEmpty()
@@ -185,7 +189,9 @@ fun ResultsList(
                 item {
                     ResultsListHeader(isGrouped = false, resultsType = resultsType)
                 }
-                itemsIndexed(resultsUiState.filterResults, key = { _, it -> it.id }) { index, result ->
+                itemsIndexed(
+                    resultsUiState.filterResults,
+                    key = { _, it -> it.id }) { index, result ->
                     ResultItem(
                         result = result,
                         index = index,
@@ -238,11 +244,17 @@ fun ResultsListHeader(isGrouped: Boolean, resultsType: ResultsType = ResultsType
         }
         Row(
             modifier = Modifier
-                .weight(5f)
+                .weight(6f)
                 .padding(end = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Text(
+                text = stringResource(R.string.medal_short),
+                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.weight(1f)
+            )
             if (resultsType == ResultsType.FIELD) {
                 Text(
                     text = stringResource(R.string.hits_short),
@@ -258,17 +270,19 @@ fun ResultsListHeader(isGrouped: Boolean, resultsType: ResultsType = ResultsType
                 )
             }
             Text(
-                text = stringResource(R.string.medal_short),
-                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.weight(1f)
-            )
-            Text(
                 text = stringResource(R.string.points_short),
                 style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.weight(1f)
             )
+            if (resultsType != ResultsType.FIELD) {
+                Text(
+                    text = stringResource(R.string.x),
+                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(1f)
+                )
+            }
         }
     }
 }
@@ -367,11 +381,17 @@ fun ResultItem(
         // 4. Score (Right side) - Now split into 3 columns
         Row(
             modifier = Modifier
-                .weight(5f)
+                .weight(6f)
                 .padding(end = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Text(
+                text = result.stdMedal?.value ?: "-",
+                style = MaterialTheme.typography.bodySmall,
+                textAlign = TextAlign.Center,
+                modifier = Modifier.weight(1f)
+            )
             if (resultsType == ResultsType.FIELD) {
                 Text(
                     text = result.hits.toString(),
@@ -386,12 +406,6 @@ fun ResultItem(
                     modifier = Modifier.weight(1f)
                 )
             }
-            Text(
-                text = result.stdMedal?.value ?: "-",
-                style = MaterialTheme.typography.bodySmall,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.weight(1f)
-            )
             // Points
             Text(
                 text = result.points.toString(),
@@ -399,6 +413,14 @@ fun ResultItem(
                 textAlign = TextAlign.Center,
                 modifier = Modifier.weight(1f)
             )
+            if (resultsType != ResultsType.FIELD) {
+                Text(
+                    text = result.hits.toString(),
+                    style = MaterialTheme.typography.bodySmall,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.weight(1f)
+                )
+            }
         }
     }
 }
@@ -417,7 +439,10 @@ fun FilterBottomSheet(
         sheetState = bottomSheetState,
         content = {
             Column(modifier = Modifier.padding(16.dp)) {
-                Text(stringResource(R.string.select_weapon_groups), style = MaterialTheme.typography.titleMedium)
+                Text(
+                    stringResource(R.string.select_weapon_groups),
+                    style = MaterialTheme.typography.titleMedium
+                )
                 Spacer(modifier = Modifier.height(8.dp))
                 FilterOptionsContent(
                     weaponGroups = allWeaponGroups,
