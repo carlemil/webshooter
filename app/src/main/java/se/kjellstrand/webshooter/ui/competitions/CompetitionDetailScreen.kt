@@ -21,7 +21,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
-import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadges
 import se.kjellstrand.webshooter.ui.mock.CompetitionsViewModelMock
 
@@ -42,7 +41,10 @@ fun CompetitionDetailScreen(
 @Composable
 private fun DetailRow(label: String, value: String) {
     Column(modifier = Modifier.fillMaxWidth()) {
-        WeaponClassBadge(weaponGroupName = label, isHighlighted = false)
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium
+        )
         Text(
             text = value,
             style = MaterialTheme.typography.bodyMedium
@@ -112,7 +114,9 @@ fun CompetitionDetail(competition: Datum) {
                 Spacer(modifier = Modifier.height(8.dp))
                 DetailRow(
                     label = stringResource(R.string.team_signup, ""),
-                    value = if (competition.allowTeams == 1L) stringResource(R.string.yes) else stringResource(R.string.no)
+                    value = if (competition.allowTeams == 1L) stringResource(R.string.yes) else stringResource(
+                        R.string.no
+                    )
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 DetailRow(
@@ -138,9 +142,10 @@ fun CompetitionDetail(competition: Datum) {
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(modifier = Modifier.padding(12.dp)) {
-                WeaponClassBadge(
-                    weaponGroupName = stringResource(R.string.description),
-                    isHighlighted = false
+                Text(
+                    text = stringResource(R.string.description),
+                    style = MaterialTheme.typography.bodyMedium
+
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
