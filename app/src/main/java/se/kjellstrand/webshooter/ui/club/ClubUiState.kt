@@ -1,15 +1,16 @@
 package se.kjellstrand.webshooter.ui.club
 
+import se.kjellstrand.webshooter.data.club.remote.ClubData
 import se.kjellstrand.webshooter.data.club.remote.ClubMember
-import se.kjellstrand.webshooter.data.common.Club
 
 enum class ClubTab { INFORMATION, ADMINS, USERS }
 
 data class ClubUiState(
     val selectedTab: ClubTab = ClubTab.INFORMATION,
-    val clubInfo: Club? = null,
-    val admins: List<ClubMember> = emptyList(),
-    val users: List<ClubMember> = emptyList(),
+    val clubData: ClubData? = null,
     val isLoading: Boolean = false,
     val error: String? = null
-)
+) {
+    val admins: List<ClubMember> get() = clubData?.admins ?: emptyList()
+    val users: List<ClubMember> get() = clubData?.users ?: emptyList()
+}

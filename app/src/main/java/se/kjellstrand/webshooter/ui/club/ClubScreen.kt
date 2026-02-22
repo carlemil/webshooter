@@ -28,8 +28,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import se.kjellstrand.webshooter.R
+import se.kjellstrand.webshooter.data.club.remote.ClubData
 import se.kjellstrand.webshooter.data.club.remote.ClubMember
-import se.kjellstrand.webshooter.data.common.Club
 
 @Composable
 fun ClubScreen(viewModel: ClubViewModel = hiltViewModel()) {
@@ -62,7 +62,7 @@ fun ClubScreen(viewModel: ClubViewModel = hiltViewModel()) {
         }
 
         when (uiState.selectedTab) {
-            ClubTab.INFORMATION -> ClubInformationTab(uiState.clubInfo)
+            ClubTab.INFORMATION -> ClubInformationTab(uiState.clubData)
             ClubTab.ADMINS -> ClubMemberListTab(uiState.admins)
             ClubTab.USERS -> ClubMemberListTab(uiState.users)
         }
@@ -70,32 +70,41 @@ fun ClubScreen(viewModel: ClubViewModel = hiltViewModel()) {
 }
 
 @Composable
-private fun ClubInformationTab(club: Club?) {
+private fun ClubInformationTab(club: ClubData?) {
     if (club == null) return
 
-    LazyColumn(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
         item {
             Text(text = club.name, style = MaterialTheme.typography.headlineSmall)
             Spacer(modifier = Modifier.height(16.dp))
             InfoCard {
-                InfoRow(label = stringResource(R.string.club_number), value = club.clubsNr)
-                InfoRow(label = stringResource(R.string.email), value = club.email)
-                InfoRow(label = stringResource(R.string.phone), value = club.phone ?: "")
+                if (!club.clubsNr.isNullOrBlank()) InfoRow(stringResource(R.string.club_number), club.clubsNr)
+                if (!club.email.isNullOrBlank()) InfoRow(stringResource(R.string.email), club.email)
+                if (!club.phone.isNullOrBlank() && club.phone != "null") InfoRow(stringResource(R.string.phone), club.phone)
             }
             Spacer(modifier = Modifier.height(8.dp))
             InfoCard {
-                InfoRow(label = stringResource(R.string.address), value = club.addressStreet)
-                InfoRow(label = "", value = "${club.addressZipcode}  ${club.addressCity}")
-                if (!club.addressCountry.isNullOrBlank()) {
-                    InfoRow(label = "", value = club.addressCountry)
-                }
+                val street = club.addressStreet?.takeIf { it != "null" } ?: ""
+                val zip = club.addressZipcode?.takeIf { it != "null" } ?: ""
+                val city = club.addressCity?.takeIf { it != "null" } ?: ""
+                val country = club.addressCountry?.takeIf { it != "null" } ?: ""
+                if (street.isNotBlank()) InfoRow(stringResource(R.string.address), street)
+                if (zip.isNotBlank() || city.isNotBlank()) InfoRow("", "$zip  $city".trim())
+                if (country.isNotBlank()) InfoRow("", country)
             }
-            if (!club.bankgiro.isNullOrBlank() || !club.postgiro.isNullOrBlank() || club.swish.isNotBlank()) {
+            val hasBankgiro = !club.bankgiro.isNullOrBlank() && club.bankgiro != "null"
+            val hasPostgiro = !club.postgiro.isNullOrBlank() && club.postgiro != "null"
+            val hasSwish = !club.swish.isNullOrBlank()
+            if (hasBankgiro || hasPostgiro || hasSwish) {
                 Spacer(modifier = Modifier.height(8.dp))
                 InfoCard {
-                    if (!club.bankgiro.isNullOrBlank()) InfoRow(label = stringResource(R.string.bankgiro), value = club.bankgiro)
-                    if (!club.postgiro.isNullOrBlank()) InfoRow(label = stringResource(R.string.postgiro), value = club.postgiro)
-                    if (club.swish.isNotBlank()) InfoRow(label = stringResource(R.string.swish), value = club.swish)
+                    if (hasBankgiro) InfoRow(stringResource(R.string.bankgiro), club.bankgiro!!)
+                    if (hasPostgiro) InfoRow(stringResource(R.string.postgiro), club.postgiro!!)
+                    if (hasSwish) InfoRow(stringResource(R.string.swish), club.swish!!)
                 }
             }
         }
@@ -118,7 +127,11 @@ private fun InfoCard(content: @Composable () -> Unit) {
 
 @Composable
 private fun InfoRow(label: String, value: String) {
-    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+    ) {
         Row(modifier = Modifier.fillMaxWidth()) {
             if (label.isNotBlank()) {
                 Text(
@@ -127,12 +140,18 @@ private fun InfoRow(label: String, value: String) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.weight(0.35f)
                 )
+                Text(
+                    text = value,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.weight(0.65f)
+                )
+            } else {
+                Text(
+                    text = value,
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.fillMaxWidth()
+                )
             }
-            Text(
-                text = value,
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = if (label.isNotBlank()) Modifier.weight(0.65f) else Modifier.fillMaxWidth()
-            )
         }
         HorizontalDivider(modifier = Modifier.padding(top = 4.dp))
     }
@@ -147,7 +166,11 @@ private fun ClubMemberListTab(members: List<ClubMember>) {
         return
     }
 
-    LazyColumn(modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp, vertical = 8.dp)) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
         items(members) { member ->
             MemberItem(member)
             Spacer(modifier = Modifier.height(6.dp))
@@ -168,13 +191,6 @@ private fun MemberItem(member: ClubMember) {
                 text = member.fullname ?: "${member.name} ${member.lastname ?: ""}".trim(),
                 style = MaterialTheme.typography.titleSmall
             )
-            if (!member.userHasRole.isNullOrBlank()) {
-                Text(
-                    text = member.userHasRole,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
             if (!member.email.isNullOrBlank()) {
                 Text(
                     text = member.email,
@@ -182,9 +198,9 @@ private fun MemberItem(member: ClubMember) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            if (!member.phone.isNullOrBlank() || !member.mobile.isNullOrBlank()) {
+            if (!member.shootingCardNumber.isNullOrBlank()) {
                 Text(
-                    text = (member.phone ?: member.mobile) ?: "",
+                    text = member.shootingCardNumber,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
