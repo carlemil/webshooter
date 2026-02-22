@@ -13,10 +13,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -119,10 +126,8 @@ fun CompetitionsScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(competitions.data) { competition ->
-                    CompetitionItem(competition = competition,
-                        onDetailsClick = {
-                            navController.navigate(Screen.CompetitionDetail.createRoute(competition.id))
-                        },
+                    CompetitionItem(
+                        competition = competition,
                         onResultsClick = {
                             navController.navigate(
                                 Screen.CompetitionResults.createRoute(
@@ -130,7 +135,8 @@ fun CompetitionsScreen(
                                     competition.resultsType.name
                                 )
                             )
-                        })
+                        }
+                    )
                 }
             }
 
@@ -154,9 +160,10 @@ fun CompetitionsScreen(
 @Composable
 fun CompetitionItem(
     competition: Datum,
-    onDetailsClick: () -> Unit,
     onResultsClick: () -> Unit
 ) {
+    var isExpanded by remember { mutableStateOf(false) }
+
     Card(
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
@@ -165,54 +172,71 @@ fun CompetitionItem(
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Main content on the left
-            Column(
-                modifier = Modifier.weight(1f)
+        Column(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = competition.name,
-                    style = MaterialTheme.typography.titleSmall
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "${competition.date}  •  ${competition.statusHuman}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = stringResource(
-                        R.string.competition_type,
-                        competition.competitionType.name
-                    ),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.height(6.dp))
-                WeaponClassBadges(
-                    weaponClasses = competition.weaponClasses,
-                    userSignups = competition.userSignups
-                )
+                // Main content on the left
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = competition.name,
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "${competition.date}  •  ${competition.statusHuman}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(2.dp))
+                    Text(
+                        text = stringResource(
+                            R.string.competition_type,
+                            competition.competitionType.name
+                        ),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    WeaponClassBadges(
+                        weaponClasses = competition.weaponClasses,
+                        userSignups = competition.userSignups
+                    )
+                }
+
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.padding(start = 8.dp)
+                ) {
+                    Button(
+                        enabled = competition.status == "completed",
+                        onClick = onResultsClick
+                    ) {
+                        Text(stringResource(R.string.result))
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    IconButton(onClick = { isExpanded = !isExpanded }) {
+                        Icon(
+                            imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp
+                                          else Icons.Default.KeyboardArrowDown,
+                            contentDescription = if (isExpanded) stringResource(R.string.collapse)
+                                                 else stringResource(R.string.expand)
+                        )
+                    }
+                }
             }
 
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.padding(start = 8.dp)
-            ) {
-                Button(onClick = { onDetailsClick() }) {
-                    Text(stringResource(R.string.details))
-                }
-                Spacer(modifier = Modifier.height(8.dp))
-                Button(enabled = competition.status == "completed",
-                    onClick = { onResultsClick() }) {
-                    Text(stringResource(R.string.result))
+            AnimatedVisibility(visible = isExpanded) {
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    HorizontalDivider()
+                    CompetitionDetail(
+                        competition = competition,
+                        modifier = Modifier.padding(12.dp)
+                    )
                 }
             }
         }
