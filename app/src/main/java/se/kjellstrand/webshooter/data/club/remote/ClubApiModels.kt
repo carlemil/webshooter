@@ -1,27 +1,36 @@
 package se.kjellstrand.webshooter.data.club.remote
 
 import com.google.gson.annotations.SerializedName
-import se.kjellstrand.webshooter.data.common.Club
 
 data class ClubInfoResponse(
-    val club: Club
+    val club: ClubData
+)
+
+data class ClubData(
+    val id: Long,
+    @SerializedName("clubs_nr") val clubsNr: String?,
+    val name: String,
+    val email: String?,
+    val phone: String?,
+    @SerializedName("address_street") val addressStreet: String?,
+    @SerializedName("address_street_2") val addressStreet2: String?,
+    @SerializedName("address_zipcode") val addressZipcode: String?,
+    @SerializedName("address_city") val addressCity: String?,
+    @SerializedName("address_country") val addressCountry: String?,
+    val bankgiro: String?,
+    val postgiro: String?,
+    val swish: String?,
+    @SerializedName("logo_url") val logoUrl: String?,
+    val admins: List<ClubMember> = emptyList(),
+    val users: List<ClubMember> = emptyList()
 )
 
 data class ClubMember(
-    val id: Long,
+    @SerializedName("user_id") val userId: Long,
     val name: String,
     val lastname: String? = null,
     val fullname: String? = null,
     val email: String? = null,
-    val phone: String? = null,
-    val mobile: String? = null,
-    @SerializedName("user_has_role") val userHasRole: String? = null
-)
-
-data class ClubAdminsResponse(
-    val admins: List<ClubMember>
-)
-
-data class ClubUsersResponse(
-    val users: List<ClubMember>
+    @SerializedName("shooting_card_number") val shootingCardNumber: String? = null,
+    val status: String? = null
 )
