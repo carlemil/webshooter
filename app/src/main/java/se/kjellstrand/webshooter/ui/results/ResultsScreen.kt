@@ -42,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -223,70 +224,58 @@ fun ResultsListHeader(isGrouped: Boolean, resultsType: ResultsType = ResultsType
             .padding(horizontal = 8.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            text = stringResource(R.string.placement),
-            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier
-                .weight(2f)
-                .padding(start = 8.dp)
+        HeaderText(
+            R.string.placement, modifier = Modifier.weight(2f)
         )
-        Text(
-            text = stringResource(R.string.name),
-            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-            modifier = Modifier.weight(10f)
-        )
-        if (!isGrouped) {
-            Text(
-                text = stringResource(R.string.weapon_class_short),
-                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier.weight(2f)
-            )
-        } else {
-            Spacer(modifier = Modifier.weight(2f))
-        }
+        HeaderText(R.string.name, modifier = Modifier.weight(10f))
+
         Row(
-            modifier = Modifier
-                .weight(6f)
-                .padding(end = 8.dp),
+            modifier = Modifier.weight(if (isGrouped) 8f else 9f),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = stringResource(R.string.medal_short),
-                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.weight(1f)
-            )
-            if (resultsType == ResultsType.FIELD) {
-                Text(
-                    text = stringResource(R.string.hits_short),
-                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = stringResource(R.string.figures_short),
-                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(1f)
+            if (!isGrouped) {
+                HeaderText(
+                    R.string.weapon_class_short,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 4.dp)
                 )
             }
-            Text(
-                text = stringResource(R.string.points_short),
-                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.weight(1f)
-            )
-            if (resultsType != ResultsType.FIELD) {
-                Text(
-                    text = stringResource(R.string.x),
-                    style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(1f)
-                )
+            HeaderText(R.string.medal_short, modifier = Modifier.weight(1f))
+            when (resultsType) {
+                ResultsType.FIELD -> {
+                    HeaderText(R.string.hits_short, modifier = Modifier.weight(1f))
+                    HeaderText(R.string.figures_short, modifier = Modifier.weight(1f))
+                    HeaderText(R.string.points_short, modifier = Modifier.weight(1f))
+                }
+
+                ResultsType.PRECISION,
+                ResultsType.MILITARY -> {
+                    HeaderText(R.string.points_short, modifier = Modifier.weight(1f))
+                    HeaderText(R.string.x, modifier = Modifier.weight(1f))
+                }
             }
         }
     }
+}
+
+@Composable
+fun HeaderText(
+    stringRes: Int,
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Center,
+    style: TextStyle = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
+) {
+    Text(
+        text = stringResource(stringRes),
+        style = style,
+        textAlign = textAlign,
+        maxLines = 1,
+        softWrap = false,
+        overflow = TextOverflow.Clip,
+        modifier = modifier
+    )
 }
 
 @Composable
@@ -303,6 +292,7 @@ fun WeaponGroupSeparator(groupName: String) {
             color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
         )
         WeaponClassBadge(
+            modifier = Modifier.padding(vertical = 4.dp),
             weaponGroupName = groupName,
             isHighlighted = false,
             size = WeaponClassBadgeSize.Large
@@ -337,94 +327,72 @@ fun ResultItem(
             .padding(horizontal = 8.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // 1. Placement (Left side)
-        Text(
+        ItemText(
             text = result.placement.toString(),
             style = MaterialTheme.typography.labelLarge,
-            maxLines = 1,
-            softWrap = false, // Prevents wrapping to a second line
-            overflow = TextOverflow.Clip, // Cuts it off instead of using "..."
-            modifier = Modifier
-                .weight(2f)
-                .padding(start = 8.dp)
+            modifier = Modifier.weight(2f)
         )
 
-        // 2. Name & Club (Left center)
         Column(
             modifier = Modifier.weight(10f)
         ) {
-            Text(
+            ItemText(
                 text = "${result.signup.user.name} ${result.signup.user.lastname}",
-                style = MaterialTheme.typography.labelLarge,
-                maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            Text(
+            ItemText(
                 text = result.signup.club?.name ?: stringResource(R.string.unknown_club),
-                style = MaterialTheme.typography.bodySmall,
-                maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
         }
 
-        // 3. Weapon Class / Group (Center right)
-        if (!isGrouped) {
-            Text(
-                text = result.weaponClass.classname,
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.weight(2f),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        } else {
-            Spacer(modifier = Modifier.weight(2f))
-        }
-
-        // 4. Score (Right side) - Now split into 3 columns
         Row(
-            modifier = Modifier
-                .weight(6f)
-                .padding(end = 8.dp),
+            modifier = Modifier.weight(if (isGrouped) 8f else 9f),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = result.stdMedal?.value ?: "-",
-                style = MaterialTheme.typography.bodySmall,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.weight(1f)
-            )
-            if (resultsType == ResultsType.FIELD) {
-                Text(
-                    text = result.hits.toString(),
-                    style = MaterialTheme.typography.bodySmall,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = result.figureHits.toString(),
-                    style = MaterialTheme.typography.bodySmall,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(1f)
+            if (!isGrouped) {
+                ItemText(
+                    text = result.weaponClass.classname, modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 4.dp)
                 )
             }
-            // Points
-            Text(
-                text = result.points.toString(),
-                style = MaterialTheme.typography.bodySmall,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.weight(1f)
-            )
-            if (resultsType != ResultsType.FIELD) {
-                Text(
-                    text = result.hits.toString(),
-                    style = MaterialTheme.typography.bodySmall,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.weight(1f)
-                )
+            ItemText(text = result.stdMedal?.value ?: "-", modifier = Modifier.weight(1f))
+            when (resultsType) {
+                ResultsType.FIELD -> {
+                    ItemText(text = result.hits.toString(), modifier = Modifier.weight(1f))
+                    ItemText(text = result.figureHits.toString(), modifier = Modifier.weight(1f))
+                    ItemText(text = result.points.toString(), modifier = Modifier.weight(1f))
+                }
+
+                ResultsType.PRECISION,
+                ResultsType.MILITARY -> {
+                    ItemText(text = result.points.toString(), modifier = Modifier.weight(1f))
+                    ItemText(text = result.hits.toString(), modifier = Modifier.weight(1f))
+                }
             }
         }
     }
+}
+
+@Composable
+fun ItemText(
+    text: String,
+    modifier: Modifier = Modifier,
+    textAlign: TextAlign = TextAlign.Center,
+    style: TextStyle = MaterialTheme.typography.bodySmall, // TODO Bold for shooter .copy(fontWeight = FontWeight.Bold),
+    overflow: TextOverflow = TextOverflow.Clip
+) {
+    Text(
+        text = text,
+        style = style,
+        textAlign = textAlign,
+        maxLines = 1,
+        softWrap = false,
+        overflow = overflow,
+        modifier = modifier
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
