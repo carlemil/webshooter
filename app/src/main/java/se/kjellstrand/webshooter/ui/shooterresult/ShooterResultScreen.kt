@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -36,35 +37,37 @@ fun ShooterResultScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     Log.d("ShooterResultScreen", "uiState.isLoading: ${uiState.isLoading}")
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        if (uiState.isLoading) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
-        } else if (uiState.error != null) {
-            Text(text = "Error: ${uiState.error}")
-        } else {
-            Text(text = uiState.shooterName, style = MaterialTheme.typography.headlineMedium)
-            Spacer(modifier = Modifier.height(16.dp))
-            LazyColumn {
-                uiState.groupedResults.forEach { group ->
-                    item(key = "separator-${group.header}") {
-                        WeaponGroupSeparator(group.header)
-                    }
-                    items(group.items, key = { it.id }) { result ->
-                        StationResultsGrid(
-                            stationResults = result.results,
-                            resultsType = uiState.resultsType
-                        )
+    Surface(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp)
+        ) {
+            if (uiState.isLoading) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            } else if (uiState.error != null) {
+                Text(text = "Error: ${uiState.error}")
+            } else {
+                Text(text = uiState.shooterName, style = MaterialTheme.typography.headlineMedium)
+                Spacer(modifier = Modifier.height(16.dp))
+                LazyColumn {
+                    uiState.groupedResults.forEach { group ->
+                        item(key = "separator-${group.header}") {
+                            WeaponGroupSeparator(group.header)
+                        }
+                        items(group.items, key = { it.id }) { result ->
+                            StationResultsGrid(
+                                stationResults = result.results,
+                                resultsType = uiState.resultsType
+                            )
+                        }
                     }
                 }
             }
