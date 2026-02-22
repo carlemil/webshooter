@@ -86,9 +86,12 @@ fun AppNavHost(navController: NavHostController) {
             val signupViewModel: SignupViewModel = hiltViewModel()
             val competitionsState by competitionsViewModel.uiState.collectAsState()
             val signupState by signupViewModel.uiState.collectAsState()
-            val competition = competitionsState.competitions?.data?.find { it.id == competitionId }
+            val competition = remember(competitionId) {
+                competitionsState.competitions?.data?.find { it.id == competitionId }
+            }
             LaunchedEffect(signupState.isSuccess) {
                 if (signupState.isSuccess) {
+                    navController.popBackStack()
                     competitionsViewModel.reload()
                 }
             }
