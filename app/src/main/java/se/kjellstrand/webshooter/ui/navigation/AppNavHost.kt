@@ -13,7 +13,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import se.kjellstrand.webshooter.ui.competitions.CompetitionDetailScreen
 import se.kjellstrand.webshooter.ui.competitions.CompetitionsScreen
 import se.kjellstrand.webshooter.ui.competitions.CompetitionsViewModelImpl
 import se.kjellstrand.webshooter.ui.landingscreen.WebShooterScreen
@@ -42,17 +41,6 @@ fun AppNavHost(navController: NavHostController) {
         composable(Screen.CompetitionsList.route) {
             val competitionsViewModel: CompetitionsViewModelImpl = hiltViewModel()
             CompetitionsScreen(navController, competitionsViewModel)
-        }
-        composable(
-            route = Screen.CompetitionDetail.route,
-            arguments = listOf(navArgument("competitionId") { type = NavType.LongType })
-        ) { backStackEntry ->
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(Screen.LandingScreen.route)
-            }
-            val competitionId = backStackEntry.arguments?.getLong("competitionId") ?: -1
-            val competitionsViewModel: CompetitionsViewModelImpl = hiltViewModel(parentEntry)
-            CompetitionDetailScreen(competitionsViewModel, competitionId)
         }
         composable(
             route = Screen.CompetitionResults.route,
