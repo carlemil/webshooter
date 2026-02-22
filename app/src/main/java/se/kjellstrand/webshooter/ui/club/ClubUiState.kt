@@ -12,5 +12,6 @@ data class ClubUiState(
     val error: String? = null
 ) {
     val admins: List<ClubMember> get() = clubData?.admins ?: emptyList()
-    val users: List<ClubMember> get() = clubData?.users ?: emptyList()
+    val users: List<ClubMember> get() = (clubData?.users ?: emptyList())
+        .sortedBy { it.shootingCardNumber?.toIntOrNull() ?: Int.MAX_VALUE }
 }
