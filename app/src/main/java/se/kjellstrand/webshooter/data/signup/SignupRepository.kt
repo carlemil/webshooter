@@ -6,7 +6,6 @@ import okio.IOException
 import retrofit2.HttpException
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
-import se.kjellstrand.webshooter.data.signup.remote.SignupData
 import se.kjellstrand.webshooter.data.signup.remote.SignupRemoteDataSource
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -20,7 +19,7 @@ class SignupRepository @Inject constructor(
         weaponClassId: Long,
         userId: Long,
         note: String
-    ): Flow<Resource<SignupData, UserError>> = flow {
+    ): Flow<Resource<Unit, UserError>> = flow {
         emit(Resource.Loading(true))
         try {
             val fields = buildMap<String, String> {
@@ -30,9 +29,8 @@ class SignupRepository @Inject constructor(
                 if (note.isNotBlank()) put("note", note)
             }
             val response = remoteDataSource.signup(fields)
-            val data = response.body()?.signup
-            if (response.isSuccessful && data != null) {
-                emit(Resource.Success(data))
+            if (response.isSuccessful) {
+                emit(Resource.Success(Unit))
             } else {
                 emit(Resource.Error(UserError.HttpError))
             }
