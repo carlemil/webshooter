@@ -38,11 +38,6 @@ fun SignupScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    if (uiState.isSuccess) {
-        navController.popBackStack()
-        return
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
