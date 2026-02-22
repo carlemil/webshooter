@@ -17,6 +17,8 @@
     <string name="sign_up">Anmäl dig</string>
     <string name="note">Notering</string>
     <string name="select_weapon_class">Välj vapenklass</string>
+    <string name="current_signups">Nuvarande anmälningar</string>
+    <string name="remove_signup">Ta bort</string>
     <string name="done_button">Klar</string>
     <string name="figures">Figurer</string>
     <string name="figures_short">F</string>
