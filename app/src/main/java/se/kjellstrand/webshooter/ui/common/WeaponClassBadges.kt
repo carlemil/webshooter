@@ -73,11 +73,8 @@ fun WeaponClassBadge(
         }
     }
 
-    val outlineModifier = if (isHighlighted) {
-        Modifier.border(width = 2.dp, color = MaterialTheme.colorScheme.onPrimaryContainer, shape = shape)
-    } else {
-        Modifier
-    }
+    val borderWidth = if (isHighlighted) 2.dp else 1.dp
+    val outlineModifier = Modifier.border(width = borderWidth, color = MaterialTheme.colorScheme.onPrimaryContainer, shape = shape)
 
     Surface(
         color = MaterialTheme.colorScheme.primaryContainer,
