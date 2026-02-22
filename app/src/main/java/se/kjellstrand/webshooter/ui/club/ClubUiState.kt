@@ -11,7 +11,8 @@ data class ClubUiState(
     val isLoading: Boolean = false,
     val error: String? = null
 ) {
-    val admins: List<ClubMember> get() = clubData?.admins ?: emptyList()
+    val admins: List<ClubMember> get() = (clubData?.admins ?: emptyList())
+        .sortedWith(compareBy({ it.name }, { it.lastname }))
     val users: List<ClubMember> get() = (clubData?.users ?: emptyList())
-        .sortedBy { it.shootingCardNumber?.toIntOrNull() ?: Int.MAX_VALUE }
+        .sortedWith(compareBy({ it.name }, { it.lastname }))
 }
