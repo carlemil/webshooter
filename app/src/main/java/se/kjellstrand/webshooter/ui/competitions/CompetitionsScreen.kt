@@ -259,6 +259,117 @@ fun CompetitionItem(
     }
 }
 
+@Composable
+fun CompetitionDetail(competition: Datum, modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = competition.name,
+            style = MaterialTheme.typography.titleLarge
+        )
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Card(
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                DetailRow(
+                    label = stringResource(R.string.contact_name, ""),
+                    value = competition.contactName
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                DetailRow(
+                    label = stringResource(R.string.date, ""),
+                    value = competition.date
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                DetailRow(
+                    label = stringResource(R.string.status, ""),
+                    value = competition.statusHuman
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                DetailRow(
+                    label = stringResource(R.string.open_for_team_signup, ""),
+                    value = competition.signupsOpeningDate
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                DetailRow(
+                    label = stringResource(R.string.last_signup_date, ""),
+                    value = competition.signupsClosingDate
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                DetailRow(
+                    label = stringResource(R.string.late_signup, ""),
+                    value = competition.allowSignupsAfterClosingDateHuman
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                DetailRow(
+                    label = stringResource(R.string.team_signup, ""),
+                    value = if (competition.allowTeams == 1L) stringResource(R.string.yes) else stringResource(
+                        R.string.no
+                    )
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                DetailRow(
+                    label = stringResource(R.string.competition_type, ""),
+                    value = competition.competitionType.name
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                DetailRow(
+                    label = stringResource(R.string.result_calculation, ""),
+                    value = competition.resultsTypeHuman
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Card(
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Spacer(modifier = Modifier.height(4.dp))
+            Column(modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 4.dp)) {
+                Text(
+                    text = stringResource(R.string.description),
+                    style = MaterialTheme.typography.bodyMedium
+
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = competition.description,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun DetailRow(label: String, value: String) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium
+        )
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodyMedium
+        )
+        HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun CompetitionsScreenPreview() {
