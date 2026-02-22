@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -97,8 +98,9 @@ object ResultsUiComponents {
         onItemClick: () -> Unit
     ) {
         val isCurrentUser = result.signup.user.userID == loggedInUserId
-        val itemStyle = if (isCurrentUser) MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
-        else MaterialTheme.typography.bodySmall
+        val itemStyle =
+            if (isCurrentUser) MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
+            else MaterialTheme.typography.bodySmall
         val backgroundColor = if (index % 2 == 0) {
             MaterialTheme.colorScheme.surface
         } else {
@@ -144,21 +146,47 @@ object ResultsUiComponents {
                     ItemText(
                         text = result.weaponClass.classname,
                         style = itemStyle,
-                        modifier = Modifier.weight(1f).padding(start = 4.dp)
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(start = 4.dp)
                     )
                 }
-                ItemText(text = result.stdMedal?.value ?: "-", style = itemStyle, modifier = Modifier.weight(1f))
+                ItemText(
+                    text = result.stdMedal?.value ?: "-",
+                    style = itemStyle,
+                    modifier = Modifier.weight(1f)
+                )
                 when (resultsType) {
                     ResultsType.FIELD -> {
-                        ItemText(text = result.hits.toString(), style = itemStyle, modifier = Modifier.weight(1f))
-                        ItemText(text = result.figureHits.toString(), style = itemStyle, modifier = Modifier.weight(1f))
-                        ItemText(text = result.points.toString(), style = itemStyle, modifier = Modifier.weight(1f))
+                        ItemText(
+                            text = result.hits.toString(),
+                            style = itemStyle,
+                            modifier = Modifier.weight(1f)
+                        )
+                        ItemText(
+                            text = result.figureHits.toString(),
+                            style = itemStyle,
+                            modifier = Modifier.weight(1f)
+                        )
+                        ItemText(
+                            text = result.points.toString(),
+                            style = itemStyle,
+                            modifier = Modifier.weight(1f)
+                        )
                     }
 
                     ResultsType.PRECISION,
                     ResultsType.MILITARY -> {
-                        ItemText(text = result.points.toString(), style = itemStyle, modifier = Modifier.weight(1f))
-                        ItemText(text = result.hits.toString(), style = itemStyle, modifier = Modifier.weight(1f))
+                        ItemText(
+                            text = result.points.toString(),
+                            style = itemStyle,
+                            modifier = Modifier.weight(1f)
+                        )
+                        ItemText(
+                            text = result.hits.toString(),
+                            style = itemStyle,
+                            modifier = Modifier.weight(1f)
+                        )
                     }
                 }
             }
@@ -182,5 +210,32 @@ object ResultsUiComponents {
             overflow = overflow,
             modifier = modifier
         )
+    }
+
+    @Composable
+    fun WeaponGroupSeparator(groupName: String) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            HorizontalDivider(
+                modifier = Modifier.weight(1f),
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+            )
+            WeaponClassBadge(
+                modifier = Modifier.padding(vertical = 4.dp),
+                weaponGroupName = groupName,
+                isHighlighted = false,
+                size = WeaponClassBadgeSize.Large
+            )
+            HorizontalDivider(
+                modifier = Modifier.weight(1f),
+                thickness = 1.dp,
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
+            )
+        }
     }
 }

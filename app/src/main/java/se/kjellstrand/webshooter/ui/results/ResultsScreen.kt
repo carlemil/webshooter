@@ -48,6 +48,7 @@ import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.ResultItem
 import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.ResultsListHeader
+import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.WeaponGroupSeparator
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
 import se.kjellstrand.webshooter.ui.mock.ResultsViewModelMock
@@ -210,33 +211,6 @@ fun ResultsList(
                 }
             }
         }
-    }
-}
-
-@Composable
-fun WeaponGroupSeparator(groupName: String) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        HorizontalDivider(
-            modifier = Modifier.weight(1f),
-            thickness = 1.dp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
-        )
-        WeaponClassBadge(
-            modifier = Modifier.padding(vertical = 4.dp),
-            weaponGroupName = groupName,
-            isHighlighted = false,
-            size = WeaponClassBadgeSize.Large
-        )
-        HorizontalDivider(
-            modifier = Modifier.weight(1f),
-            thickness = 1.dp,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
-        )
     }
 }
 
