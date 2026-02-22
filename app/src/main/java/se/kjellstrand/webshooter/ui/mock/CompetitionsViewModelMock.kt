@@ -28,4 +28,8 @@ class CompetitionsViewModelMock() : ViewModel(),
     override fun setCompetitionStatus(status: CompetitionStatus) {
         // Do nothing in mock.
     }
+
+    override fun reload() {
+        // Do nothing in mock.
+    }
 }

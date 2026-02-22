@@ -1,6 +1,7 @@
 package se.kjellstrand.webshooter.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -84,7 +85,13 @@ fun AppNavHost(navController: NavHostController) {
             val competitionsViewModel: CompetitionsViewModelImpl = hiltViewModel(parentEntry)
             val signupViewModel: SignupViewModel = hiltViewModel()
             val competitionsState by competitionsViewModel.uiState.collectAsState()
+            val signupState by signupViewModel.uiState.collectAsState()
             val competition = competitionsState.competitions?.data?.find { it.id == competitionId }
+            LaunchedEffect(signupState.isSuccess) {
+                if (signupState.isSuccess) {
+                    competitionsViewModel.reload()
+                }
+            }
             if (competition != null) {
                 SignupScreen(competition, signupViewModel, navController)
             }
