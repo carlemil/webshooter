@@ -77,6 +77,12 @@ class CompetitionsViewModelImpl @Inject constructor(
         }
     }
 
+    override fun reload() {
+        _uiState.value = _uiState.value.copy(competitions = null, isLoading = true)
+        currentPage = 1
+        loadInitialPages()
+    }
+
     override fun getCompetitionById(competitionId: Long): Datum? {
         return uiState.value.competitions?.data?.find { it.id == competitionId }
     }

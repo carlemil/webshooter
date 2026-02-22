@@ -9,4 +9,5 @@ interface CompetitionsViewModel {
     fun getCompetitionById(competitionId: Long): Datum?
     fun loadNextPage()
     fun setCompetitionStatus(status: CompetitionStatus)
+    fun reload()
 }
