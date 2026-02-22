@@ -226,7 +226,7 @@ object ResultsUiComponents {
                 color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f)
             )
             WeaponClassBadge(
-                modifier = Modifier.padding(vertical = 4.dp),
+                modifier = Modifier.padding(top = 4.dp, bottom = 4.dp, start = 8.dp, end = 8.dp),
                 weaponGroupName = groupName,
                 isHighlighted = false,
                 size = WeaponClassBadgeSize.Large
