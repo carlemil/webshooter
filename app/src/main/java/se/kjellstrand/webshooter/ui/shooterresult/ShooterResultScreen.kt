@@ -28,6 +28,7 @@ import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.results.remote.StationResult
 import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.HeaderText
 import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.ItemText
+import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.WeaponGroupSeparator
 
 @Composable
 fun ShooterResultScreen(
@@ -55,11 +56,16 @@ fun ShooterResultScreen(
             Text(text = uiState.shooterName, style = MaterialTheme.typography.headlineMedium)
             Spacer(modifier = Modifier.height(16.dp))
             LazyColumn {
-                items(uiState.results) { result ->
-                    StationResultsGrid(
-                        stationResults = result.results,
-                        resultsType = uiState.resultsType
-                    )
+                uiState.groupedResults.forEach { group ->
+                    item(key = "separator-${group.header}") {
+                        WeaponGroupSeparator(group.header)
+                    }
+                    items(group.items, key = { it.id }) { result ->
+                        StationResultsGrid(
+                            stationResults = result.results,
+                            resultsType = uiState.resultsType
+                        )
+                    }
                 }
             }
         }
