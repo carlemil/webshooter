@@ -1,7 +1,6 @@
 package se.kjellstrand.webshooter.ui.competitions
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -54,18 +53,9 @@ private fun DetailRow(label: String, value: String) {
 }
 
 @Composable
-fun CompetitionDetail(competition: Datum) {
+fun CompetitionDetail(competition: Datum, modifier: Modifier = Modifier) {
     Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                PaddingValues(
-                    top = 16.dp,
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 16.dp
-                )
-            )
+        modifier = modifier.fillMaxWidth()
     ) {
         Text(
             text = competition.name,
