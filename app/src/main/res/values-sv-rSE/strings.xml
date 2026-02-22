@@ -28,6 +28,7 @@
     <string name="email">E-post</string>
     <string name="phone">Telefon</string>
     <string name="postgiro">Postgiro</string>
+    <string name="shooting_card_number">Pskn: %1$s</string>
     <string name="swish">Swish</string>
     <string name="remove_signup">Ta bort</string>
     <string name="done_button">Klar</string>

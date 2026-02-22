@@ -200,7 +200,14 @@ private fun MemberItem(member: ClubMember) {
             }
             if (!member.shootingCardNumber.isNullOrBlank()) {
                 Text(
-                    text = member.shootingCardNumber,
+                    text = stringResource(R.string.shooting_card_number, member.shootingCardNumber),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            if (!member.status.isNullOrBlank()) {
+                Text(
+                    text = member.status,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
