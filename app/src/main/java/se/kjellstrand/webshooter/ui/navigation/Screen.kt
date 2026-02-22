@@ -12,6 +12,7 @@ sealed class Screen(val route: String) {
             "competition_results/$competitionId/$resultsType"
     }
     object MyEntries : Screen("my_entries")
+    object Club : Screen("club")
     object Settings : Screen("settings")
     object ShooterResult : Screen("shooter_result/{competitionId}/{shooterId}/{resultsType}") {
         fun createRoute(competitionId: Int, shooterId: Int, resultsType: String) =
