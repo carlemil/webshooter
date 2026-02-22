@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.results.ResultsRepository
+import se.kjellstrand.webshooter.ui.results.ResultsViewModelImpl
 import javax.inject.Inject
 
 @HiltViewModel
@@ -50,6 +51,7 @@ class ShooterResultViewModel @Inject constructor(
                             isLoading = false,
                             shooterName = shooterName,
                             results = results,
+                            groupedResults = ResultsViewModelImpl.groupResults(results, resultsType),
                             resultsType = resultsType
                         )
                     }
