@@ -82,9 +82,9 @@ fun StationResultsGrid(stationResults: List<StationResult>, resultsType: Results
                     modifier = Modifier.weight(1f),
                     textAlign = androidx.compose.ui.text.style.TextAlign.Start
                 )
-                HeaderText(R.string.hits_short, modifier = Modifier.weight(1f))
-                HeaderText(R.string.figures_short, modifier = Modifier.weight(1f))
-                HeaderText(R.string.points_short, modifier = Modifier.weight(1f))
+                HeaderText(R.string.hits, modifier = Modifier.weight(1f))
+                HeaderText(R.string.figures, modifier = Modifier.weight(1f))
+                HeaderText(R.string.points, modifier = Modifier.weight(1f))
             }
 
             ResultsType.PRECISION,
@@ -94,7 +94,7 @@ fun StationResultsGrid(stationResults: List<StationResult>, resultsType: Results
                     modifier = Modifier.weight(1f),
                     textAlign = androidx.compose.ui.text.style.TextAlign.Start
                 )
-                HeaderText(R.string.points_short, modifier = Modifier.weight(1f))
+                HeaderText(R.string.points, modifier = Modifier.weight(1f))
                 HeaderText(R.string.x, modifier = Modifier.weight(1f))
             }
         }
