@@ -135,6 +135,11 @@ fun CompetitionsScreen(
                                     competition.resultsType.name
                                 )
                             )
+                        },
+                        onSignupClick = {
+                            navController.navigate(
+                                Screen.CompetitionSignup.createRoute(competition.id)
+                            )
                         }
                     )
                 }
@@ -160,7 +165,8 @@ fun CompetitionsScreen(
 @Composable
 fun CompetitionItem(
     competition: Datum,
-    onResultsClick: () -> Unit
+    onResultsClick: () -> Unit,
+    onSignupClick: () -> Unit = {}
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -217,6 +223,12 @@ fun CompetitionItem(
                         onClick = onResultsClick
                     ) {
                         Text(stringResource(R.string.result))
+                    }
+                    if (competition.status == "open") {
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Button(onClick = onSignupClick) {
+                            Text(stringResource(R.string.sign_up))
+                        }
                     }
                     Spacer(modifier = Modifier.height(4.dp))
                     IconButton(onClick = { isExpanded = !isExpanded }) {

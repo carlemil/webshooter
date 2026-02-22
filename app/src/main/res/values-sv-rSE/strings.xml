@@ -14,6 +14,9 @@
     <string name="details">Detaljer</string>
     <string name="expand">Expandera</string>
     <string name="collapse">Komprimera</string>
+    <string name="sign_up">Anmäl dig</string>
+    <string name="note">Notering</string>
+    <string name="select_weapon_class">Välj vapenklass</string>
     <string name="done_button">Klar</string>
     <string name="figures">Figurer</string>
     <string name="figures_short">F</string>
