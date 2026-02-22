@@ -230,16 +230,20 @@ fun CompetitionItem(
                             Text(stringResource(R.string.sign_up))
                         }
                     }
-                    Spacer(modifier = Modifier.height(4.dp))
-                    IconButton(onClick = { isExpanded = !isExpanded }) {
-                        Icon(
-                            imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp
-                                          else Icons.Default.KeyboardArrowDown,
-                            contentDescription = if (isExpanded) stringResource(R.string.collapse)
-                                                 else stringResource(R.string.expand)
-                        )
-                    }
                 }
+            }
+
+            HorizontalDivider()
+            IconButton(
+                onClick = { isExpanded = !isExpanded },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(
+                    imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp
+                                  else Icons.Default.KeyboardArrowDown,
+                    contentDescription = if (isExpanded) stringResource(R.string.collapse)
+                                         else stringResource(R.string.expand)
+                )
             }
 
             AnimatedVisibility(visible = isExpanded) {
