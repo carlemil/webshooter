@@ -39,6 +39,7 @@
     <string name="result">Resultat</string>
     <string name="result_calculation">Resultatberäkning: %1$s</string>
     <string name="select_weapon_groups">Välj vapengrupper</string>
+    <string name="serie">Serie</string>
     <string name="settings">Inställningar</string>
     <string name="station">Station</string>
     <string name="status">Status: %1$s</string>

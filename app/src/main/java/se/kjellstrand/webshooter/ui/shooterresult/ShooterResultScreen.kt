@@ -21,13 +21,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import se.kjellstrand.webshooter.R
+import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.results.remote.StationResult
-import se.kjellstrand.webshooter.ui.results.ResultItem
+import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.HeaderText
+import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.ItemText
 
 @Composable
 fun ShooterResultScreen(
@@ -56,8 +56,10 @@ fun ShooterResultScreen(
             Spacer(modifier = Modifier.height(16.dp))
             LazyColumn {
                 items(uiState.results) { result ->
-                    ResultItem(result = result, index = 0, isGrouped = false, resultsType = uiState.resultsType, onItemClick = {})
-                    StationResultsGrid(stationResults = result.results)
+                    StationResultsGrid(
+                        stationResults = result.results,
+                        resultsType = uiState.resultsType
+                    )
                 }
             }
         }
@@ -65,59 +67,78 @@ fun ShooterResultScreen(
 }
 
 @Composable
-fun StationResultsGrid(stationResults: List<StationResult>) {
-    Column(modifier = Modifier.padding(top = 8.dp)) {
-        // Header
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surfaceVariant)
-                .padding(8.dp)
-        ) {
-            Text(
-                text = stringResource(R.string.station),
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier.weight(1f)
-            )
-            Text(
-                text = stringResource(R.string.figure_hits),
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier.weight(1f),
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
-            )
-            Text(
-                text = stringResource(R.string.hits),
-                style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier.weight(1f),
-                textAlign = androidx.compose.ui.text.style.TextAlign.Center
-            )
-        }
-        HorizontalDivider()
+fun StationResultsGrid(stationResults: List<StationResult>, resultsType: ResultsType) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+            .padding(horizontal = 8.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        when (resultsType) {
+            ResultsType.FIELD -> {
+                HeaderText(
+                    R.string.station,
+                    modifier = Modifier.weight(1f),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Start
+                )
+                HeaderText(R.string.hits_short, modifier = Modifier.weight(1f))
+                HeaderText(R.string.figures_short, modifier = Modifier.weight(1f))
+                HeaderText(R.string.points_short, modifier = Modifier.weight(1f))
+            }
 
-        // Station data
+            ResultsType.PRECISION,
+            ResultsType.MILITARY -> {
+                HeaderText(
+                    R.string.serie,
+                    modifier = Modifier.weight(1f),
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Start
+                )
+                HeaderText(R.string.points_short, modifier = Modifier.weight(1f))
+                HeaderText(R.string.x, modifier = Modifier.weight(1f))
+            }
+        }
+    }
+    Column(modifier = Modifier.padding(top = 8.dp)) {
         stationResults.forEachIndexed { index, stationResult ->
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(8.dp)
             ) {
-                Text(
+                ItemText(
                     text = (index + 1).toString(),
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = stationResult.figureHits.toString(),
-                    style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.weight(1f),
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    textAlign = androidx.compose.ui.text.style.TextAlign.Start
                 )
-                Text(
-                    text = stationResult.hits.toString(),
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier.weight(1f),
-                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                )
+                when (resultsType) {
+                    ResultsType.FIELD -> {
+                        ItemText(
+                            text = stationResult.hits.toString(),
+                            modifier = Modifier.weight(1f),
+                        )
+                        ItemText(
+                            text = stationResult.figureHits.toString(),
+                            modifier = Modifier.weight(1f),
+                        )
+                        ItemText(
+                            text = stationResult.points.toString(),
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+
+                    ResultsType.PRECISION,
+                    ResultsType.MILITARY -> {
+                        ItemText(
+                            text = stationResult.points.toString(),
+                            modifier = Modifier.weight(1f),
+                        )
+                        ItemText(
+                            text = stationResult.hits.toString(),
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                }
             }
             HorizontalDivider()
         }

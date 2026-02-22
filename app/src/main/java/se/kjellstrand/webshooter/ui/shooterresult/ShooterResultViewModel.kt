@@ -43,7 +43,9 @@ class ShooterResultViewModel @Inject constructor(
                 when (resource) {
                     is Resource.Success -> {
                         val results = resource.data.results
-                        val shooterName = results.firstOrNull()?.signup?.user?.name ?: ""
+                        val shooterName =
+                            "${results.firstOrNull()?.signup?.user?.name} ${results.firstOrNull()?.signup?.user?.lastname}"
+                                ?: ""
                         _uiState.value = ShooterResultUiState(
                             isLoading = false,
                             shooterName = shooterName,
@@ -51,12 +53,14 @@ class ShooterResultViewModel @Inject constructor(
                             resultsType = resultsType
                         )
                     }
+
                     is Resource.Error -> {
                         _uiState.value = ShooterResultUiState(
                             isLoading = false,
                             error = resource.error.name
                         )
                     }
+
                     else -> {}
                 }
             }
