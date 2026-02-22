@@ -207,7 +207,7 @@ private fun MemberItem(member: ClubMember) {
             }
             if (!member.status.isNullOrBlank()) {
                 Text(
-                    text = member.status,
+                    text = stringResource(R.string.member_status, member.status),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
