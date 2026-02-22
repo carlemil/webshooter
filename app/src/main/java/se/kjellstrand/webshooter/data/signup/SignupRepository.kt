@@ -43,4 +43,23 @@ class SignupRepository @Inject constructor(
         }
         emit(Resource.Loading(false))
     }
+
+    fun removeSignup(signupId: Long): Flow<Resource<Unit, UserError>> = flow {
+        emit(Resource.Loading(true))
+        try {
+            val response = remoteDataSource.removeSignup(signupId)
+            if (response.isSuccessful) {
+                emit(Resource.Success(Unit))
+            } else {
+                emit(Resource.Error(UserError.HttpError))
+            }
+        } catch (e: IOException) {
+            emit(Resource.Error(UserError.IOError))
+        } catch (e: HttpException) {
+            emit(Resource.Error(UserError.HttpError))
+        } catch (e: Exception) {
+            emit(Resource.Error(UserError.UnknownError))
+        }
+        emit(Resource.Loading(false))
+    }
 }

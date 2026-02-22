@@ -18,6 +18,8 @@
     <string name="sign_up">Sign Up</string>
     <string name="note">Note</string>
     <string name="select_weapon_class">Select weapon class</string>
+    <string name="current_signups">Current signups</string>
+    <string name="remove_signup">Remove</string>
     <string name="done_button">Done</string>
     <string name="figures">Figures</string>
     <string name="figures_short">F</string>
