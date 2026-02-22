@@ -16,11 +16,13 @@ import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.results.ResultsRepository
 import se.kjellstrand.webshooter.data.results.remote.Result
+import se.kjellstrand.webshooter.data.settings.SettingsRepository
 import javax.inject.Inject
 
 @HiltViewModel
 open class ResultsViewModelImpl @Inject constructor(
     private val resultsRepository: ResultsRepository,
+    private val settingsRepository: SettingsRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel(), ResultsViewModel {
 
@@ -40,6 +42,17 @@ open class ResultsViewModelImpl @Inject constructor(
 
     init {
         getResults(competitionId)
+        getLoggedInUserId()
+    }
+
+    private fun getLoggedInUserId() {
+        viewModelScope.launch {
+            settingsRepository.getUserProfile().collect { resource ->
+                if (resource is Resource.Success) {
+                    _uiState.update { it.copy(loggedInUserId = resource.data.userId) }
+                }
+            }
+        }
     }
 
     private fun getResults(competitionId: Int) {
@@ -51,15 +64,17 @@ open class ResultsViewModelImpl @Inject constructor(
                             _resultsEvent.emit(ResultsEvent.Empty)
                         } else {
                             println("getResults Success: ${resource.data}")
-                            _uiState.value = ResultsUiState(
-                                results = resource.data.results,
-                                filterResults = filterResults(resource.data.results, resultsType),
-                                groupedResults = groupResults(resource.data.results, resultsType),
-                                allWeaponGroups = getWeaponGroups(resource.data.results).toList().sorted(),
-                                selectedWeaponGroups = getWeaponGroups(resource.data.results),
-                                isLoading = false,
-                                resultsType = resultsType
-                            )
+                            _uiState.update { current ->
+                                current.copy(
+                                    results = resource.data.results,
+                                    filterResults = filterResults(resource.data.results, resultsType),
+                                    groupedResults = groupResults(resource.data.results, resultsType),
+                                    allWeaponGroups = getWeaponGroups(resource.data.results).toList().sorted(),
+                                    selectedWeaponGroups = getWeaponGroups(resource.data.results),
+                                    isLoading = false,
+                                    resultsType = resultsType
+                                )
+                            }
                         }
                     }
 

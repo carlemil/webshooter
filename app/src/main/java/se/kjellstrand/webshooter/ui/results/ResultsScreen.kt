@@ -174,6 +174,7 @@ fun ResultsList(
                             index = index,
                             isGrouped = true,
                             resultsType = resultsType,
+                            loggedInUserId = resultsUiState.loggedInUserId,
                             onItemClick = {
                                 navController.navigate(
                                     Screen.ShooterResult.createRoute(
@@ -199,6 +200,7 @@ fun ResultsList(
                         index = index,
                         isGrouped = false,
                         resultsType = resultsType,
+                        loggedInUserId = resultsUiState.loggedInUserId,
                         onItemClick = {
                             navController.navigate(
                                 Screen.ShooterResult.createRoute(
@@ -311,8 +313,12 @@ fun ResultItem(
     index: Int,
     isGrouped: Boolean,
     resultsType: ResultsType = ResultsType.FIELD,
+    loggedInUserId: Long = -1L,
     onItemClick: () -> Unit
 ) {
+    val isCurrentUser = result.signup.user.userID == loggedInUserId
+    val itemStyle = if (isCurrentUser) MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
+                    else MaterialTheme.typography.bodySmall
     val backgroundColor = if (index % 2 == 0) {
         MaterialTheme.colorScheme.surface
     } else {
@@ -329,7 +335,9 @@ fun ResultItem(
     ) {
         ItemText(
             text = result.placement.toString(),
-            style = MaterialTheme.typography.labelLarge,
+            style = MaterialTheme.typography.labelLarge.let {
+                if (isCurrentUser) it.copy(fontWeight = FontWeight.Bold) else it
+            },
             modifier = Modifier.weight(2f)
         )
 
@@ -338,6 +346,7 @@ fun ResultItem(
         ) {
             ItemText(
                 text = "${result.signup.user.name} ${result.signup.user.lastname}",
+                style = itemStyle,
                 overflow = TextOverflow.Ellipsis
             )
             ItemText(
@@ -353,23 +362,23 @@ fun ResultItem(
         ) {
             if (!isGrouped) {
                 ItemText(
-                    text = result.weaponClass.classname, modifier = Modifier
-                        .weight(1f)
-                        .padding(start = 4.dp)
+                    text = result.weaponClass.classname,
+                    style = itemStyle,
+                    modifier = Modifier.weight(1f).padding(start = 4.dp)
                 )
             }
-            ItemText(text = result.stdMedal?.value ?: "-", modifier = Modifier.weight(1f))
+            ItemText(text = result.stdMedal?.value ?: "-", style = itemStyle, modifier = Modifier.weight(1f))
             when (resultsType) {
                 ResultsType.FIELD -> {
-                    ItemText(text = result.hits.toString(), modifier = Modifier.weight(1f))
-                    ItemText(text = result.figureHits.toString(), modifier = Modifier.weight(1f))
-                    ItemText(text = result.points.toString(), modifier = Modifier.weight(1f))
+                    ItemText(text = result.hits.toString(), style = itemStyle, modifier = Modifier.weight(1f))
+                    ItemText(text = result.figureHits.toString(), style = itemStyle, modifier = Modifier.weight(1f))
+                    ItemText(text = result.points.toString(), style = itemStyle, modifier = Modifier.weight(1f))
                 }
 
                 ResultsType.PRECISION,
                 ResultsType.MILITARY -> {
-                    ItemText(text = result.points.toString(), modifier = Modifier.weight(1f))
-                    ItemText(text = result.hits.toString(), modifier = Modifier.weight(1f))
+                    ItemText(text = result.points.toString(), style = itemStyle, modifier = Modifier.weight(1f))
+                    ItemText(text = result.hits.toString(), style = itemStyle, modifier = Modifier.weight(1f))
                 }
             }
         }
@@ -381,7 +390,7 @@ fun ItemText(
     text: String,
     modifier: Modifier = Modifier,
     textAlign: TextAlign = TextAlign.Center,
-    style: TextStyle = MaterialTheme.typography.bodySmall, // TODO Bold for shooter .copy(fontWeight = FontWeight.Bold),
+    style: TextStyle = MaterialTheme.typography.bodySmall,
     overflow: TextOverflow = TextOverflow.Clip
 ) {
     Text(
