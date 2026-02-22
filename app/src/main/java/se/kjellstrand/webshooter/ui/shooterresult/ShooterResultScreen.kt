@@ -148,5 +148,51 @@ fun StationResultsGrid(stationResults: List<StationResult>, resultsType: Results
             }
             HorizontalDivider()
         }
+        // Summary row
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                .padding(8.dp)
+        ) {
+            ItemText(
+                text = "",
+                modifier = Modifier.weight(1f),
+            )
+            when (resultsType) {
+                ResultsType.FIELD -> {
+                    ItemText(
+                        text = stationResults.sumOf { it.hits }.toString(),
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                    )
+                    ItemText(
+                        text = stationResults.sumOf { it.figureHits }.toString(),
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                    )
+                    ItemText(
+                        text = stationResults.sumOf { it.points }.toString(),
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                    )
+                }
+
+                ResultsType.PRECISION,
+                ResultsType.MILITARY -> {
+                    ItemText(
+                        text = stationResults.sumOf { it.points }.toString(),
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                    )
+                    ItemText(
+                        text = stationResults.sumOf { it.hits }.toString(),
+                        modifier = Modifier.weight(1f),
+                        style = MaterialTheme.typography.bodySmall.copy(fontWeight = androidx.compose.ui.text.font.FontWeight.Bold)
+                    )
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
