@@ -12,6 +12,8 @@
     <string name="date">Datum: %1$s</string>
     <string name="description">Beskrivning:</string>
     <string name="details">Detaljer</string>
+    <string name="expand">Expandera</string>
+    <string name="collapse">Komprimera</string>
     <string name="done_button">Klar</string>
     <string name="figures">Figurer</string>
     <string name="figures_short">F</string>
