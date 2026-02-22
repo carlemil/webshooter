@@ -33,6 +33,7 @@ fun WeaponClassBadges(
             @Suppress("UNNECESSARY_SAFE_CALL")
             weaponClass.classname?.let {
                 WeaponClassBadge(
+                    modifier = Modifier.padding(2.dp),
                     weaponGroupName = it,
                     isHighlighted = isHighlighted,
                     size = WeaponClassBadgeSize.Small
@@ -80,7 +81,6 @@ fun WeaponClassBadge(
         color = MaterialTheme.colorScheme.primaryContainer,
         shape = shape,
         modifier = modifier
-            .padding(end = 4.dp, bottom = 4.dp)
             .then(outlineModifier)
     ) {
         Text(
