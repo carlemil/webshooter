@@ -10,50 +10,31 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.data.club.ClubRepository
 import se.kjellstrand.webshooter.data.common.Resource
-import se.kjellstrand.webshooter.data.settings.SettingsRepository
 import javax.inject.Inject
 
 @HiltViewModel
 class ClubViewModel @Inject constructor(
-    private val clubRepository: ClubRepository,
-    private val settingsRepository: SettingsRepository
+    private val clubRepository: ClubRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ClubUiState(isLoading = true))
     val uiState: StateFlow<ClubUiState> = _uiState.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            settingsRepository.getUserProfile().collect { resource ->
-                if (resource is Resource.Success) {
-                    val clubId = resource.data.clubsId
-                    loadAll(clubId)
-                }
-            }
-        }
+        load()
     }
 
-    private fun loadAll(clubId: Long) {
+    private fun load() {
         viewModelScope.launch {
-            clubRepository.getClubInfo(clubId).collect { resource ->
+            clubRepository.getUserClub().collect { resource ->
                 when (resource) {
-                    is Resource.Success -> _uiState.update { it.copy(clubInfo = resource.data.club, isLoading = false) }
-                    is Resource.Error -> _uiState.update { it.copy(error = resource.error.name, isLoading = false) }
+                    is Resource.Success -> _uiState.update {
+                        it.copy(clubData = resource.data.club, isLoading = false, error = null)
+                    }
+                    is Resource.Error -> _uiState.update {
+                        it.copy(error = resource.error.name, isLoading = false)
+                    }
                     is Resource.Loading -> _uiState.update { it.copy(isLoading = resource.isLoading) }
-                }
-            }
-        }
-        viewModelScope.launch {
-            clubRepository.getClubAdmins(clubId).collect { resource ->
-                if (resource is Resource.Success) {
-                    _uiState.update { it.copy(admins = resource.data.admins) }
-                }
-            }
-        }
-        viewModelScope.launch {
-            clubRepository.getClubUsers(clubId).collect { resource ->
-                if (resource is Resource.Success) {
-                    _uiState.update { it.copy(users = resource.data.users) }
                 }
             }
         }
