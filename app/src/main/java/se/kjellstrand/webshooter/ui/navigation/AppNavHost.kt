@@ -2,6 +2,8 @@ package se.kjellstrand.webshooter.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -18,6 +20,8 @@ import se.kjellstrand.webshooter.ui.login.LoginScreen
 import se.kjellstrand.webshooter.ui.results.CompetitionResultsScreen
 import se.kjellstrand.webshooter.ui.results.ResultsViewModelImpl
 import se.kjellstrand.webshooter.ui.shooterresult.ShooterResultScreen
+import se.kjellstrand.webshooter.ui.signup.SignupScreen
+import se.kjellstrand.webshooter.ui.signup.SignupViewModel
 
 @Composable
 fun AppNavHost(navController: NavHostController) {
@@ -68,6 +72,22 @@ fun AppNavHost(navController: NavHostController) {
             )
         ) {
             ShooterResultScreen()
+        }
+        composable(
+            route = Screen.CompetitionSignup.route,
+            arguments = listOf(navArgument("competitionId") { type = NavType.LongType })
+        ) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) {
+                navController.getBackStackEntry(Screen.LandingScreen.route)
+            }
+            val competitionId = backStackEntry.arguments?.getLong("competitionId") ?: -1L
+            val competitionsViewModel: CompetitionsViewModelImpl = hiltViewModel(parentEntry)
+            val signupViewModel: SignupViewModel = hiltViewModel()
+            val competitionsState by competitionsViewModel.uiState.collectAsState()
+            val competition = competitionsState.competitions?.data?.find { it.id == competitionId }
+            if (competition != null) {
+                SignupScreen(competition, signupViewModel, navController)
+            }
         }
     }
 }
