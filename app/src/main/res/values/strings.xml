@@ -44,7 +44,7 @@
     <string name="station">Station</string>
     <string name="status">Status: %1$s</string>
     <string name="team_signup">Team signup: %1$s</string>
-    <string name="title_activity_main">WebShooter</string>
+    <string name="title_activity_main">AppShooter</string>
     <string name="unknown_club">Unknown club</string>
     <string name="username">Username</string>
     <string name="weapon_class">Class</string>

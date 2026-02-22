@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#222222"/>
+      <stop offset="100%" style="stop-color:#111111"/>
+    </linearGradient>
+    <linearGradient id="tealGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2ecfcf"/>
+      <stop offset="100%" style="stop-color:#009e9e"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Rounded square background -->
+  <rect x="0" y="0" width="1024" height="1024" rx="220" ry="220" fill="url(#bgGrad)"/>
+
+  <!-- OUTER RING teal -->
+  <circle cx="512" cy="512" r="440" fill="url(#tealGrad)"/>
+  <!-- Gap -->
+  <circle cx="512" cy="512" r="396" fill="#1a1a1a"/>
+  <!-- MIDDLE RING teal -->
+  <circle cx="512" cy="512" r="352" fill="url(#tealGrad)"/>
+  <!-- Inner dark -->
+  <circle cx="512" cy="512" r="308" fill="#1a1a1a"/>
+  <!-- Center dot teal -->
+  <circle cx="512" cy="512" r="76" fill="url(#tealGrad)"/>
+  <!-- Center dot hole -->
+  <circle cx="512" cy="512" r="34" fill="#1a1a1a"/>
+
+  <!-- SHOOTER text cuts across — dark band behind it to slice rings -->
+  <rect x="0" y="432" width="1024" height="162" fill="#1a1a1a"/>
+
+  <!-- SHOOTER bold white text -->
+  <text
+    x="512" y="574"
+    font-family="'Arial Black', 'Haettenschweiler', Impact, sans-serif"
+    font-size="172"
+    font-weight="900"
+    fill="white"
+    text-anchor="middle"
+    letter-spacing="-2"
+  >SHOOTER</text>
+
+  <!-- APP straight text just above SHOOTER -->
+  <text x="512" y="422" font-family="'Arial Black', Impact, sans-serif" font-size="80" font-weight="900" fill="white" text-anchor="middle" letter-spacing="28">APP</text>
+
+  <!-- CEKJ AB straight text just below SHOOTER -->
+  <text x="512" y="648" font-family="'Arial Black', Impact, sans-serif" font-size="72" font-weight="900" fill="white" text-anchor="middle" letter-spacing="12">CEKJ AB</text>
+
+</svg>

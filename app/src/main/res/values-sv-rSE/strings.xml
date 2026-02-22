@@ -43,7 +43,7 @@
     <string name="station">Station</string>
     <string name="status">Status: %1$s</string>
     <string name="team_signup">Lagtävling: %1$s</string>
-    <string name="title_activity_main">HuvudAktivitet</string>
+    <string name="title_activity_main">AppShooter</string>
     <string name="unknown_club">Okänd klubb</string>
     <string name="username">Användarnamn</string>
     <string name="weapon_class">Klass</string>
