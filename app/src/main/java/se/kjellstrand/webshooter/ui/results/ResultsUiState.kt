@@ -11,7 +11,8 @@ data class ResultsUiState(
     val selectedWeaponGroups: Set<String> = emptySet(),
     var mode: Mode = Mode.GROUP,
     val isLoading: Boolean = false,
-    val resultsType: ResultsType = ResultsType.FIELD
+    val resultsType: ResultsType = ResultsType.FIELD,
+    val loggedInUserId: Long = -1L
 )
 
 data class GroupedItem(
