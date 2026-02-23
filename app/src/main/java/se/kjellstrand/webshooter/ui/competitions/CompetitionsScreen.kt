@@ -42,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -98,10 +99,9 @@ fun CompetitionsScreen(
                     CompetitionStatus.entries.forEach { status ->
                         DropdownMenuItem(
                             text = {
-                                WeaponClassBadge(
-                                    weaponGroupName = stringResource(status.labelRes),
-                                    isHighlighted = status == selectedStatus,
-                                    size = WeaponClassBadgeSize.Medium
+                                Text(
+                                    text = stringResource(status.labelRes),
+                                    style = MaterialTheme.typography.bodyMedium
                                 )
                             },
                             onClick = {
