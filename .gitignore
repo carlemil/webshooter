@@ -5,6 +5,9 @@ build/
 # Local configuration file (sdk path, etc)
 local.properties
 
+# Android App Bundle build artifacts
+*.aab
+
 # Log/OS Files
 *.log
 
