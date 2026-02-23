@@ -8,14 +8,14 @@ plugins {
 
 android {
     namespace = "se.kjellstrand.webshooter"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "se.kjellstrand.webshooter"
         minSdk = 26
-        targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        targetSdk = 35
+        versionCode = 2
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
