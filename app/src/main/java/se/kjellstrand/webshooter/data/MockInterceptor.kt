@@ -8,6 +8,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.Protocol
 import okhttp3.Response
 import okhttp3.ResponseBody.Companion.toResponseBody
+import se.kjellstrand.webshooter.BuildConfig
 import se.kjellstrand.webshooter.R
 import java.io.IOException
 import javax.inject.Inject
@@ -18,6 +19,10 @@ open class MockInterceptor @Inject constructor(
     @ApplicationContext private val context: Context
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
+        if (BuildConfig.FLAVOR != "mock" && !MockModeManager.isMockMode) {
+            return chain.proceed(chain.request())
+        }
+
         val request = chain.request()
 
         val responseString = when (request.url.encodedPath) {
