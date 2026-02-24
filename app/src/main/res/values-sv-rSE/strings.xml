@@ -72,4 +72,5 @@
     <string name="weapon_group">Vapengrupp: </string>
     <string name="x">X</string>
     <string name="yes">Ja</string>
+    <string name="no_competitions_match_filter">Din aktuella sökning matchar inte någon tävling.</string>
 </resources>

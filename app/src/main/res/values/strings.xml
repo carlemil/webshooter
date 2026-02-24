@@ -73,4 +73,5 @@
     <string name="weapon_group">Weapon group: </string>
     <string name="x">X</string>
     <string name="yes">Yes</string>
+    <string name="no_competitions_match_filter">Your current search does not match any competition.</string>
 </resources>

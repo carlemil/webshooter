@@ -114,45 +114,52 @@ fun CompetitionsScreen(
         }
 
         competitionsState.competitions?.let { competitions ->
-            LazyColumn(
-                state = listState,
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(
-                    top = 8.dp, start = 16.dp, end = 16.dp, bottom = 16.dp
-                ),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                val displayedCompetitions = if (selectedStatus == CompetitionStatus.MY_ENTRIES) {
-                    competitions.data.filter { it.userSignups.isNotEmpty() }
-                } else {
-                    competitions.data
-                }
-                items(displayedCompetitions) { competition ->
-                    CompetitionItem(
-                        competition = competition,
-                        onResultsClick = {
-                            navController.navigate(
-                                Screen.CompetitionResults.createRoute(
-                                    competition.id.toInt(),
-                                    competition.resultsType.name
-                                )
-                            )
-                        },
-                        onSignupClick = {
-                            navController.navigate(
-                                Screen.CompetitionSignup.createRoute(competition.id)
-                            )
-                        }
-                    )
-                }
+            val displayedCompetitions = if (selectedStatus == CompetitionStatus.MY_ENTRIES) {
+                competitions.data.filter { it.userSignups.isNotEmpty() }
+            } else {
+                competitions.data
             }
 
-            // Load more items when reaching the end of the list
-            LaunchedEffect(listState) {
-                val lastVisibleItemIndex =
-                    listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
-                if (lastVisibleItemIndex != null && lastVisibleItemIndex >= competitions.data.size - 5) {
-                    competitionsViewModel.loadNextPage()
+            if (displayedCompetitions.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text(stringResource(R.string.no_competitions_match_filter))
+                }
+            } else {
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(
+                        top = 8.dp, start = 16.dp, end = 16.dp, bottom = 16.dp
+                    ),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(displayedCompetitions) { competition ->
+                        CompetitionItem(
+                            competition = competition,
+                            onResultsClick = {
+                                navController.navigate(
+                                    Screen.CompetitionResults.createRoute(
+                                        competition.id.toInt(),
+                                        competition.resultsType.name
+                                    )
+                                )
+                            },
+                            onSignupClick = {
+                                navController.navigate(
+                                    Screen.CompetitionSignup.createRoute(competition.id)
+                                )
+                            }
+                        )
+                    }
+                }
+
+                // Load more items when reaching the end of the list
+                LaunchedEffect(listState) {
+                    val lastVisibleItemIndex =
+                        listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+                    if (lastVisibleItemIndex != null && lastVisibleItemIndex >= competitions.data.size - 5) {
+                        competitionsViewModel.loadNextPage()
+                    }
                 }
             }
 
