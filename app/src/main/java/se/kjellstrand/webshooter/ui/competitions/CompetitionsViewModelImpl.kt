@@ -52,9 +52,13 @@ class CompetitionsViewModelImpl @Inject constructor(
     }
 
     private fun loadCompetitions(page: Int, pageSize: Int) {
-        val apiStatus = if (competitionStatus == CompetitionStatus.MY_ENTRIES) CompetitionStatus.ALL else competitionStatus
+        val flow = if (competitionStatus == CompetitionStatus.MY_ENTRIES) {
+            competitionsRepository.getMyEntriesPage(page)
+        } else {
+            competitionsRepository.get(page, pageSize, competitionStatus)
+        }
         viewModelScope.launch {
-            competitionsRepository.get(page, pageSize, apiStatus).collect { resource ->
+            flow.collect { resource ->
                 when (resource) {
                     is Resource.Success -> {
                         val currentCompetitions = _uiState.value.competitions?.data ?: emptyList()
