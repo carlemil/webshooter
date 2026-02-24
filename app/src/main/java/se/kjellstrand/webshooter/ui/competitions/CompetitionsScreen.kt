@@ -1,5 +1,6 @@
 package se.kjellstrand.webshooter.ui.competitions
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -21,14 +21,14 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -42,7 +42,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -51,8 +50,6 @@ import androidx.navigation.compose.rememberNavController
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.common.CompetitionStatus
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
-import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
-import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadges
 import se.kjellstrand.webshooter.ui.mock.CompetitionsViewModelMock
 import se.kjellstrand.webshooter.ui.navigation.Screen
@@ -125,7 +122,12 @@ fun CompetitionsScreen(
                 ),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                items(competitions.data) { competition ->
+                val displayedCompetitions = if (selectedStatus == CompetitionStatus.MY_ENTRIES) {
+                    competitions.data.filter { it.userSignups.isNotEmpty() }
+                } else {
+                    competitions.data
+                }
+                items(displayedCompetitions) { competition ->
                     CompetitionItem(
                         competition = competition,
                         onResultsClick = {
@@ -240,9 +242,9 @@ fun CompetitionItem(
             ) {
                 Icon(
                     imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp
-                                  else Icons.Default.KeyboardArrowDown,
+                    else Icons.Default.KeyboardArrowDown,
                     contentDescription = if (isExpanded) stringResource(R.string.collapse)
-                                         else stringResource(R.string.expand)
+                    else stringResource(R.string.expand)
                 )
             }
 
