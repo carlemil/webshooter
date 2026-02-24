@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.data.AuthTokenManager
+import se.kjellstrand.webshooter.data.MockModeManager
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.cookies.CookiesRepository
 import se.kjellstrand.webshooter.data.login.LoginRepository
@@ -48,6 +49,19 @@ class LoginViewModel @Inject constructor(
 
     fun login(username: String, password: String, isAutoLogin: Boolean = false) {
         viewModelScope.launch {
+            if (username == "mockuser" && password == "mockpassword") {
+                MockModeManager.isMockMode = true
+                authTokenManager.storeToken("mock_token")
+                securePrefs.saveCredentials(username, password)
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    isSuccess = true,
+                    autoLoginAttempted = true
+                )
+                _eventFlow.emit(UiEvent.NavigateToLandingPage)
+                return@launch
+            }
+
             loginRepository.login(username, username, password)
                 .collect { resource ->
                     when (resource) {

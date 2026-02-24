@@ -33,7 +33,6 @@ class NetworkModule {
         cookieJar: AuthCookieJar,
         authInterceptor: AuthInterceptor
     ): OkHttpClient {
-        val currentFlavor = BuildConfig.FLAVOR
         val okHttpClient = OkHttpClient.Builder()
             .followRedirects(followRedirects = true)
             .followSslRedirects(followProtocolRedirects = true)
@@ -43,10 +42,7 @@ class NetworkModule {
         okHttpClient.addInterceptor(authInterceptor)
         okHttpClient.addInterceptor(cookieHeadersInterceptor)
         okHttpClient.addInterceptor(HttpLoggingInterceptor().apply { level = BODY })
-
-        if (currentFlavor == "mock") {
-            okHttpClient.addInterceptor(mockInterceptor)
-        }
+        okHttpClient.addInterceptor(mockInterceptor)
 
         return okHttpClient.build()
     }
