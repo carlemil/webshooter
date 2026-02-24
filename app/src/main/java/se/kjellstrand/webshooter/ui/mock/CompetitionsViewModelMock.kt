@@ -13,7 +13,7 @@ class CompetitionsViewModelMock() : ViewModel(),
     override val uiState: StateFlow<CompetitionsUiState>
         get() {
             return MutableStateFlow(
-                CompetitionsUiState(MockCompetitions().competitions, CompetitionStatus.COMPLETED)
+                CompetitionsUiState(MockCompetitions().competitions, CompetitionStatus.ALL)
             )
         }
 
