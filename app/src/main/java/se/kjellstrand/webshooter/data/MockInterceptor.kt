@@ -19,7 +19,7 @@ open class MockInterceptor @Inject constructor(
     @ApplicationContext private val context: Context
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
-        if (BuildConfig.FLAVOR != "mock" && !MockModeManager.isMockMode) {
+        if (!MockModeManager.isMockMode) {
             return chain.proceed(chain.request())
         }
 
