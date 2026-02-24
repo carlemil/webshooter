@@ -39,7 +39,6 @@ import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.ui.club.ClubScreen
 import se.kjellstrand.webshooter.ui.competitions.CompetitionsScreen
 import se.kjellstrand.webshooter.ui.competitions.CompetitionsViewModelImpl
-import se.kjellstrand.webshooter.ui.myentries.MyEntriesScreen
 import se.kjellstrand.webshooter.ui.navigation.Screen
 import se.kjellstrand.webshooter.ui.settings.SettingsScreen
 
@@ -51,7 +50,6 @@ fun WebShooterScreen(navController: NavController) {
 
     val navigationItems = listOf(
         NavigationItem(stringResource(R.string.competitions), Screen.CompetitionsList.route),
-        NavigationItem(stringResource(R.string.my_entries),  Screen.MyEntries.route),
         NavigationItem(stringResource(R.string.club),  Screen.Club.route),
         NavigationItem(stringResource(R.string.settings),  Screen.Settings.route)
     )
@@ -113,7 +111,6 @@ fun WebShooterScreen(navController: NavController) {
                 Screen.CompetitionsList.route -> {
                     CompetitionsScreen(navController, competitionsViewModel)
                 }
-                Screen.MyEntries.route -> MyEntriesScreen(navController)
                 Screen.Club.route -> ClubScreen()
                 Screen.Settings.route -> SettingsScreen()
             }
