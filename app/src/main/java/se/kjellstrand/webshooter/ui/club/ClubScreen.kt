@@ -24,6 +24,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -40,17 +41,17 @@ fun ClubScreen(viewModel: ClubViewModel = hiltViewModel()) {
             Tab(
                 selected = uiState.selectedTab == ClubTab.INFORMATION,
                 onClick = { viewModel.selectTab(ClubTab.INFORMATION) },
-                text = { Text(stringResource(R.string.club_tab_information)) }
+                text = { Text(stringResource(R.string.club_club_tab_information)) }
             )
             Tab(
                 selected = uiState.selectedTab == ClubTab.ADMINS,
                 onClick = { viewModel.selectTab(ClubTab.ADMINS) },
-                text = { Text(stringResource(R.string.club_tab_admins)) }
+                text = { Text(stringResource(R.string.club_club_tab_admins)) }
             )
             Tab(
                 selected = uiState.selectedTab == ClubTab.USERS,
                 onClick = { viewModel.selectTab(ClubTab.USERS) },
-                text = { Text(stringResource(R.string.club_tab_users)) }
+                text = { Text(stringResource(R.string.club_club_tab_users)) }
             )
         }
 
@@ -82,7 +83,7 @@ private fun ClubInformationTab(club: ClubData?) {
             Text(text = club.name, style = MaterialTheme.typography.headlineSmall)
             Spacer(modifier = Modifier.height(16.dp))
             InfoCard {
-                if (!club.clubsNr.isNullOrBlank()) InfoRow(stringResource(R.string.club_number), club.clubsNr)
+                if (!club.clubsNr.isNullOrBlank()) InfoRow(stringResource(R.string.club_club_number), club.clubsNr)
                 if (!club.email.isNullOrBlank()) InfoRow(stringResource(R.string.email), club.email)
                 if (!club.phone.isNullOrBlank() && club.phone != "null") InfoRow(stringResource(R.string.phone), club.phone)
             }
@@ -92,7 +93,7 @@ private fun ClubInformationTab(club: ClubData?) {
                 val zip = club.addressZipcode?.takeIf { it != "null" } ?: ""
                 val city = club.addressCity?.takeIf { it != "null" } ?: ""
                 val country = club.addressCountry?.takeIf { it != "null" } ?: ""
-                if (street.isNotBlank()) InfoRow(stringResource(R.string.address), street)
+                if (street.isNotBlank()) InfoRow(stringResource(R.string.club_address), street)
                 if (zip.isNotBlank() || city.isNotBlank()) InfoRow("", "$zip  $city".trim())
                 if (country.isNotBlank()) InfoRow("", country)
             }
@@ -102,9 +103,9 @@ private fun ClubInformationTab(club: ClubData?) {
             if (hasBankgiro || hasPostgiro || hasSwish) {
                 Spacer(modifier = Modifier.height(8.dp))
                 InfoCard {
-                    if (hasBankgiro) InfoRow(stringResource(R.string.bankgiro), club.bankgiro!!)
-                    if (hasPostgiro) InfoRow(stringResource(R.string.postgiro), club.postgiro!!)
-                    if (hasSwish) InfoRow(stringResource(R.string.swish), club.swish!!)
+                    if (hasBankgiro) InfoRow(stringResource(R.string.club_bankgiro), club.bankgiro!!)
+                    if (hasPostgiro) InfoRow(stringResource(R.string.club_postgiro), club.postgiro!!)
+                    if (hasSwish) InfoRow(stringResource(R.string.club_swish), club.swish!!)
                 }
             }
         }
@@ -207,7 +208,7 @@ private fun MemberItem(member: ClubMember) {
             }
             if (!member.status.isNullOrBlank()) {
                 Text(
-                    text = stringResource(R.string.member_status, member.status),
+                    text = stringResource(R.string.club_member_status, member.status),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

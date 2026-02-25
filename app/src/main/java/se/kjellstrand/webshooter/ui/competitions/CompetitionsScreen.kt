@@ -126,7 +126,7 @@ fun CompetitionsScreen(
 
             if (displayedCompetitions.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(stringResource(R.string.no_competitions_match_filter))
+                    Text(stringResource(R.string.competitions_no_competitions_match_filter))
                 }
             } else {
                 LazyColumn(
@@ -214,7 +214,7 @@ fun CompetitionItem(
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
                         text = stringResource(
-                            R.string.competition_type,
+                            R.string.competitions_competition_type,
                             competition.competitionType.name
                         ),
                         style = MaterialTheme.typography.bodySmall,
@@ -236,7 +236,7 @@ fun CompetitionItem(
                         enabled = competition.status == "completed",
                         onClick = onResultsClick
                     ) {
-                        Text(stringResource(R.string.result))
+                        Text(stringResource(R.string.competitions_result))
                     }
                     if (competition.status == "open") {
                         Spacer(modifier = Modifier.height(4.dp))
@@ -255,8 +255,8 @@ fun CompetitionItem(
                 Icon(
                     imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp
                     else Icons.Default.KeyboardArrowDown,
-                    contentDescription = if (isExpanded) stringResource(R.string.collapse)
-                    else stringResource(R.string.expand)
+                    contentDescription = if (isExpanded) stringResource(R.string.competitions_collapse)
+                    else stringResource(R.string.competitions_expand)
                 )
             }
 
@@ -294,49 +294,49 @@ fun CompetitionDetail(competition: Datum, modifier: Modifier = Modifier) {
         ) {
             Column(modifier = Modifier.padding(12.dp)) {
                 DetailRow(
-                    label = stringResource(R.string.contact_name, ""),
+                    label = stringResource(R.string.competitions_contact_name, ""),
                     value = competition.contactName
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 DetailRow(
-                    label = stringResource(R.string.date, ""),
+                    label = stringResource(R.string.competitions_date, ""),
                     value = competition.date
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 DetailRow(
-                    label = stringResource(R.string.status, ""),
+                    label = stringResource(R.string.competitions_status, ""),
                     value = competition.statusHuman
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 DetailRow(
-                    label = stringResource(R.string.open_for_team_signup, ""),
+                    label = stringResource(R.string.competitions_open_for_team_signup, ""),
                     value = competition.signupsOpeningDate
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 DetailRow(
-                    label = stringResource(R.string.last_signup_date, ""),
+                    label = stringResource(R.string.competitions_last_signup_date, ""),
                     value = competition.signupsClosingDate
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 DetailRow(
-                    label = stringResource(R.string.late_signup, ""),
+                    label = stringResource(R.string.competitions_late_signup, ""),
                     value = competition.allowSignupsAfterClosingDateHuman
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 DetailRow(
-                    label = stringResource(R.string.team_signup, ""),
-                    value = if (competition.allowTeams == 1L) stringResource(R.string.yes) else stringResource(
-                        R.string.no
+                    label = stringResource(R.string.competitions_team_signup, ""),
+                    value = if (competition.allowTeams == 1L) stringResource(R.string.competitions_yes) else stringResource(
+                        R.string.competitions_no
                     )
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 DetailRow(
-                    label = stringResource(R.string.competition_type, ""),
+                    label = stringResource(R.string.competitions_competition_type, ""),
                     value = competition.competitionType.name
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 DetailRow(
-                    label = stringResource(R.string.result_calculation, ""),
+                    label = stringResource(R.string.competitions_result_calculation, ""),
                     value = competition.resultsTypeHuman
                 )
             }
@@ -355,7 +355,7 @@ fun CompetitionDetail(competition: Datum, modifier: Modifier = Modifier) {
             Spacer(modifier = Modifier.height(4.dp))
             Column(modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 4.dp)) {
                 Text(
-                    text = stringResource(R.string.description),
+                    text = stringResource(R.string.competitions_description),
                     style = MaterialTheme.typography.bodyMedium
 
                 )

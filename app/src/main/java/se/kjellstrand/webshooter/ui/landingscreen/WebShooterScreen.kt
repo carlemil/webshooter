@@ -49,9 +49,9 @@ fun WebShooterScreen(navController: NavController) {
     val scope = rememberCoroutineScope()
 
     val navigationItems = listOf(
-        NavigationItem(stringResource(R.string.competitions), Screen.CompetitionsList.route),
-        NavigationItem(stringResource(R.string.club),  Screen.Club.route),
-        NavigationItem(stringResource(R.string.settings),  Screen.Settings.route)
+        NavigationItem(stringResource(R.string.web_shooter_competitions), Screen.CompetitionsList.route),
+        NavigationItem(stringResource(R.string.web_shooter_club),  Screen.Club.route),
+        NavigationItem(stringResource(R.string.web_shooter_settings),  Screen.Settings.route)
     )
 
     var selectedRoute by remember { mutableStateOf(Screen.CompetitionsList.route) }
@@ -62,7 +62,7 @@ fun WebShooterScreen(navController: NavController) {
             ModalDrawerSheet {
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    text = stringResource(R.string.menu),
+                    text = stringResource(R.string.web_shooter_menu),
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(16.dp)
                 )
@@ -97,7 +97,7 @@ fun WebShooterScreen(navController: NavController) {
                     IconButton(onClick = { scope.launch { drawerState.open() } }) {
                         Icon(
                             imageVector = Icons.Default.Menu,
-                            contentDescription = stringResource(R.string.menu_content_description)
+                            contentDescription = stringResource(R.string.web_shooter_menu_content_description)
                         )
                     }
                 }
