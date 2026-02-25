@@ -22,7 +22,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import se.kjellstrand.webshooter.ui.common.ScreenTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -46,18 +48,24 @@ fun SignupScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
+    Scaffold(
+        topBar = {
+            ScreenTopBar(
+                title = competition.name,
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(paddingValues)
+            .padding(horizontal = 16.dp)
     ) {
-        IconButton(onClick = { navController.popBackStack() }) {
-            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-        }
-        Text(
-            text = competition.name,
-            style = MaterialTheme.typography.headlineSmall
-        )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = "${competition.date}  •  ${competition.statusHuman}",
@@ -133,6 +141,7 @@ fun SignupScreen(
                 Text(stringResource(R.string.sign_up))
             }
         }
+    }
     }
 }
 

@@ -18,7 +18,7 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.NavigationDrawerItem
 import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
+import se.kjellstrand.webshooter.ui.common.ScreenTopBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -91,15 +91,10 @@ fun WebShooterScreen(navController: NavController) {
             modifier = Modifier.fillMaxSize()
         ) {
             val title = navigationItems.find { it.route == selectedRoute }?.label ?: stringResource(R.string.app_name)
-            TopAppBar(title = { Text(title) },
+            ScreenTopBar(
+                title = title,
                 navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            scope.launch {
-                                drawerState.open()
-                            }
-                        }
-                    ) {
+                    IconButton(onClick = { scope.launch { drawerState.open() } }) {
                         Icon(
                             imageVector = Icons.Default.Menu,
                             contentDescription = stringResource(R.string.menu_content_description)
