@@ -17,6 +17,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -167,7 +168,7 @@ private fun WeaponClassDropdown(
             label = { Text(stringResource(R.string.weapon_class)) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             modifier = Modifier
-                .menuAnchor()
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable)
                 .fillMaxWidth()
         )
         ExposedDropdownMenu(
