@@ -1,5 +1,9 @@
 <resources>
+
+    <!-- ### GENERAL ### -->
     <string name="clear">Återställ</string>
+
+    <!-- ### CLUB ### -->
     <string name="club_address">Adress</string>
     <string name="club_bankgiro">Bankgiro</string>
     <string name="club_club_number">Föreningsnummer</string>
@@ -9,12 +13,16 @@
     <string name="club_member_status">Status: %1$s</string>
     <string name="club_postgiro">Postgiro</string>
     <string name="club_swish">Swish</string>
+
+    <!-- ### COMPETITION ### -->
     <string name="competition_not_found">Tävling ej hittad.</string>
     <string name="competition_status_all">Alla</string>
     <string name="competition_status_closed">Stängd</string>
     <string name="competition_status_completed">Avslutad</string>
     <string name="competition_status_open">Öppen</string>
     <string name="competition_status_upcoming">Kommande</string>
+
+    <!-- ### COMPETITIONS ### -->
     <string name="competitions_collapse">Komprimera</string>
     <string name="competitions_competition_type">Tävlingstyp: %1$s</string>
     <string name="competitions_contact_name">Kontakt person: %1$s</string>
@@ -31,6 +39,8 @@
     <string name="competitions_status">Status: %1$s</string>
     <string name="competitions_team_signup">Lagtävling: %1$s</string>
     <string name="competitions_yes">Ja</string>
+
+    <!-- ### COMMON ### -->
     <string name="dash">-</string>
     <string name="details">Detaljer</string>
     <string name="email">E-post</string>
@@ -40,8 +50,12 @@
     <string name="hits">Träff</string>
     <string name="hits_short">T</string>
     <string name="landing_screen">Startsida</string>
+
+    <!-- ### LOGIN ### -->
     <string name="login_login">Inloggning</string>
     <string name="login_username">Användarnamn</string>
+
+    <!-- ### COMMON ### -->
     <string name="male">Man</string>
     <string name="medal_short">Mdlj</string>
     <string name="my_entries">Mina anmälningar</string>
@@ -51,12 +65,18 @@
     <string name="placement">#</string>
     <string name="points">Poäng</string>
     <string name="points_short">P</string>
+
+    <!-- ### RESULTS ### -->
     <string name="results_done_button">Klar</string>
     <string name="results_filter_all">Alla</string>
     <string name="results_filter_none">Ingen</string>
     <string name="results_no_results_found">Inga resultat hittade</string>
     <string name="results_select_weapon_groups">Välj vapengrupper</string>
+
+    <!-- ### COMMON ### -->
     <string name="select_gender">Välj kön</string>
+
+    <!-- ### SETTINGS ### -->
     <string name="settings_birth_year">Födelseår</string>
     <string name="settings_cancel">Avbryt</string>
     <string name="settings_change_password">Ändra lösenord</string>
@@ -78,24 +98,39 @@
     <string name="settings_shooting_card_no">Skyttekortsnr</string>
     <string name="settings_shooting_card_number_label">Skyttekortsnummer</string>
     <string name="settings_update_password">Uppdatera lösenord</string>
+
+    <!-- ### SHOOTER_RESULT ### -->
     <string name="shooter_result_serie">Serie</string>
     <string name="shooter_result_station">Station</string>
+
+    <!-- ### COMMON ### -->
     <string name="shooting_card_number">Pskn: %1$s</string>
     <string name="sign_up">Anmäl dig</string>
+
+    <!-- ### SIGNUP ### -->
     <string name="signup_current_signups">Nuvarande anmälningar</string>
     <string name="signup_note">Notering</string>
     <string name="signup_remove_signup">Ta bort</string>
     <string name="signup_select_weapon_class">Välj vapenklass</string>
+
+    <!-- ### COMMON ### -->
     <string name="title_activity_main">AppShooter</string>
     <string name="unknown">Okänd</string>
     <string name="unknown_club">Okänd klubb</string>
+
+    <!-- ### WEAPON ### -->
     <string name="weapon_class">Klass</string>
     <string name="weapon_class_short">K</string>
     <string name="weapon_group">Vapengrupp: </string>
+
+    <!-- ### WEB_SHOOTER ### -->
     <string name="web_shooter_club">Förening</string>
     <string name="web_shooter_competitions">Tävlingar</string>
     <string name="web_shooter_menu">Meny</string>
     <string name="web_shooter_menu_content_description">Meny</string>
     <string name="web_shooter_settings">Inställningar</string>
+
+    <!-- ### COMMON ### -->
     <string name="x">X</string>
+
 </resources>

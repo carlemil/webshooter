@@ -1,6 +1,10 @@
 <resources>
+
+    <!-- ### GENERAL ### -->
     <string name="app_name" translatable="false">WebShooter</string>
     <string name="clear">Clear</string>
+
+    <!-- ### CLUB ### -->
     <string name="club_address">Address</string>
     <string name="club_bankgiro">Bankgiro</string>
     <string name="club_club_number">Club number</string>
@@ -10,12 +14,16 @@
     <string name="club_member_status">Status: %1$s</string>
     <string name="club_postgiro">Postgiro</string>
     <string name="club_swish">Swish</string>
+
+    <!-- ### COMPETITION ### -->
     <string name="competition_not_found">Competition not found</string>
     <string name="competition_status_all">All</string>
     <string name="competition_status_closed">Closed</string>
     <string name="competition_status_completed">Completed</string>
     <string name="competition_status_open">Open</string>
     <string name="competition_status_upcoming">Upcoming</string>
+
+    <!-- ### COMPETITIONS ### -->
     <string name="competitions_collapse">Collapse</string>
     <string name="competitions_competition_type">Type: %1$s</string>
     <string name="competitions_contact_name">Contact: %1$s</string>
@@ -32,6 +40,8 @@
     <string name="competitions_status">Status: %1$s</string>
     <string name="competitions_team_signup">Team signup: %1$s</string>
     <string name="competitions_yes">Yes</string>
+
+    <!-- ### COMMON ### -->
     <string name="dash">-</string>
     <string name="details">Details</string>
     <string name="email">Email</string>
@@ -41,8 +51,12 @@
     <string name="hits">Hits</string>
     <string name="hits_short">H</string>
     <string name="landing_screen">Start page</string>
+
+    <!-- ### LOGIN ### -->
     <string name="login_login">Login</string>
     <string name="login_username">Username</string>
+
+    <!-- ### COMMON ### -->
     <string name="male">Male</string>
     <string name="medal_short">Mdl</string>
     <string name="my_entries">My Entries</string>
@@ -52,12 +66,18 @@
     <string name="placement">#</string>
     <string name="points">Points</string>
     <string name="points_short">P</string>
+
+    <!-- ### RESULTS ### -->
     <string name="results_done_button">Done</string>
     <string name="results_filter_all">All</string>
     <string name="results_filter_none">None</string>
     <string name="results_no_results_found">No results found</string>
     <string name="results_select_weapon_groups">Select weapon groups</string>
+
+    <!-- ### COMMON ### -->
     <string name="select_gender">Select gender</string>
+
+    <!-- ### SETTINGS ### -->
     <string name="settings_birth_year">Birth year</string>
     <string name="settings_cancel">Cancel</string>
     <string name="settings_change_password">Change password</string>
@@ -79,24 +99,39 @@
     <string name="settings_shooting_card_no">Shooting card no.</string>
     <string name="settings_shooting_card_number_label">Shooting card number</string>
     <string name="settings_update_password">Update password</string>
+
+    <!-- ### SHOOTER_RESULT ### -->
     <string name="shooter_result_serie">Series</string>
     <string name="shooter_result_station">Station</string>
+
+    <!-- ### COMMON ### -->
     <string name="shooting_card_number">Pskn: %1$s</string>
     <string name="sign_up">Sign Up</string>
+
+    <!-- ### SIGNUP ### -->
     <string name="signup_current_signups">Current signups</string>
     <string name="signup_note">Note</string>
     <string name="signup_remove_signup">Remove</string>
     <string name="signup_select_weapon_class">Select weapon class</string>
+
+    <!-- ### COMMON ### -->
     <string name="title_activity_main">AppShooter</string>
     <string name="unknown">Unknown</string>
     <string name="unknown_club">Unknown club</string>
+
+    <!-- ### WEAPON ### -->
     <string name="weapon_class">Class</string>
     <string name="weapon_class_short">C</string>
     <string name="weapon_group">Weapon group: </string>
+
+    <!-- ### WEB_SHOOTER ### -->
     <string name="web_shooter_club">Club</string>
     <string name="web_shooter_competitions">Competitions</string>
     <string name="web_shooter_menu">Menu</string>
     <string name="web_shooter_menu_content_description">Menu</string>
     <string name="web_shooter_settings">Settings</string>
+
+    <!-- ### COMMON ### -->
     <string name="x">X</string>
+
 </resources>
