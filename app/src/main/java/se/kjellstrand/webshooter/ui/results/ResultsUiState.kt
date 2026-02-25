@@ -12,7 +12,8 @@ data class ResultsUiState(
     var mode: Mode = Mode.GROUP,
     val isLoading: Boolean = false,
     val resultsType: ResultsType = ResultsType.FIELD,
-    val loggedInUserId: Long = -1L
+    val loggedInUserId: Long = -1L,
+    val groupingMode: GroupingMode = GroupingMode.WEAPON_CLASS
 )
 
 data class GroupedItem(
@@ -21,10 +22,18 @@ data class GroupedItem(
 )
 
 data class FilterState(
-    val selectedWeaponGroups: Set<String> = emptySet()
+    val selectedWeaponGroups: Set<String> = emptySet(),
+    val groupingMode: GroupingMode = GroupingMode.WEAPON_CLASS
 )
 
 enum class Mode {
     GROUP,
     FILTER
+}
+
+enum class GroupingMode {
+    WEAPON_CLASS,
+    CLUB,
+    MEDL,
+    NONE
 }
