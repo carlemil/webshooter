@@ -74,7 +74,7 @@ fun CompetitionResultsScreen(
                 is ResultsEvent.Empty -> {
                     Toast.makeText(
                         context,
-                        context.getString(R.string.no_results_found),
+                        context.getString(R.string.results_no_results_found),
                         Toast.LENGTH_LONG
                     ).show()
                     navController.popBackStack()
@@ -264,7 +264,7 @@ fun FilterBottomSheet(
                 HorizontalDivider()
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    stringResource(R.string.select_weapon_groups),
+                    stringResource(R.string.results_select_weapon_groups),
                     style = MaterialTheme.typography.titleMedium
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -281,15 +281,15 @@ fun FilterBottomSheet(
                     TextButton(onClick = {
                         onFilterChange(filterState.copy(selectedWeaponGroups = allWeaponGroups.toSet()))
                     }) {
-                        Text(stringResource(R.string.filter_all))
+                        Text(stringResource(R.string.results_filter_all))
                     }
                     TextButton(onClick = {
                         onFilterChange(filterState.copy(selectedWeaponGroups = emptySet()))
                     }) {
-                        Text(stringResource(R.string.filter_none))
+                        Text(stringResource(R.string.results_filter_none))
                     }
                     Button(onClick = onDismissRequest) {
-                        Text(stringResource(R.string.done_button))
+                        Text(stringResource(R.string.results_done_button))
                     }
                 }
             }

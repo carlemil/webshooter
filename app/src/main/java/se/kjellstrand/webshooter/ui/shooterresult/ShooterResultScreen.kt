@@ -109,7 +109,7 @@ fun StationResultsGrid(stationResults: List<StationResult>, resultsType: Results
             ResultsType.FIELD,
             ResultsType.POINTS_FIELD -> {
                 HeaderText(
-                    R.string.station,
+                    R.string.shooter_result_station,
                     modifier = Modifier.weight(1f),
                     textAlign = androidx.compose.ui.text.style.TextAlign.Start
                 )
@@ -121,7 +121,7 @@ fun StationResultsGrid(stationResults: List<StationResult>, resultsType: Results
             ResultsType.PRECISION,
             ResultsType.MILITARY -> {
                 HeaderText(
-                    R.string.serie,
+                    R.string.shooter_result_serie,
                     modifier = Modifier.weight(1f),
                     textAlign = androidx.compose.ui.text.style.TextAlign.Start
                 )

@@ -61,7 +61,7 @@ fun SettingsScreen(
             Tab(
                 selected = uiState.selectedTab == SettingsTab.PROFILE,
                 onClick = { viewModel.setTab(SettingsTab.PROFILE) },
-                text = { Text(stringResource(R.string.profile)) }
+                text = { Text(stringResource(R.string.settings_profile)) }
             )
             Tab(
                 selected = uiState.selectedTab == SettingsTab.PASSWORD,
@@ -114,7 +114,7 @@ private fun ProfileTab(uiState: SettingsUiState, viewModel: SettingsViewModel) {
 @Composable
 private fun ViewProfileContent(profile: UserProfile?, onEditClick: () -> Unit) {
     if (profile == null) {
-        Text(stringResource(R.string.no_profile_data))
+        Text(stringResource(R.string.settings_no_profile_data))
         return
     }
 
@@ -123,9 +123,9 @@ private fun ViewProfileContent(profile: UserProfile?, onEditClick: () -> Unit) {
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(stringResource(R.string.personal_information), style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.settings_personal_information), style = MaterialTheme.typography.titleMedium)
         IconButton(onClick = onEditClick) {
-            Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.edit_profile))
+            Icon(Icons.Default.Edit, contentDescription = stringResource(R.string.settings_edit_profile))
         }
     }
 
@@ -133,12 +133,12 @@ private fun ViewProfileContent(profile: UserProfile?, onEditClick: () -> Unit) {
 
     ProfileInfoRow(stringResource(R.string.name), "${profile.name} ${profile.lastname}")
     ProfileInfoRow(stringResource(R.string.email), profile.email)
-    ProfileInfoRow(stringResource(R.string.mobile), profile.mobile ?: stringResource(R.string.dash))
+    ProfileInfoRow(stringResource(R.string.settings_mobile), profile.mobile ?: stringResource(R.string.dash))
     ProfileInfoRow(stringResource(R.string.phone), profile.phone ?: stringResource(R.string.dash))
     val genderEnum = Gender.fromApiValue(profile.gender)
-    ProfileInfoRow(stringResource(R.string.gender), if (genderEnum == Gender.UNSET) stringResource(R.string.dash) else stringResource(genderEnum.labelRes))
-    ProfileInfoRow(stringResource(R.string.birth_year), profile.birthday?.substringBefore("-") ?: stringResource(R.string.dash))
-    ProfileInfoRow(stringResource(R.string.shooting_card_no), profile.shootingCardNumber ?: stringResource(R.string.dash))
+    ProfileInfoRow(stringResource(R.string.settings_gender), if (genderEnum == Gender.UNSET) stringResource(R.string.dash) else stringResource(genderEnum.labelRes))
+    ProfileInfoRow(stringResource(R.string.settings_birth_year), profile.birthday?.substringBefore("-") ?: stringResource(R.string.dash))
+    ProfileInfoRow(stringResource(R.string.settings_shooting_card_no), profile.shootingCardNumber ?: stringResource(R.string.dash))
 }
 
 @Composable
@@ -158,13 +158,13 @@ private fun ProfileInfoRow(label: String, value: String) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun EditProfileContent(uiState: SettingsUiState, viewModel: SettingsViewModel) {
-    Text(stringResource(R.string.edit_profile), style = MaterialTheme.typography.titleMedium)
+    Text(stringResource(R.string.settings_edit_profile), style = MaterialTheme.typography.titleMedium)
     Spacer(modifier = Modifier.height(16.dp))
 
     OutlinedTextField(
         value = uiState.editName,
         onValueChange = viewModel::onNameChange,
-        label = { Text(stringResource(R.string.first_name)) },
+        label = { Text(stringResource(R.string.settings_first_name)) },
         singleLine = true,
         modifier = Modifier.fillMaxWidth()
     )
@@ -173,7 +173,7 @@ private fun EditProfileContent(uiState: SettingsUiState, viewModel: SettingsView
     OutlinedTextField(
         value = uiState.editLastname,
         onValueChange = viewModel::onLastnameChange,
-        label = { Text(stringResource(R.string.last_name)) },
+        label = { Text(stringResource(R.string.settings_last_name)) },
         singleLine = true,
         modifier = Modifier.fillMaxWidth()
     )
@@ -191,7 +191,7 @@ private fun EditProfileContent(uiState: SettingsUiState, viewModel: SettingsView
     OutlinedTextField(
         value = uiState.editMobile,
         onValueChange = viewModel::onMobileChange,
-        label = { Text(stringResource(R.string.mobile_phone)) },
+        label = { Text(stringResource(R.string.settings_mobile_phone)) },
         singleLine = true,
         modifier = Modifier.fillMaxWidth()
     )
@@ -200,7 +200,7 @@ private fun EditProfileContent(uiState: SettingsUiState, viewModel: SettingsView
     OutlinedTextField(
         value = uiState.editPhone,
         onValueChange = viewModel::onPhoneChange,
-        label = { Text(stringResource(R.string.home_phone)) },
+        label = { Text(stringResource(R.string.settings_home_phone)) },
         singleLine = true,
         modifier = Modifier.fillMaxWidth()
     )
@@ -221,7 +221,7 @@ private fun EditProfileContent(uiState: SettingsUiState, viewModel: SettingsView
     OutlinedTextField(
         value = uiState.editShootingCardNumber,
         onValueChange = viewModel::onShootingCardNumberChange,
-        label = { Text(stringResource(R.string.shooting_card_number_label)) },
+        label = { Text(stringResource(R.string.settings_shooting_card_number_label)) },
         singleLine = true,
         modifier = Modifier.fillMaxWidth()
     )
@@ -232,13 +232,13 @@ private fun EditProfileContent(uiState: SettingsUiState, viewModel: SettingsView
             onClick = { viewModel.saveProfile() },
             modifier = Modifier.weight(1f)
         ) {
-            Text(stringResource(R.string.save))
+            Text(stringResource(R.string.settings_save))
         }
         OutlinedButton(
             onClick = { viewModel.setEditMode(false) },
             modifier = Modifier.weight(1f)
         ) {
-            Text(stringResource(R.string.cancel))
+            Text(stringResource(R.string.settings_cancel))
         }
     }
 }
@@ -253,7 +253,7 @@ private fun GenderDropdown(selected: Gender, onSelect: (Gender) -> Unit) {
             value = stringResource(selected.labelRes),
             onValueChange = {},
             readOnly = true,
-            label = { Text(stringResource(R.string.gender)) },
+            label = { Text(stringResource(R.string.settings_gender)) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
             modifier = Modifier
                 .fillMaxWidth()
@@ -282,10 +282,10 @@ private fun BirthYearDropdown(selected: Int?, onSelect: (Int) -> Unit) {
 
     ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
         OutlinedTextField(
-            value = selected?.toString() ?: stringResource(R.string.select_birth_year),
+            value = selected?.toString() ?: stringResource(R.string.settings_select_birth_year),
             onValueChange = {},
             readOnly = true,
-            label = { Text(stringResource(R.string.birth_year)) },
+            label = { Text(stringResource(R.string.settings_birth_year)) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
             modifier = Modifier
                 .fillMaxWidth()
@@ -312,7 +312,7 @@ private fun PasswordTab(uiState: SettingsUiState, viewModel: SettingsViewModel) 
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Text(stringResource(R.string.change_password), style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(R.string.settings_change_password), style = MaterialTheme.typography.titleMedium)
         Spacer(modifier = Modifier.height(16.dp))
 
         uiState.successMessage?.let { msg ->
@@ -327,21 +327,21 @@ private fun PasswordTab(uiState: SettingsUiState, viewModel: SettingsViewModel) 
         PasswordField(
             value = uiState.currentPassword,
             onValueChange = viewModel::onCurrentPasswordChange,
-            label = stringResource(R.string.current_password)
+            label = stringResource(R.string.settings_current_password)
         )
         Spacer(modifier = Modifier.height(8.dp))
 
         PasswordField(
             value = uiState.newPassword,
             onValueChange = viewModel::onNewPasswordChange,
-            label = stringResource(R.string.new_password)
+            label = stringResource(R.string.settings_new_password)
         )
         Spacer(modifier = Modifier.height(8.dp))
 
         PasswordField(
             value = uiState.confirmPassword,
             onValueChange = viewModel::onConfirmPasswordChange,
-            label = stringResource(R.string.confirm_new_password)
+            label = stringResource(R.string.settings_confirm_new_password)
         )
         Spacer(modifier = Modifier.height(16.dp))
 
@@ -359,7 +359,7 @@ private fun PasswordTab(uiState: SettingsUiState, viewModel: SettingsViewModel) 
                     modifier = Modifier.size(20.dp)
                 )
             } else {
-                Text(stringResource(R.string.update_password))
+                Text(stringResource(R.string.settings_update_password))
             }
         }
     }

@@ -88,7 +88,7 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = stringResource(R.string.login),
+                text = stringResource(R.string.login_login),
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
@@ -96,7 +96,7 @@ fun LoginScreen(
             OutlinedTextField(
                 value = username,
                 onValueChange = { username = it },
-                label = { Text(stringResource(R.string.username)) },
+                label = { Text(stringResource(R.string.login_username)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !uiState.isLoading
@@ -136,7 +136,7 @@ fun LoginScreen(
                         modifier = Modifier.size(20.dp)
                     )
                 } else {
-                    Text(stringResource(R.string.login))
+                    Text(stringResource(R.string.login_login))
                 }
             }
             uiState.errorMessage?.let { errorMessage ->
