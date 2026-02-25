@@ -15,12 +15,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import se.kjellstrand.webshooter.ui.common.ScreenTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -36,6 +38,7 @@ import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.HeaderText
 import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.ItemText
 import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.WeaponGroupSeparator
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShooterResultScreen(
     navController: NavController,
@@ -43,15 +46,24 @@ fun ShooterResultScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     Log.d("ShooterResultScreen", "uiState.isLoading: ${uiState.isLoading}")
-    Surface(modifier = Modifier.fillMaxSize()) {
+    Scaffold(
+        topBar = {
+            ScreenTopBar(
+                title = uiState.shooterName,
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
+        }
+    ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(paddingValues)
+                .padding(horizontal = 16.dp)
         ) {
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-            }
             if (uiState.isLoading) {
                 Box(
                     modifier = Modifier
@@ -64,8 +76,6 @@ fun ShooterResultScreen(
             } else if (uiState.error != null) {
                 Text(text = "Error: ${uiState.error}")
             } else {
-                Text(text = uiState.shooterName, style = MaterialTheme.typography.headlineMedium)
-                Spacer(modifier = Modifier.height(16.dp))
                 LazyColumn {
                     uiState.groupedResults.forEach { group ->
                         item(key = "separator-${group.header}") {
