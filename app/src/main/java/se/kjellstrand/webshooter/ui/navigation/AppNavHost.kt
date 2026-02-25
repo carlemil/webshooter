@@ -60,7 +60,7 @@ fun AppNavHost(navController: NavHostController) {
                 navArgument("resultsType") { type = NavType.StringType }
             )
         ) {
-            ShooterResultScreen()
+            ShooterResultScreen(navController)
         }
         composable(
             route = Screen.CompetitionSignup.route,

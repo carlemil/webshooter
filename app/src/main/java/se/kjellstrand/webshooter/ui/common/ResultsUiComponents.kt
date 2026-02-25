@@ -54,7 +54,8 @@ object ResultsUiComponents {
                 }
                 HeaderText(R.string.medal_short, modifier = Modifier.weight(1f))
                 when (resultsType) {
-                    ResultsType.FIELD -> {
+                    ResultsType.FIELD,
+                    ResultsType.POINTS_FIELD -> {
                         HeaderText(R.string.hits_short, modifier = Modifier.weight(1f))
                         HeaderText(R.string.figures_short, modifier = Modifier.weight(1f))
                         HeaderText(R.string.points_short, modifier = Modifier.weight(1f))
@@ -157,7 +158,8 @@ object ResultsUiComponents {
                     modifier = Modifier.weight(1f)
                 )
                 when (resultsType) {
-                    ResultsType.FIELD -> {
+                    ResultsType.FIELD,
+                    ResultsType.POINTS_FIELD -> {
                         ItemText(
                             text = result.hits.toString(),
                             style = itemStyle,

@@ -12,8 +12,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -24,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.results.remote.StationResult
@@ -33,6 +38,7 @@ import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.WeaponGroupSepara
 
 @Composable
 fun ShooterResultScreen(
+    navController: NavController,
     viewModel: ShooterResultViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -43,6 +49,9 @@ fun ShooterResultScreen(
                 .fillMaxSize()
                 .padding(16.dp)
         ) {
+            IconButton(onClick = { navController.popBackStack() }) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+            }
             if (uiState.isLoading) {
                 Box(
                     modifier = Modifier
@@ -85,7 +94,8 @@ fun StationResultsGrid(stationResults: List<StationResult>, resultsType: Results
         verticalAlignment = Alignment.CenterVertically
     ) {
         when (resultsType) {
-            ResultsType.FIELD -> {
+            ResultsType.FIELD,
+            ResultsType.POINTS_FIELD -> {
                 HeaderText(
                     R.string.station,
                     modifier = Modifier.weight(1f),
@@ -121,7 +131,8 @@ fun StationResultsGrid(stationResults: List<StationResult>, resultsType: Results
                     textAlign = androidx.compose.ui.text.style.TextAlign.Start
                 )
                 when (resultsType) {
-                    ResultsType.FIELD -> {
+                    ResultsType.FIELD,
+                    ResultsType.POINTS_FIELD -> {
                         ItemText(
                             text = stationResult.hits.toString(),
                             modifier = Modifier.weight(1f),
@@ -163,7 +174,8 @@ fun StationResultsGrid(stationResults: List<StationResult>, resultsType: Results
                 modifier = Modifier.weight(1f),
             )
             when (resultsType) {
-                ResultsType.FIELD -> {
+                ResultsType.FIELD,
+                ResultsType.POINTS_FIELD -> {
                     ItemText(
                         text = stationResults.sumOf { it.hits }.toString(),
                         modifier = Modifier.weight(1f),

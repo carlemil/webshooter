@@ -217,6 +217,9 @@ enum class ResultsType {
 
     @SerializedName("field")
     FIELD,
+
+    @SerializedName("pointfield")
+    POINTS_FIELD,
 }
 
 data class Translations (
