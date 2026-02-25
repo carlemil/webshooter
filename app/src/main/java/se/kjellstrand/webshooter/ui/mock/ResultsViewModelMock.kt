@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
+import se.kjellstrand.webshooter.ui.results.GroupingMode
 import se.kjellstrand.webshooter.ui.results.Mode
 import se.kjellstrand.webshooter.ui.results.ResultsEvent
 import se.kjellstrand.webshooter.ui.results.ResultsUiState
@@ -35,6 +36,10 @@ class ResultsViewModelMock() : ViewModel(),
     }
 
     override fun setSelectedWeaponGroups(selectedWeaponGroups: Set<String>) {
+        TODO("Not yet implemented")
+    }
+
+    override fun setGroupingMode(groupingMode: GroupingMode) {
         TODO("Not yet implemented")
     }
 }
