@@ -54,6 +54,7 @@ import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.ResultsListHeader
 import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.WeaponGroupSeparator
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
+import se.kjellstrand.webshooter.ui.common.ScreenTopBar
 import se.kjellstrand.webshooter.ui.mock.ResultsViewModelMock
 import se.kjellstrand.webshooter.ui.navigation.Screen
 
@@ -82,6 +83,16 @@ fun CompetitionResultsScreen(
     }
 
     Scaffold(
+        topBar = {
+            ScreenTopBar(
+                title = resultsUiState.competitionName,
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                }
+            )
+        },
         floatingActionButton = {
             FloatingActionButton(onClick = { isFilterBottomSheetOpen = true }) {
                 Icon(imageVector = Icons.Default.FilterList, contentDescription = "Open Filters")
@@ -94,17 +105,6 @@ fun CompetitionResultsScreen(
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = { navController.popBackStack() }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                }
-                Text(
-                    text = resultsUiState.competitionName,
-                    style = MaterialTheme.typography.titleMedium
-                )
-            }
             ResultsList(
                 resultsUiState,
                 resultsViewModel.competitionId,
