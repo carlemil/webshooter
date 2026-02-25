@@ -4,9 +4,9 @@ sealed class Screen(val route: String) {
     object LoginScreen : Screen("login")
     object LandingScreen : Screen("landing")
     object CompetitionsList : Screen("competitions")
-    object CompetitionResults : Screen("competition_results/{competitionId}/{resultsType}") {
-        fun createRoute(competitionId: Int, resultsType: String) =
-            "competition_results/$competitionId/$resultsType"
+    object CompetitionResults : Screen("competition_results/{competitionId}/{resultsType}?competitionName={competitionName}") {
+        fun createRoute(competitionId: Int, resultsType: String, competitionName: String) =
+            "competition_results/$competitionId/$resultsType?competitionName=${android.net.Uri.encode(competitionName)}"
     }
     object Club : Screen("club")
     object Settings : Screen("settings")
