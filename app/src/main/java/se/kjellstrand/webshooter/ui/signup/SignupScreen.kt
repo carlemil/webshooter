@@ -33,6 +33,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -66,8 +67,8 @@ fun SignupScreen(
             .fillMaxSize()
             .padding(paddingValues)
             .padding(horizontal = 16.dp)
+            .padding(top = dimensionResource(R.dimen.screen_content_top_padding))
     ) {
-        Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = "${competition.date}  •  ${competition.statusHuman}",
             style = MaterialTheme.typography.bodySmall,
