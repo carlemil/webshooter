@@ -200,8 +200,8 @@ open class ResultsViewModelImpl @Inject constructor(
             return when (resultsType) {
                 ResultsType.MILITARY,
                 ResultsType.PRECISION -> (result.points * 1000 + result.hits).toInt()
-                ResultsType.FIELD,
-                ResultsType.POINTS_FIELD -> (result.hits * 1000000 + result.figureHits * 1000 + result.points).toInt()
+                ResultsType.FIELD -> (result.hits * 1000000 + result.figureHits * 1000 + result.points).toInt()
+                ResultsType.POINTS_FIELD -> (result.hits + result.figureHits).toInt()
             }
         }
     }
