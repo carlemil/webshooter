@@ -74,4 +74,6 @@
     <string name="x">X</string>
     <string name="yes">Yes</string>
     <string name="no_competitions_match_filter">Your current search does not match any competition.</string>
+    <string name="dash">-</string>
+    <string name="unknown">Unknown</string>
 </resources>

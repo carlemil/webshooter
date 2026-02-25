@@ -42,8 +42,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.settings.remote.UserProfile
 
 @Composable
@@ -129,11 +131,11 @@ private fun ViewProfileContent(profile: UserProfile?, onEditClick: () -> Unit) {
 
     ProfileInfoRow("Name", "${profile.name} ${profile.lastname}")
     ProfileInfoRow("Email", profile.email)
-    ProfileInfoRow("Mobile", profile.mobile ?: "-")
-    ProfileInfoRow("Phone", profile.phone ?: "-")
-    ProfileInfoRow("Gender", profile.gender?.replaceFirstChar { it.uppercase() } ?: "-")
-    ProfileInfoRow("Birth year", profile.birthday?.substringBefore("-") ?: "-")
-    ProfileInfoRow("Shooting card no.", profile.shootingCardNumber ?: "-")
+    ProfileInfoRow("Mobile", profile.mobile ?: stringResource(R.string.dash))
+    ProfileInfoRow("Phone", profile.phone ?: stringResource(R.string.dash))
+    ProfileInfoRow("Gender", profile.gender?.replaceFirstChar { it.uppercase() } ?: stringResource(R.string.dash))
+    ProfileInfoRow("Birth year", profile.birthday?.substringBefore("-") ?: stringResource(R.string.dash))
+    ProfileInfoRow("Shooting card no.", profile.shootingCardNumber ?: stringResource(R.string.dash))
 }
 
 @Composable

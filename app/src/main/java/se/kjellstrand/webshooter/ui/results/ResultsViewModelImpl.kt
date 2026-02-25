@@ -1,9 +1,11 @@
 package se.kjellstrand.webshooter.ui.results
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -12,15 +14,20 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.results.ResultsRepository
 import se.kjellstrand.webshooter.data.results.remote.Result
+import se.kjellstrand.webshooter.data.results.remote.StdMedal
+import se.kjellstrand.webshooter.data.results.remote.StdMedal.B
+import se.kjellstrand.webshooter.data.results.remote.StdMedal.S
 import se.kjellstrand.webshooter.data.settings.SettingsRepository
 import javax.inject.Inject
 
 @HiltViewModel
 open class ResultsViewModelImpl @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val resultsRepository: ResultsRepository,
     private val settingsRepository: SettingsRepository,
     savedStateHandle: SavedStateHandle
@@ -34,7 +41,9 @@ open class ResultsViewModelImpl @Inject constructor(
         ResultsType.FIELD
     }
 
-    private val _uiState = MutableStateFlow(ResultsUiState(isLoading = true))
+    private val competitionName: String = savedStateHandle["competitionName"] ?: ""
+
+    private val _uiState = MutableStateFlow(ResultsUiState(isLoading = true, competitionName = competitionName))
     override val uiState: StateFlow<ResultsUiState> = _uiState.asStateFlow()
 
     private val _resultsEvent = MutableSharedFlow<ResultsEvent>()
@@ -68,7 +77,7 @@ open class ResultsViewModelImpl @Inject constructor(
                                 current.copy(
                                     results = resource.data.results,
                                     filterResults = filterResults(resource.data.results, resultsType),
-                                    groupedResults = groupResults(resource.data.results, resultsType, GroupingMode.WEAPON_CLASS),
+                                    groupedResults = groupResults(resource.data.results, resultsType, GroupingMode.WEAPON_CLASS, context),
                                     allWeaponGroups = getWeaponGroups(resource.data.results).toList().sorted(),
                                     selectedWeaponGroups = getWeaponGroups(resource.data.results),
                                     isLoading = false,
@@ -115,7 +124,7 @@ open class ResultsViewModelImpl @Inject constructor(
         _uiState.update { currentState ->
             currentState.copy(
                 filterResults = filtered,
-                groupedResults = groupResults(filtered, resultsType, currentGroupingMode)
+                groupedResults = groupResults(filtered, resultsType, currentGroupingMode, context)
             )
         }
     }
@@ -125,7 +134,7 @@ open class ResultsViewModelImpl @Inject constructor(
         _uiState.update { currentState ->
             currentState.copy(
                 groupingMode = groupingMode,
-                groupedResults = groupResults(filtered, resultsType, groupingMode)
+                groupedResults = groupResults(filtered, resultsType, groupingMode, context)
             )
         }
     }
@@ -134,12 +143,13 @@ open class ResultsViewModelImpl @Inject constructor(
         fun groupResults(
             results: List<Result>,
             resultsType: ResultsType,
-            groupingMode: GroupingMode = GroupingMode.WEAPON_CLASS
+            groupingMode: GroupingMode = GroupingMode.WEAPON_CLASS,
+            context: Context? = null
         ): List<GroupedItem> {
             return when (groupingMode) {
                 GroupingMode.WEAPON_CLASS -> groupByWeaponClass(results, resultsType)
-                GroupingMode.CLUB -> groupByClub(results, resultsType)
-                GroupingMode.MEDL -> groupByMedl(results, resultsType)
+                GroupingMode.CLUB -> groupByClub(results, resultsType, context)
+                GroupingMode.MEDL -> groupByMedl(results, resultsType, context)
                 GroupingMode.NONE -> emptyList()
             }
         }
@@ -153,21 +163,23 @@ open class ResultsViewModelImpl @Inject constructor(
             }
         }
 
-        private fun groupByClub(results: List<Result>, resultsType: ResultsType): List<GroupedItem> {
-            val clubs = results.map { it.signup.club?.name ?: "Okänd" }.distinct().sorted()
+        private fun groupByClub(results: List<Result>, resultsType: ResultsType, context: Context?): List<GroupedItem> {
+            val unknown = context?.getString(R.string.unknown) ?: "Unknown"
+            val clubs = results.map { it.signup.club?.name ?: unknown }.distinct().sorted()
             return clubs.mapNotNull { club ->
-                val grouped = results.filter { (it.signup.club?.name ?: "Okänd") == club }
+                val grouped = results.filter { (it.signup.club?.name ?: unknown) == club }
                     .sortedByDescending { calculateSortOrder(it, resultsType) }
                 if (grouped.isNotEmpty()) GroupedItem(club, grouped) else null
             }
         }
 
-        private fun groupByMedl(results: List<Result>, resultsType: ResultsType): List<GroupedItem> {
-            val medalOrder = { medal: String -> when (medal) { "S" -> 0; "B" -> 1; else -> 2 } }
-            val medals = results.map { it.stdMedal?.value ?: "Ingen" }.distinct()
+        private fun groupByMedl(results: List<Result>, resultsType: ResultsType, context: Context?): List<GroupedItem> {
+            val dash = context?.getString(R.string.dash) ?: "-"
+            val medalOrder = { medal: String -> when (medal) { S.value -> 0; B.value -> 1; else -> 2 } }
+            val medals = results.map { it.stdMedal?.value ?: dash }.distinct()
                 .sortedWith(compareBy({ medalOrder(it) }, { it }))
             return medals.mapNotNull { medal ->
-                val grouped = results.filter { (it.stdMedal?.value ?: "Ingen") == medal }
+                val grouped = results.filter { (it.stdMedal?.value ?: dash) == medal }
                     .sortedByDescending { calculateSortOrder(it, resultsType) }
                 if (grouped.isNotEmpty()) GroupedItem(medal, grouped) else null
             }

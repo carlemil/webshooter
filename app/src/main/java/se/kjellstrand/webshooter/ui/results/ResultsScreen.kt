@@ -94,10 +94,17 @@ fun CompetitionResultsScreen(
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp)
         ) {
-            IconButton(onClick = { navController.popBackStack() }) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                }
+                Text(
+                    text = resultsUiState.competitionName,
+                    style = MaterialTheme.typography.titleMedium
+                )
             }
-            Spacer(modifier = Modifier.height(16.dp))
             ResultsList(
                 resultsUiState,
                 resultsViewModel.competitionId,

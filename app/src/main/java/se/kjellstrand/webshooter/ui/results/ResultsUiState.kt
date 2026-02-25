@@ -13,7 +13,8 @@ data class ResultsUiState(
     val isLoading: Boolean = false,
     val resultsType: ResultsType = ResultsType.FIELD,
     val loggedInUserId: Long = -1L,
-    val groupingMode: GroupingMode = GroupingMode.WEAPON_CLASS
+    val groupingMode: GroupingMode = GroupingMode.WEAPON_CLASS,
+    val competitionName: String = ""
 )
 
 data class GroupedItem(
