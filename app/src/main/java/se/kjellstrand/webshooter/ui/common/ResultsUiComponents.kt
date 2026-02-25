@@ -153,7 +153,7 @@ object ResultsUiComponents {
                     )
                 }
                 ItemText(
-                    text = result.stdMedal?.value ?: "-",
+                    text = result.stdMedal?.value ?: stringResource(R.string.dash),
                     style = itemStyle,
                     modifier = Modifier.weight(1f)
                 )

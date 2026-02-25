@@ -46,7 +46,8 @@ fun AppNavHost(navController: NavHostController) {
             route = Screen.CompetitionResults.route,
             arguments = listOf(
                 navArgument("competitionId") { type = NavType.IntType },
-                navArgument("resultsType") { type = NavType.StringType }
+                navArgument("resultsType") { type = NavType.StringType },
+                navArgument("competitionName") { type = NavType.StringType; defaultValue = "" }
             )
         ) {
             val resultsViewModel: ResultsViewModelImpl = hiltViewModel()
