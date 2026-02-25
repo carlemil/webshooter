@@ -68,7 +68,7 @@ open class ResultsViewModelImpl @Inject constructor(
                                 current.copy(
                                     results = resource.data.results,
                                     filterResults = filterResults(resource.data.results, resultsType),
-                                    groupedResults = groupResults(resource.data.results, resultsType),
+                                    groupedResults = groupResults(resource.data.results, resultsType, GroupingMode.WEAPON_CLASS),
                                     allWeaponGroups = getWeaponGroups(resource.data.results).toList().sorted(),
                                     selectedWeaponGroups = getWeaponGroups(resource.data.results),
                                     isLoading = false,
@@ -110,36 +110,74 @@ open class ResultsViewModelImpl @Inject constructor(
                 selectedGroups.contains(result.weaponClass.classname)
             }
         }.sortedByDescending { calculateSortOrder(it, resultsType) }
+
+        val currentGroupingMode = _uiState.value.groupingMode
         _uiState.update { currentState ->
-            currentState.copy(filterResults = filtered)
+            currentState.copy(
+                filterResults = filtered,
+                groupedResults = groupResults(filtered, resultsType, currentGroupingMode)
+            )
+        }
+    }
+
+    override fun setGroupingMode(groupingMode: GroupingMode) {
+        val filtered = _uiState.value.filterResults
+        _uiState.update { currentState ->
+            currentState.copy(
+                groupingMode = groupingMode,
+                groupedResults = groupResults(filtered, resultsType, groupingMode)
+            )
         }
     }
 
     companion object {
-        fun groupResults(results: List<Result>, resultsType: ResultsType): List<GroupedItem> {
-            val listOfGroupedItems = mutableListOf<GroupedItem>()
-
-            val weaponClasses = results.map { it.weaponClass.classname }.distinct().sorted()
-
-            weaponClasses.forEach { weaponClass ->
-                val groupedResults =
-                    results.filter { it.weaponClass.classname == weaponClass }
-                        .sortedByDescending { calculateSortOrder(it, resultsType) }
-                if (groupedResults.isNotEmpty()) {
-                    listOfGroupedItems.add(GroupedItem(weaponClass, groupedResults))
-                }
+        fun groupResults(
+            results: List<Result>,
+            resultsType: ResultsType,
+            groupingMode: GroupingMode = GroupingMode.WEAPON_CLASS
+        ): List<GroupedItem> {
+            return when (groupingMode) {
+                GroupingMode.WEAPON_CLASS -> groupByWeaponClass(results, resultsType)
+                GroupingMode.CLUB -> groupByClub(results, resultsType)
+                GroupingMode.MEDL -> groupByMedl(results, resultsType)
+                GroupingMode.NONE -> emptyList()
             }
-            return listOfGroupedItems
+        }
+
+        private fun groupByWeaponClass(results: List<Result>, resultsType: ResultsType): List<GroupedItem> {
+            val weaponClasses = results.map { it.weaponClass.classname }.distinct().sorted()
+            return weaponClasses.mapNotNull { weaponClass ->
+                val grouped = results.filter { it.weaponClass.classname == weaponClass }
+                    .sortedByDescending { calculateSortOrder(it, resultsType) }
+                if (grouped.isNotEmpty()) GroupedItem(weaponClass, grouped) else null
+            }
+        }
+
+        private fun groupByClub(results: List<Result>, resultsType: ResultsType): List<GroupedItem> {
+            val clubs = results.map { it.signup.club?.name ?: "Okänd" }.distinct().sorted()
+            return clubs.mapNotNull { club ->
+                val grouped = results.filter { (it.signup.club?.name ?: "Okänd") == club }
+                    .sortedByDescending { calculateSortOrder(it, resultsType) }
+                if (grouped.isNotEmpty()) GroupedItem(club, grouped) else null
+            }
+        }
+
+        private fun groupByMedl(results: List<Result>, resultsType: ResultsType): List<GroupedItem> {
+            val medalOrder = { medal: String -> when (medal) { "S" -> 0; "B" -> 1; else -> 2 } }
+            val medals = results.map { it.stdMedal?.value ?: "Ingen" }.distinct()
+                .sortedWith(compareBy({ medalOrder(it) }, { it }))
+            return medals.mapNotNull { medal ->
+                val grouped = results.filter { (it.stdMedal?.value ?: "Ingen") == medal }
+                    .sortedByDescending { calculateSortOrder(it, resultsType) }
+                if (grouped.isNotEmpty()) GroupedItem(medal, grouped) else null
+            }
         }
 
         fun filterResults(results: List<Result>, resultsType: ResultsType): List<Result> {
             val weaponClasses = getWeaponGroups(results)
-
-            val listOfFilteredItems =
-                results.filter {
-                    it.weaponClass.classname in weaponClasses
-                }.sortedByDescending { calculateSortOrder(it, resultsType) }
-            return listOfFilteredItems
+            return results.filter {
+                it.weaponClass.classname in weaponClasses
+            }.sortedByDescending { calculateSortOrder(it, resultsType) }
         }
 
         fun getWeaponGroups(results: List<Result>): Set<String> {

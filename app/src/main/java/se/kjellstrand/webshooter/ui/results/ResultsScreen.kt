@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.RadioButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.FilterList
@@ -109,9 +110,13 @@ fun CompetitionResultsScreen(
     if (isFilterBottomSheetOpen) {
         FilterBottomSheet(
             allWeaponGroups = resultsUiState.allWeaponGroups,
-            filterState = FilterState(selectedWeaponGroups = resultsUiState.selectedWeaponGroups),
+            filterState = FilterState(
+                selectedWeaponGroups = resultsUiState.selectedWeaponGroups,
+                groupingMode = resultsUiState.groupingMode
+            ),
             onFilterChange = { newFilterState ->
                 resultsViewModel.setSelectedWeaponGroups(newFilterState.selectedWeaponGroups)
+                resultsViewModel.setGroupingMode(newFilterState.groupingMode)
             },
             onDismissRequest = { isFilterBottomSheetOpen = false }
         )
@@ -138,19 +143,9 @@ fun ResultsList(
             val noneSelected = resultsUiState.selectedWeaponGroups.isEmpty()
                     && resultsUiState.allWeaponGroups.isNotEmpty()
 
-            val allGroupsSelected =
-                resultsUiState.selectedWeaponGroups.toSet()
-                    .containsAll(resultsUiState.allWeaponGroups.toSet())
-
-            val isLoading = if (noneSelected || allGroupsSelected) {
-                resultsUiState.groupedResults.isEmpty()
-            } else {
-                resultsUiState.filterResults.isEmpty()
-            }
-
             if (noneSelected) {
                 // empty — nothing to show
-            } else if (isLoading) {
+            } else if (resultsUiState.isLoading) {
                 item {
                     Box(
                         modifier = Modifier
@@ -161,8 +156,33 @@ fun ResultsList(
                         CircularProgressIndicator()
                     }
                 }
-            } else if (allGroupsSelected) {
-                // GROUPED VIEW with separators and running index
+            } else if (resultsUiState.groupingMode == GroupingMode.NONE) {
+                // FLAT VIEW
+                item {
+                    ResultsListHeader(isGrouped = false, resultsType = resultsType)
+                }
+                itemsIndexed(
+                    resultsUiState.filterResults,
+                    key = { _, it -> it.id }) { index, result ->
+                    ResultItem(
+                        result = result,
+                        index = index,
+                        isGrouped = false,
+                        resultsType = resultsType,
+                        loggedInUserId = resultsUiState.loggedInUserId,
+                        onItemClick = {
+                            navController.navigate(
+                                Screen.ShooterResult.createRoute(
+                                    competitionId,
+                                    result.signup.user.userID.toInt(),
+                                    resultsType.name
+                                )
+                            )
+                        })
+                    Spacer(modifier = Modifier.height(2.dp))
+                }
+            } else {
+                // GROUPED VIEW with separators
                 resultsUiState.groupedResults.forEach { group ->
                     item(key = "separator-${group.header}") {
                         WeaponGroupSeparator(group.header)
@@ -189,31 +209,6 @@ fun ResultsList(
                         Spacer(modifier = Modifier.height(2.dp))
                     }
                 }
-            } else {
-                // FILTERED VIEW (flat list) using itemsIndexed
-                item {
-                    ResultsListHeader(isGrouped = false, resultsType = resultsType)
-                }
-                itemsIndexed(
-                    resultsUiState.filterResults,
-                    key = { _, it -> it.id }) { index, result ->
-                    ResultItem(
-                        result = result,
-                        index = index,
-                        isGrouped = false,
-                        resultsType = resultsType,
-                        loggedInUserId = resultsUiState.loggedInUserId,
-                        onItemClick = {
-                            navController.navigate(
-                                Screen.ShooterResult.createRoute(
-                                    competitionId,
-                                    result.signup.user.userID.toInt(),
-                                    resultsType.name
-                                )
-                            )
-                        })
-                    Spacer(modifier = Modifier.height(2.dp))
-                }
             }
         }
     }
@@ -233,6 +228,32 @@ fun FilterBottomSheet(
         sheetState = bottomSheetState,
         content = {
             Column(modifier = Modifier.padding(16.dp)) {
+                Text("Gruppering", style = MaterialTheme.typography.titleMedium)
+                Spacer(modifier = Modifier.height(4.dp))
+                GroupingMode.entries.forEach { mode ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onFilterChange(filterState.copy(groupingMode = mode)) },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = filterState.groupingMode == mode,
+                            onClick = { onFilterChange(filterState.copy(groupingMode = mode)) }
+                        )
+                        Text(
+                            text = when (mode) {
+                                GroupingMode.WEAPON_CLASS -> "Vapenklass"
+                                GroupingMode.CLUB -> "Klubb"
+                                GroupingMode.MEDL -> "Medl"
+                                GroupingMode.NONE -> "Ingen"
+                            }
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+                HorizontalDivider()
+                Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     stringResource(R.string.select_weapon_groups),
                     style = MaterialTheme.typography.titleMedium

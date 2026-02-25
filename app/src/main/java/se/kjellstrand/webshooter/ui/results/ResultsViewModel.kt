@@ -9,4 +9,5 @@ interface ResultsViewModel {
     val resultsEvent: SharedFlow<ResultsEvent>
     fun setMode(mode: Mode)
     fun setSelectedWeaponGroups(selectedWeaponGroups: Set<String>)
+    fun setGroupingMode(groupingMode: GroupingMode)
 }
