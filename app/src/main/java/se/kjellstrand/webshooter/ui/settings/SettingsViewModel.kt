@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.settings.SettingsRepository
+import se.kjellstrand.webshooter.data.settings.remote.Gender
 import se.kjellstrand.webshooter.data.settings.remote.UserProfile
 import javax.inject.Inject
 
@@ -38,7 +39,7 @@ class SettingsViewModel @Inject constructor(
                             editEmail = profile.email,
                             editMobile = profile.mobile ?: "",
                             editPhone = profile.phone ?: "",
-                            editGender = profile.gender ?: "",
+                            editGender = Gender.fromApiValue(profile.gender),
                             editBirthday = profile.birthday?.substringBefore("-")?.toIntOrNull(),
                             editShootingCardNumber = profile.shootingCardNumber ?: ""
                         )
@@ -65,7 +66,7 @@ class SettingsViewModel @Inject constructor(
                 editEmail = current.profile?.email ?: "",
                 editMobile = current.profile?.mobile ?: "",
                 editPhone = current.profile?.phone ?: "",
-                editGender = current.profile?.gender ?: "",
+                editGender = Gender.fromApiValue(current.profile?.gender),
                 editBirthday = current.profile?.birthday?.substringBefore("-")?.toIntOrNull(),
                 editShootingCardNumber = current.profile?.shootingCardNumber ?: "",
                 successMessage = null,
@@ -81,7 +82,7 @@ class SettingsViewModel @Inject constructor(
     fun onEmailChange(value: String) { _uiState.value = _uiState.value.copy(editEmail = value) }
     fun onMobileChange(value: String) { _uiState.value = _uiState.value.copy(editMobile = value) }
     fun onPhoneChange(value: String) { _uiState.value = _uiState.value.copy(editPhone = value) }
-    fun onGenderChange(value: String) { _uiState.value = _uiState.value.copy(editGender = value) }
+    fun onGenderChange(gender: Gender) { _uiState.value = _uiState.value.copy(editGender = gender) }
     fun onBirthdayChange(value: Int) { _uiState.value = _uiState.value.copy(editBirthday = value) }
     fun onShootingCardNumberChange(value: String) { _uiState.value = _uiState.value.copy(editShootingCardNumber = value) }
 
@@ -99,7 +100,7 @@ class SettingsViewModel @Inject constructor(
             shootingCardNumber = state.editShootingCardNumber.ifEmpty { null },
             noShootingCardNumber = existingProfile.noShootingCardNumber,
             birthday = state.editBirthday?.let { "$it-01-01" },
-            gender = state.editGender.ifEmpty { null },
+            gender = state.editGender.apiValue,
             phone = state.editPhone.ifEmpty { null },
             mobile = state.editMobile.ifEmpty { null },
             gradeField = existingProfile.gradeField,
