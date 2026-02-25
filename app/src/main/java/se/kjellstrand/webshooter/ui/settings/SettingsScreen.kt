@@ -60,12 +60,12 @@ fun SettingsScreen(
             Tab(
                 selected = uiState.selectedTab == SettingsTab.PROFILE,
                 onClick = { viewModel.setTab(SettingsTab.PROFILE) },
-                text = { Text("Profile") }
+                text = { Text(stringResource(R.string.profile)) }
             )
             Tab(
                 selected = uiState.selectedTab == SettingsTab.PASSWORD,
                 onClick = { viewModel.setTab(SettingsTab.PASSWORD) },
-                text = { Text("Password") }
+                text = { Text(stringResource(R.string.password)) }
             )
         }
 
