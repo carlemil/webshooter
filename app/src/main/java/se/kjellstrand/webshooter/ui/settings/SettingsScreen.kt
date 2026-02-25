@@ -47,6 +47,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import se.kjellstrand.webshooter.R
+import se.kjellstrand.webshooter.data.settings.remote.Gender
 import se.kjellstrand.webshooter.data.settings.remote.UserProfile
 
 @Composable
@@ -55,7 +56,7 @@ fun SettingsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    Column(modifier = Modifier.fillMaxSize().padding(top = dimensionResource(R.dimen.screen_content_top_padding))) {
+    Column(modifier = Modifier.fillMaxSize()) {
         TabRow(selectedTabIndex = uiState.selectedTab.ordinal) {
             Tab(
                 selected = uiState.selectedTab == SettingsTab.PROFILE,
@@ -134,7 +135,8 @@ private fun ViewProfileContent(profile: UserProfile?, onEditClick: () -> Unit) {
     ProfileInfoRow(stringResource(R.string.email), profile.email)
     ProfileInfoRow(stringResource(R.string.mobile), profile.mobile ?: stringResource(R.string.dash))
     ProfileInfoRow(stringResource(R.string.phone), profile.phone ?: stringResource(R.string.dash))
-    ProfileInfoRow(stringResource(R.string.gender), profile.gender?.replaceFirstChar { it.uppercase() } ?: stringResource(R.string.dash))
+    val genderEnum = Gender.fromApiValue(profile.gender)
+    ProfileInfoRow(stringResource(R.string.gender), if (genderEnum == Gender.UNSET) stringResource(R.string.dash) else stringResource(genderEnum.labelRes))
     ProfileInfoRow(stringResource(R.string.birth_year), profile.birthday?.substringBefore("-") ?: stringResource(R.string.dash))
     ProfileInfoRow(stringResource(R.string.shooting_card_no), profile.shootingCardNumber ?: stringResource(R.string.dash))
 }
@@ -243,19 +245,12 @@ private fun EditProfileContent(uiState: SettingsUiState, viewModel: SettingsView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun GenderDropdown(selected: String, onSelect: (String) -> Unit) {
-    val selectGender = stringResource(R.string.select_gender)
-    val genders = listOf(
-        "" to selectGender,
-        "male" to stringResource(R.string.male),
-        "female" to stringResource(R.string.female)
-    )
+private fun GenderDropdown(selected: Gender, onSelect: (Gender) -> Unit) {
     var expanded by remember { mutableStateOf(false) }
-    val selectedLabel = genders.find { it.first == selected }?.second ?: selectGender
 
     ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
         OutlinedTextField(
-            value = selectedLabel,
+            value = stringResource(selected.labelRes),
             onValueChange = {},
             readOnly = true,
             label = { Text(stringResource(R.string.gender)) },
@@ -265,11 +260,11 @@ private fun GenderDropdown(selected: String, onSelect: (String) -> Unit) {
                 .menuAnchor(MenuAnchorType.PrimaryNotEditable)
         )
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-            genders.forEach { (value, label) ->
+            Gender.entries.forEach { gender ->
                 DropdownMenuItem(
-                    text = { Text(label) },
+                    text = { Text(stringResource(gender.labelRes)) },
                     onClick = {
-                        onSelect(value)
+                        onSelect(gender)
                         expanded = false
                     }
                 )

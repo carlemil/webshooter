@@ -1,5 +1,6 @@
 package se.kjellstrand.webshooter.ui.settings
 
+import se.kjellstrand.webshooter.data.settings.remote.Gender
 import se.kjellstrand.webshooter.data.settings.remote.UserProfile
 
 data class SettingsUiState(
@@ -11,7 +12,7 @@ data class SettingsUiState(
     val editEmail: String = "",
     val editMobile: String = "",
     val editPhone: String = "",
-    val editGender: String = "",
+    val editGender: Gender = Gender.UNSET,
     val editBirthday: Int? = null,
     val editShootingCardNumber: String = "",
     val currentPassword: String = "",
