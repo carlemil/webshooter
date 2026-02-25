@@ -76,7 +76,7 @@ fun SignupScreen(
         )
         if (competition.userSignups.isNotEmpty()) {
             Text(
-                text = stringResource(R.string.current_signups),
+                text = stringResource(R.string.signup_current_signups),
                 style = MaterialTheme.typography.titleSmall
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -96,7 +96,7 @@ fun SignupScreen(
                         ),
                         enabled = !uiState.isLoading
                     ) {
-                        Text(stringResource(R.string.remove_signup))
+                        Text(stringResource(R.string.signup_remove_signup))
                     }
                 }
             }
@@ -116,7 +116,7 @@ fun SignupScreen(
         OutlinedTextField(
             value = uiState.note,
             onValueChange = { viewModel.updateNote(it) },
-            label = { Text(stringResource(R.string.note)) },
+            label = { Text(stringResource(R.string.signup_note)) },
             modifier = Modifier.fillMaxWidth(),
             minLines = 3
         )
@@ -163,7 +163,7 @@ private fun WeaponClassDropdown(
         modifier = Modifier.fillMaxWidth()
     ) {
         OutlinedTextField(
-            value = selectedClass?.classname ?: stringResource(R.string.select_weapon_class),
+            value = selectedClass?.classname ?: stringResource(R.string.signup_select_weapon_class),
             onValueChange = {},
             readOnly = true,
             label = { Text(stringResource(R.string.weapon_class)) },
