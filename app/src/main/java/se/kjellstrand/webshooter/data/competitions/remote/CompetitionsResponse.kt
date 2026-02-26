@@ -18,7 +18,7 @@ data class Competitions (
     val data: List<Datum>,
 
     @SerializedName("first_page_url")
-    val firstPageURL: String,
+    val firstPageURL: String? = null,
 
     val from: Long,
 
@@ -26,7 +26,7 @@ data class Competitions (
     val lastPage: Long,
 
     @SerializedName("last_page_url")
-    val lastPageURL: String,
+    val lastPageURL: String? = null,
 
     val links: List<Link>,
 

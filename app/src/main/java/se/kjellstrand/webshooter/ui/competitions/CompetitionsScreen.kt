@@ -162,7 +162,9 @@ fun CompetitionsScreen(
                 LaunchedEffect(listState) {
                     val lastVisibleItemIndex =
                         listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
-                    if (lastVisibleItemIndex != null && lastVisibleItemIndex >= competitions.data.size - 5) {
+                    if (lastVisibleItemIndex != null &&
+                        lastVisibleItemIndex >= competitions.data.size - 5 &&
+                        competitions.data.size.toLong() < competitions.total) {
                         competitionsViewModel.loadNextPage()
                     }
                 }
