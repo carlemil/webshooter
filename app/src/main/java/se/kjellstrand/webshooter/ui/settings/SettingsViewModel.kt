@@ -7,15 +7,19 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import se.kjellstrand.webshooter.data.AuthTokenManager
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.settings.SettingsRepository
 import se.kjellstrand.webshooter.data.settings.remote.Gender
 import se.kjellstrand.webshooter.data.settings.remote.UserProfile
+import se.kjellstrand.webshooter.data.secure.SecurePrefs
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val securePrefs: SecurePrefs,
+    private val authTokenManager: AuthTokenManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(SettingsUiState())
@@ -159,6 +163,12 @@ class SettingsViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun logout() {
+        securePrefs.clearCredentials()
+        authTokenManager.clearToken()
+        _uiState.value = _uiState.value.copy(loggedOut = true)
     }
 
     fun clearMessages() {

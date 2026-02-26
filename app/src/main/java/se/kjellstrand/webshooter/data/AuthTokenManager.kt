@@ -33,6 +33,14 @@ class AuthTokenManager(context: Context) {
         return token
     }
 
+    fun clearToken() {
+        with(sharedPreferences.edit()) {
+            remove(AUTH_TOKEN_KEY)
+            apply()
+        }
+        token = null
+    }
+
     companion object {
         private const val AUTH_TOKEN_KEY = "auth_token"
         var token: String? = null
