@@ -20,7 +20,8 @@ data class SettingsUiState(
     val confirmPassword: String = "",
     val successMessage: String? = null,
     val errorMessage: String? = null,
-    val selectedTab: SettingsTab = SettingsTab.PROFILE
+    val selectedTab: SettingsTab = SettingsTab.PROFILE,
+    val loggedOut: Boolean = false
 )
 
 enum class SettingsTab { PROFILE, PASSWORD }
