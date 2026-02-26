@@ -50,7 +50,7 @@ open class CompetitionsRepository @Inject constructor(
     fun getMyEntriesPage(page: Int): Flow<Resource<CompetitionsResponse, UserError>> = flow {
         emit(Resource.Loading(true))
         try {
-            val result = competitionsRemoteDataSource.getCompetitionsWithSignups(page, 100, "all", 1)
+            val result = competitionsRemoteDataSource.getCompetitionsWithSignups(page, 20, "all", 1)
             emit(Resource.Success(result))
         } catch (e: IOException) {
             e.printStackTrace()
