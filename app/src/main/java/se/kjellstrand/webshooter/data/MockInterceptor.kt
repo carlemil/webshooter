@@ -36,7 +36,6 @@ open class MockInterceptor @Inject constructor(
                     getTextFromRaw(R.raw.competitions)
                 }
             }
-            "/api/v4.1.9/competitions/196/results" -> getTextFromRaw(R.raw.results_196)
             "/api/v4.1.9/competitions/208/results" -> getTextFromRaw(R.raw.results_208)
             "/api/v4.1.9/authenticate/user" -> getTextFromRaw(R.raw.authenticate_user)
             "/api/v4.1.9/authenticate/updatePassword" -> "{}"
