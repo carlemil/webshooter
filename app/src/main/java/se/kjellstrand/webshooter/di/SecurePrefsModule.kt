@@ -46,6 +46,13 @@ class SecurePrefs @Inject constructor(@ApplicationContext context: Context) {
     fun getUsername(): String = sharedPrefs.getString(KEY_USERNAME, "") ?: ""
     fun getPassword(): String = sharedPrefs.getString(KEY_PASSWORD, "") ?: ""
 
+    fun clearCredentials() {
+        sharedPrefs.edit {
+            remove(KEY_USERNAME)
+            remove(KEY_PASSWORD)
+        }
+    }
+
     fun saveCompetitionStatus(status: CompetitionStatus) {
         sharedPrefs.edit {
             putString(KEY_COMPETITION_STATUS, status.name)

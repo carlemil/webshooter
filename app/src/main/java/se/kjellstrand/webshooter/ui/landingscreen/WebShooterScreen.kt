@@ -107,7 +107,13 @@ fun WebShooterScreen(navController: NavController) {
                     CompetitionsScreen(navController, competitionsViewModel)
                 }
                 Screen.Club.route -> ClubScreen()
-                Screen.Settings.route -> SettingsScreen()
+                Screen.Settings.route -> SettingsScreen(
+                    onLoggedOut = {
+                        navController.navigate(Screen.LoginScreen.route) {
+                            popUpTo(0) { inclusive = true }
+                        }
+                    }
+                )
             }
         }
     }

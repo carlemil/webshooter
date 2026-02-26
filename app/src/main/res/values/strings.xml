@@ -88,6 +88,7 @@
     <string name="settings_gender">Gender</string>
     <string name="settings_home_phone">Home phone</string>
     <string name="settings_last_name">Last name</string>
+    <string name="settings_logout">Logout</string>
     <string name="settings_mobile">Mobile</string>
     <string name="settings_mobile_phone">Mobile phone</string>
     <string name="settings_new_password">New password</string>

@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -33,6 +34,7 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -52,9 +54,14 @@ import se.kjellstrand.webshooter.data.settings.remote.UserProfile
 
 @Composable
 fun SettingsScreen(
+    onLoggedOut: () -> Unit = {},
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(uiState.loggedOut) {
+        if (uiState.loggedOut) onLoggedOut()
+    }
 
     Column(modifier = Modifier.fillMaxSize()) {
         TabRow(selectedTabIndex = uiState.selectedTab.ordinal) {
@@ -106,13 +113,17 @@ private fun ProfileTab(uiState: SettingsUiState, viewModel: SettingsViewModel) {
         if (uiState.isEditMode) {
             EditProfileContent(uiState, viewModel)
         } else {
-            ViewProfileContent(uiState.profile, onEditClick = { viewModel.setEditMode(true) })
+            ViewProfileContent(
+                uiState.profile,
+                onEditClick = { viewModel.setEditMode(true) },
+                onLogoutClick = { viewModel.logout() }
+            )
         }
     }
 }
 
 @Composable
-private fun ViewProfileContent(profile: UserProfile?, onEditClick: () -> Unit) {
+private fun ViewProfileContent(profile: UserProfile?, onEditClick: () -> Unit, onLogoutClick: () -> Unit) {
     if (profile == null) {
         Text(stringResource(R.string.settings_no_profile_data))
         return
@@ -139,6 +150,15 @@ private fun ViewProfileContent(profile: UserProfile?, onEditClick: () -> Unit) {
     ProfileInfoRow(stringResource(R.string.settings_gender), if (genderEnum == Gender.UNSET) stringResource(R.string.dash) else stringResource(genderEnum.labelRes))
     ProfileInfoRow(stringResource(R.string.settings_birth_year), profile.birthday?.substringBefore("-") ?: stringResource(R.string.dash))
     ProfileInfoRow(stringResource(R.string.settings_shooting_card_no), profile.shootingCardNumber ?: stringResource(R.string.dash))
+
+    Spacer(modifier = Modifier.height(24.dp))
+    Button(
+        onClick = onLogoutClick,
+        modifier = Modifier.fillMaxWidth(),
+        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+    ) {
+        Text(stringResource(R.string.settings_logout))
+    }
 }
 
 @Composable
