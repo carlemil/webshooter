@@ -2,7 +2,7 @@
   "user": {
     "name": "Test",
     "lastname": "User",
-    "email": "test@example.com",
+    "email": "secret@test",
     "shooting_card_number": "12345",
     "no_shooting_card_number": null,
     "birthday": "1990-01-01",
@@ -23,7 +23,7 @@
         "districts_id": 12,
         "clubs_nr": 100,
         "name": "Test Pistolskytteklubb",
-        "email": "info@testclub.se",
+        "email": "secret@info",
         "phone": null,
         "address_street": "Test Street 1",
         "address_street_2": null,
