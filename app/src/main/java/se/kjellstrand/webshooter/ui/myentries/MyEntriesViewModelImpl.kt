@@ -19,48 +19,33 @@ class MyEntriesViewModelImpl @Inject constructor(
     private val _uiState = MutableStateFlow(MyEntriesUiState(isLoading = true))
     override val uiState: StateFlow<MyEntriesUiState> = _uiState.asStateFlow()
 
-    private var currentPage = 0
-    private var totalPages = Int.MAX_VALUE
-
     init {
-        loadAllPages()
+        load()
     }
 
-    private fun loadAllPages() {
+    private fun load() {
         viewModelScope.launch {
-            while (currentPage < totalPages) {
-                currentPage++
-                var pageFinished = false
-                repository.getPage(currentPage, 50).collect { resource ->
-                    when (resource) {
-                        is Resource.Success -> {
-                            val comps = resource.data.competitions
-                            totalPages = comps.lastPage.toInt()
-                            val newEntries = comps.data.filter { it.userSignups.isNotEmpty() }
-                            _uiState.value = _uiState.value.copy(
-                                entries = _uiState.value.entries + newEntries,
-                                isLoading = currentPage < totalPages
-                            )
-                            pageFinished = true
-                        }
-                        is Resource.Error -> {
-                            _uiState.value = _uiState.value.copy(isLoading = false, isFinished = true)
-                            totalPages = 0
-                            pageFinished = true
-                        }
-                        else -> {}
+            repository.getSignups().collect { resource ->
+                when (resource) {
+                    is Resource.Success -> {
+                        _uiState.value = _uiState.value.copy(
+                            groupedEntries = resource.data
+                                .mapValues { (_, group) -> group.signups }
+                                .toSortedMap(compareByDescending { it }),
+                            isLoading = false
+                        )
                     }
+                    is Resource.Error -> {
+                        _uiState.value = _uiState.value.copy(isLoading = false)
+                    }
+                    else -> {}
                 }
-                if (!pageFinished) break
             }
-            _uiState.value = _uiState.value.copy(isLoading = false, isFinished = true)
         }
     }
 
     override fun reload() {
-        currentPage = 0
-        totalPages = Int.MAX_VALUE
         _uiState.value = MyEntriesUiState(isLoading = true)
-        loadAllPages()
+        load()
     }
 }

@@ -1,9 +1,8 @@
 package se.kjellstrand.webshooter.ui.myentries
 
-import se.kjellstrand.webshooter.data.competitions.remote.Datum
+import se.kjellstrand.webshooter.data.myentries.remote.SignupEntry
 
 data class MyEntriesUiState(
-    val entries: List<Datum> = emptyList(),
-    val isLoading: Boolean = false,
-    val isFinished: Boolean = false
+    val groupedEntries: Map<String, List<SignupEntry>> = emptyMap(),
+    val isLoading: Boolean = false
 )
