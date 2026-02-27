@@ -45,7 +45,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import se.kjellstrand.webshooter.R
-import se.kjellstrand.webshooter.data.common.CompetitionStatus
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadges
 import se.kjellstrand.webshooter.ui.mock.CompetitionsViewModelMock
@@ -55,15 +54,10 @@ import se.kjellstrand.webshooter.ui.navigation.Screen
 @Composable
 fun CompetitionsScreen(
     navController: NavController,
-    competitionsViewModel: CompetitionsViewModel = hiltViewModel<CompetitionsViewModelImpl>(),
-    selectedStatus: CompetitionStatus = CompetitionStatus.ALL
+    competitionsViewModel: CompetitionsViewModel = hiltViewModel<CompetitionsViewModelImpl>()
 ) {
     val competitionsState by competitionsViewModel.uiState.collectAsState()
     val listState = rememberLazyListState()
-
-    LaunchedEffect(selectedStatus) {
-        competitionsViewModel.setCompetitionStatus(selectedStatus)
-    }
 
     LaunchedEffect(listState) {
         snapshotFlow {
@@ -79,13 +73,7 @@ fun CompetitionsScreen(
 
     Column {
         competitionsState.competitions?.let { competitions ->
-            val displayedCompetitions = if (selectedStatus == CompetitionStatus.MY_ENTRIES) {
-                competitions.data.filter { it.userSignups.isNotEmpty() }
-            } else {
-                competitions.data
-            }
-
-            if (displayedCompetitions.isEmpty()) {
+            if (competitions.data.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     Text(stringResource(R.string.competitions_no_competitions_match_filter))
                 }
@@ -98,7 +86,7 @@ fun CompetitionsScreen(
                     ),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(displayedCompetitions) { competition ->
+                    items(competitions.data) { competition ->
                         CompetitionItem(
                             competition = competition,
                             onResultsClick = {

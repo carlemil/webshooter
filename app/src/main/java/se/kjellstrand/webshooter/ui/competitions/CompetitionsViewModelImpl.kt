@@ -7,28 +7,22 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import se.kjellstrand.webshooter.data.common.CompetitionStatus
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.competitions.CompetitionsRepository
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
-import se.kjellstrand.webshooter.data.secure.SecurePrefs
 import javax.inject.Inject
 
 @HiltViewModel
 class CompetitionsViewModelImpl @Inject constructor(
-    private val competitionsRepository: CompetitionsRepository,
-    private val securePrefs: SecurePrefs
+    private val competitionsRepository: CompetitionsRepository
 ) : ViewModel(), CompetitionsViewModel {
 
     private val _uiState = MutableStateFlow(CompetitionsUiState(isLoading = true))
     override val uiState: StateFlow<CompetitionsUiState> = _uiState.asStateFlow()
 
     private var currentPage = 1
-    private var competitionStatus = CompetitionStatus.COMPLETED
 
     init {
-        competitionStatus = securePrefs.getCompetitionStatus()
-        _uiState.value = _uiState.value.copy(competitionStatus = competitionStatus)
         loadInitialPages()
     }
 
@@ -43,20 +37,8 @@ class CompetitionsViewModelImpl @Inject constructor(
         loadCompetitions(currentPage, 10)
     }
 
-    override fun setCompetitionStatus(status: CompetitionStatus) {
-        competitionStatus = status
-        securePrefs.saveCompetitionStatus(status)
-        _uiState.value = _uiState.value.copy(competitions = null, competitionStatus = status, isLoading = true)
-        currentPage = 1
-        loadInitialPages()
-    }
-
     private fun loadCompetitions(page: Int, pageSize: Int) {
-        val flow = if (competitionStatus == CompetitionStatus.MY_ENTRIES) {
-            competitionsRepository.getMyEntriesPage(page)
-        } else {
-            competitionsRepository.get(page, pageSize, competitionStatus)
-        }
+        val flow = competitionsRepository.get(page, pageSize)
         viewModelScope.launch {
             flow.collect { resource ->
                 when (resource) {
