@@ -39,6 +39,7 @@ import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.ui.club.ClubScreen
 import se.kjellstrand.webshooter.ui.competitions.CompetitionsScreen
 import se.kjellstrand.webshooter.ui.competitions.CompetitionsViewModelImpl
+import se.kjellstrand.webshooter.ui.myentries.MyEntriesScreen
 import se.kjellstrand.webshooter.ui.navigation.Screen
 import se.kjellstrand.webshooter.ui.settings.SettingsScreen
 
@@ -108,7 +109,7 @@ fun WebShooterScreen(navController: NavController) {
                     CompetitionsScreen(navController, competitionsViewModel)
                 }
                 Screen.MyEntries.route -> {
-                    CompetitionsScreen(navController, competitionsViewModel)
+                    MyEntriesScreen()
                 }
                 Screen.Club.route -> ClubScreen()
                 Screen.Settings.route -> SettingsScreen(

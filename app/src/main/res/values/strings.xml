@@ -56,6 +56,13 @@
     <string name="login_login">Login</string>
     <string name="login_username">Username</string>
 
+    <!-- ### MY_ENTRIES ### -->
+    <string name="my_entries_lane">Lane: %1$d</string>
+    <string name="my_entries_no_entries">You have no registered entries.</string>
+    <string name="my_entries_note">Note: %1$s</string>
+    <string name="my_entries_start_time">Start: %1$s</string>
+    <string name="my_entries_weapon_class">Class: %1$s</string>
+
     <!-- ### COMMON ### -->
     <string name="male">Male</string>
     <string name="medal_short">Mdl</string>
