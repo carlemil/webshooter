@@ -56,8 +56,10 @@ fun MyEntriesScreen(
                             modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
                         )
                     }
-                    items(entries.size, key = { entries[it].id }) { index ->
-                        SignupItem(entries[index])
+                    val byCompetition = entries.groupBy { it.competition.id }
+                        .values.toList()
+                    items(byCompetition.size, key = { byCompetition[it].first().competition.id }) { index ->
+                        CompetitionSignupsItem(byCompetition[index])
                         HorizontalDivider()
                     }
                 }
@@ -67,23 +69,33 @@ fun MyEntriesScreen(
 }
 
 @Composable
-private fun SignupItem(entry: SignupEntry) {
+private fun CompetitionSignupsItem(entries: List<SignupEntry>) {
+    val competition = entries.first().competition
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 10.dp)
     ) {
         Text(
-            text = entry.competition.name,
+            text = competition.name,
             style = MaterialTheme.typography.bodyMedium
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
-            text = "${entry.competition.date}  •  ${entry.competition.statusHuman}",
+            text = "${competition.date}  •  ${competition.statusHuman}",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
-        Spacer(modifier = Modifier.height(4.dp))
+        entries.forEach { entry ->
+            Spacer(modifier = Modifier.height(6.dp))
+            SignupRow(entry)
+        }
+    }
+}
+
+@Composable
+private fun SignupRow(entry: SignupEntry) {
+    Column(modifier = Modifier.padding(start = 12.dp)) {
         Text(
             text = stringResource(R.string.signups_weapon_class, entry.weaponclass.classname),
             style = MaterialTheme.typography.bodySmall
