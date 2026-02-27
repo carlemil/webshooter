@@ -1,6 +1,7 @@
 <resources>
 
     <!-- ### GENERAL ### -->
+    <string name="app_name">App Shooter</string>
     <string name="clear">Återställ</string>
     <string name="dash">-</string>
     <string name="details">Detaljer</string>
@@ -21,6 +22,7 @@
     <string name="points">Poäng</string>
     <string name="points_short">P</string>
     <string name="select_gender">Välj kön</string>
+    <string name="settings_logout">Logga ut</string>
     <string name="shooting_card_number">Pskn: %1$s</string>
     <string name="sign_up">Anmäl dig</string>
     <string name="title_activity_main">AppShooter</string>
@@ -120,5 +122,12 @@
     <string name="web_shooter_menu">Meny</string>
     <string name="web_shooter_menu_content_description">Meny</string>
     <string name="web_shooter_settings">Inställningar</string>
+
+    <!-- ### SIGNUPS ### -->
+    <string name="signups_lane">Bana: %1$s</string>
+    <string name="signups_no_entries">Inga tävlingar</string>
+    <string name="signups_note">Önskemål: %1$s</string>
+    <string name="signups_start_time">Start tid: %1$s</string>
+    <string name="signups_weapon_class">Vapen klass: %1$s</string>
 
 </resources>
