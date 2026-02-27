@@ -116,6 +116,26 @@ private fun SignupRow(entry: SignupEntry) {
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
+        if (entry.team.isNotEmpty()) {
+            Text(
+                text = stringResource(R.string.signups_team, entry.team.first().name),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        entry.resultsPlacements?.let { rp ->
+            val medal = rp.stdMedal?.let { " · ${stringResource(R.string.signups_medal, it)}" } ?: ""
+            Text(
+                text = stringResource(R.string.signups_placement, rp.placement) + medal,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        Text(
+            text = stringResource(R.string.signups_registration_fee, entry.registrationFee),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
         if (!entry.note.isNullOrBlank()) {
             Text(
                 text = stringResource(R.string.signups_note, entry.note),

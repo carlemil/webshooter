@@ -31,7 +31,10 @@ data class SignupEntry(
 
     val competition: SignupCompetition,
     val weaponclass: SignupWeaponClass,
-    val patrol: SignupPatrol?
+    val patrol: SignupPatrol?,
+    val team: List<SignupTeam>,
+
+    @SerializedName("results_placements") val resultsPlacements: SignupResultsPlacement?
 )
 
 data class SignupCompetition(
@@ -60,4 +63,17 @@ data class SignupPatrol(
     @SerializedName("competitions_id") val competitionsId: Long,
     @SerializedName("start_time_human") val startTimeHuman: String,
     @SerializedName("end_time_human") val endTimeHuman: String
+)
+
+data class SignupTeam(
+    val id: Long,
+    val name: String
+)
+
+data class SignupResultsPlacement(
+    val id: Long,
+    val placement: Int,
+
+    @SerializedName("std_medal") val stdMedal: String?,
+    val points: Long
 )
