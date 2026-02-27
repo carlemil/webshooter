@@ -3,6 +3,36 @@
     <!-- ### GENERAL ### -->
     <string name="app_name" translatable="false">WebShooter</string>
     <string name="clear">Clear</string>
+    <string name="dash">-</string>
+    <string name="details">Details</string>
+    <string name="email">Email</string>
+    <string name="female">Female</string>
+    <string name="figures">Figures</string>
+    <string name="figures_short">F</string>
+    <string name="hits">Hits</string>
+    <string name="hits_short">H</string>
+    <string name="landing_screen">Start page</string>
+    <string name="male">Male</string>
+    <string name="medal_short">Mdl</string>
+    <string name="my_entries">My Entries</string>
+    <string name="name">Name</string>
+    <string name="password">Password</string>
+    <string name="phone">Phone</string>
+    <string name="placement">#</string>
+    <string name="points">Points</string>
+    <string name="points_short">P</string>
+    <string name="select_gender">Select gender</string>
+    <string name="shooting_card_number">Pskn: %1$s</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="title_activity_main">AppShooter</string>
+    <string name="unknown">Unknown</string>
+    <string name="unknown_club">Unknown club</string>
+    <string name="x">X</string>
+    <string name="results_done_button">Done</string>
+    <string name="results_filter_all">All</string>
+    <string name="results_filter_none">None</string>
+    <string name="results_no_results_found">No results found</string>
+    <string name="results_select_weapon_groups">Select weapon groups</string>
 
     <!-- ### CLUB ### -->
     <string name="club_address">Address</string>
@@ -41,48 +71,16 @@
     <string name="competitions_team_signup">Team signup: %1$s</string>
     <string name="competitions_yes">Yes</string>
 
-    <!-- ### COMMON ### -->
-    <string name="dash">-</string>
-    <string name="details">Details</string>
-    <string name="email">Email</string>
-    <string name="female">Female</string>
-    <string name="figures">Figures</string>
-    <string name="figures_short">F</string>
-    <string name="hits">Hits</string>
-    <string name="hits_short">H</string>
-    <string name="landing_screen">Start page</string>
-
     <!-- ### LOGIN ### -->
     <string name="login_login">Login</string>
     <string name="login_username">Username</string>
 
-    <!-- ### MY_ENTRIES ### -->
-    <string name="my_entries_lane">Lane: %1$d</string>
-    <string name="my_entries_no_entries">You have no registered entries.</string>
-    <string name="my_entries_note">Note: %1$s</string>
-    <string name="my_entries_start_time">Start: %1$s</string>
-    <string name="my_entries_weapon_class">Class: %1$s</string>
-
-    <!-- ### COMMON ### -->
-    <string name="male">Male</string>
-    <string name="medal_short">Mdl</string>
-    <string name="my_entries">My Entries</string>
-    <string name="name">Name</string>
-    <string name="password">Password</string>
-    <string name="phone">Phone</string>
-    <string name="placement">#</string>
-    <string name="points">Points</string>
-    <string name="points_short">P</string>
-
-    <!-- ### RESULTS ### -->
-    <string name="results_done_button">Done</string>
-    <string name="results_filter_all">All</string>
-    <string name="results_filter_none">None</string>
-    <string name="results_no_results_found">No results found</string>
-    <string name="results_select_weapon_groups">Select weapon groups</string>
-
-    <!-- ### COMMON ### -->
-    <string name="select_gender">Select gender</string>
+    <!-- ### SIGNUPS ### -->
+    <string name="signups_lane">Lane: %1$d</string>
+    <string name="signups_no_entries">You have no registered entries.</string>
+    <string name="signups_note">Note: %1$s</string>
+    <string name="signups_start_time">Start: %1$s</string>
+    <string name="signups_weapon_class">Class: %1$s</string>
 
     <!-- ### SETTINGS ### -->
     <string name="settings_birth_year">Birth year</string>
@@ -112,20 +110,11 @@
     <string name="shooter_result_serie">Series</string>
     <string name="shooter_result_station">Station</string>
 
-    <!-- ### COMMON ### -->
-    <string name="shooting_card_number">Pskn: %1$s</string>
-    <string name="sign_up">Sign Up</string>
-
     <!-- ### SIGNUP ### -->
     <string name="signup_current_signups">Current signups</string>
     <string name="signup_note">Note</string>
     <string name="signup_remove_signup">Remove</string>
     <string name="signup_select_weapon_class">Select weapon class</string>
-
-    <!-- ### COMMON ### -->
-    <string name="title_activity_main">AppShooter</string>
-    <string name="unknown">Unknown</string>
-    <string name="unknown_club">Unknown club</string>
 
     <!-- ### WEAPON ### -->
     <string name="weapon_class">Class</string>
@@ -139,7 +128,5 @@
     <string name="web_shooter_menu_content_description">Menu</string>
     <string name="web_shooter_settings">Settings</string>
 
-    <!-- ### COMMON ### -->
-    <string name="x">X</string>
 
 </resources>

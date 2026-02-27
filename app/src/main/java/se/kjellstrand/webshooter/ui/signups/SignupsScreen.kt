@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.myentries
+package se.kjellstrand.webshooter.ui.signups
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,11 +23,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import se.kjellstrand.webshooter.R
-import se.kjellstrand.webshooter.data.myentries.remote.SignupEntry
+import se.kjellstrand.webshooter.data.signups.remote.SignupEntry
 
 @Composable
 fun MyEntriesScreen(
-    viewModel: MyEntriesViewModel = hiltViewModel<MyEntriesViewModelImpl>()
+    viewModel: SignupsViewModel = hiltViewModel<SignupsViewModelImpl>()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -39,7 +39,7 @@ fun MyEntriesScreen(
         }
         uiState.groupedEntries.isEmpty() -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(stringResource(R.string.my_entries_no_entries))
+                Text(stringResource(R.string.signups_no_entries))
             }
         }
         else -> {
@@ -85,28 +85,28 @@ private fun SignupItem(entry: SignupEntry) {
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
-            text = stringResource(R.string.my_entries_weapon_class, entry.weaponclass.classname),
+            text = stringResource(R.string.signups_weapon_class, entry.weaponclass.classname),
             style = MaterialTheme.typography.bodySmall
         )
         val startTime = entry.patrol?.startTimeHuman?.takeIf { it.isNotBlank() }
             ?: entry.startTimeHuman.takeIf { it.isNotBlank() && it != "01:00" }
         if (startTime != null) {
             Text(
-                text = stringResource(R.string.my_entries_start_time, startTime),
+                text = stringResource(R.string.signups_start_time, startTime),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         if (entry.lane > 0) {
             Text(
-                text = stringResource(R.string.my_entries_lane, entry.lane),
+                text = stringResource(R.string.signups_lane, entry.lane),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         if (!entry.note.isNullOrBlank()) {
             Text(
-                text = stringResource(R.string.my_entries_note, entry.note),
+                text = stringResource(R.string.signups_note, entry.note),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
