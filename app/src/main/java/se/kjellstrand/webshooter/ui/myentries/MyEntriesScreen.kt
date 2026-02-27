@@ -10,10 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -27,8 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import se.kjellstrand.webshooter.R
-import se.kjellstrand.webshooter.data.competitions.remote.Datum
-import se.kjellstrand.webshooter.data.competitions.remote.Usersignup
+import se.kjellstrand.webshooter.data.myentries.remote.SignupEntry
 
 @Composable
 fun MyEntriesScreen(
@@ -37,12 +32,12 @@ fun MyEntriesScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     when {
-        uiState.isLoading && uiState.entries.isEmpty() -> {
+        uiState.isLoading -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 CircularProgressIndicator()
             }
         }
-        uiState.isFinished && uiState.entries.isEmpty() -> {
+        uiState.groupedEntries.isEmpty() -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(stringResource(R.string.my_entries_no_entries))
             }
@@ -51,19 +46,19 @@ fun MyEntriesScreen(
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(top = 8.dp, start = 16.dp, end = 16.dp, bottom = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(0.dp)
             ) {
-                items(uiState.entries) { entry ->
-                    MyEntryItem(entry)
-                }
-                if (uiState.isLoading) {
-                    item {
-                        Box(
-                            modifier = Modifier.fillMaxWidth().padding(16.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            CircularProgressIndicator()
-                        }
+                uiState.groupedEntries.forEach { (year, entries) ->
+                    item(key = "header_$year") {
+                        Text(
+                            text = year,
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                        )
+                    }
+                    items(entries.size, key = { entries[it].id }) { index ->
+                        SignupItem(entries[index])
+                        HorizontalDivider()
                     }
                 }
             }
@@ -72,69 +67,46 @@ fun MyEntriesScreen(
 }
 
 @Composable
-private fun MyEntryItem(entry: Datum) {
-    Card(
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        modifier = Modifier.fillMaxWidth()
+private fun SignupItem(entry: SignupEntry) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 10.dp)
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Text(
-                text = entry.name,
-                style = MaterialTheme.typography.titleSmall
-            )
-            Spacer(modifier = Modifier.height(2.dp))
-            Text(
-                text = "${entry.date}  •  ${entry.statusHuman}",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
-            if (entry.userSignups.isNotEmpty()) {
-                Spacer(modifier = Modifier.height(8.dp))
-                HorizontalDivider()
-                Spacer(modifier = Modifier.height(8.dp))
-                entry.userSignups.forEach { signup ->
-                    SignupRow(signup, entry)
-                    if (signup != entry.userSignups.last()) {
-                        Spacer(modifier = Modifier.height(6.dp))
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun SignupRow(signup: Usersignup, entry: Datum) {
-    val weaponClass = entry.weaponClasses.find { it.id == signup.weaponClassesID }
-    val className = weaponClass?.classname ?: signup.weaponClassesID.toString()
-
-    Column {
         Text(
-            text = stringResource(R.string.my_entries_weapon_class, className),
+            text = entry.competition.name,
+            style = MaterialTheme.typography.bodyMedium
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+        Text(
+            text = "${entry.competition.date}  •  ${entry.competition.statusHuman}",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        Text(
+            text = stringResource(R.string.my_entries_weapon_class, entry.weaponclass.classname),
             style = MaterialTheme.typography.bodySmall
         )
-        if (signup.startTimeHuman.isNotBlank() && signup.startTimeHuman != "01:00") {
+        val startTime = entry.patrol?.startTimeHuman?.takeIf { it.isNotBlank() }
+            ?: entry.startTimeHuman.takeIf { it.isNotBlank() && it != "01:00" }
+        if (startTime != null) {
             Text(
-                text = stringResource(R.string.my_entries_start_time, signup.startTimeHuman),
+                text = stringResource(R.string.my_entries_start_time, startTime),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-        if (signup.lane > 0) {
+        if (entry.lane > 0) {
             Text(
-                text = stringResource(R.string.my_entries_lane, signup.lane),
+                text = stringResource(R.string.my_entries_lane, entry.lane),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-        if (!signup.note.isNullOrBlank()) {
+        if (!entry.note.isNullOrBlank()) {
             Text(
-                text = stringResource(R.string.my_entries_note, signup.note),
+                text = stringResource(R.string.my_entries_note, entry.note),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
