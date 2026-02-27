@@ -6,20 +6,20 @@ import okio.IOException
 import retrofit2.HttpException
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
-import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsRemoteDataSource
-import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsResponse
+import se.kjellstrand.webshooter.data.myentries.remote.SignupGroup
+import se.kjellstrand.webshooter.data.myentries.remote.SignupsRemoteDataSource
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class MyEntriesRepository @Inject constructor(
-    private val remoteDataSource: CompetitionsRemoteDataSource
+    private val remoteDataSource: SignupsRemoteDataSource
 ) {
-    fun getPage(page: Int, pageSize: Int): Flow<Resource<CompetitionsResponse, UserError>> = flow {
+    fun getSignups(): Flow<Resource<Map<String, SignupGroup>, UserError>> = flow {
         emit(Resource.Loading(true))
         try {
-            val result = remoteDataSource.getCompetitions(page, pageSize, "all", 0, 1)
-            emit(Resource.Success(result))
+            val result = remoteDataSource.getSignups()
+            emit(Resource.Success(result.groupedSignups))
         } catch (e: IOException) {
             e.printStackTrace()
             emit(Resource.Error(UserError.IOError))
