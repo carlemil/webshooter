@@ -12,6 +12,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -57,14 +60,14 @@ fun MyEntriesScreen(
                     end = 16.dp,
                     bottom = 16.dp
                 ),
-                verticalArrangement = Arrangement.spacedBy(0.dp)
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 uiState.groupedEntries.forEach { (year, entries) ->
                     item(key = "header_$year") {
                         Text(
                             text = year,
                             style = MaterialTheme.typography.titleLarge,
-                            modifier = Modifier.padding(top = 16.dp, bottom = 8.dp)
+                            modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
                         )
                     }
                     val byCompetition = entries.groupBy { it.competition.id }
@@ -73,7 +76,6 @@ fun MyEntriesScreen(
                         byCompetition.size,
                         key = { byCompetition[it].first().competition.id }) { index ->
                         CompetitionSignupsItem(byCompetition[index])
-                        HorizontalDivider(thickness = 2.dp)
                     }
                 }
             }
@@ -85,73 +87,61 @@ fun MyEntriesScreen(
 private fun CompetitionSignupsItem(entries: List<SignupEntry>) {
     val competition = entries.first().competition
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 10.dp)
+    Card(
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(text = competition.name, style = MaterialTheme.typography.bodyMedium)
-        Spacer(modifier = Modifier.height(2.dp))
-        Text(
-            text = "${competition.date}  •  ${competition.statusHuman}",
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(modifier = Modifier.height(8.dp))
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(text = competition.name, style = MaterialTheme.typography.titleSmall)
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = "${competition.date}  •  ${competition.statusHuman}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(8.dp))
 
-        // Header row
-        GridRow {
-            GridCell(stringResource(R.string.signups_col_class), 1.5f, fontWeight = FontWeight.Bold)
-            GridCell(
-                stringResource(R.string.signups_col_start),
-                1.5f,
-                fontWeight = FontWeight.Bold
-            )
-            GridCell(
-                stringResource(R.string.signups_col_lane),
-                1f,
-                fontWeight = FontWeight.Bold
-            )
-            GridCell(
-                stringResource(R.string.signups_col_team),
-                2f,
-                fontWeight = FontWeight.Bold
-            )
-            GridCell(
-                stringResource(R.string.placement),
-                1.0f,
-                fontWeight = FontWeight.Bold
-            )
-            GridCell(stringResource(R.string.signups_col_fee), 1.5f, fontWeight = FontWeight.Bold)
-        }
-
-        HorizontalDivider(modifier = Modifier.padding(vertical = 2.dp))
-
-        // Value rows
-        entries.sortedBy { it.startTimeHuman }.forEach { entry ->
-            val startTime = entry.patrol?.startTimeHuman?.takeIf(String::isNotBlank)
-                ?: entry.startTimeHuman.takeIf { it.isNotBlank() && it != "01:00" }
-            val placement = entry.resultsPlacements?.let { rp ->
-                "${rp.placement}" + (rp.stdMedal?.let { medal ->
-                    " " + when (medal) {
-                        "B" -> stringResource(R.string.bronze)
-                        "S" -> stringResource(R.string.silver)
-                        else -> ""
-                    }
-                } ?: "")
+            // Header row
+            GridRow {
+                GridCell(stringResource(R.string.signups_col_class), 1.5f, fontWeight = FontWeight.Bold)
+                GridCell(stringResource(R.string.signups_col_start), 1.5f, fontWeight = FontWeight.Bold)
+                GridCell(stringResource(R.string.signups_col_lane), 1f, fontWeight = FontWeight.Bold)
+                GridCell(stringResource(R.string.signups_col_team), 2f, fontWeight = FontWeight.Bold)
+                GridCell(stringResource(R.string.placement), 1.0f, fontWeight = FontWeight.Bold)
+                GridCell(stringResource(R.string.signups_col_fee), 1.5f, fontWeight = FontWeight.Bold)
             }
 
-            GridRow {
-                GridCell(entry.weaponclass.classname, 1.5f)
-                GridCell(startTime ?: "-", 1.5f)
-                GridCell(if (entry.lane > 0) entry.lane.toString() else "-", 1f)
-                GridCell(entry.team.firstOrNull()?.name ?: "-", 2f)
-                GridCell(placement ?: "-", 1.0f)
-                GridCell(
-                    if (entry.registrationFee == 0L) "-" else entry.registrationFee.toString(),
-                    1.5f
-                )
+            HorizontalDivider(modifier = Modifier.padding(vertical = 2.dp))
+
+            // Value rows
+            entries.sortedBy { it.startTimeHuman }.forEach { entry ->
+                val startTime = entry.patrol?.startTimeHuman?.takeIf(String::isNotBlank)
+                    ?: entry.startTimeHuman.takeIf { it.isNotBlank() && it != "01:00" }
+                val placement = entry.resultsPlacements?.let { rp ->
+                    "${rp.placement}" + (rp.stdMedal?.let { medal ->
+                        " " + when (medal) {
+                            "B" -> stringResource(R.string.bronze)
+                            "S" -> stringResource(R.string.silver)
+                            else -> ""
+                        }
+                    } ?: "")
+                }
+
+                GridRow {
+                    GridCell(entry.weaponclass.classname, 1.5f)
+                    GridCell(startTime ?: "-", 1.5f)
+                    GridCell(if (entry.lane > 0) entry.lane.toString() else "-", 1f)
+                    GridCell(entry.team.firstOrNull()?.name ?: "-", 2f)
+                    GridCell(placement ?: "-", 1.0f)
+                    GridCell(
+                        if (entry.registrationFee == 0L) "-" else entry.registrationFee.toString(),
+                        1.5f
+                    )
+                }
             }
         }
     }
