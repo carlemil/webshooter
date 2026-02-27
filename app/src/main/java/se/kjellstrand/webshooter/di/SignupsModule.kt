@@ -5,13 +5,13 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
-import se.kjellstrand.webshooter.data.myentries.MyEntriesRepository
-import se.kjellstrand.webshooter.data.myentries.remote.SignupsRemoteDataSource
+import se.kjellstrand.webshooter.data.signups.SignupsRepository
+import se.kjellstrand.webshooter.data.signups.remote.SignupsRemoteDataSource
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-class MyEntriesModule {
+class SignupsModule {
 
     @Provides
     @Singleton
@@ -21,9 +21,9 @@ class MyEntriesModule {
 
     @Provides
     @Singleton
-    fun providesMyEntriesRepository(
+    fun providesSignupsRepository(
         remoteDataSource: SignupsRemoteDataSource
-    ): MyEntriesRepository {
-        return MyEntriesRepository(remoteDataSource)
+    ): SignupsRepository {
+        return SignupsRepository(remoteDataSource)
     }
 }

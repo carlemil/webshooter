@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.data.myentries
+package se.kjellstrand.webshooter.data.signups
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -6,13 +6,13 @@ import okio.IOException
 import retrofit2.HttpException
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
-import se.kjellstrand.webshooter.data.myentries.remote.SignupGroup
-import se.kjellstrand.webshooter.data.myentries.remote.SignupsRemoteDataSource
+import se.kjellstrand.webshooter.data.signups.remote.SignupGroup
+import se.kjellstrand.webshooter.data.signups.remote.SignupsRemoteDataSource
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class MyEntriesRepository @Inject constructor(
+class SignupsRepository @Inject constructor(
     private val remoteDataSource: SignupsRemoteDataSource
 ) {
     fun getSignups(): Flow<Resource<Map<String, SignupGroup>, UserError>> = flow {

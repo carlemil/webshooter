@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.myentries
+package se.kjellstrand.webshooter.ui.signups
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,16 +8,16 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.data.common.Resource
-import se.kjellstrand.webshooter.data.myentries.MyEntriesRepository
+import se.kjellstrand.webshooter.data.signups.SignupsRepository
 import javax.inject.Inject
 
 @HiltViewModel
-class MyEntriesViewModelImpl @Inject constructor(
-    private val repository: MyEntriesRepository
-) : ViewModel(), MyEntriesViewModel {
+class SignupsViewModelImpl @Inject constructor(
+    private val repository: SignupsRepository
+) : ViewModel(), SignupsViewModel {
 
-    private val _uiState = MutableStateFlow(MyEntriesUiState(isLoading = true))
-    override val uiState: StateFlow<MyEntriesUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(SignupsUiState(isLoading = true))
+    override val uiState: StateFlow<SignupsUiState> = _uiState.asStateFlow()
 
     init {
         load()
@@ -45,7 +45,7 @@ class MyEntriesViewModelImpl @Inject constructor(
     }
 
     override fun reload() {
-        _uiState.value = MyEntriesUiState(isLoading = true)
+        _uiState.value = SignupsUiState(isLoading = true)
         load()
     }
 }
