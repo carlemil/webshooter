@@ -125,9 +125,13 @@
 
     <!-- ### SIGNUPS ### -->
     <string name="signups_lane">Bana: %1$s</string>
+    <string name="signups_medal">Medalj: %1$s</string>
     <string name="signups_no_entries">Inga tävlingar</string>
     <string name="signups_note">Önskemål: %1$s</string>
+    <string name="signups_placement">Placering: %1$d</string>
+    <string name="signups_registration_fee">Avgift: %1$d kr</string>
     <string name="signups_start_time">Start tid: %1$s</string>
+    <string name="signups_team">Lag: %1$s</string>
     <string name="signups_weapon_class">Klass: %1$s</string>
 
 </resources>
