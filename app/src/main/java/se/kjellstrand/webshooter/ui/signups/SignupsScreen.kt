@@ -133,7 +133,13 @@ private fun CompetitionSignupsItem(entries: List<SignupEntry>) {
             val startTime = entry.patrol?.startTimeHuman?.takeIf(String::isNotBlank)
                 ?: entry.startTimeHuman.takeIf { it.isNotBlank() && it != "01:00" }
             val placement = entry.resultsPlacements?.let { rp ->
-                "${rp.placement}" + (rp.stdMedal?.let { " $it" } ?: "")
+                "${rp.placement}" + (rp.stdMedal?.let { medal ->
+                    " " + when (medal) {
+                        "B" -> stringResource(R.string.bronze)
+                        "S" -> stringResource(R.string.silver)
+                        else -> ""
+                    }
+                } ?: "")
             }
 
             GridRow {
@@ -142,7 +148,10 @@ private fun CompetitionSignupsItem(entries: List<SignupEntry>) {
                 GridCell(if (entry.lane > 0) entry.lane.toString() else "-", 1f)
                 GridCell(entry.team.firstOrNull()?.name ?: "-", 2f)
                 GridCell(placement ?: "-", 1.0f)
-                GridCell(if (entry.registrationFee == 0L) "-" else entry.registrationFee.toString(), 1.5f)
+                GridCell(
+                    if (entry.registrationFee == 0L) "-" else entry.registrationFee.toString(),
+                    1.5f
+                )
             }
         }
     }
