@@ -4,7 +4,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okio.IOException
 import retrofit2.HttpException
-import se.kjellstrand.webshooter.data.common.CompetitionStatus
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
 import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsRemoteDataSource
@@ -18,18 +17,12 @@ open class CompetitionsRepository @Inject constructor(
 ) {
     fun get(
         page: Int,
-        pageSize: Int,
-        status: CompetitionStatus
+        pageSize: Int
     ): Flow<Resource<CompetitionsResponse, UserError>> {
         return flow {
             emit(Resource.Loading(true))
             val result = try {
-                competitionsRemoteDataSource.getCompetitions(
-                    page,
-                    pageSize,
-                    status.status,
-                    0
-                )
+                competitionsRemoteDataSource.getCompetitions(page, pageSize, "all", 0, 0)
             } catch (e: IOException) {
                 e.printStackTrace()
                 emit(Resource.Error(UserError.IOError))
@@ -45,23 +38,5 @@ open class CompetitionsRepository @Inject constructor(
             }
             emit(Resource.Success(result))
         }
-    }
-
-    fun getMyEntriesPage(page: Int): Flow<Resource<CompetitionsResponse, UserError>> = flow {
-        emit(Resource.Loading(true))
-        try {
-            val result = competitionsRemoteDataSource.getCompetitionsWithSignups(page, 20, "all", 1)
-            emit(Resource.Success(result))
-        } catch (e: IOException) {
-            e.printStackTrace()
-            emit(Resource.Error(UserError.IOError))
-        } catch (e: HttpException) {
-            e.printStackTrace()
-            emit(Resource.Error(UserError.HttpError))
-        } catch (e: Exception) {
-            e.printStackTrace()
-            emit(Resource.Error(UserError.UnknownError))
-        }
-        emit(Resource.Loading(false))
     }
 }

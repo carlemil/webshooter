@@ -36,7 +36,6 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.R
-import se.kjellstrand.webshooter.data.common.CompetitionStatus
 import se.kjellstrand.webshooter.ui.club.ClubScreen
 import se.kjellstrand.webshooter.ui.competitions.CompetitionsScreen
 import se.kjellstrand.webshooter.ui.competitions.CompetitionsViewModelImpl
@@ -106,10 +105,10 @@ fun WebShooterScreen(navController: NavController) {
             )
             when (selectedRoute) {
                 Screen.CompetitionsList.route -> {
-                    CompetitionsScreen(navController, competitionsViewModel, CompetitionStatus.ALL)
+                    CompetitionsScreen(navController, competitionsViewModel)
                 }
                 Screen.MyEntries.route -> {
-                    CompetitionsScreen(navController, competitionsViewModel, CompetitionStatus.MY_ENTRIES)
+                    CompetitionsScreen(navController, competitionsViewModel)
                 }
                 Screen.Club.route -> ClubScreen()
                 Screen.Settings.route -> SettingsScreen(
