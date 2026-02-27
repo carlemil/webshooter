@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.data.myentries.remote
+package se.kjellstrand.webshooter.data.signups.remote
 
 import com.google.gson.annotations.SerializedName
 
