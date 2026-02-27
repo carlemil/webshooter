@@ -22,16 +22,11 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExposedDropdownMenuBox
-import androidx.compose.material3.ExposedDropdownMenuDefaults
-import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,7 +37,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -52,7 +46,6 @@ import androidx.navigation.compose.rememberNavController
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.common.CompetitionStatus
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
-import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadges
 import se.kjellstrand.webshooter.ui.mock.CompetitionsViewModelMock
 import se.kjellstrand.webshooter.ui.navigation.Screen
@@ -61,62 +54,17 @@ import se.kjellstrand.webshooter.ui.navigation.Screen
 @Composable
 fun CompetitionsScreen(
     navController: NavController,
-    competitionsViewModel: CompetitionsViewModel = hiltViewModel<CompetitionsViewModelImpl>()
+    competitionsViewModel: CompetitionsViewModel = hiltViewModel<CompetitionsViewModelImpl>(),
+    selectedStatus: CompetitionStatus = CompetitionStatus.ALL
 ) {
     val competitionsState by competitionsViewModel.uiState.collectAsState()
     val listState = rememberLazyListState()
 
-    var expanded by remember { mutableStateOf(false) }
-    var selectedStatus by remember { mutableStateOf(competitionsState.competitionStatus) }
+    LaunchedEffect(selectedStatus) {
+        competitionsViewModel.setCompetitionStatus(selectedStatus)
+    }
 
     Column {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-                .padding(top = dimensionResource(R.dimen.screen_content_top_padding))
-        ) {
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = {
-                    expanded = !expanded
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                OutlinedTextField(
-                    value = stringResource(selectedStatus.labelRes),
-                    onValueChange = {},
-                    readOnly = true,
-                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-                    modifier = Modifier
-                        .menuAnchor(MenuAnchorType.PrimaryNotEditable)
-                        .fillMaxWidth()
-                )
-
-                ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false }
-                ) {
-                    CompetitionStatus.entries.forEach { status ->
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = stringResource(status.labelRes),
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            },
-                            onClick = {
-                                selectedStatus = status
-                                competitionsViewModel.setCompetitionStatus(status)
-                                expanded = false
-                            },
-                            modifier = Modifier.padding(vertical = 2.dp)
-                        )
-                    }
-                }
-            }
-        }
-
         competitionsState.competitions?.let { competitions ->
             val displayedCompetitions = if (selectedStatus == CompetitionStatus.MY_ENTRIES) {
                 competitions.data.filter { it.userSignups.isNotEmpty() }
