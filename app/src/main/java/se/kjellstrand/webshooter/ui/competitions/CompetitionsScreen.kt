@@ -32,6 +32,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -62,6 +63,18 @@ fun CompetitionsScreen(
 
     LaunchedEffect(selectedStatus) {
         competitionsViewModel.setCompetitionStatus(selectedStatus)
+    }
+
+    LaunchedEffect(listState) {
+        snapshotFlow {
+            listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index to competitionsState.competitions
+        }.collect { (lastVisibleItemIndex, comps) ->
+            if (lastVisibleItemIndex != null && comps != null &&
+                lastVisibleItemIndex >= comps.data.size - 5 &&
+                comps.data.size.toLong() < comps.total) {
+                competitionsViewModel.loadNextPage()
+            }
+        }
     }
 
     Column {
@@ -103,17 +116,6 @@ fun CompetitionsScreen(
                                 )
                             }
                         )
-                    }
-                }
-
-                // Load more items when reaching the end of the list
-                LaunchedEffect(listState) {
-                    val lastVisibleItemIndex =
-                        listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
-                    if (lastVisibleItemIndex != null &&
-                        lastVisibleItemIndex >= competitions.data.size - 5 &&
-                        competitions.data.size.toLong() < competitions.total) {
-                        competitionsViewModel.loadNextPage()
                     }
                 }
             }
