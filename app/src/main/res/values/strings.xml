@@ -124,6 +124,13 @@
     <string name="web_shooter_settings">Inställningar</string>
 
     <!-- ### SIGNUPS ### -->
+    <string name="signups_col_class">Klass</string>
+    <string name="signups_col_fee">Avgift</string>
+    <string name="signups_col_lane">Bana</string>
+    <string name="signups_col_note">Notering</string>
+    <string name="signups_col_placement">Placering</string>
+    <string name="signups_col_start">Start</string>
+    <string name="signups_col_team">Lag</string>
     <string name="signups_lane">Bana: %1$s</string>
     <string name="signups_medal">Medalj: %1$s</string>
     <string name="signups_no_entries">Inga tävlingar</string>
