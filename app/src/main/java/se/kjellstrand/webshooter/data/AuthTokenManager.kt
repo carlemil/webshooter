@@ -1,6 +1,7 @@
 package se.kjellstrand.webshooter.data
 
 import android.content.Context
+import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 
@@ -9,13 +10,25 @@ class AuthTokenManager(context: Context) {
         .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
         .build()
 
-    private val sharedPreferences = EncryptedSharedPreferences.create(
-        context,
-        "auth_prefs",
-        masterKeyAlias,
-        EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-        EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-    )
+    private val sharedPreferences = try {
+        EncryptedSharedPreferences.create(
+            context,
+            PREFS_FILE,
+            masterKeyAlias,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+    } catch (e: Exception) {
+        Log.w(TAG, "EncryptedSharedPreferences corrupted, clearing and recreating", e)
+        context.deleteSharedPreferences(PREFS_FILE)
+        EncryptedSharedPreferences.create(
+            context,
+            PREFS_FILE,
+            masterKeyAlias,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
+    }
 
     fun storeToken(newToken: String) {
         with(sharedPreferences.edit()) {
@@ -43,6 +56,8 @@ class AuthTokenManager(context: Context) {
 
     companion object {
         private const val AUTH_TOKEN_KEY = "auth_token"
+        private const val PREFS_FILE = "auth_prefs"
+        private const val TAG = "AuthTokenManager"
         var token: String? = null
     }
 }
