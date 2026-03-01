@@ -125,6 +125,21 @@
     <string name="web_shooter_menu_content_description">Meny</string>
     <string name="web_shooter_settings">Inställningar</string>
 
+    <!-- ### COMPETITION_PATROLS ### -->
+    <string name="competition_patrols_button">Patrullar</string>
+    <string name="competition_patrols_title">Patrullar</string>
+    <string name="competition_patrols_patrol_number">Patrull %1$d</string>
+    <string name="competition_patrols_participant_count">%1$d st</string>
+    <string name="competition_patrols_no_patrols">Inga patrullar</string>
+    <string name="competition_patrols_sort_label">Sortering</string>
+    <string name="competition_patrols_sort_name">Namn</string>
+    <string name="competition_patrols_sort_club">Klubb</string>
+    <string name="competition_patrols_sort_group">Grupp</string>
+    <string name="competition_patrols_filter_all">Alla</string>
+    <string name="competition_patrols_filter_club_label">Filtrera på klubb</string>
+    <string name="competition_patrols_filter_group_label">Filtrera på vapengrupp</string>
+    <string name="competition_patrols_clear_filters">Återställ filter</string>
+
     <!-- ### COMPETITION_SIGNUPS_LIST ### -->
     <string name="competition_signups_list_participants">Deltagare</string>
     <string name="competition_signups_list_filter_all">Alla</string>

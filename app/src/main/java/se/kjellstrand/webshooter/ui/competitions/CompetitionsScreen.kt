@@ -107,6 +107,11 @@ fun CompetitionsScreen(
                                 navController.navigate(
                                     Screen.CompetitionSignupsList.createRoute(competition.id)
                                 )
+                            },
+                            onPatrolsClick = {
+                                navController.navigate(
+                                    Screen.CompetitionPatrols.createRoute(competition.id)
+                                )
                             }
                         )
                     }
@@ -126,7 +131,8 @@ fun CompetitionItem(
     competition: Datum,
     onResultsClick: () -> Unit,
     onSignupClick: () -> Unit = {},
-    onSignupsListClick: () -> Unit = {}
+    onSignupsListClick: () -> Unit = {},
+    onPatrolsClick: () -> Unit = {}
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -187,6 +193,10 @@ fun CompetitionItem(
                     Spacer(modifier = Modifier.height(4.dp))
                     Button(onClick = onSignupsListClick) {
                         Text(stringResource(R.string.competition_signups_list_participants))
+                    }
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Button(onClick = onPatrolsClick) {
+                        Text(stringResource(R.string.competition_patrols_button))
                     }
                     if (competition.status == "open") {
                         Spacer(modifier = Modifier.height(4.dp))
