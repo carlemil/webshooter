@@ -50,7 +50,7 @@ fun WeaponClassBadge(
     isHighlighted: Boolean,
     size: WeaponClassBadgeSize = WeaponClassBadgeSize.Small
 ) {
-    val shape = RoundedCornerShape(50)
+    val shape = RoundedCornerShape(10)
     val fontWeight = if (isHighlighted) FontWeight.Bold else FontWeight.Normal
 
     val textStyle: TextStyle
@@ -62,11 +62,13 @@ fun WeaponClassBadge(
             horizontalPadding = 6.dp
             verticalPadding = 2.dp
         }
+
         WeaponClassBadgeSize.Medium -> {
             textStyle = MaterialTheme.typography.labelMedium.copy(fontWeight = fontWeight)
             horizontalPadding = 8.dp
             verticalPadding = 3.dp
         }
+
         WeaponClassBadgeSize.Large -> {
             textStyle = MaterialTheme.typography.labelLarge.copy(fontWeight = fontWeight)
             horizontalPadding = 12.dp
@@ -75,10 +77,14 @@ fun WeaponClassBadge(
     }
 
     val borderWidth = if (isHighlighted) 2.dp else 1.dp
-    val outlineModifier = Modifier.border(width = borderWidth, color = MaterialTheme.colorScheme.onPrimaryContainer, shape = shape)
+    val outlineModifier = Modifier.border(
+        width = borderWidth,
+        color = if (isHighlighted) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondary,
+        shape = shape
+    )
 
     Surface(
-        color = MaterialTheme.colorScheme.primaryContainer,
+        color = if (isHighlighted) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
         shape = shape,
         modifier = modifier
             .then(outlineModifier)
@@ -88,6 +94,7 @@ fun WeaponClassBadge(
             style = textStyle,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
+            color = if (isHighlighted) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondary,
             modifier = Modifier.padding(horizontal = horizontalPadding, vertical = verticalPadding)
         )
     }
