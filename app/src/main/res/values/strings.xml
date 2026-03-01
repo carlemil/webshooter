@@ -125,6 +125,18 @@
     <string name="web_shooter_menu_content_description">Meny</string>
     <string name="web_shooter_settings">Inställningar</string>
 
+    <!-- ### COMPETITION_SIGNUPS_LIST ### -->
+    <string name="competition_signups_list_participants">Deltagare</string>
+    <string name="competition_signups_list_filter_all">Alla</string>
+    <string name="competition_signups_list_sort_name">Namn</string>
+    <string name="competition_signups_list_sort_club">Klubb</string>
+    <string name="competition_signups_list_sort_group">Grupp</string>
+    <string name="competition_signups_list_no_signups">Inga anmälningar</string>
+    <string name="competition_signups_list_sort_label">Sortering</string>
+    <string name="competition_signups_list_filter_club_label">Filtrera på klubb</string>
+    <string name="competition_signups_list_filter_group_label">Filtrera på vapengrupp</string>
+    <string name="competition_signups_list_clear_filters">Återställ filter</string>
+
     <!-- ### SIGNUPS ### -->
     <string name="signups_col_class">Klass</string>
     <string name="signups_col_fee">Avgift</string>

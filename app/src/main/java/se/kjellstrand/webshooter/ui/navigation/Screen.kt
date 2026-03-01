@@ -18,4 +18,7 @@ sealed class Screen(val route: String) {
     object CompetitionSignup : Screen("competition_signup/{competitionId}") {
         fun createRoute(competitionId: Long) = "competition_signup/$competitionId"
     }
+    object CompetitionSignupsList : Screen("competition_signups_list/{competitionId}") {
+        fun createRoute(competitionId: Long) = "competition_signups_list/$competitionId"
+    }
 }
