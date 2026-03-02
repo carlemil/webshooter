@@ -126,11 +126,11 @@
     <string name="web_shooter_settings">Inställningar</string>
 
     <!-- ### COMPETITION_PATROLS ### -->
-    <string name="competition_patrols_button">Patrullar</string>
-    <string name="competition_patrols_title">Patrullar</string>
+    <string name="competition_patrols_button">Patruller</string>
+    <string name="competition_patrols_title">Patruller</string>
     <string name="competition_patrols_patrol_number">Patrull %1$d</string>
     <string name="competition_patrols_participant_count">%1$d st</string>
-    <string name="competition_patrols_no_patrols">Inga patrullar</string>
+    <string name="competition_patrols_no_patrols">Inga patruller</string>
     <string name="competition_patrols_sort_label">Sortering</string>
     <string name="competition_patrols_sort_name">Namn</string>
     <string name="competition_patrols_sort_club">Klubb</string>

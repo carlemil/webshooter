@@ -16,6 +16,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.xr.compose.testing.toDp
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.common.WeaponClass
 import se.kjellstrand.webshooter.data.competitions.remote.Usersignup
@@ -75,7 +76,7 @@ fun WeaponClassBadge(
         }
     }
 
-    val borderWidth = 1.dp
+    val borderWidth = 1.toDp()
     val shape = RoundedCornerShape(integerResource(R.integer.rounded_corner_shape_percent))
     val outlineModifier = Modifier.border(
         width = borderWidth,
