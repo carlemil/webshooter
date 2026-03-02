@@ -10,11 +10,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.common.WeaponClass
 import se.kjellstrand.webshooter.data.competitions.remote.Usersignup
 
@@ -50,33 +52,31 @@ fun WeaponClassBadge(
     isHighlighted: Boolean,
     size: WeaponClassBadgeSize = WeaponClassBadgeSize.Small
 ) {
-    val shape = RoundedCornerShape(10)
-    val fontWeight = if (isHighlighted) FontWeight.Bold else FontWeight.Normal
-
     val textStyle: TextStyle
     val horizontalPadding: Dp
     val verticalPadding: Dp
     when (size) {
         WeaponClassBadgeSize.Small -> {
-            textStyle = MaterialTheme.typography.labelSmall.copy(fontWeight = fontWeight)
+            textStyle = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Normal)
             horizontalPadding = 6.dp
             verticalPadding = 2.dp
         }
 
         WeaponClassBadgeSize.Medium -> {
-            textStyle = MaterialTheme.typography.labelMedium.copy(fontWeight = fontWeight)
+            textStyle = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Normal)
             horizontalPadding = 8.dp
             verticalPadding = 3.dp
         }
 
         WeaponClassBadgeSize.Large -> {
-            textStyle = MaterialTheme.typography.labelLarge.copy(fontWeight = fontWeight)
+            textStyle = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.Normal)
             horizontalPadding = 12.dp
             verticalPadding = 4.dp
         }
     }
 
-    val borderWidth = if (isHighlighted) 2.dp else 1.dp
+    val borderWidth = 1.dp
+    val shape = RoundedCornerShape(integerResource(R.integer.rounded_corner_shape_percent))
     val outlineModifier = Modifier.border(
         width = borderWidth,
         color = if (isHighlighted) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondary,
