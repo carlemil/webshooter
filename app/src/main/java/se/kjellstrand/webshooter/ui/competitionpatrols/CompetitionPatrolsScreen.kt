@@ -143,7 +143,7 @@ private fun PatrolCard(patrol: PatrolEntry) {
                             R.string.competition_patrols_participant_count,
                             patrol.signups.size
                         ),
-                        style = MaterialTheme.typography.bodySmall,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     if (weaponGroups.isNotEmpty()) {
@@ -205,7 +205,7 @@ private fun SignupHeaderRow() {
             modifier = Modifier.weight(3f)
         )
         Text(
-            text = stringResource(R.string.weapon_group),
+            text = stringResource(R.string.weapon_groups),
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Normal,
             modifier = Modifier.weight(1f)
@@ -239,7 +239,7 @@ private fun SignupRow(signup: PatrolSignupEntry) {
         }
         Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
             WeaponClassBadge(
-                weaponGroupName = signup.weaponclass.classnameGeneral,
+                weaponGroupName = signup.weaponclass.classname,
                 isHighlighted = false,
                 size = WeaponClassBadgeSize.Small
             )
