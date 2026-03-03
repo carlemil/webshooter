@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.competitions
+package se.kjellstrand.webshooter.ui.screens.competitions
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement

@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.competitionsignups
+package se.kjellstrand.webshooter.ui.screens.competitionsignups
 
 import kotlinx.coroutines.flow.StateFlow
 

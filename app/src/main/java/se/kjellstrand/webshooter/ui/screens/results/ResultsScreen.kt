@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.results
+package se.kjellstrand.webshooter.ui.screens.results
 
 import android.widget.Toast
 import androidx.compose.foundation.clickable

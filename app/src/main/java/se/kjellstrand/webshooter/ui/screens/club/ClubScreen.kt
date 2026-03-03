@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.club
+package se.kjellstrand.webshooter.ui.screens.club
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
