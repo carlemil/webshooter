@@ -96,10 +96,7 @@ class MockCompetitions {
                 championship = null,
                 competitionType = CompetitionType(
                     id = 1,
-                    name = "Fält",
-                    createdAt = "2023-01-01",
-                    updatedAt = "2023-01-01",
-                    deletedAt = null
+                    name = "Fält"
                 ),
                 weaponClasses = listOf(),
                 userSignups = listOf(
@@ -215,10 +212,7 @@ class MockCompetitions {
         competitionTypes = listOf(
             CompetitionType(
                 id = 1,
-                name = "Indoor",
-                createdAt = "2023-01-01",
-                updatedAt = "2023-01-01",
-                deletedAt = null
+                name = "Indoor"
             )
         )
     )

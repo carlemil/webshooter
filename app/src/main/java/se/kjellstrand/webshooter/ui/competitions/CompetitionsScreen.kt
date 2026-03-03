@@ -92,6 +92,10 @@ fun CompetitionsScreen(
                     items(competitions.data) { competition ->
                         CompetitionItem(
                             competition = competition,
+                            patrolOrRelayButtonText = when (competition.competitionType.id) {
+                                2, 3, 9, 10 -> R.string.competitions_patrols_button
+                                else -> R.string.competitions_relays_button
+                            },
                             onResultsClick = {
                                 navController.navigate(
                                     Screen.CompetitionResults.createRoute(
@@ -111,9 +115,9 @@ fun CompetitionsScreen(
                                     Screen.CompetitionSignupsList.createRoute(competition.id)
                                 )
                             },
-                            onPatrolsClick = {
+                            onPatrolsOrRelayClick = {
                                 navController.navigate(
-                                    Screen.CompetitionPatrols.createRoute(competition.id)
+                                        Screen.CompetitionPatrols.createRoute(competition.id)
                                 )
                             }
                         )
@@ -132,10 +136,11 @@ fun CompetitionsScreen(
 @Composable
 fun CompetitionItem(
     competition: Datum,
+    patrolOrRelayButtonText: Int,
     onResultsClick: () -> Unit,
     onSignupClick: () -> Unit = {},
     onSignupsListClick: () -> Unit = {},
-    onPatrolsClick: () -> Unit = {}
+    onPatrolsOrRelayClick: () -> Unit = {}
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -213,13 +218,13 @@ fun CompetitionItem(
                     }
                     Button(
                         modifier = Modifier.weight(1f),
-                        onClick = onPatrolsClick,
+                        onClick = onPatrolsOrRelayClick,
                         shape = shape,
                         contentPadding = buttonContentPadding
                     ) {
                         Text(
                             style = MaterialTheme.typography.bodySmall,
-                            text = stringResource(R.string.competition_patrols_button),
+                            text = stringResource(patrolOrRelayButtonText),
                             textAlign = TextAlign.Center
                         )
                     }

@@ -217,7 +217,7 @@ private fun SignupHeaderRow(sortField: PatrolsSortField) {
             text = stringResource(R.string.competition_patrols_sort_club),
             style = MaterialTheme.typography.bodySmall,
             fontWeight = if (sortField == PatrolsSortField.Club) FontWeight.Bold else FontWeight.Normal,
-            modifier = Modifier.weight(2f)
+            modifier = Modifier.weight(3f)
         )
         Text(
             text = stringResource(R.string.competition_patrols_sort_group),
@@ -244,7 +244,7 @@ private fun SignupRow(signup: PatrolSignupEntry) {
         Text(
             text = signup.club.name,
             style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.weight(2f)
+            modifier = Modifier.weight(3f)
         )
         Text(
             text = signup.weaponclass.classnameGeneral,
