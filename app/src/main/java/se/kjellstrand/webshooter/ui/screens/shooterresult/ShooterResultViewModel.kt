@@ -12,7 +12,7 @@ import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.results.ResultsRepository
-import se.kjellstrand.webshooter.ui.results.ResultsViewModelImpl
+import se.kjellstrand.webshooter.ui.screens.results.ResultsViewModelImpl
 import javax.inject.Inject
 
 @HiltViewModel
