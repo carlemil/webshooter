@@ -13,34 +13,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -52,6 +40,8 @@ import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitionpatrols.remote.PatrolEntry
 import se.kjellstrand.webshooter.data.competitionpatrols.remote.PatrolSignupEntry
 import se.kjellstrand.webshooter.ui.common.ScreenTopBar
+import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
+import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -100,7 +90,7 @@ fun CompetitionPatrolsScreen(
                     ) {
                         uiState.patrols.forEach { patrol ->
                             item(key = "header_${patrol.id}") {
-                                PatrolCard(patrol = patrol, uiState = uiState)
+                                PatrolCard(patrol = patrol)
                             }
                         }
                     }
@@ -110,13 +100,13 @@ fun CompetitionPatrolsScreen(
     }
 }
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun PatrolCard(patrol: PatrolEntry, uiState: CompetitionPatrolsUiState) {
+private fun PatrolCard(patrol: PatrolEntry) {
     val weaponGroups = patrol.signups
         .map { it.weaponclass.classnameGeneral }
         .distinct()
         .sorted()
-        .joinToString(" ")
 
     Card(
         shape = RoundedCornerShape(12.dp),
@@ -157,11 +147,25 @@ private fun PatrolCard(patrol: PatrolEntry, uiState: CompetitionPatrolsUiState) 
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     if (weaponGroups.isNotEmpty()) {
-                        Text(
-                            text = weaponGroups,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(6.dp)
+                        ) {
+                            Text(
+                                text = stringResource(R.string.weapon_group),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            FlowRow(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                                weaponGroups.forEach { group ->
+                                    WeaponClassBadge(
+                                        weaponGroupName = group,
+                                        isHighlighted = false,
+                                        size = WeaponClassBadgeSize.Small
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -189,19 +193,19 @@ private fun SignupHeaderRow() {
             .padding(vertical = 2.dp)
     ) {
         Text(
-            text = stringResource(R.string.competition_patrols_sort_name),
+            text = "#",
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Normal,
-            modifier = Modifier.weight(2f)
+            modifier = Modifier.weight(0.5f)
         )
         Text(
-            text = stringResource(R.string.competition_patrols_sort_club),
+            text = stringResource(R.string.competition_patrols_name_club),
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Normal,
             modifier = Modifier.weight(3f)
         )
         Text(
-            text = stringResource(R.string.competition_patrols_sort_group),
+            text = stringResource(R.string.weapon_group),
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Normal,
             modifier = Modifier.weight(1f)
@@ -218,19 +222,27 @@ private fun SignupRow(signup: PatrolSignupEntry) {
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "${signup.user.name} ${signup.user.lastname}",
+            text = "#${signup.lane}",
             style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.weight(2f)
+            modifier = Modifier.weight(0.5f)
         )
-        Text(
-            text = signup.club.name,
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.weight(3f)
-        )
-        Text(
-            text = signup.weaponclass.classnameGeneral,
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.weight(1f)
-        )
+        Column(modifier = Modifier.weight(3f)) {
+            Text(
+                text = "${signup.user.name} ${signup.user.lastname}",
+                style = MaterialTheme.typography.bodySmall
+            )
+            Text(
+                text = signup.club.name,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+            WeaponClassBadge(
+                weaponGroupName = signup.weaponclass.classnameGeneral,
+                isHighlighted = false,
+                size = WeaponClassBadgeSize.Small
+            )
+        }
     }
 }
