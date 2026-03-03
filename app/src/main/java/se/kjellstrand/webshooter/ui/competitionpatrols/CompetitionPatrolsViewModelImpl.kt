@@ -41,23 +41,4 @@ class CompetitionPatrolsViewModelImpl @Inject constructor(
             }
         }
     }
-
-    override fun setFilterClub(club: String?) {
-        _uiState.value = _uiState.value.copy(filterClub = club)
-    }
-
-    override fun setFilterWeaponGroup(group: String?) {
-        _uiState.value = _uiState.value.copy(filterWeaponGroup = group)
-    }
-
-    override fun setSortField(field: PatrolsSortField) {
-        val current = _uiState.value
-        val newDirection = if (current.sortField == field) {
-            if (current.sortDirection == PatrolsSortDirection.Ascending) PatrolsSortDirection.Descending
-            else PatrolsSortDirection.Ascending
-        } else {
-            PatrolsSortDirection.Ascending
-        }
-        _uiState.value = current.copy(sortField = field, sortDirection = newDirection)
-    }
 }
