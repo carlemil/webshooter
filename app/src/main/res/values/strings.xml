@@ -119,6 +119,7 @@
     <string name="weapon_class">Klass</string>
     <string name="weapon_class_short">K</string>
     <string name="weapon_group">Vapengrupp: </string>
+    <string name="weapon_groups">Vapengrupper: </string>
 
     <!-- ### WEB_SHOOTER ### -->
     <string name="web_shooter_club">Förening</string>
