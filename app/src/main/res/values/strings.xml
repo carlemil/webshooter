@@ -134,6 +134,7 @@
     <string name="competition_patrols_relay_number">Skjutlag %1$d</string>
     <string name="competition_patrols_participant_count">%1$d st</string>
     <string name="competition_patrols_no_patrols">Inga patruller</string>
+    <string name="competition_patrols_no_relays">Inga Skjutlag</string>
     <string name="competition_patrols_sort_label">Sortering</string>
     <string name="competition_patrols_sort_name">Namn</string>
     <string name="competition_patrols_name_club">Namn/Klubb</string>
