@@ -13,8 +13,8 @@ data class CompetitionsUiState(
     val allCompetitionTypes: List<CompetitionType>
         get() = competitions?.competitionTypes ?: emptyList()
 
-    val allStatuses: List<Pair<String, String>>
-        get() = competitions?.data?.map { it.status to it.statusHuman }?.distinctBy { it.first } ?: emptyList()
+    val allStatuses: Map<String, String>
+        get() = competitions?.data?.associate { it.status to it.statusHuman }.orEmpty()
 
     val filteredData: List<Datum>
         get() {
