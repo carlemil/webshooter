@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.results
+package se.kjellstrand.webshooter.ui.screens.results
 
 sealed class ResultsEvent {
     object Empty : ResultsEvent()

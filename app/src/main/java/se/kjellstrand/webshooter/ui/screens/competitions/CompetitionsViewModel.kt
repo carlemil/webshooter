@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.competitions
+package se.kjellstrand.webshooter.ui.screens.competitions
 
 import kotlinx.coroutines.flow.StateFlow
 import se.kjellstrand.webshooter.data.competitions.remote.Datum

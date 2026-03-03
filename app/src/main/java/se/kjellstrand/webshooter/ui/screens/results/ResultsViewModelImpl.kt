@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.results
+package se.kjellstrand.webshooter.ui.screens.results
 
 import android.content.Context
 import androidx.lifecycle.SavedStateHandle

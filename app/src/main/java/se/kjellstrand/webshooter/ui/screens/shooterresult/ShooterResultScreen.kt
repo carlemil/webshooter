@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.shooterresult
+package se.kjellstrand.webshooter.ui.screens.shooterresult
 
 import android.util.Log
 import androidx.compose.foundation.background
