@@ -6,12 +6,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
-import se.kjellstrand.webshooter.ui.results.GroupingMode
-import se.kjellstrand.webshooter.ui.results.Mode
-import se.kjellstrand.webshooter.ui.results.ResultsEvent
-import se.kjellstrand.webshooter.ui.results.ResultsUiState
-import se.kjellstrand.webshooter.ui.results.ResultsViewModel
-import se.kjellstrand.webshooter.ui.results.ResultsViewModelImpl
+import se.kjellstrand.webshooter.ui.screens.results.GroupingMode
+import se.kjellstrand.webshooter.ui.screens.results.Mode
+import se.kjellstrand.webshooter.ui.screens.results.ResultsEvent
+import se.kjellstrand.webshooter.ui.screens.results.ResultsUiState
+import se.kjellstrand.webshooter.ui.screens.results.ResultsViewModel
+import se.kjellstrand.webshooter.ui.screens.results.ResultsViewModelImpl
 
 class ResultsViewModelMock() : ViewModel(),
     ResultsViewModel {

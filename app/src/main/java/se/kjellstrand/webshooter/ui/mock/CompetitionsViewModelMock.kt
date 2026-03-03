@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
-import se.kjellstrand.webshooter.ui.competitions.CompetitionsUiState
-import se.kjellstrand.webshooter.ui.competitions.CompetitionsViewModel
+import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsUiState
+import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsViewModel
 
 class CompetitionsViewModelMock() : ViewModel(),
     CompetitionsViewModel {
@@ -25,6 +25,14 @@ class CompetitionsViewModelMock() : ViewModel(),
     }
 
     override fun reload() {
+        // Do nothing in mock.
+    }
+
+    override fun setSelectedCompetitionTypeIds(ids: Set<Int>) {
+        // Do nothing in mock.
+    }
+
+    override fun setSelectedStatuses(statuses: Set<String>) {
         // Do nothing in mock.
     }
 }

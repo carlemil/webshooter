@@ -36,12 +36,12 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.R
-import se.kjellstrand.webshooter.ui.club.ClubScreen
-import se.kjellstrand.webshooter.ui.competitions.CompetitionsScreen
-import se.kjellstrand.webshooter.ui.competitions.CompetitionsViewModelImpl
-import se.kjellstrand.webshooter.ui.signups.MyEntriesScreen
+import se.kjellstrand.webshooter.ui.screens.club.ClubScreen
+import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsScreen
+import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsViewModelImpl
+import se.kjellstrand.webshooter.ui.screens.signups.MyEntriesScreen
 import se.kjellstrand.webshooter.ui.navigation.Screen
-import se.kjellstrand.webshooter.ui.settings.SettingsScreen
+import se.kjellstrand.webshooter.ui.screens.settings.SettingsScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
