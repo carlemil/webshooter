@@ -76,7 +76,7 @@ fun CompetitionPatrolsScreen(
 
                 uiState.patrols.isEmpty() -> {
                     Text(
-                        text = stringResource(R.string.competition_patrols_no_patrols),
+                        text = stringResource(if (isFalt) R.string.competition_patrols_no_patrols else R.string.competition_patrols_no_relays),
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
