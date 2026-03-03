@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.shooterresult
+package se.kjellstrand.webshooter.ui.screens.shooterresult
 
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.results.remote.Result

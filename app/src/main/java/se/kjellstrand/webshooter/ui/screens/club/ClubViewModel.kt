@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.club
+package se.kjellstrand.webshooter.ui.screens.club
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

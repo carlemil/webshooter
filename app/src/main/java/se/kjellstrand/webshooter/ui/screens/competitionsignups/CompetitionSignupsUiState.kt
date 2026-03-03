@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.competitionsignups
+package se.kjellstrand.webshooter.ui.screens.competitionsignups
 
 import se.kjellstrand.webshooter.data.competitionsignups.remote.CompetitionSignupEntry
 

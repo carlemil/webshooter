@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.settings
+package se.kjellstrand.webshooter.ui.screens.settings
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
