@@ -50,11 +50,12 @@ fun CompetitionPatrolsScreen(
     viewModel: CompetitionPatrolsViewModel = hiltViewModel<CompetitionPatrolsViewModelImpl>()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val isFalt = uiState.competitionTypeId in setOf(2, 3, 9, 10)
 
     Scaffold(
         topBar = {
             ScreenTopBar(
-                title = stringResource(R.string.competition_patrols_title),
+                title = stringResource(if (isFalt) R.string.competitions_patrols_button else R.string.competitions_relays_button),
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -90,7 +91,7 @@ fun CompetitionPatrolsScreen(
                     ) {
                         uiState.patrols.forEach { patrol ->
                             item(key = "header_${patrol.id}") {
-                                PatrolCard(patrol = patrol)
+                                PatrolCard(patrol = patrol, isFalt = isFalt)
                             }
                         }
                     }
@@ -102,7 +103,7 @@ fun CompetitionPatrolsScreen(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun PatrolCard(patrol: PatrolEntry) {
+private fun PatrolCard(patrol: PatrolEntry, isFalt: Boolean) {
     val weaponGroups = patrol.signups
         .map { it.weaponclass.classnameGeneral }
         .distinct()
@@ -125,7 +126,8 @@ private fun PatrolCard(patrol: PatrolEntry) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
                         text = stringResource(
-                            R.string.competition_patrols_patrol_number,
+                            if (isFalt) R.string.competition_patrols_patrol_number
+                            else R.string.competition_patrols_relay_number,
                             patrol.sortorder
                         ),
                         style = MaterialTheme.typography.titleSmall
@@ -152,7 +154,7 @@ private fun PatrolCard(patrol: PatrolEntry) {
                             horizontalArrangement = Arrangement.spacedBy(6.dp)
                         ) {
                             Text(
-                                text = stringResource(R.string.weapon_group),
+                                text = stringResource(R.string.weapon_groups),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -196,19 +198,19 @@ private fun SignupHeaderRow() {
             text = "#",
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Normal,
-            modifier = Modifier.weight(0.5f)
+            modifier = Modifier.weight(2f)
         )
         Text(
             text = stringResource(R.string.competition_patrols_name_club),
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Normal,
-            modifier = Modifier.weight(3f)
+            modifier = Modifier.weight(12f)
         )
         Text(
-            text = stringResource(R.string.weapon_groups),
+            text = stringResource(R.string.weapon_group),
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Normal,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(4f)
         )
     }
 }
