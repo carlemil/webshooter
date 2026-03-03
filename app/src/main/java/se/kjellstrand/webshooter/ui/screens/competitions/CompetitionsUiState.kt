@@ -11,7 +11,7 @@ data class CompetitionsUiState(
     val selectedStatuses: Set<String> = emptySet()
 ) {
     val allCompetitionTypes: List<CompetitionType>
-        get() = competitions?.data?.map { it.competitionType }?.distinctBy { it.id } ?: emptyList()
+        get() = competitions?.competitionTypes ?: emptyList()
 
     val allStatuses: List<Pair<String, String>>
         get() = competitions?.data?.map { it.status to it.statusHuman }?.distinctBy { it.first } ?: emptyList()
