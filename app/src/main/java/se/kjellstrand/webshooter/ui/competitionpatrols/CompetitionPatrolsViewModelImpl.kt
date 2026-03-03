@@ -19,8 +19,9 @@ class CompetitionPatrolsViewModelImpl @Inject constructor(
 ) : ViewModel(), CompetitionPatrolsViewModel {
 
     private val competitionId: Long = savedStateHandle["competitionId"] ?: -1L
+    private val competitionTypeId: Int = savedStateHandle["competitionTypeId"] ?: 0
 
-    private val _uiState = MutableStateFlow(CompetitionPatrolsUiState(isLoading = true))
+    private val _uiState = MutableStateFlow(CompetitionPatrolsUiState(isLoading = true, competitionTypeId = competitionTypeId))
     override val uiState: StateFlow<CompetitionPatrolsUiState> = _uiState.asStateFlow()
 
     init {
