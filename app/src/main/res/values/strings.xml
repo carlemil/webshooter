@@ -134,6 +134,7 @@
     <string name="competition_patrols_no_patrols">Inga patruller</string>
     <string name="competition_patrols_sort_label">Sortering</string>
     <string name="competition_patrols_sort_name">Namn</string>
+    <string name="competition_patrols_name_club">Namn/Klubb</string>
     <string name="competition_patrols_sort_club">Klubb</string>
     <string name="competition_patrols_sort_group">Grupp</string>
     <string name="competition_patrols_filter_all">Alla</string>
