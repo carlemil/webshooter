@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="screen_content_top_padding">8dp</dimen>
+    <integer name="rounded_corner_shape_percent">10</integer>
 </resources>

@@ -19,8 +19,9 @@ class CompetitionPatrolsViewModelImpl @Inject constructor(
 ) : ViewModel(), CompetitionPatrolsViewModel {
 
     private val competitionId: Long = savedStateHandle["competitionId"] ?: -1L
+    private val competitionTypeId: Int = savedStateHandle["competitionTypeId"] ?: 0
 
-    private val _uiState = MutableStateFlow(CompetitionPatrolsUiState(isLoading = true))
+    private val _uiState = MutableStateFlow(CompetitionPatrolsUiState(isLoading = true, competitionTypeId = competitionTypeId))
     override val uiState: StateFlow<CompetitionPatrolsUiState> = _uiState.asStateFlow()
 
     init {
@@ -40,24 +41,5 @@ class CompetitionPatrolsViewModelImpl @Inject constructor(
                 }
             }
         }
-    }
-
-    override fun setFilterClub(club: String?) {
-        _uiState.value = _uiState.value.copy(filterClub = club)
-    }
-
-    override fun setFilterWeaponGroup(group: String?) {
-        _uiState.value = _uiState.value.copy(filterWeaponGroup = group)
-    }
-
-    override fun setSortField(field: PatrolsSortField) {
-        val current = _uiState.value
-        val newDirection = if (current.sortField == field) {
-            if (current.sortDirection == PatrolsSortDirection.Ascending) PatrolsSortDirection.Descending
-            else PatrolsSortDirection.Ascending
-        } else {
-            PatrolsSortDirection.Ascending
-        }
-        _uiState.value = current.copy(sortField = field, sortDirection = newDirection)
     }
 }
