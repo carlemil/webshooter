@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.login
+package se.kjellstrand.webshooter.ui.screens.login
 
 data class LoginUiState(
     val isLoading: Boolean = false,

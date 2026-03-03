@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.competitionpatrols
+package se.kjellstrand.webshooter.ui.screens.competitionpatrols
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

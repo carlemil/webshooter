@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.competitionsignups
+package se.kjellstrand.webshooter.ui.screens.competitionsignups
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
