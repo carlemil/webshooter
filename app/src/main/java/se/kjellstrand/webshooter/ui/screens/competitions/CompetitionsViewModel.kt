@@ -8,4 +8,6 @@ interface CompetitionsViewModel {
     fun getCompetitionById(competitionId: Long): Datum?
     fun loadNextPage()
     fun reload()
+    fun setSelectedCompetitionTypeIds(ids: Set<Int>)
+    fun setSelectedStatuses(statuses: Set<String>)
 }

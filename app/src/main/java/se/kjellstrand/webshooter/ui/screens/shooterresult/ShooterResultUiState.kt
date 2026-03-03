@@ -2,7 +2,7 @@ package se.kjellstrand.webshooter.ui.screens.shooterresult
 
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.results.remote.Result
-import se.kjellstrand.webshooter.ui.results.GroupedItem
+import se.kjellstrand.webshooter.ui.screens.results.GroupedItem
 
 data class ShooterResultUiState(
     val isLoading: Boolean = true,

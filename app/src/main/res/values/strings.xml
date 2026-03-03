@@ -70,6 +70,8 @@
     <string name="competitions_relays_button">Skjutlag</string>
     <string name="competitions_team_signup">Lagtävling: %1$s</string>
     <string name="competitions_yes">Ja</string>
+    <string name="competitions_filter_status">Status</string>
+    <string name="competitions_filter_competition_type">Tävlingstyp</string>
 
     <!-- ### LOGIN ### -->
     <string name="login_login">Inloggning</string>
