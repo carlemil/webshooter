@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.login
+package se.kjellstrand.webshooter.ui.screens.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

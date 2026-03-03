@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.signup
+package se.kjellstrand.webshooter.ui.screens.signup
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

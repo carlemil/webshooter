@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.competitionsignups
+package se.kjellstrand.webshooter.ui.screens.competitionsignups
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel

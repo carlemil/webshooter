@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.competitionpatrols
+package se.kjellstrand.webshooter.ui.screens.competitionpatrols
 
 import se.kjellstrand.webshooter.data.competitionpatrols.remote.PatrolEntry
 import se.kjellstrand.webshooter.data.competitionpatrols.remote.PatrolSignupEntry

@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.competitions
+package se.kjellstrand.webshooter.ui.screens.competitions
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

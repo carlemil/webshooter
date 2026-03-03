@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.club
+package se.kjellstrand.webshooter.ui.screens.club
 
 import se.kjellstrand.webshooter.data.club.remote.ClubData
 import se.kjellstrand.webshooter.data.club.remote.ClubMember

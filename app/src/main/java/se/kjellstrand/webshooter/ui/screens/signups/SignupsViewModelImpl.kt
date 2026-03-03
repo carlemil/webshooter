@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.signups
+package se.kjellstrand.webshooter.ui.screens.signups
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
