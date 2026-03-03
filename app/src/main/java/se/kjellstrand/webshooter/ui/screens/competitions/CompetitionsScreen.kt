@@ -32,13 +32,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -65,7 +67,8 @@ fun CompetitionsScreen(
         }.collect { (lastVisibleItemIndex, comps) ->
             if (lastVisibleItemIndex != null && comps != null &&
                 lastVisibleItemIndex >= comps.data.size - 5 &&
-                comps.data.size.toLong() < comps.total) {
+                comps.data.size.toLong() < comps.total
+            ) {
                 competitionsViewModel.loadNextPage()
             }
         }
@@ -89,6 +92,10 @@ fun CompetitionsScreen(
                     items(competitions.data) { competition ->
                         CompetitionItem(
                             competition = competition,
+                            patrolOrRelayButtonText = when (competition.competitionType.id) {
+                                2, 3, 9, 10 -> R.string.competitions_patrols_button
+                                else -> R.string.competitions_relays_button
+                            },
                             onResultsClick = {
                                 navController.navigate(
                                     Screen.CompetitionResults.createRoute(
@@ -108,9 +115,9 @@ fun CompetitionsScreen(
                                     Screen.CompetitionSignupsList.createRoute(competition.id)
                                 )
                             },
-                            onPatrolsClick = {
+                            onPatrolsOrRelayClick = {
                                 navController.navigate(
-                                    Screen.CompetitionPatrols.createRoute(competition.id)
+                                        Screen.CompetitionPatrols.createRoute(competition.id, competition.competitionType.id)
                                 )
                             }
                         )
@@ -129,10 +136,11 @@ fun CompetitionsScreen(
 @Composable
 fun CompetitionItem(
     competition: Datum,
+    patrolOrRelayButtonText: Int,
     onResultsClick: () -> Unit,
     onSignupClick: () -> Unit = {},
     onSignupsListClick: () -> Unit = {},
-    onPatrolsClick: () -> Unit = {}
+    onPatrolsOrRelayClick: () -> Unit = {}
 ) {
     var isExpanded by remember { mutableStateOf(false) }
 
@@ -145,64 +153,93 @@ fun CompetitionItem(
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(12.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(12.dp)
             ) {
-                // Main content on the left
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = competition.name,
-                        style = MaterialTheme.typography.titleSmall
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Text(
-                        text = "${competition.date}  •  ${competition.statusHuman}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = stringResource(
-                            R.string.competitions_competition_type,
-                            competition.competitionType.name
-                        ),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Spacer(modifier = Modifier.height(6.dp))
-                    WeaponClassBadges(
-                        weaponClasses = competition.weaponClasses,
-                        userSignups = competition.userSignups
-                    )
-                }
-
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(start = 8.dp)
+                Text(
+                    text = competition.name,
+                    style = MaterialTheme.typography.titleSmall
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "${competition.date}  •  ${competition.statusHuman}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = stringResource(
+                        R.string.competitions_competition_type,
+                        competition.competitionType.name
+                    ),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                WeaponClassBadges(
+                    weaponClasses = competition.weaponClasses,
+                    userSignups = competition.userSignups
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
+                    val shape =
+                        RoundedCornerShape(integerResource(R.integer.rounded_corner_shape_percent))
+
+                    val buttonContentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp)
                     Button(
+                        modifier = Modifier.weight(1f),
                         enabled = competition.status == "completed",
-                        onClick = onResultsClick
+                        onClick = onResultsClick,
+                        shape = shape,
+                        contentPadding = buttonContentPadding
                     ) {
-                        Text(stringResource(R.string.competitions_result))
+                        Text(
+                            style = MaterialTheme.typography.bodySmall,
+                            text = stringResource(R.string.competitions_result),
+                            textAlign = TextAlign.Center
+                        )
                     }
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Button(onClick = onSignupsListClick) {
-                        Text(stringResource(R.string.competition_signups_list_participants))
+                    Button(
+                        modifier = Modifier.weight(1f),
+                        onClick = onSignupsListClick,
+                        shape = shape,
+                        contentPadding = buttonContentPadding
+                    ) {
+                        Text(
+                            style = MaterialTheme.typography.bodySmall,
+                            text = stringResource(R.string.competition_signups_list_participants),
+                            textAlign = TextAlign.Center
+                        )
                     }
-                    Spacer(modifier = Modifier.height(4.dp))
-                    Button(onClick = onPatrolsClick) {
-                        Text(stringResource(R.string.competition_patrols_button))
+                    Button(
+                        modifier = Modifier.weight(1f),
+                        onClick = onPatrolsOrRelayClick,
+                        shape = shape,
+                        contentPadding = buttonContentPadding
+                    ) {
+                        Text(
+                            style = MaterialTheme.typography.bodySmall,
+                            text = stringResource(patrolOrRelayButtonText),
+                            textAlign = TextAlign.Center
+                        )
                     }
-                    if (competition.status == "open") {
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Button(onClick = onSignupClick) {
-                            Text(stringResource(R.string.sign_up))
-                        }
+                    Button(
+                        modifier = Modifier.weight(1f),
+                        enabled = competition.status == "open",
+                        shape = shape,
+                        onClick = onSignupClick,
+                        contentPadding = buttonContentPadding
+                    ) {
+                        Text(
+                            style = MaterialTheme.typography.bodySmall,
+                            text = stringResource(R.string.sign_up),
+                            textAlign = TextAlign.Center
+                        )
                     }
                 }
             }

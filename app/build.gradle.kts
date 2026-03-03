@@ -52,6 +52,9 @@ android {
         jniLibs {
             useLegacyPackaging = false
         }
+        resources {
+            excludes += "META-INF/versions/9/OSGI-INF/MANIFEST.MF"
+        }
     }
 
     compileOptions {
@@ -81,6 +84,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.security.crypto)
     implementation(libs.androidx.security.crypto.ktx)
+    implementation(libs.androidx.compose.testing)
 
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)

@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.competitionpatrols
+package se.kjellstrand.webshooter.ui.competitionsignups
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -36,11 +36,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -49,23 +51,39 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import se.kjellstrand.webshooter.R
-import se.kjellstrand.webshooter.data.competitionpatrols.remote.PatrolEntry
-import se.kjellstrand.webshooter.data.competitionpatrols.remote.PatrolSignupEntry
+import se.kjellstrand.webshooter.data.competitionsignups.remote.CompetitionSignupEntry
 import se.kjellstrand.webshooter.ui.common.ScreenTopBar
+import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
+import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CompetitionPatrolsScreen(
+fun CompetitionSignupsScreen(
     navController: NavController,
-    viewModel: CompetitionPatrolsViewModel = hiltViewModel<CompetitionPatrolsViewModelImpl>()
+    viewModel: CompetitionSignupsViewModel = hiltViewModel<CompetitionSignupsViewModelImpl>()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val listState = rememberLazyListState()
     var isFilterSheetOpen by remember { mutableStateOf(false) }
+
+    LaunchedEffect(listState) {
+        snapshotFlow {
+            listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index to uiState.filteredAndSorted.size
+        }.collect { (lastVisibleIndex, listSize) ->
+            if (lastVisibleIndex != null &&
+                listSize > 0 &&
+                lastVisibleIndex >= listSize - 5 &&
+                uiState.allSignups.size < uiState.total
+            ) {
+                viewModel.loadNextPage()
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
             ScreenTopBar(
-                title = stringResource(R.string.competition_patrols_title),
+                title = stringResource(R.string.competition_signups_list_participants),
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -74,42 +92,48 @@ fun CompetitionPatrolsScreen(
             )
         },
         floatingActionButton = {
-            if (!uiState.isLoading) {
-                FloatingActionButton(onClick = { isFilterSheetOpen = true }) {
-                    Icon(Icons.Default.FilterList, contentDescription = "Filter och sortering")
-                }
+            FloatingActionButton(onClick = { isFilterSheetOpen = true }) {
+                Icon(Icons.Default.FilterList, contentDescription = "Filter och sortering")
             }
         }
     ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            when {
-                uiState.isLoading -> {
-                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                }
+        val displayed = uiState.filteredAndSorted
+        val grouped = displayed.groupBy { it.club.name }.entries.sortedBy { it.key }
 
-                uiState.filteredPatrols.isEmpty() -> {
-                    Text(
-                        text = stringResource(R.string.competition_patrols_no_patrols),
-                        modifier = Modifier.align(Alignment.Center)
-                    )
+        if (!uiState.isLoading && displayed.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(stringResource(R.string.competition_signups_list_no_signups))
+            }
+        } else {
+            LazyColumn(
+                state = listState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentPadding = PaddingValues(
+                    start = 16.dp, end = 16.dp, top = 8.dp, bottom = 80.dp
+                ),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                grouped.forEach { (clubName, entries) ->
+                    item(key = "club_$clubName") {
+                        ClubCard(clubName = clubName, entries = entries)
+                    }
                 }
-
-                else -> {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(
-                            start = 16.dp, end = 16.dp, top = 8.dp, bottom = 80.dp
-                        ),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        uiState.filteredPatrols.forEach { patrol ->
-                            item(key = "header_${patrol.id}") {
-                                PatrolCard(patrol = patrol, uiState = uiState)
-                            }
+                if (uiState.isLoading) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
                         }
                     }
                 }
@@ -118,7 +142,7 @@ fun CompetitionPatrolsScreen(
     }
 
     if (isFilterSheetOpen) {
-        PatrolsFilterSheet(
+        SignupsFilterSheet(
             uiState = uiState,
             onSetSortField = { viewModel.setSortField(it) },
             onSetFilterClub = { viewModel.setFilterClub(it) },
@@ -129,13 +153,7 @@ fun CompetitionPatrolsScreen(
 }
 
 @Composable
-private fun PatrolCard(patrol: PatrolEntry, uiState: CompetitionPatrolsUiState) {
-    val weaponGroups = patrol.signups
-        .map { it.weaponclass.classnameGeneral }
-        .distinct()
-        .sorted()
-        .joinToString(" ")
-
+private fun ClubCard(clubName: String, entries: List<CompetitionSignupEntry>) {
     Card(
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
@@ -145,120 +163,27 @@ private fun PatrolCard(patrol: PatrolEntry, uiState: CompetitionPatrolsUiState) 
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
-            // Patrol header
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = stringResource(
-                            R.string.competition_patrols_patrol_number,
-                            patrol.sortorder
-                        ),
-                        style = MaterialTheme.typography.titleSmall
-                    )
-                    Spacer(modifier = Modifier.height(2.dp))
-                    Text(
-                        text = "${patrol.startTimeHuman} – ${patrol.endTimeHuman}",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-                Column(horizontalAlignment = Alignment.End) {
-                    Text(
-                        text = stringResource(
-                            R.string.competition_patrols_participant_count,
-                            patrol.signups.size
-                        ),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    if (weaponGroups.isNotEmpty()) {
-                        Text(
-                            text = weaponGroups,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-            }
-
+            Text(
+                text = clubName,
+                style = MaterialTheme.typography.titleSmall
+            )
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-
-            // Column header
-            SignupHeaderRow(uiState.sortField)
-
-            HorizontalDivider(modifier = Modifier.padding(bottom = 4.dp))
-
-            // Signup rows
-            patrol.signups.forEach { signup ->
-                SignupRow(signup)
+            val byUser = entries
+                .groupBy { "${it.user.name} ${it.user.lastname}" }
+                .entries.sortedBy { it.key }
+            byUser.forEach { (_, userEntries) ->
+                SignupRow(userEntries)
                 HorizontalDivider()
             }
         }
     }
 }
 
-@Composable
-private fun SignupHeaderRow(sortField: PatrolsSortField) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 2.dp)
-    ) {
-        Text(
-            text = stringResource(R.string.competition_patrols_sort_name),
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = if (sortField == PatrolsSortField.Name) FontWeight.Bold else FontWeight.Normal,
-            modifier = Modifier.weight(2f)
-        )
-        Text(
-            text = stringResource(R.string.competition_patrols_sort_club),
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = if (sortField == PatrolsSortField.Club) FontWeight.Bold else FontWeight.Normal,
-            modifier = Modifier.weight(2f)
-        )
-        Text(
-            text = stringResource(R.string.competition_patrols_sort_group),
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = if (sortField == PatrolsSortField.WeaponGroup) FontWeight.Bold else FontWeight.Normal,
-            modifier = Modifier.weight(1f)
-        )
-    }
-}
-
-@Composable
-private fun SignupRow(signup: PatrolSignupEntry) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 6.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            text = "${signup.user.name} ${signup.user.lastname}",
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.weight(2f)
-        )
-        Text(
-            text = signup.club.name,
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.weight(2f)
-        )
-        Text(
-            text = signup.weaponclass.classnameGeneral,
-            style = MaterialTheme.typography.bodySmall,
-            modifier = Modifier.weight(1f)
-        )
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-private fun PatrolsFilterSheet(
-    uiState: CompetitionPatrolsUiState,
-    onSetSortField: (PatrolsSortField) -> Unit,
+private fun SignupsFilterSheet(
+    uiState: CompetitionSignupsUiState,
+    onSetSortField: (SignupsListSortField) -> Unit,
     onSetFilterClub: (String?) -> Unit,
     onSetFilterWeaponGroup: (String?) -> Unit,
     onDismiss: () -> Unit
@@ -273,18 +198,18 @@ private fun PatrolsFilterSheet(
 
             // Sort section
             Text(
-                stringResource(R.string.competition_patrols_sort_label),
+                stringResource(R.string.competition_signups_list_sort_label),
                 style = MaterialTheme.typography.titleMedium
             )
             Spacer(modifier = Modifier.height(4.dp))
-            PatrolsSortField.entries.forEach { field ->
+            SignupsListSortField.entries.forEach { field ->
                 val label = when (field) {
-                    PatrolsSortField.Name -> stringResource(R.string.competition_patrols_sort_name)
-                    PatrolsSortField.Club -> stringResource(R.string.competition_patrols_sort_club)
-                    PatrolsSortField.WeaponGroup -> stringResource(R.string.competition_patrols_sort_group)
+                    SignupsListSortField.Name -> stringResource(R.string.competition_signups_list_sort_name)
+                    SignupsListSortField.Club -> stringResource(R.string.competition_signups_list_sort_club)
+                    SignupsListSortField.WeaponGroup -> stringResource(R.string.competition_signups_list_sort_group)
                 }
-                val directionSuffix = if (uiState.sortField == field) {
-                    if (uiState.sortDirection == PatrolsSortDirection.Ascending) " ↑" else " ↓"
+                val directionLabel = if (uiState.sortField == field) {
+                    if (uiState.sortDirection == SortDirection.Ascending) " ↑" else " ↓"
                 } else ""
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -294,7 +219,7 @@ private fun PatrolsFilterSheet(
                         selected = uiState.sortField == field,
                         onClick = { onSetSortField(field) }
                     )
-                    Text(label + directionSuffix)
+                    Text(label + directionLabel)
                 }
             }
 
@@ -302,10 +227,10 @@ private fun PatrolsFilterSheet(
             HorizontalDivider()
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Club filter
+            // Club filter section
             if (uiState.availableClubs.isNotEmpty()) {
                 Text(
-                    stringResource(R.string.competition_patrols_filter_club_label),
+                    stringResource(R.string.competition_signups_list_filter_club_label),
                     style = MaterialTheme.typography.titleMedium
                 )
                 Spacer(modifier = Modifier.height(4.dp))
@@ -313,7 +238,7 @@ private fun PatrolsFilterSheet(
                     FilterChip(
                         selected = uiState.filterClub == null,
                         onClick = { onSetFilterClub(null) },
-                        label = { Text(stringResource(R.string.competition_patrols_filter_all)) }
+                        label = { Text(stringResource(R.string.competition_signups_list_filter_all)) }
                     )
                     uiState.availableClubs.forEach { club ->
                         FilterChip(
@@ -330,10 +255,10 @@ private fun PatrolsFilterSheet(
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
-            // Weapon group filter
+            // Weapon group filter section
             if (uiState.availableWeaponGroups.isNotEmpty()) {
                 Text(
-                    stringResource(R.string.competition_patrols_filter_group_label),
+                    stringResource(R.string.competition_signups_list_filter_group_label),
                     style = MaterialTheme.typography.titleMedium
                 )
                 Spacer(modifier = Modifier.height(4.dp))
@@ -341,7 +266,7 @@ private fun PatrolsFilterSheet(
                     FilterChip(
                         selected = uiState.filterWeaponGroup == null,
                         onClick = { onSetFilterWeaponGroup(null) },
-                        label = { Text(stringResource(R.string.competition_patrols_filter_all)) }
+                        label = { Text(stringResource(R.string.competition_signups_list_filter_all)) }
                     )
                     uiState.availableWeaponGroups.forEach { group ->
                         FilterChip(
@@ -369,11 +294,37 @@ private fun PatrolsFilterSheet(
                     onSetFilterClub(null)
                     onSetFilterWeaponGroup(null)
                 }) {
-                    Text(stringResource(R.string.competition_patrols_clear_filters))
+                    Text(stringResource(R.string.competition_signups_list_clear_filters))
                 }
                 Button(onClick = onDismiss) {
                     Text(stringResource(R.string.results_done_button))
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SignupRow(entries: List<CompetitionSignupEntry>) {
+    val user = entries.first().user
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "${user.name} ${user.lastname}",
+            style = MaterialTheme.typography.bodySmall,
+            modifier = Modifier.weight(1f)
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            entries.forEach { entry ->
+                WeaponClassBadge(
+                    weaponGroupName = entry.weaponclass.classname,
+                    isHighlighted = false,
+                    size = WeaponClassBadgeSize.Small
+                )
             }
         }
     }
