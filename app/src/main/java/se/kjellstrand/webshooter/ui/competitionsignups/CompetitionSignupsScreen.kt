@@ -13,12 +13,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -51,6 +53,8 @@ import androidx.navigation.NavController
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitionsignups.remote.CompetitionSignupEntry
 import se.kjellstrand.webshooter.ui.common.ScreenTopBar
+import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
+import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,66 +98,42 @@ fun CompetitionSignupsScreen(
         }
     ) { paddingValues ->
         val displayed = uiState.filteredAndSorted
+        val grouped = displayed.groupBy { it.club.name }.entries.sortedBy { it.key }
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            // Static column header
-            HorizontalDivider()
-            Row(
+        if (!uiState.isLoading && displayed.isEmpty()) {
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 4.dp)
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = stringResource(R.string.competition_signups_list_sort_name),
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = if (uiState.sortField == SignupsListSortField.Name) FontWeight.Bold else FontWeight.Normal,
-                    modifier = Modifier.weight(2f)
-                )
-                Text(
-                    text = stringResource(R.string.competition_signups_list_sort_club),
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = if (uiState.sortField == SignupsListSortField.Club) FontWeight.Bold else FontWeight.Normal,
-                    modifier = Modifier.weight(2f)
-                )
-                Text(
-                    text = stringResource(R.string.competition_signups_list_sort_group),
-                    style = MaterialTheme.typography.bodySmall,
-                    fontWeight = if (uiState.sortField == SignupsListSortField.WeaponGroup) FontWeight.Bold else FontWeight.Normal,
-                    modifier = Modifier.weight(1f)
-                )
+                Text(stringResource(R.string.competition_signups_list_no_signups))
             }
-            HorizontalDivider()
-
-            if (!uiState.isLoading && displayed.isEmpty()) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(stringResource(R.string.competition_signups_list_no_signups))
-                }
-            } else {
-                LazyColumn(
-                    state = listState,
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(
-                        start = 16.dp, end = 16.dp, bottom = 80.dp
-                    )
-                ) {
-                    items(displayed, key = { it.id }) { entry ->
-                        SignupRow(entry)
-                        HorizontalDivider()
+        } else {
+            LazyColumn(
+                state = listState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+                contentPadding = PaddingValues(
+                    start = 16.dp, end = 16.dp, top = 8.dp, bottom = 80.dp
+                ),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                grouped.forEach { (clubName, entries) ->
+                    item(key = "club_$clubName") {
+                        ClubCard(clubName = clubName, entries = entries)
                     }
-                    if (uiState.isLoading) {
-                        item {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(16.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator()
-                            }
+                }
+                if (uiState.isLoading) {
+                    item {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(16.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator()
                         }
                     }
                 }
@@ -169,6 +149,33 @@ fun CompetitionSignupsScreen(
             onSetFilterWeaponGroup = { viewModel.setFilterWeaponGroup(it) },
             onDismiss = { isFilterSheetOpen = false }
         )
+    }
+}
+
+@Composable
+private fun ClubCard(clubName: String, entries: List<CompetitionSignupEntry>) {
+    Card(
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(
+                text = clubName,
+                style = MaterialTheme.typography.titleSmall
+            )
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+            val byUser = entries
+                .groupBy { "${it.user.name} ${it.user.lastname}" }
+                .entries.sortedBy { it.key }
+            byUser.forEach { (_, userEntries) ->
+                SignupRow(userEntries)
+                HorizontalDivider()
+            }
+        }
     }
 }
 
@@ -298,27 +305,27 @@ private fun SignupsFilterSheet(
 }
 
 @Composable
-private fun SignupRow(entry: CompetitionSignupEntry) {
+private fun SignupRow(entries: List<CompetitionSignupEntry>) {
+    val user = entries.first().user
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp),
+            .padding(vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "${entry.user.name} ${entry.user.lastname}",
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.weight(2f)
-        )
-        Text(
-            text = entry.club.name,
-            style = MaterialTheme.typography.bodyMedium,
-            modifier = Modifier.weight(2f)
-        )
-        Text(
-            text = entry.weaponclass.classname,
-            style = MaterialTheme.typography.bodyMedium,
+            text = "${user.name} ${user.lastname}",
+            style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.weight(1f)
         )
+        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+            entries.forEach { entry ->
+                WeaponClassBadge(
+                    weaponGroupName = entry.weaponclass.classname,
+                    isHighlighted = false,
+                    size = WeaponClassBadgeSize.Small
+                )
+            }
+        }
     }
 }
