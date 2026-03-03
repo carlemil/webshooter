@@ -117,7 +117,7 @@ fun CompetitionsScreen(
                             },
                             onPatrolsOrRelayClick = {
                                 navController.navigate(
-                                        Screen.CompetitionPatrols.createRoute(competition.id)
+                                        Screen.CompetitionPatrols.createRoute(competition.id, competition.competitionType.id)
                                 )
                             }
                         )

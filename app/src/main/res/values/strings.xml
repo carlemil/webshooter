@@ -131,6 +131,7 @@
     <!-- ### COMPETITION_PATROLS ### -->
     <string name="competition_patrols_title">Patruller</string>
     <string name="competition_patrols_patrol_number">Patrull %1$d</string>
+    <string name="competition_patrols_relay_number">Skjutlag %1$d</string>
     <string name="competition_patrols_participant_count">%1$d st</string>
     <string name="competition_patrols_no_patrols">Inga patruller</string>
     <string name="competition_patrols_sort_label">Sortering</string>
