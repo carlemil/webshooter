@@ -33,6 +33,7 @@ class CompetitionsViewModelImpl @Inject constructor(
 
     override fun loadNextPage() {
         if (_uiState.value.isLoading) return
+        _uiState.value = _uiState.value.copy(isLoading = true)
         currentPage++
         loadCompetitions(currentPage, 10)
     }
