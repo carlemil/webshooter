@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.signup
+package se.kjellstrand.webshooter.ui.screens.signup
 
 data class SignupUiState(
     val isLoading: Boolean = false,
