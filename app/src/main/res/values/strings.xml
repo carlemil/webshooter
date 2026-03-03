@@ -25,7 +25,7 @@
     <string name="select_gender">Välj kön</string>
     <string name="settings_logout">Logga ut</string>
     <string name="shooting_card_number">Pskn: %1$s</string>
-    <string name="sign_up">Anmäl dig</string>
+    <string name="sign_up">Din anmälan</string>
     <string name="silver">🥈</string>
     <string name="title_activity_main">AppShooter</string>
     <string name="unknown">Okänd</string>
@@ -66,6 +66,8 @@
     <string name="competitions_result">Resultat</string>
     <string name="competitions_result_calculation">Resultatberäkning: %1$s</string>
     <string name="competitions_status">Status: %1$s</string>
+    <string name="competitions_patrols_button">Patruller</string>
+    <string name="competitions_relays_button">Skjutlag</string>
     <string name="competitions_team_signup">Lagtävling: %1$s</string>
     <string name="competitions_yes">Ja</string>
 
@@ -117,6 +119,7 @@
     <string name="weapon_class">Klass</string>
     <string name="weapon_class_short">K</string>
     <string name="weapon_group">Vapengrupp: </string>
+    <string name="weapon_groups">Vapengrupper: </string>
 
     <!-- ### WEB_SHOOTER ### -->
     <string name="web_shooter_club">Förening</string>
@@ -126,13 +129,15 @@
     <string name="web_shooter_settings">Inställningar</string>
 
     <!-- ### COMPETITION_PATROLS ### -->
-    <string name="competition_patrols_button">Patrullar</string>
-    <string name="competition_patrols_title">Patrullar</string>
+    <string name="competition_patrols_title">Patruller</string>
     <string name="competition_patrols_patrol_number">Patrull %1$d</string>
+    <string name="competition_patrols_relay_number">Skjutlag %1$d</string>
     <string name="competition_patrols_participant_count">%1$d st</string>
-    <string name="competition_patrols_no_patrols">Inga patrullar</string>
+    <string name="competition_patrols_no_patrols">Inga patruller</string>
+    <string name="competition_patrols_no_relays">Inga Skjutlag</string>
     <string name="competition_patrols_sort_label">Sortering</string>
     <string name="competition_patrols_sort_name">Namn</string>
+    <string name="competition_patrols_name_club">Namn/Klubb</string>
     <string name="competition_patrols_sort_club">Klubb</string>
     <string name="competition_patrols_sort_group">Grupp</string>
     <string name="competition_patrols_filter_all">Alla</string>

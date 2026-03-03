@@ -76,7 +76,10 @@ fun AppNavHost(navController: NavHostController) {
         }
         composable(
             route = Screen.CompetitionPatrols.route,
-            arguments = listOf(navArgument("competitionId") { type = NavType.LongType })
+            arguments = listOf(
+                navArgument("competitionId") { type = NavType.LongType },
+                navArgument("competitionTypeId") { type = NavType.IntType }
+            )
         ) {
             val patrolsViewModel: CompetitionPatrolsViewModelImpl = hiltViewModel()
             CompetitionPatrolsScreen(navController, patrolsViewModel)
