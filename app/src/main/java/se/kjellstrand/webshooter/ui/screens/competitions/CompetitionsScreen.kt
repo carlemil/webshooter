@@ -23,7 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.Place
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -372,10 +372,10 @@ fun CompetitionItem(
             }
                 IconButton(
                     onClick = {
-                        val uri = if (competition.lat != 0.0 || competition.lng != 0.0) {
-                            Uri.parse("geo:${competition.lat},${competition.lng}?q=${competition.lat},${competition.lng}")
-                        } else {
+                        val uri = if (competition.googleMaps.isNotBlank()) {
                             Uri.parse(competition.googleMaps)
+                        } else {
+                            Uri.parse("geo:${competition.lat},${competition.lng}?q=${competition.lat},${competition.lng}")
                         }
                         context.startActivity(Intent(Intent.ACTION_VIEW, uri))
                     },
@@ -383,7 +383,7 @@ fun CompetitionItem(
                     modifier = Modifier.align(Alignment.TopEnd)
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Place,
+                        imageVector = Icons.Default.Map,
                         contentDescription = stringResource(R.string.competitions_open_map)
                     )
                 }
