@@ -1,5 +1,7 @@
 package se.kjellstrand.webshooter.ui.screens.competitions
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -21,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.Place
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -45,6 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.integerResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -262,6 +266,8 @@ fun CompetitionItem(
     onPatrolsOrRelayClick: () -> Unit = {}
 ) {
     var isExpanded by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    val hasLocation = competition.lat != 0.0 || competition.lng != 0.0 || competition.googleMaps.isNotBlank()
 
     Card(
         shape = RoundedCornerShape(12.dp),
@@ -272,10 +278,12 @@ fun CompetitionItem(
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
+            Box(modifier = Modifier.fillMaxWidth()) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(12.dp)
+                    .padding(end = 36.dp)
             ) {
                 Text(
                     text = competition.name,
@@ -362,6 +370,24 @@ fun CompetitionItem(
                     }
                 }
             }
+                IconButton(
+                    onClick = {
+                        val uri = if (competition.lat != 0.0 || competition.lng != 0.0) {
+                            Uri.parse("geo:${competition.lat},${competition.lng}?q=${competition.lat},${competition.lng}")
+                        } else {
+                            Uri.parse(competition.googleMaps)
+                        }
+                        context.startActivity(Intent(Intent.ACTION_VIEW, uri))
+                    },
+                    enabled = hasLocation,
+                    modifier = Modifier.align(Alignment.TopEnd)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Place,
+                        contentDescription = stringResource(R.string.competitions_open_map)
+                    )
+                }
+            } // Box
 
             HorizontalDivider()
             IconButton(
