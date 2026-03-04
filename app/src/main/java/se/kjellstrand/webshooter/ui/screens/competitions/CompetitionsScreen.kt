@@ -1,7 +1,7 @@
 package se.kjellstrand.webshooter.ui.screens.competitions
 
 import android.content.Intent
-import android.net.Uri
+import androidx.core.net.toUri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -373,9 +373,9 @@ fun CompetitionItem(
                 IconButton(
                     onClick = {
                         val uri = if (competition.googleMaps.isNotBlank()) {
-                            Uri.parse(competition.googleMaps)
+                            competition.googleMaps.toUri()
                         } else {
-                            Uri.parse("geo:${competition.lat},${competition.lng}?q=${competition.lat},${competition.lng}")
+                            "geo:${competition.lat},${competition.lng}?q=${competition.lat},${competition.lng}".toUri()
                         }
                         context.startActivity(Intent(Intent.ACTION_VIEW, uri))
                     },
