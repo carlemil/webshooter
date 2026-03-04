@@ -184,7 +184,7 @@ fun CompetitionsScreen(
 @Composable
 fun CompetitionsFilterBottomSheet(
     allCompetitionTypes: List<CompetitionType>,
-    allStatuses: List<Pair<String, String>>,
+    allStatuses: Map<String, String>,
     selectedCompetitionTypeIds: Set<Int>,
     selectedStatuses: Set<String>,
     onCompetitionTypesChange: (Set<Int>) -> Unit,
@@ -203,16 +203,16 @@ fun CompetitionsFilterBottomSheet(
             )
             Spacer(modifier = Modifier.height(8.dp))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                allStatuses.forEach { (status, statusHuman) ->
-                    val isSelected = selectedStatuses.contains(status)
+                allStatuses.forEach { status ->
+                    val isSelected = selectedStatuses.contains(status.key)
                     FilterChip(
                         selected = isSelected,
                         onClick = {
-                            val updated = if (isSelected) selectedStatuses - status
-                            else selectedStatuses + status
+                            val updated = if (isSelected) selectedStatuses - status.key
+                            else selectedStatuses + status.key
                             onStatusesChange(updated)
                         },
-                        label = { Text(statusHuman) }
+                        label = { Text(status.value) }
                     )
                 }
             }
