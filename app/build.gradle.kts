@@ -14,8 +14,8 @@ android {
         applicationId = "se.kjellstrand.webshooter"
         minSdk = 26
         targetSdk = 36
-        versionCode = 6
-        versionName = "1.6.0"
+        versionCode = 7
+        versionName = "1.7.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -84,8 +84,6 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.security.crypto)
     implementation(libs.androidx.security.crypto.ktx)
-    implementation(libs.androidx.compose.testing)
-
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
