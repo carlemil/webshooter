@@ -72,7 +72,6 @@ open class ResultsViewModelImpl @Inject constructor(
                         if (resource.data.results.isEmpty()) {
                             _resultsEvent.emit(ResultsEvent.Empty)
                         } else {
-                            println("getResults Success: ${resource.data}")
                             _uiState.update { current ->
                                 current.copy(
                                     results = resource.data.results,
@@ -88,12 +87,11 @@ open class ResultsViewModelImpl @Inject constructor(
                     }
 
                     is Resource.Error -> {
-                        println("getResults Failed: ${resource.error}")
                         _uiState.value = _uiState.value.copy(isLoading = false)
                     }
 
                     else -> {
-                        println("getResults resource: $resource")
+                        println("getResults is loading competitionId: $competitionId")
                     }
                 }
             }
