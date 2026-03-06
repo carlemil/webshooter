@@ -14,8 +14,8 @@ android {
         applicationId = "se.kjellstrand.webshooter"
         minSdk = 26
         targetSdk = 36
-        versionCode = 8
-        versionName = "1.7.1"
+        versionCode = 12
+        versionName = "1.7.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -104,9 +104,6 @@ dependencies {
 
     // Extended Icons
     implementation(libs.androidx.material.icons.extended)
-
-    // system UI Controller
-    implementation(libs.accompanist.systemuicontroller)
 
     // Test
     androidTestImplementation(platform(libs.androidx.compose.bom))
