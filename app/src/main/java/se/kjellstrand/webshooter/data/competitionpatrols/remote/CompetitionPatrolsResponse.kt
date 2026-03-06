@@ -23,7 +23,7 @@ data class PatrolSignupEntry(
     val weaponclass: PatrolSignupWeaponClass
 )
 
-data class PatrolSignupUser(val name: String, val lastname: String)
+data class PatrolSignupUser(val id: Long, val name: String, val lastname: String)
 
 data class PatrolSignupClub(val name: String)
 

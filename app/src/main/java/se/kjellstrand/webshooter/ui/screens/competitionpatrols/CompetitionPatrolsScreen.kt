@@ -1,5 +1,6 @@
 package se.kjellstrand.webshooter.ui.screens.competitionpatrols
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -91,7 +92,7 @@ fun CompetitionPatrolsScreen(
                     ) {
                         uiState.patrols.forEach { patrol ->
                             item(key = "header_${patrol.id}") {
-                                PatrolCard(patrol = patrol, isFalt = isFalt)
+                                PatrolCard(patrol = patrol, isFalt = isFalt, currentUserId = uiState.currentUserId)
                             }
                         }
                     }
@@ -103,7 +104,7 @@ fun CompetitionPatrolsScreen(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun PatrolCard(patrol: PatrolEntry, isFalt: Boolean) {
+private fun PatrolCard(patrol: PatrolEntry, isFalt: Boolean, currentUserId: Long?) {
     val weaponGroups = patrol.signups
         .map { it.weaponclass.classnameGeneral }
         .distinct()
@@ -180,7 +181,7 @@ private fun PatrolCard(patrol: PatrolEntry, isFalt: Boolean) {
 
             // Signup rows
             patrol.signups.forEach { signup ->
-                SignupRow(signup)
+                SignupRow(signup, isCurrentUser = signup.user.id == currentUserId)
                 HorizontalDivider()
             }
         }
@@ -216,27 +217,37 @@ private fun SignupHeaderRow() {
 }
 
 @Composable
-private fun SignupRow(signup: PatrolSignupEntry) {
+private fun SignupRow(signup: PatrolSignupEntry, isCurrentUser: Boolean) {
+    val bgColor = if (isCurrentUser) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surface
+    val textColor = if (isCurrentUser) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+    val subTextColor = if (isCurrentUser) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f) else MaterialTheme.colorScheme.onSurfaceVariant
+    val fontWeight = if (isCurrentUser) FontWeight.Bold else FontWeight.Normal
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .background(bgColor)
             .padding(vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = "#${signup.lane}",
             style = MaterialTheme.typography.bodySmall,
+            color = textColor,
+            fontWeight = fontWeight,
             modifier = Modifier.weight(0.5f)
         )
         Column(modifier = Modifier.weight(3f)) {
             Text(
                 text = "${signup.user.name} ${signup.user.lastname}",
-                style = MaterialTheme.typography.bodySmall
+                style = MaterialTheme.typography.bodySmall,
+                color = textColor,
+                fontWeight = fontWeight
             )
             Text(
                 text = signup.club.name,
                 style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = subTextColor
             )
         }
         Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
