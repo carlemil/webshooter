@@ -2,7 +2,6 @@ package se.kjellstrand.webshooter.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -12,7 +11,6 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsScreen
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsViewModelImpl
 import se.kjellstrand.webshooter.ui.landingscreen.WebShooterScreen
@@ -29,12 +27,6 @@ import se.kjellstrand.webshooter.ui.screens.signup.SignupViewModel
 
 @Composable
 fun AppNavHost(navController: NavHostController) {
-    val systemUiController = rememberSystemUiController()
-    SideEffect {
-        systemUiController.isStatusBarVisible = false
-        systemUiController.isNavigationBarVisible = false
-    }
-
     NavHost(navController, startDestination = Screen.LoginScreen.route) {
         composable(Screen.LoginScreen.route) {
             LoginScreen(navController)
