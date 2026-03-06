@@ -41,7 +41,7 @@ class NetworkModule {
         okHttpClient.addInterceptor(generalHeadersInterceptor)
         okHttpClient.addInterceptor(authInterceptor)
         okHttpClient.addInterceptor(cookieHeadersInterceptor)
-        okHttpClient.addInterceptor(HttpLoggingInterceptor().apply { level = BODY })
+        okHttpClient.addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC })
         okHttpClient.addInterceptor(mockInterceptor)
 
         return okHttpClient.build()
