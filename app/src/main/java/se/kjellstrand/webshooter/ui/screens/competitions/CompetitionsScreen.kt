@@ -278,32 +278,53 @@ fun CompetitionItem(
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
-            Box(modifier = Modifier.fillMaxWidth()) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(12.dp)
-                    .padding(end = 36.dp)
             ) {
-                Text(
-                    text = competition.name,
-                    style = MaterialTheme.typography.titleSmall
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "${competition.date}  •  ${competition.statusHuman}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = stringResource(
-                        R.string.competitions_competition_type,
-                        competition.competitionType.name
-                    ),
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.Top
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = competition.name,
+                            style = MaterialTheme.typography.titleSmall
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+                        Text(
+                            text = "${competition.date}  •  ${competition.statusHuman}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                        Spacer(modifier = Modifier.height(2.dp))
+                        Text(
+                            text = stringResource(
+                                R.string.competitions_competition_type,
+                                competition.competitionType.name
+                            ),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    IconButton(
+                        onClick = {
+                            val uri = if (competition.googleMaps.isNotBlank()) {
+                                competition.googleMaps.toUri()
+                            } else {
+                                "geo:${competition.lat},${competition.lng}?q=${competition.lat},${competition.lng}".toUri()
+                            }
+                            context.startActivity(Intent(Intent.ACTION_VIEW, uri))
+                        },
+                        enabled = hasLocation
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Map,
+                            contentDescription = stringResource(R.string.competitions_open_map)
+                        )
+                    }
+                }
                 Spacer(modifier = Modifier.height(6.dp))
                 WeaponClassBadges(
                     weaponClasses = competition.weaponClasses,
@@ -370,24 +391,6 @@ fun CompetitionItem(
                     }
                 }
             }
-                IconButton(
-                    onClick = {
-                        val uri = if (competition.googleMaps.isNotBlank()) {
-                            competition.googleMaps.toUri()
-                        } else {
-                            "geo:${competition.lat},${competition.lng}?q=${competition.lat},${competition.lng}".toUri()
-                        }
-                        context.startActivity(Intent(Intent.ACTION_VIEW, uri))
-                    },
-                    enabled = hasLocation,
-                    modifier = Modifier.align(Alignment.TopEnd)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Map,
-                        contentDescription = stringResource(R.string.competitions_open_map)
-                    )
-                }
-            } // Box
 
             HorizontalDivider()
             IconButton(
