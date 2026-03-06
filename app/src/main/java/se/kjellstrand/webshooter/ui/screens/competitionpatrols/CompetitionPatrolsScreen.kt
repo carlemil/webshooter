@@ -177,12 +177,10 @@ private fun PatrolCard(patrol: PatrolEntry, isFalt: Boolean, currentUserId: Long
 
             SignupHeaderRow()
 
-            HorizontalDivider(modifier = Modifier.padding(bottom = 4.dp))
-
             // Signup rows
-            patrol.signups.forEach { signup ->
-                SignupRow(signup, isCurrentUser = signup.user.id == currentUserId)
-                HorizontalDivider()
+            patrol.signups.forEachIndexed { index, signup ->
+                SignupRow(signup, isCurrentUser = signup.user.userId == currentUserId)
+                if (index < patrol.signups.lastIndex) HorizontalDivider()
             }
         }
     }
@@ -199,13 +197,13 @@ private fun SignupHeaderRow() {
             text = "#",
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Normal,
-            modifier = Modifier.weight(2f)
+            modifier = Modifier.weight(1f)
         )
         Text(
             text = stringResource(R.string.competition_patrols_name_club),
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Normal,
-            modifier = Modifier.weight(12f)
+            modifier = Modifier.weight(10f)
         )
         Text(
             text = stringResource(R.string.weapon_group),
