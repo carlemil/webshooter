@@ -8,7 +8,6 @@ class AuthCookieJar : CookieJar {
     private val cookieStore: MutableMap<String, Cookie> = mutableMapOf()
 
     override fun saveFromResponse(url: HttpUrl, cookies: List<Cookie>) {
-        println("saveFromResponse: $cookies")
         for (cookie in cookies) {
             val key = "${cookie.domain}${cookie.path}${cookie.name}"
             cookieStore[key] = cookie
@@ -16,7 +15,6 @@ class AuthCookieJar : CookieJar {
     }
 
     override fun loadForRequest(url: HttpUrl): List<Cookie> {
-        println("loadForRequest: $cookieStore")
         return cookieStore.values.filter { cookie ->
             url.host.endsWith(cookie.domain) && url.encodedPath.startsWith(cookie.path)
         }

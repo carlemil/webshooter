@@ -35,13 +35,11 @@ class AuthTokenManager(context: Context) {
             putString(AUTH_TOKEN_KEY, newToken)
             apply()
         }
-        println("$AUTH_TOKEN_KEY stored: $newToken")
         token = newToken
     }
 
     fun readToken(): String? {
         token = sharedPreferences.getString(AUTH_TOKEN_KEY, null)
-        println("$AUTH_TOKEN_KEY read: $token")
 
         return token
     }
