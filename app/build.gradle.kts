@@ -38,10 +38,6 @@ android {
     }
 
     productFlavors {
-        create("mock") {
-            dimension = "server"
-            buildConfigField("String", "BASE_URL", "\"http://localhost:8080/\"")
-        }
         create("prod") {
             dimension = "server"
             buildConfigField("String", "BASE_URL", "\"https://webshooter.se/\"")
