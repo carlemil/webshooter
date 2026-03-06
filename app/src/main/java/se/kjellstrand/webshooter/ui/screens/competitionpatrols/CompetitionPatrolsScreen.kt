@@ -204,7 +204,7 @@ private fun SignupHeaderRow() {
             text = "#",
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Normal,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(2f)
         )
         Text(
             text = stringResource(R.string.competition_patrols_name_club),
@@ -212,7 +212,7 @@ private fun SignupHeaderRow() {
             fontWeight = FontWeight.Normal,
             modifier = Modifier.weight(10f)
         )
-        Box(modifier = Modifier.weight(4f), contentAlignment = Alignment.CenterEnd) {
+        Box(modifier = Modifier.weight(6f), contentAlignment = Alignment.CenterEnd) {
             Text(
                 text = stringResource(R.string.weapon_group),
                 style = MaterialTheme.typography.bodySmall,
@@ -236,9 +236,9 @@ private fun SignupRow(signup: PatrolSignupEntry, isCurrentUser: Boolean) {
             style = MaterialTheme.typography.bodySmall,
             color = if (isCurrentUser) MaterialTheme.colorScheme.onPrimary else Color.Unspecified,
             fontWeight = if (isCurrentUser) FontWeight.Bold else FontWeight.Normal,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(2f)
         )
-        Column(modifier = Modifier.weight(10f)) {
+        Column(modifier = Modifier.weight(12f)) {
             Text(
                 text = "${signup.user.name} ${signup.user.lastname}",
                 style = MaterialTheme.typography.bodySmall,

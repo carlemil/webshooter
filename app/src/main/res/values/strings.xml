@@ -25,7 +25,7 @@
     <string name="select_gender">Välj kön</string>
     <string name="settings_logout">Logga ut</string>
     <string name="shooting_card_number">Pskn: %1$s</string>
-    <string name="sign_up">Din anmälan</string>
+    <string name="sign_up">Anmälan</string>
     <string name="silver">🥈</string>
     <string name="title_activity_main">AppShooter</string>
     <string name="unknown">Okänd</string>
