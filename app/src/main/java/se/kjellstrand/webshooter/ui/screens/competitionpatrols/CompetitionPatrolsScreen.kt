@@ -31,8 +31,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -93,7 +93,11 @@ fun CompetitionPatrolsScreen(
                     ) {
                         uiState.patrols.forEach { patrol ->
                             item(key = "header_${patrol.id}") {
-                                PatrolCard(patrol = patrol, isFalt = isFalt, currentUserId = uiState.currentUserId)
+                                PatrolCard(
+                                    patrol = patrol,
+                                    isFalt = isFalt,
+                                    currentUserId = uiState.currentUserId
+                                )
                             }
                         }
                     }
@@ -178,10 +182,12 @@ private fun PatrolCard(patrol: PatrolEntry, isFalt: Boolean, currentUserId: Long
 
             SignupHeaderRow()
 
+            HorizontalDivider()
+
             // Signup rows
             patrol.signups.forEachIndexed { index, signup ->
                 SignupRow(signup, isCurrentUser = signup.user.userId == currentUserId)
-                if (index < patrol.signups.lastIndex) HorizontalDivider()
+                HorizontalDivider()
             }
         }
     }
@@ -206,12 +212,13 @@ private fun SignupHeaderRow() {
             fontWeight = FontWeight.Normal,
             modifier = Modifier.weight(10f)
         )
-        Text(
-            text = stringResource(R.string.weapon_group),
-            style = MaterialTheme.typography.bodySmall,
-            fontWeight = FontWeight.Normal,
-            modifier = Modifier.weight(4f)
-        )
+        Box(modifier = Modifier.weight(4f), contentAlignment = Alignment.CenterEnd) {
+            Text(
+                text = stringResource(R.string.weapon_group),
+                style = MaterialTheme.typography.bodySmall,
+                fontWeight = FontWeight.Normal
+            )
+        }
     }
 }
 
@@ -229,9 +236,9 @@ private fun SignupRow(signup: PatrolSignupEntry, isCurrentUser: Boolean) {
             style = MaterialTheme.typography.bodySmall,
             color = if (isCurrentUser) MaterialTheme.colorScheme.onPrimary else Color.Unspecified,
             fontWeight = if (isCurrentUser) FontWeight.Bold else FontWeight.Normal,
-            modifier = Modifier.weight(0.5f)
+            modifier = Modifier.weight(1f)
         )
-        Column(modifier = Modifier.weight(3f)) {
+        Column(modifier = Modifier.weight(10f)) {
             Text(
                 text = "${signup.user.name} ${signup.user.lastname}",
                 style = MaterialTheme.typography.bodySmall,
@@ -244,7 +251,7 @@ private fun SignupRow(signup: PatrolSignupEntry, isCurrentUser: Boolean) {
                 color = if (isCurrentUser) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f) else Color.Unspecified
             )
         }
-        Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier.weight(4f), contentAlignment = Alignment.CenterEnd) {
             WeaponClassBadge(
                 weaponGroupName = signup.weaponclass.classname,
                 isHighlighted = false,
