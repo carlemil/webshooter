@@ -10,5 +10,6 @@ data class CompetitionPatrolsUiState(
     val patrols: List<PatrolEntry> = emptyList(),
     val isLoading: Boolean = false,
     val competitionTypeId: Int = 0,
-    val sortDirection: PatrolsSortDirection = PatrolsSortDirection.Ascending
+    val sortDirection: PatrolsSortDirection = PatrolsSortDirection.Ascending,
+    val currentUserId: Long? = null
 )

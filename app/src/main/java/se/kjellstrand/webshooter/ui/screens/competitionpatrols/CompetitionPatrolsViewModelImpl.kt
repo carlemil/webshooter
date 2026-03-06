@@ -10,11 +10,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.competitionpatrols.CompetitionPatrolsRepository
+import se.kjellstrand.webshooter.data.settings.SettingsRepository
 import javax.inject.Inject
 
 @HiltViewModel
 class CompetitionPatrolsViewModelImpl @Inject constructor(
     private val repository: CompetitionPatrolsRepository,
+    private val settingsRepository: SettingsRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel(), CompetitionPatrolsViewModel {
 
@@ -26,6 +28,17 @@ class CompetitionPatrolsViewModelImpl @Inject constructor(
 
     init {
         loadPatrols()
+        loadCurrentUser()
+    }
+
+    private fun loadCurrentUser() {
+        viewModelScope.launch {
+            settingsRepository.getUserProfile().collect { resource ->
+                if (resource is Resource.Success) {
+                    _uiState.value = _uiState.value.copy(currentUserId = resource.data.userId)
+                }
+            }
+        }
     }
 
     private fun loadPatrols() {
