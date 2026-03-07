@@ -65,7 +65,10 @@ fun CompetitionSignupsScreen(
     Scaffold(
         topBar = {
             ScreenTopBar(
-                title = stringResource(R.string.competition_signups_list_participants),
+                title = if (uiState.totalSignupsCount > 0)
+                    "${stringResource(R.string.competition_signups_list_participants)}  ${uiState.uniquePersonCount} / ${uiState.totalSignupsCount}"
+                else
+                    stringResource(R.string.competition_signups_list_participants),
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
