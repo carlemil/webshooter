@@ -147,10 +147,23 @@ private fun ClubCard(clubName: String, entries: List<CompetitionSignupEntry>) {
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
-            Text(
-                text = clubName,
-                style = MaterialTheme.typography.titleSmall
-            )
+            val uniquePersons = entries.map { "${it.user.name} ${it.user.lastname}" }.distinct().size
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = clubName,
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.weight(1f)
+                )
+                Text(
+                    text = "$uniquePersons / ${entries.size}",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
             val byUser = entries
                 .groupBy { "${it.user.name} ${it.user.lastname}" }
