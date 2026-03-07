@@ -16,6 +16,12 @@ data class CompetitionSignupsUiState(
     val sortField: SignupsListSortField = SignupsListSortField.Name,
     val sortDirection: SortDirection = SortDirection.Ascending
 ) {
+    val uniquePersonCount: Int
+        get() = allSignups.map { "${it.user.name} ${it.user.lastname}" }.distinct().size
+
+    val totalSignupsCount: Int
+        get() = allSignups.size
+
     val availableClubs: List<String>
         get() = allSignups.map { it.club.name }.distinct().sorted()
 
