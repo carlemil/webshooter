@@ -26,19 +26,19 @@ class CompetitionSignupsViewModelImpl @Inject constructor(
     private var currentPage = 0
 
     init {
-        loadPage(1, 20)
+        loadPage(1)
     }
 
     override fun loadNextPage() {
         if (_uiState.value.isLoading) return
         val state = _uiState.value
         if (state.currentPage >= state.totalPages) return
-        loadPage(state.currentPage + 1, 20)
+        loadPage(state.currentPage + 1)
     }
 
-    private fun loadPage(page: Int, perPage: Int) {
+    private fun loadPage(page: Int) {
         viewModelScope.launch {
-            repository.get(competitionId, page, perPage).collect { resource ->
+            repository.get(competitionId, page, 100).collect { resource ->
                 when (resource) {
                     is Resource.Loading -> {
                         _uiState.value = _uiState.value.copy(isLoading = true)
@@ -53,6 +53,9 @@ class CompetitionSignupsViewModelImpl @Inject constructor(
                             total = paged.total,
                             isLoading = false
                         )
+                        if (paged.currentPage < paged.lastPage) {
+                            loadPage(paged.currentPage + 1)
+                        }
                     }
                     is Resource.Error -> {
                         _uiState.value = _uiState.value.copy(isLoading = false)
