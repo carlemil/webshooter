@@ -30,7 +30,7 @@ Each feature has: `remote/Response.kt` (data classes) → `remote/XxxRemoteDataS
 All async results are wrapped in `Resource<T, E>` (sealed interface: `Loading`, `Success`, `Error`) from `data/common/Resource.kt`.
 
 ### DI Layer
-One Hilt `@Module` per feature in `di/`, all installed in `SingletonComponent`. `NetworkModule` wires up OkHttp with four interceptors: `GeneralHeadersInterceptor`, `AuthInterceptor`, `CookieHeadersInterceptor`, `HttpLoggingInterceptor`, and `MockInterceptor`.
+One Hilt `@Module` per feature in `di/`, all installed in `SingletonComponent`. `NetworkModule` wires up OkHttp with interceptors: `GeneralHeadersInterceptor`, `AuthInterceptor`, `CookieHeadersInterceptor`, `HttpLoggingInterceptor` (level BASIC), and `MockInterceptor`.
 
 ### UI Layer
 MVI-like pattern: each screen has a `UiState` data class, a `ViewModel` interface, and a `ViewModelImpl` (`@HiltViewModel`) that holds a `MutableStateFlow<UiState>`. Screens observe with `collectAsState()`.
