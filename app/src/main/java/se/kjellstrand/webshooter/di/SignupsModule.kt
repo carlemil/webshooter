@@ -1,11 +1,13 @@
 package se.kjellstrand.webshooter.di
 
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import se.kjellstrand.webshooter.data.signups.SignupsRepository
+import se.kjellstrand.webshooter.data.signups.local.SignupsDao
 import se.kjellstrand.webshooter.data.signups.remote.SignupsRemoteDataSource
 import javax.inject.Singleton
 
@@ -22,8 +24,10 @@ class SignupsModule {
     @Provides
     @Singleton
     fun providesSignupsRepository(
-        remoteDataSource: SignupsRemoteDataSource
+        remoteDataSource: SignupsRemoteDataSource,
+        dao: SignupsDao,
+        gson: Gson
     ): SignupsRepository {
-        return SignupsRepository(remoteDataSource)
+        return SignupsRepository(remoteDataSource, dao, gson)
     }
 }
