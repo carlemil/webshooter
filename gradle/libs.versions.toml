@@ -17,6 +17,7 @@ mockwebserver = "4.12.0"
 navigationCompose = "2.8.1"
 okhttp = "4.12.0"
 retrofit = "2.9.0"
+room = "2.6.1"
 kotlin = "2.0.20"
 ksp = "2.0.20-1.0.25"
 securityCryptoVersion = "1.1.0-alpha06"
@@ -52,6 +53,9 @@ logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", ver
 mockwebserver = { module = "com.squareup.okhttp3:mockwebserver", version.ref = "mockwebserver" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCryptoVersion" }
 androidx-security-crypto-ktx = { module = "androidx.security:security-crypto-ktx", version.ref = "securityCryptoVersion" }
 

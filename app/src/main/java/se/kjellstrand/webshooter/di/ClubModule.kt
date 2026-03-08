@@ -1,11 +1,13 @@
 package se.kjellstrand.webshooter.di
 
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import se.kjellstrand.webshooter.data.club.ClubRepository
+import se.kjellstrand.webshooter.data.club.local.ClubDao
 import se.kjellstrand.webshooter.data.club.remote.ClubRemoteDataSource
 import javax.inject.Singleton
 
@@ -21,7 +23,11 @@ class ClubModule {
 
     @Provides
     @Singleton
-    fun providesClubRepository(remoteDataSource: ClubRemoteDataSource): ClubRepository {
-        return ClubRepository(remoteDataSource)
+    fun providesClubRepository(
+        remoteDataSource: ClubRemoteDataSource,
+        dao: ClubDao,
+        gson: Gson
+    ): ClubRepository {
+        return ClubRepository(remoteDataSource, dao, gson)
     }
 }

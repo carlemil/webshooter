@@ -1,11 +1,13 @@
 package se.kjellstrand.webshooter.di
 
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import se.kjellstrand.webshooter.data.competitionsignups.CompetitionSignupsRepository
+import se.kjellstrand.webshooter.data.competitionsignups.local.CompetitionSignupsDao
 import se.kjellstrand.webshooter.data.competitionsignups.remote.CompetitionSignupsRemoteDataSource
 import javax.inject.Singleton
 
@@ -22,8 +24,10 @@ class CompetitionSignupsModule {
     @Provides
     @Singleton
     fun providesCompetitionSignupsRepository(
-        remoteDataSource: CompetitionSignupsRemoteDataSource
+        remoteDataSource: CompetitionSignupsRemoteDataSource,
+        dao: CompetitionSignupsDao,
+        gson: Gson
     ): CompetitionSignupsRepository {
-        return CompetitionSignupsRepository(remoteDataSource)
+        return CompetitionSignupsRepository(remoteDataSource, dao, gson)
     }
 }

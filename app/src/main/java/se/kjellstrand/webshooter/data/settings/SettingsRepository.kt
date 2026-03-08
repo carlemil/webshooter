@@ -1,38 +1,60 @@
 package se.kjellstrand.webshooter.data.settings
 
+import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okio.IOException
 import retrofit2.HttpException
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
+import se.kjellstrand.webshooter.data.settings.local.UserProfileDao
+import se.kjellstrand.webshooter.data.settings.local.toDomain
+import se.kjellstrand.webshooter.data.settings.local.toEntity
 import se.kjellstrand.webshooter.data.settings.remote.Club
 import se.kjellstrand.webshooter.data.settings.remote.SettingsRemoteDataSource
+import se.kjellstrand.webshooter.data.settings.remote.UpdatePasswordRequest
 import se.kjellstrand.webshooter.data.settings.remote.UserProfile
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class SettingsRepository @Inject constructor(
-    private val remoteDataSource: SettingsRemoteDataSource
+    private val remoteDataSource: SettingsRemoteDataSource,
+    private val dao: UserProfileDao,
+    private val gson: Gson
 ) {
 
     fun getUserProfile(): Flow<Resource<UserProfile, UserError>> = flow {
         emit(Resource.Loading(true))
+
+        var cached = try {
+            dao.get()
+        } catch (e: Exception) {
+            null
+        }
+        try {
+            if (cached != null) {
+                emit(Resource.Success(cached.toDomain(gson)))
+            }
+        } catch (e: Exception) {
+            cached = null
+        }
+
         try {
             val response = remoteDataSource.getUserProfile()
             val profile = response.body()?.user
             if (response.isSuccessful && profile != null) {
+                dao.insert(profile.toEntity(gson))
                 emit(Resource.Success(profile))
             } else {
-                emit(Resource.Error(UserError.HttpError))
+                if (cached == null) emit(Resource.Error(UserError.HttpError))
             }
         } catch (e: IOException) {
-            emit(Resource.Error(UserError.IOError))
+            if (cached == null) emit(Resource.Error(UserError.IOError))
         } catch (e: HttpException) {
-            emit(Resource.Error(UserError.HttpError))
+            if (cached == null) emit(Resource.Error(UserError.HttpError))
         } catch (e: Exception) {
-            emit(Resource.Error(UserError.UnknownError))
+            if (cached == null) emit(Resource.Error(UserError.UnknownError))
         }
         emit(Resource.Loading(false))
     }
@@ -84,6 +106,7 @@ class SettingsRepository @Inject constructor(
             val response = remoteDataSource.updateUserProfile(fields)
             val updated = response.body()?.user
             if (response.isSuccessful && updated != null) {
+                dao.insert(updated.toEntity(gson))
                 emit(Resource.Success(updated))
             } else {
                 emit(Resource.Error(UserError.HttpError))
