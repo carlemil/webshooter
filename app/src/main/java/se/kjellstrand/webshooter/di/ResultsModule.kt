@@ -1,11 +1,13 @@
 package se.kjellstrand.webshooter.di
 
+import com.google.gson.Gson
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import se.kjellstrand.webshooter.data.results.ResultsRepository
+import se.kjellstrand.webshooter.data.results.local.ResultsDao
 import se.kjellstrand.webshooter.data.results.remote.ResultsRemoteDataSource
 import javax.inject.Singleton
 
@@ -21,7 +23,11 @@ class ResultsModule {
 
     @Provides
     @Singleton
-    fun providesResultsRepository(resultsRemoteDataSource: ResultsRemoteDataSource) : ResultsRepository {
-        return ResultsRepository(resultsRemoteDataSource)
+    fun providesResultsRepository(
+        resultsRemoteDataSource: ResultsRemoteDataSource,
+        dao: ResultsDao,
+        gson: Gson
+    ) : ResultsRepository {
+        return ResultsRepository(resultsRemoteDataSource, dao, gson)
     }
 }
