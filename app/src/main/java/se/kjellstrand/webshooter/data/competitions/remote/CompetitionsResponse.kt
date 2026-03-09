@@ -93,28 +93,28 @@ data class Datum (
     @SerializedName("teams_registration_fee")
     val teamsRegistrationFee: Long,
 
-    val website: String,
+    val website: String? = null,
 
     @SerializedName("contact_name")
-    val contactName: String,
+    val contactName: String? = null,
 
     @SerializedName("contact_venue")
-    val contactVenue: String,
+    val contactVenue: String? = null,
 
     @SerializedName("contact_city")
-    val contactCity: String,
+    val contactCity: String? = null,
 
     val lat: Double,
     val lng: Double,
 
     @SerializedName("contact_email")
-    val contactEmail: String,
+    val contactEmail: String? = null,
 
     @SerializedName("contact_telephone")
-    val contactTelephone: String,
+    val contactTelephone: String? = null,
 
     @SerializedName("google_maps")
-    val googleMaps: String,
+    val googleMaps: String? = null,
 
     val description: String,
 
