@@ -16,6 +16,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -124,6 +125,24 @@ private fun ProfileTab(uiState: SettingsUiState, viewModel: SettingsViewModel) {
 
 @Composable
 private fun ViewProfileContent(profile: UserProfile?, onEditClick: () -> Unit, onLogoutClick: () -> Unit) {
+    var showLogoutDialog by remember { mutableStateOf(false) }
+
+    if (showLogoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            text = { Text("Är du säker på att du vill logga ut?") },
+            confirmButton = {
+                Button(
+                    onClick = { showLogoutDialog = false; onLogoutClick() },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+                ) { Text("Ja") }
+            },
+            dismissButton = {
+                OutlinedButton(onClick = { showLogoutDialog = false }) { Text("Nej") }
+            }
+        )
+    }
+
     if (profile == null) {
         Text(stringResource(R.string.settings_no_profile_data))
         return
@@ -153,7 +172,7 @@ private fun ViewProfileContent(profile: UserProfile?, onEditClick: () -> Unit, o
 
     Spacer(modifier = Modifier.height(24.dp))
     Button(
-        onClick = onLogoutClick,
+        onClick = { showLogoutDialog = true },
         modifier = Modifier.fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
     ) {
