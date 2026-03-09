@@ -1,5 +1,6 @@
 package se.kjellstrand.webshooter.ui.common
 
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -14,6 +15,7 @@ fun ScreenTopBar(
 ) {
     TopAppBar(
         title = { Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
-        navigationIcon = navigationIcon
+        navigationIcon = navigationIcon,
+        windowInsets = WindowInsets(0)
     )
 }
