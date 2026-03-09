@@ -14,13 +14,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,6 +33,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -53,6 +62,16 @@ fun CompetitionPatrolsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isFalt = uiState.competitionTypeId in setOf(2, 3, 9, 10)
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+
+    val currentUserPatrolIndices = remember(uiState.patrols, uiState.currentUserId) {
+        val userId = uiState.currentUserId ?: return@remember emptyList()
+        uiState.patrols.mapIndexedNotNull { index, patrol ->
+            if (patrol.signups.any { it.user.userId == userId }) index else null
+        }
+    }
+    var occurrenceIdx by remember(currentUserPatrolIndices) { mutableStateOf(-1) }
 
     Scaffold(
         topBar = {
@@ -64,6 +83,17 @@ fun CompetitionPatrolsScreen(
                     }
                 }
             )
+        },
+        floatingActionButton = {
+            if (currentUserPatrolIndices.isNotEmpty()) {
+                FloatingActionButton(onClick = {
+                    val nextIdx = (occurrenceIdx + 1) % currentUserPatrolIndices.size
+                    occurrenceIdx = nextIdx
+                    coroutineScope.launch { listState.animateScrollToItem(currentUserPatrolIndices[nextIdx]) }
+                }) {
+                    Icon(Icons.Default.FastForward, contentDescription = "Fast forward to current user")
+                }
+            }
         }
     ) { paddingValues ->
         Box(
@@ -85,6 +115,7 @@ fun CompetitionPatrolsScreen(
 
                 else -> {
                     LazyColumn(
+                        state = listState,
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(
                             start = 16.dp, end = 16.dp, top = 8.dp, bottom = 80.dp

@@ -10,11 +10,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.competitionsignups.CompetitionSignupsRepository
+import se.kjellstrand.webshooter.data.settings.SettingsRepository
 import javax.inject.Inject
 
 @HiltViewModel
 class CompetitionSignupsViewModelImpl @Inject constructor(
     private val repository: CompetitionSignupsRepository,
+    private val settingsRepository: SettingsRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel(), CompetitionSignupsViewModel {
 
@@ -27,6 +29,20 @@ class CompetitionSignupsViewModelImpl @Inject constructor(
 
     init {
         loadPage(1)
+        loadCurrentUser()
+    }
+
+    private fun loadCurrentUser() {
+        viewModelScope.launch {
+            settingsRepository.getUserProfile().collect { resource ->
+                if (resource is Resource.Success) {
+                    val profile = resource.data
+                    _uiState.value = _uiState.value.copy(
+                        currentUserFullName = "${profile.name} ${profile.lastname}"
+                    )
+                }
+            }
+        }
     }
 
     override fun loadNextPage() {

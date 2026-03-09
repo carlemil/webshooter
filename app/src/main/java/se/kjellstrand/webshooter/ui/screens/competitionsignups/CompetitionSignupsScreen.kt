@@ -13,9 +13,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -39,8 +41,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -61,6 +65,18 @@ fun CompetitionSignupsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var isFilterSheetOpen by remember { mutableStateOf(false) }
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+
+    val displayed = uiState.filteredAndSorted
+    val grouped = displayed.groupBy { it.club.name }.entries.sortedBy { it.key }
+    val currentUserClubIndices = remember(grouped, uiState.currentUserFullName) {
+        val name = uiState.currentUserFullName ?: return@remember emptyList()
+        grouped.mapIndexedNotNull { index, (_, entries) ->
+            if (entries.any { "${it.user.name} ${it.user.lastname}" == name }) index else null
+        }
+    }
+    var occurrenceIdx by remember(currentUserClubIndices) { mutableStateOf(-1) }
 
     Scaffold(
         topBar = {
@@ -77,14 +93,25 @@ fun CompetitionSignupsScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { isFilterSheetOpen = true }) {
-                Icon(Icons.Default.FilterList, contentDescription = "Filter och sortering")
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.End
+            ) {
+                if (currentUserClubIndices.isNotEmpty()) {
+                    FloatingActionButton(onClick = {
+                        val nextIdx = (occurrenceIdx + 1) % currentUserClubIndices.size
+                        occurrenceIdx = nextIdx
+                        coroutineScope.launch { listState.animateScrollToItem(currentUserClubIndices[nextIdx]) }
+                    }) {
+                        Icon(Icons.Default.FastForward, contentDescription = "Fast forward to current user")
+                    }
+                }
+                FloatingActionButton(onClick = { isFilterSheetOpen = true }) {
+                    Icon(Icons.Default.FilterList, contentDescription = "Filter och sortering")
+                }
             }
         }
     ) { paddingValues ->
-        val displayed = uiState.filteredAndSorted
-        val grouped = displayed.groupBy { it.club.name }.entries.sortedBy { it.key }
-
         if (!uiState.isLoading && displayed.isEmpty()) {
             Box(
                 modifier = Modifier
@@ -96,6 +123,7 @@ fun CompetitionSignupsScreen(
             }
         } else {
             LazyColumn(
+                state = listState,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues),

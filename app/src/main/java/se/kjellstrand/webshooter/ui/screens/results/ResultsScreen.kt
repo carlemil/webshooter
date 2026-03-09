@@ -15,10 +15,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.RadioButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
@@ -39,7 +42,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -67,6 +72,34 @@ fun CompetitionResultsScreen(
     val resultsUiState by resultsViewModel.uiState.collectAsState()
     var isFilterBottomSheetOpen by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+
+    val currentUserIndices = remember(
+        resultsUiState.filterResults,
+        resultsUiState.groupedResults,
+        resultsUiState.groupingMode,
+        resultsUiState.loggedInUserId
+    ) {
+        val userId = resultsUiState.loggedInUserId
+        if (userId == -1L) return@remember emptyList()
+        if (resultsUiState.groupingMode == GroupingMode.NONE) {
+            resultsUiState.filterResults.mapIndexedNotNull { i, result ->
+                if (result.signup.user.userID == userId) i + 1 else null
+            }
+        } else {
+            val indices = mutableListOf<Int>()
+            var base = 0
+            resultsUiState.groupedResults.forEach { group ->
+                group.items.forEachIndexed { i, result ->
+                    if (result.signup.user.userID == userId) indices.add(base + 2 + i)
+                }
+                base += 2 + group.items.size
+            }
+            indices
+        }
+    }
+    var occurrenceIdx by remember(currentUserIndices) { mutableStateOf(-1) }
 
     LaunchedEffect(Unit) {
         resultsViewModel.resultsEvent.collect { event ->
@@ -95,8 +128,22 @@ fun CompetitionResultsScreen(
             )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { isFilterBottomSheetOpen = true }) {
-                Icon(imageVector = Icons.Default.FilterList, contentDescription = "Open Filters")
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.End
+            ) {
+                if (currentUserIndices.isNotEmpty()) {
+                    FloatingActionButton(onClick = {
+                        val nextIdx = (occurrenceIdx + 1) % currentUserIndices.size
+                        occurrenceIdx = nextIdx
+                        coroutineScope.launch { listState.animateScrollToItem(currentUserIndices[nextIdx]) }
+                    }) {
+                        Icon(Icons.Default.FastForward, contentDescription = "Fast forward to current user")
+                    }
+                }
+                FloatingActionButton(onClick = { isFilterBottomSheetOpen = true }) {
+                    Icon(imageVector = Icons.Default.FilterList, contentDescription = "Open Filters")
+                }
             }
         }
     ) { paddingValues ->
@@ -111,7 +158,8 @@ fun CompetitionResultsScreen(
                 resultsUiState,
                 resultsViewModel.competitionId,
                 navController,
-                resultsUiState.resultsType
+                resultsUiState.resultsType,
+                listState
             )
         }
     }
@@ -137,10 +185,12 @@ fun ResultsList(
     resultsUiState: ResultsUiState,
     competitionId: Int,
     navController: NavController,
-    resultsType: ResultsType = ResultsType.FIELD
+    resultsType: ResultsType = ResultsType.FIELD,
+    listState: LazyListState = rememberLazyListState()
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
+            state = listState,
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
                 top = 16.dp,
