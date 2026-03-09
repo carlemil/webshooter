@@ -311,10 +311,12 @@ fun CompetitionItem(
                     }
                     IconButton(
                         onClick = {
-                            val uri = if (competition.googleMaps.isNotBlank()) {
-                                competition.googleMaps.toUri()
-                            } else {
-                                "geo:${competition.lat},${competition.lng}?q=${competition.lat},${competition.lng}".toUri()
+                            val uri = when {
+                                competition.lat != 0.0 || competition.lng != 0.0 ->
+                                    "geo:${competition.lat},${competition.lng}?q=${competition.lat},${competition.lng}".toUri()
+                                competition.googleMaps.isNotBlank() ->
+                                    competition.googleMaps.replace("/maps/embed", "/maps").toUri()
+                                else -> "geo:0,0".toUri()
                             }
                             context.startActivity(Intent(Intent.ACTION_VIEW, uri))
                         },
