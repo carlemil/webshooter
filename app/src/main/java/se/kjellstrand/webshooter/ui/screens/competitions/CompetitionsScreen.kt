@@ -1,7 +1,6 @@
 package se.kjellstrand.webshooter.ui.screens.competitions
 
 import android.content.Intent
-import androidx.core.net.toUri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -46,7 +45,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import java.time.LocalDate
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -55,6 +53,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -64,6 +63,7 @@ import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadges
 import se.kjellstrand.webshooter.ui.mock.CompetitionsViewModelMock
 import se.kjellstrand.webshooter.ui.navigation.Screen
+import java.time.LocalDate
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -92,7 +92,10 @@ fun CompetitionsScreen(
 
     // State-based trigger: auto-load more pages when filtered results are sparse,
     // so filters don't stall pagination even when the user can't scroll
-    LaunchedEffect(competitionsState.filteredData.size, competitionsState.competitions?.data?.size) {
+    LaunchedEffect(
+        competitionsState.filteredData.size,
+        competitionsState.competitions?.data?.size
+    ) {
         val comps = competitionsState.competitions ?: return@LaunchedEffect
         if (!competitionsState.isLoading &&
             competitionsState.filteredData.size < 5 &&
@@ -235,8 +238,9 @@ fun CompetitionsFilterBottomSheet(
                     FilterChip(
                         selected = isSelected,
                         onClick = {
-                            val updated = if (isSelected) selectedCompetitionTypeIds - competitionType.id
-                            else selectedCompetitionTypeIds + competitionType.id
+                            val updated =
+                                if (isSelected) selectedCompetitionTypeIds - competitionType.id
+                                else selectedCompetitionTypeIds + competitionType.id
                             onCompetitionTypesChange(updated)
                         },
                         label = { Text(competitionType.name) }
@@ -268,7 +272,8 @@ fun CompetitionItem(
 ) {
     var isExpanded by remember { mutableStateOf(false) }
     val context = LocalContext.current
-    val hasLocation = competition.lat != 0.0 || competition.lng != 0.0 || competition.googleMaps.isNotBlank()
+    val hasLocation =
+        competition.lat != 0.0 || competition.lng != 0.0 || !competition.googleMaps.isNullOrBlank()
 
     Card(
         shape = RoundedCornerShape(12.dp),
@@ -314,8 +319,10 @@ fun CompetitionItem(
                             val uri = when {
                                 competition.lat != 0.0 || competition.lng != 0.0 ->
                                     "geo:${competition.lat},${competition.lng}?q=${competition.lat},${competition.lng}".toUri()
-                                competition.googleMaps.isNotBlank() ->
-                                    competition.googleMaps.replace("/maps/embed", "/maps").toUri()
+
+                                !competition.googleMaps.isNullOrBlank() ->
+                                    competition.googleMaps!!.replace("/maps/embed", "/maps").toUri()
+
                                 else -> "geo:0,0".toUri()
                             }
                             context.startActivity(Intent(Intent.ACTION_VIEW, uri))
@@ -343,7 +350,9 @@ fun CompetitionItem(
 
                     val buttonContentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp)
                     val resultsEnabled = competition.status == "completed" ||
-                        runCatching { !LocalDate.parse(competition.date).isAfter(LocalDate.now()) }.getOrDefault(false)
+                            runCatching {
+                                !LocalDate.parse(competition.date).isAfter(LocalDate.now())
+                            }.getOrDefault(false)
                     Button(
                         modifier = Modifier.weight(1f),
                         enabled = resultsEnabled,
@@ -412,10 +421,9 @@ fun CompetitionItem(
 
             AnimatedVisibility(visible = isExpanded) {
                 Column(modifier = Modifier.fillMaxWidth()) {
-                    HorizontalDivider()
                     CompetitionDetail(
                         competition = competition,
-                        modifier = Modifier.padding(12.dp)
+                        modifier = Modifier.padding(8.dp)
                     )
                 }
             }
@@ -428,12 +436,6 @@ fun CompetitionDetail(competition: Datum, modifier: Modifier = Modifier) {
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
-        Text(
-            text = competition.name,
-            style = MaterialTheme.typography.titleLarge
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-
         Card(
             shape = RoundedCornerShape(12.dp),
             colors = CardDefaults.cardColors(
@@ -443,48 +445,42 @@ fun CompetitionDetail(competition: Datum, modifier: Modifier = Modifier) {
             modifier = Modifier.fillMaxWidth()
         ) {
             Column(modifier = Modifier.padding(12.dp)) {
+                Text(
+                    text = stringResource(R.string.competitions_information),
+                    style = MaterialTheme.typography.titleSmall
+                )
                 DetailRow(
                     label = stringResource(R.string.competitions_contact_name, ""),
-                    value = competition.contactName
+                    value = competition.contactName ?: ""
                 )
-                Spacer(modifier = Modifier.height(8.dp))
                 DetailRow(
                     label = stringResource(R.string.competitions_date, ""),
                     value = competition.date
                 )
-                Spacer(modifier = Modifier.height(8.dp))
                 DetailRow(
                     label = stringResource(R.string.competitions_status, ""),
                     value = competition.statusHuman
                 )
-                Spacer(modifier = Modifier.height(8.dp))
                 DetailRow(
                     label = stringResource(R.string.competitions_open_for_team_signup, ""),
                     value = competition.signupsOpeningDate
                 )
-                Spacer(modifier = Modifier.height(8.dp))
                 DetailRow(
                     label = stringResource(R.string.competitions_last_signup_date, ""),
                     value = competition.signupsClosingDate
                 )
-                Spacer(modifier = Modifier.height(8.dp))
                 DetailRow(
                     label = stringResource(R.string.competitions_late_signup, ""),
                     value = competition.allowSignupsAfterClosingDateHuman
                 )
-                Spacer(modifier = Modifier.height(8.dp))
                 DetailRow(
                     label = stringResource(R.string.competitions_team_signup, ""),
-                    value = if (competition.allowTeams == 1L) stringResource(R.string.competitions_yes) else stringResource(
-                        R.string.competitions_no
-                    )
+                    value = if (competition.allowTeams == 1L) stringResource(R.string.competitions_yes) else stringResource(R.string.competitions_no)
                 )
-                Spacer(modifier = Modifier.height(8.dp))
                 DetailRow(
                     label = stringResource(R.string.competitions_competition_type, ""),
                     value = competition.competitionType.name
                 )
-                Spacer(modifier = Modifier.height(8.dp))
                 DetailRow(
                     label = stringResource(R.string.competitions_result_calculation, ""),
                     value = competition.resultsTypeHuman
@@ -502,17 +498,61 @@ fun CompetitionDetail(competition: Datum, modifier: Modifier = Modifier) {
             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
             modifier = Modifier.fillMaxWidth()
         ) {
-            Spacer(modifier = Modifier.height(4.dp))
-            Column(modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 4.dp)) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                Text(
+                    text = stringResource(R.string.competitions_contact_information),
+                    style = MaterialTheme.typography.titleSmall
+                )
+                DetailRow(
+                    label = stringResource(R.string.competitions_arranger),
+                    value = competition.club.name
+                )
+                DetailRow(
+                    label = stringResource(R.string.competitions_venue),
+                    value = competition.contactVenue ?: ""
+                )
+                DetailRow(
+                    label = stringResource(R.string.competitions_city),
+                    value = competition.contactCity ?: ""
+                )
+                DetailRow(
+                    label = stringResource(R.string.competitions_contact_person),
+                    value = competition.contactName ?: ""
+                )
+                DetailRow(
+                    label = stringResource(R.string.competitions_phone),
+                    value = competition.contactTelephone ?: ""
+                )
+                DetailRow(
+                    label = stringResource(R.string.competitions_email),
+                    value = competition.contactEmail ?: ""
+                )
+                DetailRow(
+                    label = stringResource(R.string.competitions_website),
+                    value = competition.website ?: ""
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Card(
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+            ),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(12.dp)) {
                 Text(
                     text = stringResource(R.string.competitions_description),
-                    style = MaterialTheme.typography.bodyMedium
-
+                    style = MaterialTheme.typography.titleSmall
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
                     text = competition.description,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.bodySmall
                 )
             }
         }
@@ -521,16 +561,25 @@ fun CompetitionDetail(competition: Datum, modifier: Modifier = Modifier) {
 
 @Composable
 private fun DetailRow(label: String, value: String) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 6.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Text(
             text = label,
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.weight(2f)
         )
         Text(
             text = value,
-            style = MaterialTheme.typography.bodyMedium
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.weight(3f)
         )
-        HorizontalDivider(modifier = Modifier.padding(top = 8.dp))
     }
 }
 
