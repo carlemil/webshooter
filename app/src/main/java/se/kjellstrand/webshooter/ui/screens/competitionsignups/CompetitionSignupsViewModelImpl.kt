@@ -61,7 +61,8 @@ class CompetitionSignupsViewModelImpl @Inject constructor(
                     }
                     is Resource.Success -> {
                         val paged = resource.data.signups
-                        val accumulated = _uiState.value.allSignups + paged.data
+                        val accumulated = if (paged.currentPage == 1) paged.data
+                        else _uiState.value.allSignups + paged.data
                         _uiState.value = _uiState.value.copy(
                             allSignups = accumulated,
                             currentPage = paged.currentPage,
