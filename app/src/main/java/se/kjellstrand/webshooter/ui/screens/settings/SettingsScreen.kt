@@ -130,15 +130,14 @@ private fun ViewProfileContent(profile: UserProfile?, onEditClick: () -> Unit, o
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
-            text = { Text("Är du säker på att du vill logga ut?") },
+            text = { Text(stringResource(R.string.logga_out_confirm)) },
             confirmButton = {
                 Button(
                     onClick = { showLogoutDialog = false; onLogoutClick() },
-                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
-                ) { Text("Ja") }
+                ) { Text(stringResource(R.string.yes)) }
             },
             dismissButton = {
-                OutlinedButton(onClick = { showLogoutDialog = false }) { Text("Nej") }
+                OutlinedButton(onClick = { showLogoutDialog = false }) { Text(stringResource(R.string.no)) }
             }
         )
     }
