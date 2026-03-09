@@ -174,7 +174,7 @@ private fun ViewProfileContent(profile: UserProfile?, onEditClick: () -> Unit, o
     Button(
         onClick = { showLogoutDialog = true },
         modifier = Modifier.fillMaxWidth(),
-        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)
+        colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.secondary)
     ) {
         Text(stringResource(R.string.settings_logout))
     }
