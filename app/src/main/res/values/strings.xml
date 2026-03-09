@@ -54,7 +54,16 @@
     <!-- ### COMPETITIONS ### -->
     <string name="competitions_collapse">Komprimera</string>
     <string name="competitions_competition_type">Tävlingstyp: %1$s</string>
+    <string name="competitions_information">Information</string>
     <string name="competitions_contact_name">Kontakt person: %1$s</string>
+    <string name="competitions_arranger">Arrangör</string>
+    <string name="competitions_venue">Tävlingsplats</string>
+    <string name="competitions_city">Ort</string>
+    <string name="competitions_contact_person">Kontaktperson</string>
+    <string name="competitions_phone">Telefonnummer</string>
+    <string name="competitions_email">E-postadress</string>
+    <string name="competitions_website">Webbplats</string>
+    <string name="competitions_contact_information">Kontaktinformation</string>
     <string name="competitions_date">Datum: %1$s</string>
     <string name="competitions_description">Beskrivning:</string>
     <string name="competitions_expand">Expandera</string>
