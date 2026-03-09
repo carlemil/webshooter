@@ -46,6 +46,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import java.time.LocalDate
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -339,9 +340,11 @@ fun CompetitionItem(
                         RoundedCornerShape(integerResource(R.integer.rounded_corner_shape_percent))
 
                     val buttonContentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp)
+                    val resultsEnabled = competition.status == "completed" ||
+                        runCatching { !LocalDate.parse(competition.date).isAfter(LocalDate.now()) }.getOrDefault(false)
                     Button(
                         modifier = Modifier.weight(1f),
-                        enabled = competition.status == "completed",
+                        enabled = resultsEnabled,
                         onClick = onResultsClick,
                         shape = shape,
                         contentPadding = buttonContentPadding
