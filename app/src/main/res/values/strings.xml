@@ -107,6 +107,7 @@
     <string name="settings_shooting_card_no">Skyttekortsnr</string>
     <string name="settings_shooting_card_number_label">Skyttekortsnummer</string>
     <string name="settings_update_password">Uppdatera lösenord</string>
+    <string name="logga_out_confirm">Är du säker på att du vill logga ut?</string>
 
     <!-- ### SHOOTER_RESULT ### -->
     <string name="shooter_result_serie">Serie</string>
@@ -177,5 +178,7 @@
     <string name="signups_start_time">Start tid: %1$s</string>
     <string name="signups_team">Lag: %1$s</string>
     <string name="signups_weapon_class">Klass: %1$s</string>
+    <string name="yes">Ja</string>
+    <string name="no">Nej</string>
 
 </resources>
