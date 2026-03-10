@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.results.remote.Result
+import se.kjellstrand.webshooter.ui.theme.appColors
 
 object ResultsUiComponents {
 
@@ -102,7 +103,9 @@ object ResultsUiComponents {
         val itemStyle =
             if (isCurrentUser) MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
             else MaterialTheme.typography.bodySmall
-        val backgroundColor = if (index % 2 == 0) {
+        val backgroundColor = if (isCurrentUser) {
+            MaterialTheme.appColors.currentUserHighlight
+        } else if (index % 2 == 0) {
             MaterialTheme.colorScheme.surface
         } else {
             MaterialTheme.colorScheme.surfaceContainerLow
