@@ -1,5 +1,6 @@
 package se.kjellstrand.webshooter.ui.screens.competitionsignups
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,6 +27,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -56,6 +58,7 @@ import se.kjellstrand.webshooter.data.competitionsignups.remote.CompetitionSignu
 import se.kjellstrand.webshooter.ui.common.ScreenTopBar
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
+import se.kjellstrand.webshooter.ui.theme.appColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -97,14 +100,19 @@ fun CompetitionSignupsScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.End
             ) {
-                if (currentUserClubIndices.isNotEmpty()) {
-                    FloatingActionButton(onClick = {
-                        val nextIdx = (occurrenceIdx + 1) % currentUserClubIndices.size
-                        occurrenceIdx = nextIdx
-                        coroutineScope.launch { listState.animateScrollToItem(currentUserClubIndices[nextIdx]) }
-                    }) {
-                        Icon(Icons.Default.FastForward, contentDescription = "Fast forward to current user")
-                    }
+                val ffEnabled = currentUserClubIndices.isNotEmpty()
+                SmallFloatingActionButton(
+                    onClick = {
+                        if (ffEnabled) {
+                            val nextIdx = (occurrenceIdx + 1) % currentUserClubIndices.size
+                            occurrenceIdx = nextIdx
+                            coroutineScope.launch { listState.animateScrollToItem(currentUserClubIndices[nextIdx]) }
+                        }
+                    },
+                    containerColor = if (ffEnabled) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                    contentColor = if (ffEnabled) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+                ) {
+                    Icon(Icons.Default.FastForward, contentDescription = "Fast forward to current user")
                 }
                 FloatingActionButton(onClick = { isFilterSheetOpen = true }) {
                     Icon(Icons.Default.FilterList, contentDescription = "Filter och sortering")
@@ -134,7 +142,7 @@ fun CompetitionSignupsScreen(
             ) {
                 grouped.forEach { (clubName, entries) ->
                     item(key = "club_$clubName") {
-                        ClubCard(clubName = clubName, entries = entries)
+                        ClubCard(clubName = clubName, entries = entries, currentUserFullName = uiState.currentUserFullName)
                     }
                 }
                 if (uiState.isLoading) {
@@ -165,7 +173,7 @@ fun CompetitionSignupsScreen(
 }
 
 @Composable
-private fun ClubCard(clubName: String, entries: List<CompetitionSignupEntry>) {
+private fun ClubCard(clubName: String, entries: List<CompetitionSignupEntry>, currentUserFullName: String?) {
     Card(
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(
@@ -196,8 +204,8 @@ private fun ClubCard(clubName: String, entries: List<CompetitionSignupEntry>) {
             val byUser = entries
                 .groupBy { "${it.user.name} ${it.user.lastname}" }
                 .entries.sortedBy { it.key }
-            byUser.forEach { (_, userEntries) ->
-                SignupRow(userEntries)
+            byUser.forEach { (userName, userEntries) ->
+                SignupRow(userEntries, isCurrentUser = userName == currentUserFullName)
                 HorizontalDivider()
             }
         }
@@ -330,11 +338,12 @@ private fun SignupsFilterSheet(
 }
 
 @Composable
-private fun SignupRow(entries: List<CompetitionSignupEntry>) {
+private fun SignupRow(entries: List<CompetitionSignupEntry>, isCurrentUser: Boolean = false) {
     val user = entries.first().user
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .then(if (isCurrentUser) Modifier.background(MaterialTheme.appColors.currentUserHighlight) else Modifier)
             .padding(vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
