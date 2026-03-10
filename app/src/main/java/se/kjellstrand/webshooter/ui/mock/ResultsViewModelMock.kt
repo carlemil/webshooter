@@ -16,6 +16,7 @@ import se.kjellstrand.webshooter.ui.screens.results.ResultsViewModelImpl
 class ResultsViewModelMock() : ViewModel(),
     ResultsViewModel {
     override val competitionId: Int = 0
+    override val competitionDate: String = ""
     override val uiState: StateFlow<ResultsUiState>
         get() {
             return MutableStateFlow(
@@ -42,4 +43,6 @@ class ResultsViewModelMock() : ViewModel(),
     override fun setGroupingMode(groupingMode: GroupingMode) {
         TODO("Not yet implemented")
     }
+
+    override fun refresh() {}
 }
