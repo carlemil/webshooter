@@ -24,6 +24,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -53,6 +54,7 @@ import se.kjellstrand.webshooter.data.competitionpatrols.remote.PatrolSignupEntr
 import se.kjellstrand.webshooter.ui.common.ScreenTopBar
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
+import se.kjellstrand.webshooter.ui.theme.appColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -85,14 +87,19 @@ fun CompetitionPatrolsScreen(
             )
         },
         floatingActionButton = {
-            if (currentUserPatrolIndices.isNotEmpty()) {
-                FloatingActionButton(onClick = {
-                    val nextIdx = (occurrenceIdx + 1) % currentUserPatrolIndices.size
-                    occurrenceIdx = nextIdx
-                    coroutineScope.launch { listState.animateScrollToItem(currentUserPatrolIndices[nextIdx]) }
-                }) {
-                    Icon(Icons.Default.FastForward, contentDescription = "Fast forward to current user")
-                }
+            val ffEnabled = currentUserPatrolIndices.isNotEmpty()
+            SmallFloatingActionButton(
+                onClick = {
+                    if (ffEnabled) {
+                        val nextIdx = (occurrenceIdx + 1) % currentUserPatrolIndices.size
+                        occurrenceIdx = nextIdx
+                        coroutineScope.launch { listState.animateScrollToItem(currentUserPatrolIndices[nextIdx]) }
+                    }
+                },
+                containerColor = if (ffEnabled) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                contentColor = if (ffEnabled) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+            ) {
+                Icon(Icons.Default.FastForward, contentDescription = "Fast forward to current user")
             }
         }
     ) { paddingValues ->
@@ -258,14 +265,13 @@ private fun SignupRow(signup: PatrolSignupEntry, isCurrentUser: Boolean) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .then(if (isCurrentUser) Modifier.background(MaterialTheme.colorScheme.primary) else Modifier)
+            .then(if (isCurrentUser) Modifier.background(MaterialTheme.appColors.currentUserHighlight) else Modifier)
             .padding(vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = "#${signup.lane}",
             style = MaterialTheme.typography.bodySmall,
-            color = if (isCurrentUser) MaterialTheme.colorScheme.onPrimary else Color.Unspecified,
             fontWeight = if (isCurrentUser) FontWeight.Bold else FontWeight.Normal,
             modifier = Modifier.weight(2f)
         )
@@ -273,13 +279,12 @@ private fun SignupRow(signup: PatrolSignupEntry, isCurrentUser: Boolean) {
             Text(
                 text = "${signup.user.name} ${signup.user.lastname}",
                 style = MaterialTheme.typography.bodySmall,
-                color = if (isCurrentUser) MaterialTheme.colorScheme.onPrimary else Color.Unspecified,
                 fontWeight = if (isCurrentUser) FontWeight.Bold else FontWeight.Normal
             )
             Text(
                 text = signup.club.name,
                 style = MaterialTheme.typography.bodySmall,
-                color = if (isCurrentUser) MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.7f) else Color.Unspecified
+                color = Color.Unspecified
             )
         }
         Box(modifier = Modifier.weight(4f), contentAlignment = Alignment.CenterEnd) {

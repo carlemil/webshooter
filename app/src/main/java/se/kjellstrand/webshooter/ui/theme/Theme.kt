@@ -8,7 +8,18 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.ReadOnlyComposable
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+
+data class AppColors(val currentUserHighlight: Color)
+
+val LocalAppColors = compositionLocalOf { AppColors(Color.Unspecified) }
+
+val MaterialTheme.appColors: AppColors
+    @Composable @ReadOnlyComposable get() = LocalAppColors.current
 
 private val DarkColorScheme = darkColorScheme(
     primary = primaryDark,
@@ -51,9 +62,15 @@ fun WebShooterTheme(
         else -> LightColorScheme
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
+    val appColors = AppColors(
+        currentUserHighlight = if (darkTheme) currentUserHighlightDark else currentUserHighlight
     )
+
+    CompositionLocalProvider(LocalAppColors provides appColors) {
+        MaterialTheme(
+            colorScheme = colorScheme,
+            typography = Typography,
+            content = content
+        )
+    }
 }

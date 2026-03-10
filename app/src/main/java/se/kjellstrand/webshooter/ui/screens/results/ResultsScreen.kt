@@ -27,6 +27,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -151,14 +152,19 @@ fun CompetitionResultsScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.End
             ) {
-                if (currentUserIndices.isNotEmpty()) {
-                    FloatingActionButton(onClick = {
-                        val nextIdx = (occurrenceIdx + 1) % currentUserIndices.size
-                        occurrenceIdx = nextIdx
-                        coroutineScope.launch { listState.animateScrollToItem(currentUserIndices[nextIdx]) }
-                    }) {
-                        Icon(Icons.Default.FastForward, contentDescription = "Fast forward to current user")
-                    }
+                val ffEnabled = currentUserIndices.isNotEmpty()
+                SmallFloatingActionButton(
+                    onClick = {
+                        if (ffEnabled) {
+                            val nextIdx = (occurrenceIdx + 1) % currentUserIndices.size
+                            occurrenceIdx = nextIdx
+                            coroutineScope.launch { listState.animateScrollToItem(currentUserIndices[nextIdx]) }
+                        }
+                    },
+                    containerColor = if (ffEnabled) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                    contentColor = if (ffEnabled) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+                ) {
+                    Icon(Icons.Default.FastForward, contentDescription = "Fast forward to current user")
                 }
                 FloatingActionButton(onClick = { isFilterBottomSheetOpen = true }) {
                     Icon(imageVector = Icons.Default.FilterList, contentDescription = "Open Filters")
