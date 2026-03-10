@@ -44,7 +44,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -74,6 +79,20 @@ fun CompetitionResultsScreen(
     val context = LocalContext.current
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
+    val lifecycleOwner = LocalLifecycleOwner.current
+    val isCompetitionToday = remember(resultsViewModel.competitionDate) {
+        runCatching { LocalDate.parse(resultsViewModel.competitionDate) == LocalDate.now() }.getOrDefault(false)
+    }
+
+    LaunchedEffect(lifecycleOwner, isCompetitionToday) {
+        if (!isCompetitionToday) return@LaunchedEffect
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            while (true) {
+                delay(5 * 60 * 1000L)
+                resultsViewModel.refresh()
+            }
+        }
+    }
 
     val currentUserIndices = remember(
         resultsUiState.filterResults,

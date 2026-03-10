@@ -34,6 +34,7 @@ open class ResultsViewModelImpl @Inject constructor(
 ) : ViewModel(), ResultsViewModel {
 
     override val competitionId: Int = checkNotNull(savedStateHandle["competitionId"])
+    override val competitionDate: String = savedStateHandle["competitionDate"] ?: ""
 
     private val resultsType: ResultsType = try {
         ResultsType.valueOf(checkNotNull(savedStateHandle["resultsType"]))
@@ -125,6 +126,10 @@ open class ResultsViewModelImpl @Inject constructor(
                 groupedResults = groupResults(filtered, resultsType, currentGroupingMode, context)
             )
         }
+    }
+
+    override fun refresh() {
+        getResults(competitionId)
     }
 
     override fun setGroupingMode(groupingMode: GroupingMode) {
