@@ -1,5 +1,6 @@
 package se.kjellstrand.webshooter.ui.screens.club
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,7 +15,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -24,8 +24,9 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import se.kjellstrand.webshooter.R
@@ -73,6 +74,7 @@ fun ClubScreen(viewModel: ClubViewModel = hiltViewModel()) {
 @Composable
 private fun ClubInformationTab(club: ClubData?) {
     if (club == null) return
+    val clipboardManager = LocalClipboardManager.current
 
     LazyColumn(
         modifier = Modifier
@@ -83,29 +85,44 @@ private fun ClubInformationTab(club: ClubData?) {
             Text(text = club.name, style = MaterialTheme.typography.headlineSmall)
             Spacer(modifier = Modifier.height(16.dp))
             InfoCard {
-                if (!club.clubsNr.isNullOrBlank()) InfoRow(stringResource(R.string.club_club_number), club.clubsNr)
-                if (!club.email.isNullOrBlank()) InfoRow(stringResource(R.string.email), club.email)
-                if (!club.phone.isNullOrBlank() && club.phone != "null") InfoRow(stringResource(R.string.phone), club.phone)
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            InfoCard {
+                if (!club.clubsNr.isNullOrBlank()) InfoRow(
+                    stringResource(R.string.club_club_number),
+                    club.clubsNr
+                )
+                if (!club.email.isNullOrBlank()) InfoRow(
+                    label = stringResource(R.string.email),
+                    value = club.email,
+                    onClick = { clipboardManager.setText(AnnotatedString(club.email)) }
+                )
+                if (!club.phone.isNullOrBlank() && club.phone != "null") InfoRow(
+                    stringResource(R.string.phone),
+                    club.phone
+                )
+
                 val street = club.addressStreet?.takeIf { it != "null" } ?: ""
                 val zip = club.addressZipcode?.takeIf { it != "null" } ?: ""
                 val city = club.addressCity?.takeIf { it != "null" } ?: ""
                 val country = club.addressCountry?.takeIf { it != "null" } ?: ""
-                if (street.isNotBlank()) InfoRow(stringResource(R.string.club_address), street)
-                if (zip.isNotBlank() || city.isNotBlank()) InfoRow("", "$zip  $city".trim())
+                if (street.isNotBlank()) InfoRow(
+                    stringResource(R.string.club_address),
+                    "$street, $zip, $city".trim()
+                )
                 if (country.isNotBlank()) InfoRow("", country)
-            }
-            val hasBankgiro = !club.bankgiro.isNullOrBlank() && club.bankgiro != "null"
-            val hasPostgiro = !club.postgiro.isNullOrBlank() && club.postgiro != "null"
-            val hasSwish = !club.swish.isNullOrBlank()
-            if (hasBankgiro || hasPostgiro || hasSwish) {
-                Spacer(modifier = Modifier.height(8.dp))
-                InfoCard {
-                    if (hasBankgiro) InfoRow(stringResource(R.string.club_bankgiro), club.bankgiro!!)
-                    if (hasPostgiro) InfoRow(stringResource(R.string.club_postgiro), club.postgiro!!)
+
+                val hasBankgiro = !club.bankgiro.isNullOrBlank() && club.bankgiro != "null"
+                val hasPostgiro = !club.postgiro.isNullOrBlank() && club.postgiro != "null"
+                val hasSwish = !club.swish.isNullOrBlank()
+                if (hasBankgiro || hasPostgiro || hasSwish) {
+                    if (hasBankgiro) InfoRow(
+                        stringResource(R.string.club_bankgiro),
+                        club.bankgiro!!
+                    )
+                    if (hasPostgiro) InfoRow(
+                        stringResource(R.string.club_postgiro),
+                        club.postgiro!!
+                    )
                     if (hasSwish) InfoRow(stringResource(R.string.club_swish), club.swish!!)
+
                 }
             }
         }
@@ -127,11 +144,17 @@ private fun InfoCard(content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun InfoRow(label: String, value: String) {
+private fun InfoRow(
+    label: String,
+    value: String,
+    onClick: (() -> Unit)? = null,
+    showDivider: Boolean = true
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
             if (label.isNotBlank()) {
@@ -154,7 +177,6 @@ private fun InfoRow(label: String, value: String) {
                 )
             }
         }
-        HorizontalDivider(modifier = Modifier.padding(top = 4.dp))
     }
 }
 
@@ -181,6 +203,7 @@ private fun ClubMemberListTab(members: List<ClubMember>) {
 
 @Composable
 private fun MemberItem(member: ClubMember) {
+    val clipboardManager = LocalClipboardManager.current
     Card(
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
@@ -196,7 +219,10 @@ private fun MemberItem(member: ClubMember) {
                 Text(
                     text = member.email,
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.clickable {
+                        clipboardManager.setText(AnnotatedString(member.email))
+                    }
                 )
             }
             if (!member.shootingCardNumber.isNullOrBlank()) {
