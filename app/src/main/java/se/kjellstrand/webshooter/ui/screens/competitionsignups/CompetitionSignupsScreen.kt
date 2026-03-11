@@ -33,7 +33,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -72,7 +71,7 @@ fun CompetitionSignupsScreen(
     val coroutineScope = rememberCoroutineScope()
 
     val displayed = uiState.filteredAndSorted
-    val grouped = displayed.groupBy { it.club.name }.entries.sortedBy { it.key }
+    val grouped = displayed.groupBy { it.club.name }.entries
     val currentUserClubIndices = remember(grouped, uiState.currentUserFullName) {
         val name = uiState.currentUserFullName ?: return@remember emptyList()
         grouped.mapIndexedNotNull { index, (_, entries) ->
@@ -115,7 +114,7 @@ fun CompetitionSignupsScreen(
                     Icon(Icons.Default.FastForward, contentDescription = "Fast forward to current user")
                 }
                 FloatingActionButton(onClick = { isFilterSheetOpen = true }) {
-                    Icon(Icons.Default.FilterList, contentDescription = "Filter och sortering")
+                    Icon(Icons.Default.FilterList, contentDescription = "Filter")
                 }
             }
         }
@@ -164,7 +163,6 @@ fun CompetitionSignupsScreen(
     if (isFilterSheetOpen) {
         SignupsFilterSheet(
             uiState = uiState,
-            onSetSortField = { viewModel.setSortField(it) },
             onSetFilterClub = { viewModel.setFilterClub(it) },
             onSetFilterWeaponGroup = { viewModel.setFilterWeaponGroup(it) },
             onDismiss = { isFilterSheetOpen = false }
@@ -203,7 +201,7 @@ private fun ClubCard(clubName: String, entries: List<CompetitionSignupEntry>, cu
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
             val byUser = entries
                 .groupBy { "${it.user.name} ${it.user.lastname}" }
-                .entries.sortedBy { it.key }
+                .entries
             byUser.forEach { (userName, userEntries) ->
                 SignupRow(userEntries, isCurrentUser = userName == currentUserFullName)
                 HorizontalDivider()
@@ -216,7 +214,6 @@ private fun ClubCard(clubName: String, entries: List<CompetitionSignupEntry>, cu
 @Composable
 private fun SignupsFilterSheet(
     uiState: CompetitionSignupsUiState,
-    onSetSortField: (SignupsListSortField) -> Unit,
     onSetFilterClub: (String?) -> Unit,
     onSetFilterWeaponGroup: (String?) -> Unit,
     onDismiss: () -> Unit
@@ -228,37 +225,6 @@ private fun SignupsFilterSheet(
         sheetState = sheetState
     ) {
         Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 32.dp)) {
-
-            // Sort section
-            Text(
-                stringResource(R.string.competition_signups_list_sort_label),
-                style = MaterialTheme.typography.titleMedium
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            SignupsListSortField.entries.forEach { field ->
-                val label = when (field) {
-                    SignupsListSortField.Name -> stringResource(R.string.competition_signups_list_sort_name)
-                    SignupsListSortField.Club -> stringResource(R.string.competition_signups_list_sort_club)
-                    SignupsListSortField.WeaponGroup -> stringResource(R.string.competition_signups_list_sort_group)
-                }
-                val directionLabel = if (uiState.sortField == field) {
-                    if (uiState.sortDirection == SortDirection.Ascending) " ↑" else " ↓"
-                } else ""
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    RadioButton(
-                        selected = uiState.sortField == field,
-                        onClick = { onSetSortField(field) }
-                    )
-                    Text(label + directionLabel)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-            HorizontalDivider()
-            Spacer(modifier = Modifier.height(8.dp))
 
             // Club filter section
             if (uiState.availableClubs.isNotEmpty()) {
