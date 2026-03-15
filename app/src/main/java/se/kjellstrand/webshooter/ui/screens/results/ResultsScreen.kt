@@ -18,7 +18,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.RadioButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.FastForward
@@ -27,30 +26,27 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.repeatOnLifecycle
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import java.time.LocalDate
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -58,18 +54,24 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.ResultItem
 import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.ResultsListHeader
 import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.WeaponGroupSeparator
+import se.kjellstrand.webshooter.ui.common.ScreenTopBar
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
-import se.kjellstrand.webshooter.ui.common.ScreenTopBar
 import se.kjellstrand.webshooter.ui.mock.ResultsViewModelMock
 import se.kjellstrand.webshooter.ui.navigation.Screen
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CompetitionResultsScreen(
     resultsViewModel: ResultsViewModel,
@@ -82,15 +84,36 @@ fun CompetitionResultsScreen(
     val coroutineScope = rememberCoroutineScope()
     val lifecycleOwner = LocalLifecycleOwner.current
     val isCompetitionToday = remember(resultsViewModel.competitionDate) {
-        runCatching { LocalDate.parse(resultsViewModel.competitionDate) == LocalDate.now() }.getOrDefault(false)
+        runCatching { java.time.LocalDate.parse(resultsViewModel.competitionDate) == java.time.LocalDate.now() }.getOrDefault(
+            false
+        )
     }
 
-    LaunchedEffect(lifecycleOwner, isCompetitionToday) {
+    val refreshIntervalSeconds = 5 * 60
+    var secondsLeft by remember { mutableIntStateOf(refreshIntervalSeconds) }
+    var refreshTrigger by remember { mutableIntStateOf(0) }
+    var isRefreshing by remember { mutableStateOf(false) }
+    val refreshVersion = resultsUiState.refreshVersion
+    var lastSeenRefreshVersion by remember { mutableIntStateOf(refreshVersion) }
+
+    LaunchedEffect(refreshVersion) {
+        if (refreshVersion > lastSeenRefreshVersion) {
+            isRefreshing = false
+        }
+        lastSeenRefreshVersion = refreshVersion
+    }
+
+    LaunchedEffect(lifecycleOwner, isCompetitionToday, refreshTrigger) {
         if (!isCompetitionToday) return@LaunchedEffect
+        secondsLeft = refreshIntervalSeconds
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
             while (true) {
-                delay(5 * 60 * 1000L)
-                resultsViewModel.refresh()
+                delay(1000L)
+                secondsLeft = (secondsLeft - 1).coerceAtLeast(0)
+                if (secondsLeft <= 0) {
+                    resultsViewModel.refresh()
+                    secondsLeft = refreshIntervalSeconds
+                }
             }
         }
     }
@@ -164,28 +187,53 @@ fun CompetitionResultsScreen(
                     containerColor = if (ffEnabled) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
                     contentColor = if (ffEnabled) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
                 ) {
-                    Icon(Icons.Default.FastForward, contentDescription = "Fast forward to current user")
+                    Icon(
+                        Icons.Default.FastForward,
+                        contentDescription = "Fast forward to current user"
+                    )
                 }
                 FloatingActionButton(onClick = { isFilterBottomSheetOpen = true }) {
-                    Icon(imageVector = Icons.Default.FilterList, contentDescription = "Open Filters")
+                    Icon(
+                        imageVector = Icons.Default.FilterList,
+                        contentDescription = "Open Filters"
+                    )
                 }
             }
         }
     ) { paddingValues ->
-        Column(
+        PullToRefreshBox(
+            isRefreshing = isRefreshing,
+            onRefresh = {
+                isRefreshing = true
+                resultsViewModel.refresh()
+                refreshTrigger++
+            },
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .padding(horizontal = 16.dp)
-                .padding(top = dimensionResource(R.dimen.screen_content_top_padding))
         ) {
-            ResultsList(
-                resultsUiState,
-                resultsViewModel.competitionId,
-                navController,
-                resultsUiState.resultsType,
-                listState
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp)
+                    .padding(top = dimensionResource(R.dimen.screen_content_top_padding))
+            ) {
+                if (isCompetitionToday) {
+                    Text(
+                        text = stringResource(R.string.updates_in, secondsLeft),
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.align(Alignment.Start)
+                    )
+                }
+                ResultsList(
+                    resultsUiState,
+                    resultsViewModel.competitionId,
+                    navController,
+                    resultsUiState.resultsType,
+                    listState
+                )
+            }
         }
     }
 
