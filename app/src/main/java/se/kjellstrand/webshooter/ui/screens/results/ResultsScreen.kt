@@ -216,7 +216,7 @@ fun CompetitionResultsScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)
-                    .padding(top = dimensionResource(R.dimen.screen_content_top_padding))
+                    .padding(top = dimensionResource(R.dimen.screen_content_top_padding), bottom = 16.dp)
             ) {
                 if (isCompetitionToday) {
                     Text(
@@ -266,7 +266,7 @@ fun ResultsList(
             state = listState,
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
-                top = 16.dp,
+                top = 0.dp,
                 start = 0.dp,
                 end = 0.dp,
                 bottom = 16.dp
