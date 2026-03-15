@@ -81,14 +81,15 @@ open class ResultsViewModelImpl @Inject constructor(
                                     allWeaponGroups = getWeaponGroups(resource.data.results).toList().sorted(),
                                     selectedWeaponGroups = getWeaponGroups(resource.data.results),
                                     isLoading = false,
-                                    resultsType = resultsType
+                                    resultsType = resultsType,
+                                    refreshVersion = current.refreshVersion + 1
                                 )
                             }
                         }
                     }
 
                     is Resource.Error -> {
-                        _uiState.value = _uiState.value.copy(isLoading = false)
+                        _uiState.update { it.copy(isLoading = false, refreshVersion = it.refreshVersion + 1) }
                     }
 
                     else -> {
