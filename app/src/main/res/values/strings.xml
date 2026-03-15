@@ -189,5 +189,6 @@
     <string name="signups_weapon_class">Klass: %1$s</string>
     <string name="yes">Ja</string>
     <string name="no">Nej</string>
+    <string name="updates_in">Uppdateras om %1$ds</string>
 
 </resources>

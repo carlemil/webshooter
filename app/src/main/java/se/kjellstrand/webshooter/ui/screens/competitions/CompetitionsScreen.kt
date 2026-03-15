@@ -133,7 +133,8 @@ fun CompetitionsScreen(
                                     Screen.CompetitionResults.createRoute(
                                         competition.id.toInt(),
                                         (competition.resultsType).name,
-                                        competition.name
+                                        competition.name,
+                                        competition.date
                                     )
                                 )
                             },
