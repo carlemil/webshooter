@@ -53,7 +53,7 @@ open class CompetitionsRepository @Inject constructor(
                                     path = "",
                                     perPage = domains.size.toLong(),
                                     to = domains.size.toLong(),
-                                    total = domains.size.toLong(),
+                                    total = Long.MAX_VALUE,
                                     status = "",
                                     type = 0,
                                     competitionTypes = emptyList()
