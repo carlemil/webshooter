@@ -19,7 +19,7 @@
     <string name="name">Namn</string>
     <string name="password">Lösenord</string>
     <string name="phone">Telefon</string>
-    <string name="placement">Placering</string>
+    <string name="placement">#</string>
     <string name="points">Poäng</string>
     <string name="points_short">P</string>
     <string name="select_gender">Välj kön</string>

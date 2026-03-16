@@ -1,13 +1,13 @@
-package se.kjellstrand.webshooter.data.signups.local
+package se.kjellstrand.webshooter.data.mysignups.local
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import se.kjellstrand.webshooter.data.signups.remote.SignupCompetition
-import se.kjellstrand.webshooter.data.signups.remote.SignupEntry
-import se.kjellstrand.webshooter.data.signups.remote.SignupPatrol
-import se.kjellstrand.webshooter.data.signups.remote.SignupResultsPlacement
-import se.kjellstrand.webshooter.data.signups.remote.SignupTeam
-import se.kjellstrand.webshooter.data.signups.remote.SignupWeaponClass
+import se.kjellstrand.webshooter.data.mysignups.remote.SignupCompetition
+import se.kjellstrand.webshooter.data.mysignups.remote.SignupEntry
+import se.kjellstrand.webshooter.data.mysignups.remote.SignupPatrol
+import se.kjellstrand.webshooter.data.mysignups.remote.SignupResultsPlacement
+import se.kjellstrand.webshooter.data.mysignups.remote.SignupTeam
+import se.kjellstrand.webshooter.data.mysignups.remote.SignupWeaponClass
 
 fun SignupEntry.toEntity(groupKey: String, gson: Gson): SignupEntryEntity = SignupEntryEntity(
     id = id,
