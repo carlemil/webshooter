@@ -6,8 +6,8 @@ plugins {
     alias(libs.plugins.compose.compiler)
 }
 
-val appVersionCode = 13
-val appVersionName = "1.7.6"
+val appVersionCode = 14
+val appVersionName = "1.7.7"
 
 val dbVersionDir = layout.buildDirectory.dir("generated/source/dbversion")
 

@@ -174,7 +174,17 @@ fun CompetitionsScreen(
             }
         } ?: run {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+                if (competitionsState.hasError) {
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text(stringResource(R.string.competitions_load_error))
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Button(onClick = { competitionsViewModel.reload() }) {
+                            Text(stringResource(R.string.competitions_retry))
+                        }
+                    }
+                } else {
+                    CircularProgressIndicator()
+                }
             }
         }
 
