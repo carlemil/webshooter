@@ -60,7 +60,11 @@ class CompetitionsViewModelImpl @Inject constructor(
                     }
 
                     is Resource.Error -> {
-                        _uiState.value = _uiState.value.copy(isLoading = false)
+                        if (page > 1) currentPage--
+                        _uiState.value = _uiState.value.copy(
+                            isLoading = false,
+                            hasError = _uiState.value.competitions == null
+                        )
                     }
 
                     else -> {
@@ -72,7 +76,7 @@ class CompetitionsViewModelImpl @Inject constructor(
     }
 
     override fun reload() {
-        _uiState.value = _uiState.value.copy(competitions = null, isLoading = true)
+        _uiState.value = _uiState.value.copy(competitions = null, isLoading = true, hasError = false)
         currentPage = 1
         loadInitialPages()
     }
