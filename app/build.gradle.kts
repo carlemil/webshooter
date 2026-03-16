@@ -6,6 +6,28 @@ plugins {
     alias(libs.plugins.compose.compiler)
 }
 
+val appVersionCode = 13
+val appVersionName = "1.7.6"
+
+val dbVersionDir = layout.buildDirectory.dir("generated/source/dbversion")
+
+val generateDbVersion = tasks.register("generateDbVersion") {
+    outputs.dir(dbVersionDir)
+    doLast {
+        val dir = dbVersionDir.get().asFile
+        dir.mkdirs()
+        File(dir, "DbVersion.kt").writeText(
+            "package se.kjellstrand.webshooter.data.db\n\nconst val DB_VERSION = $appVersionCode\n"
+        )
+    }
+}
+
+tasks.configureEach {
+    if (name.startsWith("ksp") || (name.startsWith("compile") && name.endsWith("Kotlin"))) {
+        dependsOn(generateDbVersion)
+    }
+}
+
 android {
     namespace = "se.kjellstrand.webshooter"
     compileSdk = 36
@@ -14,8 +36,8 @@ android {
         applicationId = "se.kjellstrand.webshooter"
         minSdk = 26
         targetSdk = 36
-        versionCode = 13
-        versionName = "1.7.6"
+        versionCode = appVersionCode
+        versionName = appVersionName
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -28,6 +50,10 @@ android {
                 "proguard-rules.pro"
             )
         }
+    }
+
+    sourceSets {
+        getByName("main").java.srcDir(dbVersionDir)
     }
 
     flavorDimensions += "server"

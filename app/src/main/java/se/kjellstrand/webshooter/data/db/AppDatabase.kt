@@ -27,7 +27,7 @@ import se.kjellstrand.webshooter.data.mysignups.local.SignupsDao
         ClubEntity::class,
         UserProfileEntity::class
     ],
-    version = 2,
+    version = DB_VERSION,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
