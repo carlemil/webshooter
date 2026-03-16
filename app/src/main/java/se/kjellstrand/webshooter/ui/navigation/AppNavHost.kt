@@ -12,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsScreen
+import se.kjellstrand.webshooter.ui.screens.splash.SplashScreen
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsViewModelImpl
 import se.kjellstrand.webshooter.ui.landingscreen.WebShooterScreen
 import se.kjellstrand.webshooter.ui.screens.login.LoginScreen
@@ -27,7 +28,10 @@ import se.kjellstrand.webshooter.ui.screens.signup.SignupViewModel
 
 @Composable
 fun AppNavHost(navController: NavHostController) {
-    NavHost(navController, startDestination = Screen.LoginScreen.route) {
+    NavHost(navController, startDestination = Screen.SplashScreen.route) {
+        composable(Screen.SplashScreen.route) {
+            SplashScreen(navController)
+        }
         composable(Screen.LoginScreen.route) {
             LoginScreen(navController)
         }
@@ -43,7 +47,8 @@ fun AppNavHost(navController: NavHostController) {
             arguments = listOf(
                 navArgument("competitionId") { type = NavType.IntType },
                 navArgument("resultsType") { type = NavType.StringType },
-                navArgument("competitionName") { type = NavType.StringType; defaultValue = "" }
+                navArgument("competitionName") { type = NavType.StringType; defaultValue = "" },
+                navArgument("competitionDate") { type = NavType.StringType; defaultValue = "" }
             )
         ) {
             val resultsViewModel: ResultsViewModelImpl = hiltViewModel()

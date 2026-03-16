@@ -142,7 +142,7 @@ fun CompetitionResultsScreen(
             indices
         }
     }
-    var occurrenceIdx by remember(currentUserIndices) { mutableStateOf(-1) }
+    var occurrenceIdx by remember(currentUserIndices) { mutableIntStateOf(-1) }
 
     LaunchedEffect(Unit) {
         resultsViewModel.resultsEvent.collect { event ->
