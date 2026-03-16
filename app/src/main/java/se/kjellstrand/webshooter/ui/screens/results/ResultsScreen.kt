@@ -23,7 +23,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material.icons.filled.FilterList
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -50,6 +53,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -68,7 +72,6 @@ import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.results.remote.Result
 import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.HeaderText
 import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.ItemText
-import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.WeaponGroupSeparator
 import se.kjellstrand.webshooter.ui.common.ScreenTopBar
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
@@ -274,11 +277,9 @@ fun ResultsList(
             state = listState,
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(
-                top = 0.dp,
-                start = 0.dp,
-                end = 0.dp,
-                bottom = 16.dp
-            )
+                start = 16.dp, end = 16.dp, top = 8.dp, bottom = 80.dp
+            ),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             val noneSelected = resultsUiState.selectedWeaponGroups.isEmpty()
                     && resultsUiState.allWeaponGroups.isNotEmpty()
@@ -322,31 +323,59 @@ fun ResultsList(
                     Spacer(modifier = Modifier.height(2.dp))
                 }
             } else {
-                // GROUPED VIEW with separators
+                // GROUPED VIEW — one Card per group
                 resultsUiState.groupedResults.forEach { group ->
-                    item(key = "separator-${group.header}") {
-                        WeaponGroupSeparator(group.header)
-                    }
-                    item {
-                        ResultsListHeader(isGrouped = true, resultsType = resultsType)
-                    }
-                    itemsIndexed(group.items, key = { _, item -> item.id }) { index, result ->
-                        ResultItem(
-                            result = result,
-                            index = index,
-                            isGrouped = true,
-                            resultsType = resultsType,
-                            loggedInUserId = resultsUiState.loggedInUserId,
-                            onItemClick = {
-                                navController.navigate(
-                                    Screen.ShooterResult.createRoute(
-                                        competitionId,
-                                        result.signup.user.userID.toInt(),
-                                        resultsType.name
+                    item(key = "group-${group.header}") {
+                        Card(
+                            shape = RoundedCornerShape(12.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                            ),
+                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(modifier = Modifier.padding(12.dp)) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    WeaponClassBadge(
+                                        weaponGroupName = group.header,
+                                        isHighlighted = false,
+                                        size = WeaponClassBadgeSize.Large
                                     )
-                                )
-                            })
-                        Spacer(modifier = Modifier.height(2.dp))
+                                    Text(
+                                        text = "${group.items.size}",
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                                ResultsListHeader(isGrouped = true, resultsType = resultsType, inCard = true)
+                                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                                group.items.forEachIndexed { index, result ->
+                                    ResultItem(
+                                        result = result,
+                                        index = index,
+                                        isGrouped = true,
+                                        resultsType = resultsType,
+                                        loggedInUserId = resultsUiState.loggedInUserId,
+                                        inCard = true,
+                                        onItemClick = {
+                                            navController.navigate(
+                                                Screen.ShooterResult.createRoute(
+                                                    competitionId,
+                                                    result.signup.user.userID.toInt(),
+                                                    resultsType.name
+                                                )
+                                            )
+                                        }
+                                    )
+                                    if (index < group.items.size - 1) HorizontalDivider()
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -355,12 +384,12 @@ fun ResultsList(
 }
 
 @Composable
-fun ResultsListHeader(isGrouped: Boolean, resultsType: ResultsType) {
+fun ResultsListHeader(isGrouped: Boolean, resultsType: ResultsType, inCard: Boolean = false) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-            .padding(horizontal = 8.dp, vertical = 6.dp),
+            .then(if (!inCard) Modifier.background(MaterialTheme.colorScheme.surfaceContainerHigh) else Modifier)
+            .padding(horizontal = if (inCard) 0.dp else 8.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         HeaderText(
@@ -508,6 +537,7 @@ fun ResultItem(
     isGrouped: Boolean,
     resultsType: ResultsType = ResultsType.FIELD,
     loggedInUserId: Long = -1L,
+    inCard: Boolean = false,
     onItemClick: () -> Unit
 ) {
     val isCurrentUser = result.signup.user.userID == loggedInUserId
@@ -516,18 +546,15 @@ fun ResultItem(
         else MaterialTheme.typography.bodySmall
     val backgroundColor = if (isCurrentUser) {
         MaterialTheme.appColors.currentUserHighlight
-    } else if (index % 2 == 0) {
-        MaterialTheme.colorScheme.surface
     } else {
-        MaterialTheme.colorScheme.surfaceContainerLow
+        Color.Transparent
     }
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .background(backgroundColor)
             .clickable(onClick = onItemClick)
-            .padding(horizontal = 8.dp, vertical = 6.dp),
+            .padding(horizontal = if (inCard) 0.dp else 8.dp, vertical = 6.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         ItemText(
