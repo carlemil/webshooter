@@ -23,6 +23,8 @@ import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Map
+import androidx.compose.material.icons.filled.Today
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -43,8 +45,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -73,7 +77,15 @@ fun CompetitionsScreen(
 ) {
     val competitionsState by competitionsViewModel.uiState.collectAsState()
     val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
     var isFilterBottomSheetOpen by remember { mutableStateOf(false) }
+
+    val upcomingIndex = remember(competitionsState.filteredData) {
+        val today = LocalDate.now()
+        competitionsState.filteredData.indexOfLast { competition ->
+            runCatching { !LocalDate.parse(competition.date).isBefore(today) }.getOrDefault(false)
+        }
+    }
 
     // Scroll-based trigger: compare against filtered list size, not raw size
     LaunchedEffect(listState) {
@@ -166,13 +178,27 @@ fun CompetitionsScreen(
             }
         }
 
-        FloatingActionButton(
-            onClick = { isFilterBottomSheetOpen = true },
+        Column(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(16.dp)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.End
         ) {
-            Icon(imageVector = Icons.Default.FilterList, contentDescription = "Open Filters")
+            SmallFloatingActionButton(
+                onClick = {
+                    if (upcomingIndex >= 0) {
+                        coroutineScope.launch { listState.animateScrollToItem(upcomingIndex) }
+                    }
+                },
+                containerColor = if (upcomingIndex >= 0) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                contentColor = if (upcomingIndex >= 0) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+            ) {
+                Icon(imageVector = Icons.Default.Today, contentDescription = "Scroll to next upcoming competition")
+            }
+            FloatingActionButton(onClick = { isFilterBottomSheetOpen = true }) {
+                Icon(imageVector = Icons.Default.FilterList, contentDescription = "Open Filters")
+            }
         }
     }
 
