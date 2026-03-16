@@ -14,8 +14,8 @@ import se.kjellstrand.webshooter.data.results.local.ResultEntity
 import se.kjellstrand.webshooter.data.results.local.ResultsDao
 import se.kjellstrand.webshooter.data.settings.local.UserProfileDao
 import se.kjellstrand.webshooter.data.settings.local.UserProfileEntity
-import se.kjellstrand.webshooter.data.signups.local.SignupEntryEntity
-import se.kjellstrand.webshooter.data.signups.local.SignupsDao
+import se.kjellstrand.webshooter.data.mysignups.local.SignupEntryEntity
+import se.kjellstrand.webshooter.data.mysignups.local.SignupsDao
 
 @Database(
     entities = [

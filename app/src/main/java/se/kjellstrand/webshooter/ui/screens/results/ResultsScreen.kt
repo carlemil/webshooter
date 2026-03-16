@@ -1,6 +1,7 @@
 package se.kjellstrand.webshooter.ui.screens.results
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -52,6 +53,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -62,14 +65,16 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
-import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.ResultItem
-import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.ResultsListHeader
+import se.kjellstrand.webshooter.data.results.remote.Result
+import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.HeaderText
+import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.ItemText
 import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.WeaponGroupSeparator
 import se.kjellstrand.webshooter.ui.common.ScreenTopBar
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
 import se.kjellstrand.webshooter.ui.mock.ResultsViewModelMock
 import se.kjellstrand.webshooter.ui.navigation.Screen
+import se.kjellstrand.webshooter.ui.theme.appColors
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -216,7 +221,10 @@ fun CompetitionResultsScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)
-                    .padding(top = dimensionResource(R.dimen.screen_content_top_padding), bottom = 16.dp)
+                    .padding(
+                        top = dimensionResource(R.dimen.screen_content_top_padding),
+                        bottom = 16.dp
+                    )
             ) {
                 if (isCompetitionToday) {
                     Text(
@@ -346,6 +354,52 @@ fun ResultsList(
     }
 }
 
+@Composable
+fun ResultsListHeader(isGrouped: Boolean, resultsType: ResultsType) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+            .padding(horizontal = 8.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        HeaderText(
+            R.string.placement, modifier = Modifier.weight(2f)
+        )
+        HeaderText(R.string.name, modifier = Modifier.weight(10f))
+
+        Row(
+            modifier = Modifier.weight(if (isGrouped) 8f else 9f),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (!isGrouped) {
+                HeaderText(
+                    R.string.weapon_class_short,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 4.dp)
+                )
+            }
+            HeaderText(R.string.medal_short, modifier = Modifier.weight(1f))
+            when (resultsType) {
+                ResultsType.FIELD,
+                ResultsType.POINTS_FIELD -> {
+                    HeaderText(R.string.hits_short, modifier = Modifier.weight(1f))
+                    HeaderText(R.string.figures_short, modifier = Modifier.weight(1f))
+                    HeaderText(R.string.points_short, modifier = Modifier.weight(1f))
+                }
+
+                ResultsType.PRECISION,
+                ResultsType.MILITARY -> {
+                    HeaderText(R.string.points_short, modifier = Modifier.weight(1f))
+                    HeaderText(R.string.x, modifier = Modifier.weight(1f))
+                }
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterBottomSheet(
@@ -443,6 +497,114 @@ fun FilterOptionsContent(
                     onFilterChange(filterState.copy(selectedWeaponGroups = newSelectedGroups))
                 }
             )
+        }
+    }
+}
+
+@Composable
+fun ResultItem(
+    result: Result,
+    index: Int,
+    isGrouped: Boolean,
+    resultsType: ResultsType = ResultsType.FIELD,
+    loggedInUserId: Long = -1L,
+    onItemClick: () -> Unit
+) {
+    val isCurrentUser = result.signup.user.userID == loggedInUserId
+    val itemStyle =
+        if (isCurrentUser) MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
+        else MaterialTheme.typography.bodySmall
+    val backgroundColor = if (isCurrentUser) {
+        MaterialTheme.appColors.currentUserHighlight
+    } else if (index % 2 == 0) {
+        MaterialTheme.colorScheme.surface
+    } else {
+        MaterialTheme.colorScheme.surfaceContainerLow
+    }
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(backgroundColor)
+            .clickable(onClick = onItemClick)
+            .padding(horizontal = 8.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        ItemText(
+            text = result.placement.toString(),
+            style = MaterialTheme.typography.labelLarge.let {
+                if (isCurrentUser) it.copy(fontWeight = FontWeight.Bold) else it
+            },
+            modifier = Modifier.weight(2f)
+        )
+
+        Column(
+            modifier = Modifier.weight(10f)
+        ) {
+            ItemText(
+                text = "${result.signup.user.name} ${result.signup.user.lastname}",
+                style = itemStyle,
+                overflow = TextOverflow.Ellipsis
+            )
+            ItemText(
+                text = result.signup.club?.name ?: stringResource(R.string.unknown_club),
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+
+        Row(
+            modifier = Modifier.weight(if (isGrouped) 8f else 9f),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (!isGrouped) {
+                ItemText(
+                    text = result.weaponClass.classname,
+                    style = itemStyle,
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(start = 4.dp)
+                )
+            }
+            ItemText(
+                text = result.stdMedal?.value ?: stringResource(R.string.dash),
+                style = itemStyle,
+                modifier = Modifier.weight(1f)
+            )
+            when (resultsType) {
+                ResultsType.FIELD,
+                ResultsType.POINTS_FIELD -> {
+                    ItemText(
+                        text = result.hits.toString(),
+                        style = itemStyle,
+                        modifier = Modifier.weight(1f)
+                    )
+                    ItemText(
+                        text = result.figureHits.toString(),
+                        style = itemStyle,
+                        modifier = Modifier.weight(1f)
+                    )
+                    ItemText(
+                        text = result.points.toString(),
+                        style = itemStyle,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                ResultsType.PRECISION,
+                ResultsType.MILITARY -> {
+                    ItemText(
+                        text = result.points.toString(),
+                        style = itemStyle,
+                        modifier = Modifier.weight(1f)
+                    )
+                    ItemText(
+                        text = result.hits.toString(),
+                        style = itemStyle,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
         }
     }
 }

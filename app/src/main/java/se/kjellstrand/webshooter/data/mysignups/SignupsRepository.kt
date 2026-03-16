@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.data.signups
+package se.kjellstrand.webshooter.data.mysignups
 
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
@@ -7,11 +7,11 @@ import okio.IOException
 import retrofit2.HttpException
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
-import se.kjellstrand.webshooter.data.signups.local.SignupsDao
-import se.kjellstrand.webshooter.data.signups.local.toDomain
-import se.kjellstrand.webshooter.data.signups.local.toEntity
-import se.kjellstrand.webshooter.data.signups.remote.SignupGroup
-import se.kjellstrand.webshooter.data.signups.remote.SignupsRemoteDataSource
+import se.kjellstrand.webshooter.data.mysignups.local.SignupsDao
+import se.kjellstrand.webshooter.data.mysignups.local.toDomain
+import se.kjellstrand.webshooter.data.mysignups.local.toEntity
+import se.kjellstrand.webshooter.data.mysignups.remote.SignupGroup
+import se.kjellstrand.webshooter.data.mysignups.remote.SignupsRemoteDataSource
 import javax.inject.Inject
 import javax.inject.Singleton
 

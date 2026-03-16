@@ -22,7 +22,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import se.kjellstrand.webshooter.ui.common.ScreenTopBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -38,6 +37,7 @@ import se.kjellstrand.webshooter.data.results.remote.StationResult
 import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.HeaderText
 import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.ItemText
 import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.WeaponGroupSeparator
+import se.kjellstrand.webshooter.ui.common.ScreenTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -222,4 +222,5 @@ fun StationResultsGrid(stationResults: List<StationResult>, resultsType: Results
         }
         Spacer(modifier = Modifier.height(16.dp))
     }
+
 }

@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.screens.signups
+package se.kjellstrand.webshooter.ui.screens.mysignups
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,7 +30,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import se.kjellstrand.webshooter.R
-import se.kjellstrand.webshooter.data.signups.remote.SignupEntry
+import se.kjellstrand.webshooter.data.mysignups.remote.SignupEntry
 
 @Composable
 fun MyEntriesScreen(
@@ -107,12 +107,32 @@ private fun CompetitionSignupsItem(entries: List<SignupEntry>) {
 
             // Header row
             GridRow {
-                GridCell(stringResource(R.string.signups_col_class), 1.5f, fontWeight = FontWeight.Bold)
-                GridCell(stringResource(R.string.signups_col_start), 1.5f, fontWeight = FontWeight.Bold)
-                GridCell(stringResource(R.string.signups_col_lane), 1f, fontWeight = FontWeight.Bold)
-                GridCell(stringResource(R.string.signups_col_team), 2f, fontWeight = FontWeight.Bold)
+                GridCell(
+                    stringResource(R.string.signups_col_class),
+                    1.5f,
+                    fontWeight = FontWeight.Bold
+                )
+                GridCell(
+                    stringResource(R.string.signups_col_start),
+                    1.5f,
+                    fontWeight = FontWeight.Bold
+                )
+                GridCell(
+                    stringResource(R.string.signups_col_lane),
+                    1f,
+                    fontWeight = FontWeight.Bold
+                )
+                GridCell(
+                    stringResource(R.string.signups_col_team),
+                    2f,
+                    fontWeight = FontWeight.Bold
+                )
                 GridCell(stringResource(R.string.placement), 1.0f, fontWeight = FontWeight.Bold)
-                GridCell(stringResource(R.string.signups_col_fee), 1.5f, fontWeight = FontWeight.Bold)
+                GridCell(
+                    stringResource(R.string.signups_col_fee),
+                    1.5f,
+                    fontWeight = FontWeight.Bold
+                )
             }
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 2.dp))
