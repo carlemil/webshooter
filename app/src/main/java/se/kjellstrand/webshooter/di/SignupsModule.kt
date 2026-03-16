@@ -6,9 +6,9 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
-import se.kjellstrand.webshooter.data.signups.SignupsRepository
-import se.kjellstrand.webshooter.data.signups.local.SignupsDao
-import se.kjellstrand.webshooter.data.signups.remote.SignupsRemoteDataSource
+import se.kjellstrand.webshooter.data.mysignups.SignupsRepository
+import se.kjellstrand.webshooter.data.mysignups.local.SignupsDao
+import se.kjellstrand.webshooter.data.mysignups.remote.SignupsRemoteDataSource
 import javax.inject.Singleton
 
 @Module

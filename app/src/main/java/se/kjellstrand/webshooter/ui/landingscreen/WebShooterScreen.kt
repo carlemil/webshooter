@@ -39,7 +39,7 @@ import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.ui.screens.club.ClubScreen
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsScreen
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsViewModelImpl
-import se.kjellstrand.webshooter.ui.screens.signups.MyEntriesScreen
+import se.kjellstrand.webshooter.ui.screens.mysignups.MyEntriesScreen
 import se.kjellstrand.webshooter.ui.navigation.Screen
 import se.kjellstrand.webshooter.ui.screens.settings.SettingsScreen
 

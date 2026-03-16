@@ -14,7 +14,7 @@ import se.kjellstrand.webshooter.data.competitionsignups.local.CompetitionSignup
 import se.kjellstrand.webshooter.data.db.AppDatabase
 import se.kjellstrand.webshooter.data.results.local.ResultsDao
 import se.kjellstrand.webshooter.data.settings.local.UserProfileDao
-import se.kjellstrand.webshooter.data.signups.local.SignupsDao
+import se.kjellstrand.webshooter.data.mysignups.local.SignupsDao
 import javax.inject.Singleton
 
 @Module

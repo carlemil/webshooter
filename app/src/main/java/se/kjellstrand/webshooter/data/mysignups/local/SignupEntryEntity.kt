@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.data.signups.local
+package se.kjellstrand.webshooter.data.mysignups.local
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

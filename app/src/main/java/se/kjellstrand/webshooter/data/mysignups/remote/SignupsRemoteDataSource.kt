@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.data.signups.remote
+package se.kjellstrand.webshooter.data.mysignups.remote
 
 import retrofit2.http.GET
 

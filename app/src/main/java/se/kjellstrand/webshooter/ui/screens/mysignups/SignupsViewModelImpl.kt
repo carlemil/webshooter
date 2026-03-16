@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.screens.signups
+package se.kjellstrand.webshooter.ui.screens.mysignups
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.data.common.Resource
-import se.kjellstrand.webshooter.data.signups.SignupsRepository
+import se.kjellstrand.webshooter.data.mysignups.SignupsRepository
 import javax.inject.Inject
 
 @HiltViewModel

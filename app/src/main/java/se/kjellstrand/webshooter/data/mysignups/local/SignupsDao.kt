@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.data.signups.local
+package se.kjellstrand.webshooter.data.mysignups.local
 
 import androidx.room.Dao
 import androidx.room.Insert
