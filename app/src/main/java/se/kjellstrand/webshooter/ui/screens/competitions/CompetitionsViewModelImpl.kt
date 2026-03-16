@@ -44,13 +44,19 @@ class CompetitionsViewModelImpl @Inject constructor(
             flow.collect { resource ->
                 when (resource) {
                     is Resource.Success -> {
-                        val currentCompetitions = _uiState.value.competitions?.data ?: emptyList()
-                        val newCompetitions = resource.data.competitions.data
-                        val allCompetitions = currentCompetitions + newCompetitions
-                        _uiState.value = _uiState.value.copy(
-                            competitions = resource.data.competitions.copy(data = allCompetitions),
-                            isLoading = false
-                        )
+                        if (page == 1) {
+                            _uiState.value = _uiState.value.copy(
+                                competitions = resource.data.competitions,
+                                isLoading = false
+                            )
+                        } else {
+                            val currentCompetitions = _uiState.value.competitions?.data ?: emptyList()
+                            val newCompetitions = resource.data.competitions.data
+                            _uiState.value = _uiState.value.copy(
+                                competitions = resource.data.competitions.copy(data = currentCompetitions + newCompetitions),
+                                isLoading = false
+                            )
+                        }
                     }
 
                     is Resource.Error -> {
