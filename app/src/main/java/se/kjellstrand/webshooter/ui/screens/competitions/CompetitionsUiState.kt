@@ -7,6 +7,7 @@ import se.kjellstrand.webshooter.data.competitions.remote.Datum
 data class CompetitionsUiState(
     val competitions: Competitions? = null,
     val isLoading: Boolean = false,
+    val hasError: Boolean = false,
     val selectedCompetitionTypeIds: Set<Int> = emptySet(),
     val selectedStatuses: Set<String> = emptySet()
 ) {
