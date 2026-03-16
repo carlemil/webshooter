@@ -1,8 +1,10 @@
 package se.kjellstrand.webshooter.data.competitions
 
 import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import okio.IOException
 import retrofit2.HttpException
 import se.kjellstrand.webshooter.data.common.Resource
@@ -27,33 +29,37 @@ open class CompetitionsRepository @Inject constructor(
         page: Int,
         pageSize: Int
     ): Flow<Resource<CompetitionsResponse, UserError>> {
-        return flow {
+        return flow<Resource<CompetitionsResponse, UserError>> {
             emit(Resource.Loading(true))
 
             if (page == 1) {
                 try {
                     val cached = dao.getAll()
                     if (cached.isNotEmpty()) {
-                        val domains = cached.map { it.toDomain(gson) }
-                        emit(Resource.Success(CompetitionsResponse(
-                            competitions = Competitions(
-                                currentPage = 1,
-                                data = domains,
-                                from = 1,
-                                lastPage = 1,
-                                links = emptyList<Link>(),
-                                path = "",
-                                perPage = domains.size.toLong(),
-                                to = domains.size.toLong(),
-                                total = domains.size.toLong(),
-                                status = "",
-                                type = 0,
-                                competitionTypes = emptyList()
-                            )
-                        )))
+                        val domains = cached.mapNotNull { entity ->
+                            try { entity.toDomain(gson) } catch (e: Exception) { null }
+                        }
+                        if (domains.isNotEmpty()) {
+                            emit(Resource.Success(CompetitionsResponse(
+                                competitions = Competitions(
+                                    currentPage = 1,
+                                    data = domains,
+                                    from = 1,
+                                    lastPage = 1,
+                                    links = emptyList<Link>(),
+                                    path = "",
+                                    perPage = domains.size.toLong(),
+                                    to = domains.size.toLong(),
+                                    total = domains.size.toLong(),
+                                    status = "",
+                                    type = 0,
+                                    competitionTypes = emptyList()
+                                )
+                            )))
+                        }
                     }
                 } catch (e: Exception) {
-                    dao.deleteAll()
+                    e.printStackTrace()
                 }
             }
 
@@ -77,6 +83,6 @@ open class CompetitionsRepository @Inject constructor(
             dao.insertAll(result.competitions.data.map { it.toEntity(gson) })
 
             emit(Resource.Success(result))
-        }
+        }.flowOn(Dispatchers.Default)
     }
 }
