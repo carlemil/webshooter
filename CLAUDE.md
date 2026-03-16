@@ -51,3 +51,5 @@ Navigation is Jetpack Compose Navigation. Routes are defined as a sealed class i
 - **Current user identity:** Fetched via `SettingsRepository.getUserProfile()` which calls `authenticate/user`. Inject `SettingsRepository` when a screen needs the logged-in user's ID or name.
 - **Highlighted state in lists:** `isCurrentUser` rows use `MaterialTheme.colorScheme.primary` background (same green as active `WeaponClassBadge`). Non-highlighted rows use `Color.Unspecified` to fall back to defaults.
 - **Column weights in patrol/signup lists:** header and data rows must share identical weight values to align columns.
+- **App is offline first:** all network calls are wrapped in `Resource.Loading`:** This prevents UI from flashing between loading and error states.
+- **Error handling:** Network errors are handled gracefully by displaying a toast message and logging the error. UI remains responsive and does not crash.
