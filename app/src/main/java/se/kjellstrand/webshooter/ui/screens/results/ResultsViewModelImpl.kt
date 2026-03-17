@@ -19,7 +19,6 @@ import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.results.ResultsRepository
 import se.kjellstrand.webshooter.data.results.remote.Result
-import se.kjellstrand.webshooter.data.results.remote.StdMedal
 import se.kjellstrand.webshooter.data.results.remote.StdMedal.B
 import se.kjellstrand.webshooter.data.results.remote.StdMedal.S
 import se.kjellstrand.webshooter.data.settings.SettingsRepository

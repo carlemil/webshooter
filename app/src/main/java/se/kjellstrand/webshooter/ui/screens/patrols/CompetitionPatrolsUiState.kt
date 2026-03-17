@@ -1,7 +1,6 @@
-package se.kjellstrand.webshooter.ui.screens.competitionpatrols
+package se.kjellstrand.webshooter.ui.screens.patrols
 
 import se.kjellstrand.webshooter.data.competitionpatrols.remote.PatrolEntry
-import se.kjellstrand.webshooter.data.competitionpatrols.remote.PatrolSignupEntry
 
 enum class PatrolsSortField { Name, Club, WeaponGroup }
 enum class PatrolsSortDirection { Ascending, Descending }
