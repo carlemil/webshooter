@@ -135,7 +135,7 @@ fun CompetitionSignupsScreen(
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues),
+                    .padding(top = paddingValues.calculateTopPadding()),
                 contentAlignment = Alignment.Center
             ) {
                 Text(stringResource(R.string.competition_signups_list_no_signups))
@@ -145,9 +145,11 @@ fun CompetitionSignupsScreen(
                 state = listState,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues),
+                    .padding(top = paddingValues.calculateTopPadding()),
                 contentPadding = PaddingValues(
-                    start = 16.dp, end = 16.dp, top = 8.dp, bottom = 80.dp
+                    start = 16.dp, end = 16.dp,
+                    top = 8.dp,
+                    bottom = paddingValues.calculateBottomPadding() + 8.dp
                 )
             ) {
                 grouped.forEach { (clubName, entries) ->
