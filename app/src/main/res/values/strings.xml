@@ -2,7 +2,6 @@
 
     <!-- ### GENERAL ### -->
     <string name="app_name">App Shooter</string>
-    <string name="bronze">🥉</string>
     <string name="clear">Återställ</string>
     <string name="dash">-</string>
     <string name="details">Detaljer</string>
@@ -12,6 +11,8 @@
     <string name="figures_short">F</string>
     <string name="hits">Träff</string>
     <string name="hits_short">T</string>
+    <string name="hfp">T/F/P</string>
+    <string name="px">P/X</string>
     <string name="landing_screen">Startsida</string>
     <string name="male">Man</string>
     <string name="medal_short">Mdlj</string>
@@ -26,6 +27,7 @@
     <string name="settings_logout">Logga ut</string>
     <string name="shooting_card_number">Pskn: %1$s</string>
     <string name="sign_up">Anmälan</string>
+    <string name="bronze">🥉</string>
     <string name="silver">🥈</string>
     <string name="title_activity_main">AppShooter</string>
     <string name="unknown">Okänd</string>
