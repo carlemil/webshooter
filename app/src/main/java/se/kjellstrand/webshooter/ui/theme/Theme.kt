@@ -24,9 +24,19 @@ val MaterialTheme.appColors: AppColors
 private val DarkColorScheme = darkColorScheme(
     primary = primaryDark,
     onPrimary = onPrimaryDark,
+    primaryContainer = primaryContainerDark,
+    onPrimaryContainer = onPrimaryContainerDark,
     secondary = secondaryDark,
-    onSecondary = onSecondaryDark
-    )
+    onSecondary = onSecondaryDark,
+    background = backgroundDark,
+    onBackground = onBackgroundDark,
+    surface = surfaceDark,
+    onSurface = onSurfaceDark,
+    surfaceContainerHigh = surfaceContainerHighDark,
+    surfaceVariant = surfaceVariantDark,
+    onSurfaceVariant = onSurfaceVariantDark,
+    outlineVariant = outlineVariantDark,
+)
 
 private val LightColorScheme = lightColorScheme(
     primary = primary,
