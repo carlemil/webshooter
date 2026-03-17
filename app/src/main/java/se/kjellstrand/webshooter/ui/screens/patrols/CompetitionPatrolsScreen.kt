@@ -112,7 +112,7 @@ fun CompetitionPatrolsScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(top = paddingValues.calculateTopPadding())
         ) {
             when {
                 uiState.isLoading -> {
@@ -131,7 +131,9 @@ fun CompetitionPatrolsScreen(
                         state = listState,
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(
-                            start = 16.dp, end = 16.dp, top = 8.dp, bottom = 80.dp
+                            start = 16.dp, end = 16.dp,
+                            top = 8.dp,
+                            bottom = paddingValues.calculateBottomPadding() + 8.dp
                         )
                     ) {
                         uiState.patrols.forEach { patrol ->
