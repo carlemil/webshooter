@@ -565,7 +565,7 @@ fun FilterOptionsContent(
                         filterState.selectedWeaponGroups + weaponGroup
                     }
                     onFilterChange(filterState.copy(selectedWeaponGroups = newSelectedGroups))
-                }
+                }.padding(2.dp)
             )
         }
     }
