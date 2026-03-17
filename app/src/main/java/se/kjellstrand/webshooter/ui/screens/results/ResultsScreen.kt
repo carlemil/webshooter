@@ -299,27 +299,36 @@ fun ResultsList(
             } else if (resultsUiState.groupingMode == GroupingMode.NONE) {
                 // FLAT VIEW
                 item {
-                    ResultsListHeader(isGrouped = false, resultsType = resultsType)
-                }
-                itemsIndexed(
-                    resultsUiState.filterResults,
-                    key = { _, it -> it.id }) { index, result ->
-                    ResultItem(
-                        result = result,
-                        index = index,
-                        isGrouped = false,
-                        resultsType = resultsType,
-                        loggedInUserId = resultsUiState.loggedInUserId,
-                        onItemClick = {
-                            navController.navigate(
-                                Screen.ShooterResult.createRoute(
-                                    competitionId,
-                                    result.signup.user.userID.toInt(),
-                                    resultsType.name
-                                )
-                            )
-                        })
-                    Spacer(modifier = Modifier.height(2.dp))
+                    Card(
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+                        ),
+                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(modifier = Modifier.padding(12.dp)) {
+                            ResultsListHeader(isGrouped = false, resultsType = resultsType, inCard = true)
+                            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                            resultsUiState.filterResults.forEachIndexed { index, result ->
+                                ResultItem(
+                                    result = result,
+                                    resultsType = resultsType,
+                                    loggedInUserId = resultsUiState.loggedInUserId,
+                                    inCard = true,
+                                    onItemClick = {
+                                        navController.navigate(
+                                            Screen.ShooterResult.createRoute(
+                                                competitionId,
+                                                result.signup.user.userID.toInt(),
+                                                resultsType.name
+                                            )
+                                        )
+                                    })
+                                if (index < resultsUiState.filterResults.size - 1) HorizontalDivider()
+                            }
+                        }
+                    }
                 }
             } else {
                 // GROUPED VIEW — one Card per group
@@ -391,8 +400,6 @@ fun ResultsList(
                                 group.items.forEachIndexed { index, result ->
                                     ResultItem(
                                         result = result,
-                                        index = index,
-                                        isGrouped = true,
                                         resultsType = resultsType,
                                         loggedInUserId = resultsUiState.loggedInUserId,
                                         inCard = true,
@@ -567,8 +574,6 @@ fun FilterOptionsContent(
 @Composable
 fun ResultItem(
     result: Result,
-    index: Int,
-    isGrouped: Boolean,
     resultsType: ResultsType = ResultsType.FIELD,
     loggedInUserId: Long = -1L,
     inCard: Boolean = false,
