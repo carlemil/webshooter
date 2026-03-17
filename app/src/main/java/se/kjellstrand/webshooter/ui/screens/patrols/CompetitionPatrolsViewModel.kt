@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.screens.competitionpatrols
+package se.kjellstrand.webshooter.ui.screens.patrols
 
 import kotlinx.coroutines.flow.StateFlow
 
