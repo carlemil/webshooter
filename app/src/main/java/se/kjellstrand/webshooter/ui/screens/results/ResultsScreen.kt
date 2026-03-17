@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -59,6 +60,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -222,16 +224,13 @@ fun CompetitionResultsScreen(
             },
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .padding(top = paddingValues.calculateTopPadding())
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)
-                    .padding(
-                        top = dimensionResource(R.dimen.screen_content_top_padding),
-                        bottom = 16.dp
-                    )
+                    .padding(top = dimensionResource(R.dimen.screen_content_top_padding))
             ) {
                 if (isCompetitionToday) {
                     Text(
@@ -246,7 +245,8 @@ fun CompetitionResultsScreen(
                     resultsViewModel.competitionId,
                     navController,
                     resultsUiState.resultsType,
-                    listState
+                    listState,
+                    bottomContentPadding = paddingValues.calculateBottomPadding()
                 )
             }
         }
@@ -274,12 +274,14 @@ fun ResultsList(
     competitionId: Int,
     navController: NavController,
     resultsType: ResultsType = ResultsType.FIELD,
-    listState: LazyListState = rememberLazyListState()
+    listState: LazyListState = rememberLazyListState(),
+    bottomContentPadding: Dp = 0.dp
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
             state = listState,
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(bottom = bottomContentPadding + 8.dp)
         ) {
             val noneSelected = resultsUiState.selectedWeaponGroups.isEmpty()
                     && resultsUiState.allWeaponGroups.isNotEmpty()
