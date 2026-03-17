@@ -77,7 +77,7 @@ open class ResultsViewModelImpl @Inject constructor(
                                 current.copy(
                                     results = resource.data.results,
                                     filterResults = filterResults(resource.data.results, resultsType),
-                                    groupedResults = groupResults(resource.data.results, resultsType, GroupingMode.WEAPON_CLASS, context),
+                                    groupedResults = groupResults(resource.data.results, resultsType, current.groupingMode, context),
                                     allWeaponGroups = getWeaponGroups(resource.data.results).toList().sorted(),
                                     selectedWeaponGroups = getWeaponGroups(resource.data.results),
                                     isLoading = false,
@@ -162,7 +162,7 @@ open class ResultsViewModelImpl @Inject constructor(
             val weaponClasses = results.map { it.weaponClass.classname }.distinct().sorted()
             return weaponClasses.mapNotNull { weaponClass ->
                 val grouped = results.filter { it.weaponClass.classname == weaponClass }
-                    .sortedBy { it.placement } //calculateSortOrder(it, resultsType) }
+                    .sortedWith(compareBy { if (it.placement == 0L) Long.MAX_VALUE else it.placement })
                 if (grouped.isNotEmpty()) GroupedItem(weaponClass, grouped) else null
             }
         }
