@@ -58,6 +58,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -276,9 +277,6 @@ fun ResultsList(
         LazyColumn(
             state = listState,
             modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(
-                start = 16.dp, end = 16.dp, top = 8.dp, bottom = 80.dp
-            ),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             val noneSelected = resultsUiState.selectedWeaponGroups.isEmpty()
@@ -337,18 +335,41 @@ fun ResultsList(
                             Column(modifier = Modifier.padding(12.dp)) {
                                 Row(
                                     modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    WeaponClassBadge(
-                                        weaponGroupName = group.header,
-                                        isHighlighted = false,
-                                        size = WeaponClassBadgeSize.Large
-                                    )
+                                    val countText = "${group.items.size}/${resultsUiState.results.size}"
+                                    // Ghost spacer mirrors count width so center slot is symmetric
                                     Text(
-                                        text = "${group.items.size}",
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        text = countText,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = Color.Transparent,
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                    Box(
+                                        modifier = Modifier.weight(3f),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        if (resultsUiState.groupingMode == GroupingMode.WEAPON_CLASS) {
+                                            WeaponClassBadge(
+                                                weaponGroupName = group.header,
+                                                isHighlighted = false,
+                                                size = WeaponClassBadgeSize.Large
+                                            )
+                                        } else {
+                                            Text(
+                                                text = group.header,
+                                                style = MaterialTheme.typography.titleMedium,
+                                                fontWeight = FontWeight.Bold,
+                                                textAlign = TextAlign.Center
+                                            )
+                                        }
+                                    }
+                                    Text(
+                                        text = countText,
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.weight(1f),
+                                        textAlign = TextAlign.End
                                     )
                                 }
                                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
