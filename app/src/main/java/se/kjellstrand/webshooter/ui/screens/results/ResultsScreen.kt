@@ -16,8 +16,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.FastForward
@@ -135,14 +137,22 @@ fun CompetitionResultsScreen(
         val userId = resultsUiState.loggedInUserId
         if (userId == -1L) return@remember emptyList()
         if (resultsUiState.groupingMode == GroupingMode.NONE) {
-            // All results are inside a single lazy item (one card), so we can only scroll to index 0.
-            if (resultsUiState.filterResults.any { it.signup.user.userID == userId }) listOf(0)
-            else emptyList()
-        } else {
-            // Each group is one lazy item; collect group indices that contain the current user.
-            resultsUiState.groupedResults.mapIndexedNotNull { groupIndex, group ->
-                if (group.items.any { it.signup.user.userID == userId }) groupIndex else null
+            // Item 0 is the header; result rows are items 1..N
+            resultsUiState.filterResults.mapIndexedNotNull { i, result ->
+                if (result.signup.user.userID == userId) i + 1 else null
             }
+        } else {
+            // Each group occupies 1 header item + group.items.size result items
+            val indices = mutableListOf<Int>()
+            var base = 0
+            resultsUiState.groupedResults.forEach { group ->
+                base++ // header item
+                group.items.forEachIndexed { i, result ->
+                    if (result.signup.user.userID == userId) indices.add(base + i)
+                }
+                base += group.items.size
+            }
+            indices
         }
     }
     var occurrenceIdx by remember(currentUserIndices) { mutableIntStateOf(-1) }
@@ -270,8 +280,7 @@ fun ResultsList(
     Box(modifier = Modifier.fillMaxSize()) {
         LazyColumn(
             state = listState,
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.fillMaxSize()
         ) {
             val noneSelected = resultsUiState.selectedWeaponGroups.isEmpty()
                     && resultsUiState.allWeaponGroups.isNotEmpty()
@@ -290,143 +299,172 @@ fun ResultsList(
                     }
                 }
             } else if (resultsUiState.groupingMode == GroupingMode.NONE) {
-                // FLAT VIEW
-                item {
-                    Card(
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
-                        ),
-                        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-                        modifier = Modifier.fillMaxWidth()
+                // FLAT VIEW — header is item 0, each result row is a separate lazy item
+                item(key = "flat-header") {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 8.dp)
+                            .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
+                            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                            .padding(start = 12.dp, end = 12.dp, top = 12.dp)
                     ) {
-                        Column(modifier = Modifier.padding(12.dp)) {
-                            ResultsListHeader(
-                                isGrouped = false,
-                                resultsType = resultsType,
-                                inCard = true
+                        ResultsListHeader(
+                            isGrouped = false,
+                            resultsType = resultsType,
+                            inCard = true
+                        )
+                        HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                    }
+                }
+                itemsIndexed(
+                    resultsUiState.filterResults,
+                    key = { _, r -> "flat-${r.id}" }
+                ) { index, result ->
+                    val isLast = index == resultsUiState.filterResults.size - 1
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .then(
+                                if (isLast) Modifier.clip(
+                                    RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
+                                ) else Modifier
                             )
-                            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-                            resultsUiState.filterResults.forEachIndexed { index, result ->
-                                ResultItem(
-                                    result = result,
-                                    resultsType = resultsType,
-                                    loggedInUserId = resultsUiState.loggedInUserId,
-                                    inCard = true,
-                                    onItemClick = {
-                                        navController.navigate(
-                                            Screen.ShooterResult.createRoute(
-                                                competitionId,
-                                                result.signup.user.userID.toInt(),
-                                                resultsType.name
-                                            )
-                                        )
-                                    })
-                                if (index < resultsUiState.filterResults.size - 1) HorizontalDivider()
+                            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                            .padding(horizontal = 12.dp)
+                            .then(if (isLast) Modifier.padding(bottom = 12.dp) else Modifier)
+                    ) {
+                        ResultItem(
+                            result = result,
+                            resultsType = resultsType,
+                            loggedInUserId = resultsUiState.loggedInUserId,
+                            inCard = true,
+                            onItemClick = {
+                                navController.navigate(
+                                    Screen.ShooterResult.createRoute(
+                                        competitionId,
+                                        result.signup.user.userID.toInt(),
+                                        resultsType.name
+                                    )
+                                )
                             }
-                        }
+                        )
+                        if (!isLast) HorizontalDivider()
                     }
                 }
             } else {
-                // GROUPED VIEW — one Card per group
+                // GROUPED VIEW — each group: 1 header item + N result items
                 resultsUiState.groupedResults.forEach { group ->
-                    item(key = "group-${group.header}") {
-                        Card(
-                            shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
-                            ),
-                            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-                            modifier = Modifier.fillMaxWidth()
+                    val isWeaponClassGrouping =
+                        resultsUiState.groupingMode == GroupingMode.WEAPON_CLASS
+                    val isMedlGrouping = resultsUiState.groupingMode == GroupingMode.MEDL
+                    val isClubGrouping = resultsUiState.groupingMode == GroupingMode.CLUB
+
+                    item(key = "group-header-${group.header}") {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 8.dp)
+                                .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
+                                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                                .padding(start = 12.dp, end = 12.dp, top = 12.dp)
                         ) {
-                            Column(modifier = Modifier.padding(12.dp)) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    val countText =
-                                        "${group.items.size}/${resultsUiState.results.size}"
-                                    // Ghost spacer mirrors count width so center slot is symmetric
-                                    Text(
-                                        text = countText,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = Color.Transparent,
-                                        modifier = Modifier.weight(1f)
-                                    )
-                                    Box(
-                                        modifier = Modifier.weight(3f),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        if (resultsUiState.groupingMode == GroupingMode.WEAPON_CLASS) {
-                                            WeaponClassBadge(
-                                                weaponGroupName = group.header,
-                                                isHighlighted = false,
-                                                size = WeaponClassBadgeSize.Large
-                                            )
-                                        } else {
-                                            val headerText =
-                                                if (resultsUiState.groupingMode == GroupingMode.MEDL) {
-                                                    when (group.header) {
-                                                        StdMedal.S.value -> stringResource(R.string.silver)
-                                                        StdMedal.B.value -> stringResource(R.string.bronze)
-                                                        else -> group.header
-                                                    }
-                                                } else {
-                                                    group.header
-                                                }
-                                            Text(
-                                                text = headerText,
-                                                style = MaterialTheme.typography.titleMedium,
-                                                fontWeight = FontWeight.Bold,
-                                                textAlign = TextAlign.Center
-                                            )
-                                        }
-                                    }
-                                    Text(
-                                        text = countText,
-                                        style = MaterialTheme.typography.bodyMedium,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                        modifier = Modifier.weight(1f),
-                                        textAlign = TextAlign.End
-                                    )
-                                }
-                                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                                val isWeaponClassGrouping =
-                                    resultsUiState.groupingMode == GroupingMode.WEAPON_CLASS
-                                val isMedlGrouping =
-                                    resultsUiState.groupingMode == GroupingMode.MEDL
-                                val isClubGrouping =
-                                    resultsUiState.groupingMode == GroupingMode.CLUB
-                                ResultsListHeader(
-                                    isGrouped = true,
-                                    resultsType = resultsType,
-                                    inCard = true,
-                                    showMedal = !isMedlGrouping,
-                                    showWeaponClass = !isWeaponClassGrouping
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                val countText =
+                                    "${group.items.size}/${resultsUiState.results.size}"
+                                Text(
+                                    text = countText,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color.Transparent,
+                                    modifier = Modifier.weight(1f)
                                 )
-                                HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
-                                group.items.forEachIndexed { index, result ->
-                                    ResultItem(
-                                        result = result,
-                                        resultsType = resultsType,
-                                        loggedInUserId = resultsUiState.loggedInUserId,
-                                        inCard = true,
-                                        showMedal = !isMedlGrouping,
-                                        showClub = !isClubGrouping,
-                                        showWeaponClass = !isWeaponClassGrouping,
-                                        onItemClick = {
-                                            navController.navigate(
-                                                Screen.ShooterResult.createRoute(
-                                                    competitionId,
-                                                    result.signup.user.userID.toInt(),
-                                                    resultsType.name
-                                                )
-                                            )
-                                        }
-                                    )
-                                    if (index < group.items.size - 1) HorizontalDivider()
+                                Box(
+                                    modifier = Modifier.weight(3f),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    if (isWeaponClassGrouping) {
+                                        WeaponClassBadge(
+                                            weaponGroupName = group.header,
+                                            isHighlighted = false,
+                                            size = WeaponClassBadgeSize.Large
+                                        )
+                                    } else {
+                                        val headerText =
+                                            if (isMedlGrouping) {
+                                                when (group.header) {
+                                                    StdMedal.S.value -> stringResource(R.string.silver)
+                                                    StdMedal.B.value -> stringResource(R.string.bronze)
+                                                    else -> group.header
+                                                }
+                                            } else {
+                                                group.header
+                                            }
+                                        Text(
+                                            text = headerText,
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    }
                                 }
+                                Text(
+                                    text = countText,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    modifier = Modifier.weight(1f),
+                                    textAlign = TextAlign.End
+                                )
                             }
+                            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                            ResultsListHeader(
+                                isGrouped = true,
+                                resultsType = resultsType,
+                                inCard = true,
+                                showMedal = !isMedlGrouping,
+                                showWeaponClass = !isWeaponClassGrouping
+                            )
+                            HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
+                        }
+                    }
+                    itemsIndexed(
+                        group.items,
+                        key = { _, r -> "group-${group.header}-${r.id}" }
+                    ) { index, result ->
+                        val isLast = index == group.items.size - 1
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .then(
+                                    if (isLast) Modifier.clip(
+                                        RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
+                                    ) else Modifier
+                                )
+                                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                                .padding(horizontal = 12.dp)
+                                .then(if (isLast) Modifier.padding(bottom = 12.dp) else Modifier)
+                        ) {
+                            ResultItem(
+                                result = result,
+                                resultsType = resultsType,
+                                loggedInUserId = resultsUiState.loggedInUserId,
+                                inCard = true,
+                                showMedal = !isMedlGrouping,
+                                showClub = !isClubGrouping,
+                                showWeaponClass = !isWeaponClassGrouping,
+                                onItemClick = {
+                                    navController.navigate(
+                                        Screen.ShooterResult.createRoute(
+                                            competitionId,
+                                            result.signup.user.userID.toInt(),
+                                            resultsType.name
+                                        )
+                                    )
+                                }
+                            )
+                            if (!isLast) HorizontalDivider()
                         }
                     }
                 }
