@@ -1,6 +1,7 @@
 package se.kjellstrand.webshooter.ui.screens.competitions
 
 import android.content.Intent
+import androidx.compose.foundation.clickable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -470,6 +471,7 @@ fun CompetitionItem(
 
 @Composable
 fun CompetitionDetail(competition: Datum, modifier: Modifier = Modifier) {
+    val context = LocalContext.current
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
@@ -558,15 +560,24 @@ fun CompetitionDetail(competition: Datum, modifier: Modifier = Modifier) {
                 )
                 DetailRow(
                     label = stringResource(R.string.competitions_phone),
-                    value = competition.contactTelephone ?: ""
+                    value = competition.contactTelephone ?: "",
+                    onClick = competition.contactTelephone?.takeIf { it.isNotEmpty() }?.let {
+                        { context.startActivity(Intent(Intent.ACTION_DIAL, "tel:$it".toUri())) }
+                    }
                 )
                 DetailRow(
                     label = stringResource(R.string.competitions_email),
-                    value = competition.contactEmail ?: ""
+                    value = competition.contactEmail ?: "",
+                    onClick = competition.contactEmail?.takeIf { it.isNotEmpty() }?.let {
+                        { context.startActivity(Intent(Intent.ACTION_SENDTO, "mailto:$it".toUri())) }
+                    }
                 )
                 DetailRow(
                     label = stringResource(R.string.competitions_website),
-                    value = competition.website ?: ""
+                    value = competition.website ?: "",
+                    onClick = competition.website?.takeIf { it.isNotEmpty() }?.let {
+                        { context.startActivity(Intent(Intent.ACTION_VIEW, it.toUri())) }
+                    }
                 )
             }
         }
@@ -597,10 +608,11 @@ fun CompetitionDetail(competition: Datum, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun DetailRow(label: String, value: String) {
+private fun DetailRow(label: String, value: String, onClick: (() -> Unit)? = null) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .then(if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier)
             .padding(vertical = 6.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
