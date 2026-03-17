@@ -19,10 +19,10 @@ import se.kjellstrand.webshooter.ui.screens.login.LoginScreen
 import se.kjellstrand.webshooter.ui.screens.results.CompetitionResultsScreen
 import se.kjellstrand.webshooter.ui.screens.results.ResultsViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.shooterresult.ShooterResultScreen
-import se.kjellstrand.webshooter.ui.screens.competitionpatrols.CompetitionPatrolsScreen
-import se.kjellstrand.webshooter.ui.screens.competitionpatrols.CompetitionPatrolsViewModelImpl
-import se.kjellstrand.webshooter.ui.screens.competitionsignups.CompetitionSignupsScreen
-import se.kjellstrand.webshooter.ui.screens.competitionsignups.CompetitionSignupsViewModelImpl
+import se.kjellstrand.webshooter.ui.screens.patrols.CompetitionPatrolsScreen
+import se.kjellstrand.webshooter.ui.screens.patrols.CompetitionPatrolsViewModelImpl
+import se.kjellstrand.webshooter.ui.screens.signups.CompetitionSignupsScreen
+import se.kjellstrand.webshooter.ui.screens.signups.CompetitionSignupsViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.signup.SignupScreen
 import se.kjellstrand.webshooter.ui.screens.signup.SignupViewModel
 
