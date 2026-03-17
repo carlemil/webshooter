@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -21,8 +22,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -47,6 +46,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -71,14 +71,25 @@ fun CompetitionSignupsScreen(
     val coroutineScope = rememberCoroutineScope()
 
     val displayed = uiState.filteredAndSorted
-    val grouped = displayed.groupBy { it.club.name }.entries
-    val currentUserClubIndices = remember(grouped, uiState.currentUserFullName) {
+    // grouped: List<Map.Entry<clubName, entries>> in insertion order
+    val grouped = displayed.groupBy { it.club.name }.entries.toList()
+
+    // Per-user-row indices: 1 header item per club + N user rows per club
+    val currentUserIndices = remember(grouped, uiState.currentUserFullName) {
         val name = uiState.currentUserFullName ?: return@remember emptyList()
-        grouped.mapIndexedNotNull { index, (_, entries) ->
-            if (entries.any { "${it.user.name} ${it.user.lastname}" == name }) index else null
+        val indices = mutableListOf<Int>()
+        var base = 0
+        grouped.forEach { (_, entries) ->
+            base++ // club header item
+            val byUser = entries.groupBy { "${it.user.name} ${it.user.lastname}" }.entries.toList()
+            byUser.forEachIndexed { i, (userName, _) ->
+                if (userName == name) indices.add(base + i)
+            }
+            base += byUser.size
         }
+        indices
     }
-    var occurrenceIdx by remember(currentUserClubIndices) { mutableStateOf(-1) }
+    var occurrenceIdx by remember(currentUserIndices) { mutableStateOf(-1) }
 
     Scaffold(
         topBar = {
@@ -99,13 +110,13 @@ fun CompetitionSignupsScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp),
                 horizontalAlignment = Alignment.End
             ) {
-                val ffEnabled = currentUserClubIndices.isNotEmpty()
+                val ffEnabled = currentUserIndices.isNotEmpty()
                 SmallFloatingActionButton(
                     onClick = {
                         if (ffEnabled) {
-                            val nextIdx = (occurrenceIdx + 1) % currentUserClubIndices.size
+                            val nextIdx = (occurrenceIdx + 1) % currentUserIndices.size
                             occurrenceIdx = nextIdx
-                            coroutineScope.launch { listState.animateScrollToItem(currentUserClubIndices[nextIdx]) }
+                            coroutineScope.launch { listState.animateScrollToItem(currentUserIndices[nextIdx]) }
                         }
                     },
                     containerColor = if (ffEnabled) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
@@ -136,12 +147,36 @@ fun CompetitionSignupsScreen(
                     .padding(paddingValues),
                 contentPadding = PaddingValues(
                     start = 16.dp, end = 16.dp, top = 8.dp, bottom = 80.dp
-                ),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                )
             ) {
                 grouped.forEach { (clubName, entries) ->
-                    item(key = "club_$clubName") {
-                        ClubCard(clubName = clubName, entries = entries, currentUserFullName = uiState.currentUserFullName)
+                    val byUser = entries.groupBy { "${it.user.name} ${it.user.lastname}" }.entries.toList()
+
+                    // Header item: top-rounded card + club name + divider
+                    item(key = "club_header_$clubName") {
+                        ClubHeaderItem(clubName = clubName, entries = entries)
+                    }
+                    // Each user row is a separate lazy item
+                    itemsIndexed(
+                        byUser,
+                        key = { _, entry -> "user_${clubName}_${entry.key}" }
+                    ) { index, (userName, userEntries) ->
+                        val isLast = index == byUser.size - 1
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .then(
+                                    if (isLast) Modifier.clip(
+                                        RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
+                                    ) else Modifier
+                                )
+                                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                                .padding(horizontal = 12.dp)
+                                .then(if (isLast) Modifier.padding(bottom = 12.dp) else Modifier)
+                        ) {
+                            SignupRow(userEntries, isCurrentUser = userName == uiState.currentUserFullName)
+                            if (!isLast) HorizontalDivider()
+                        }
                     }
                 }
                 if (uiState.isLoading) {
@@ -171,42 +206,33 @@ fun CompetitionSignupsScreen(
 }
 
 @Composable
-private fun ClubCard(clubName: String, entries: List<CompetitionSignupEntry>, currentUserFullName: String?) {
-    Card(
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        modifier = Modifier.fillMaxWidth()
+private fun ClubHeaderItem(clubName: String, entries: List<CompetitionSignupEntry>) {
+    val uniquePersons = entries.map { "${it.user.name} ${it.user.lastname}" }.distinct().size
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp)
+            .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+            .padding(start = 12.dp, end = 12.dp, top = 12.dp)
     ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            val uniquePersons = entries.map { "${it.user.name} ${it.user.lastname}" }.distinct().size
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = clubName,
-                    style = MaterialTheme.typography.titleSmall,
-                    modifier = Modifier.weight(1f)
-                )
-                Text(
-                    text = "$uniquePersons / ${entries.size}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-            val byUser = entries
-                .groupBy { "${it.user.name} ${it.user.lastname}" }
-                .entries
-            byUser.forEach { (userName, userEntries) ->
-                SignupRow(userEntries, isCurrentUser = userName == currentUserFullName)
-                HorizontalDivider()
-            }
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = clubName,
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.weight(1f)
+            )
+            Text(
+                text = "$uniquePersons / ${entries.size}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
+        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
     }
 }
 
