@@ -135,19 +135,14 @@ fun CompetitionResultsScreen(
         val userId = resultsUiState.loggedInUserId
         if (userId == -1L) return@remember emptyList()
         if (resultsUiState.groupingMode == GroupingMode.NONE) {
-            resultsUiState.filterResults.mapIndexedNotNull { i, result ->
-                if (result.signup.user.userID == userId) i + 1 else null
-            }
+            // All results are inside a single lazy item (one card), so we can only scroll to index 0.
+            if (resultsUiState.filterResults.any { it.signup.user.userID == userId }) listOf(0)
+            else emptyList()
         } else {
-            val indices = mutableListOf<Int>()
-            var base = 0
-            resultsUiState.groupedResults.forEach { group ->
-                group.items.forEachIndexed { i, result ->
-                    if (result.signup.user.userID == userId) indices.add(base + 2 + i)
-                }
-                base += 2 + group.items.size
+            // Each group is one lazy item; collect group indices that contain the current user.
+            resultsUiState.groupedResults.mapIndexedNotNull { groupIndex, group ->
+                if (group.items.any { it.signup.user.userID == userId }) groupIndex else null
             }
-            indices
         }
     }
     var occurrenceIdx by remember(currentUserIndices) { mutableIntStateOf(-1) }
