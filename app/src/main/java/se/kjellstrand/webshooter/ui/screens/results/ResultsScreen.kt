@@ -71,6 +71,7 @@ import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.results.remote.Result
+import se.kjellstrand.webshooter.data.results.remote.StdMedal
 import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.HeaderText
 import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.ItemText
 import se.kjellstrand.webshooter.ui.common.ScreenTopBar
@@ -356,8 +357,17 @@ fun ResultsList(
                                                 size = WeaponClassBadgeSize.Large
                                             )
                                         } else {
+                                            val headerText = if (resultsUiState.groupingMode == GroupingMode.MEDL) {
+                                                when (group.header) {
+                                                    StdMedal.S.value -> stringResource(R.string.silver)
+                                                    StdMedal.B.value -> stringResource(R.string.bronze)
+                                                    else -> group.header
+                                                }
+                                            } else {
+                                                group.header
+                                            }
                                             Text(
-                                                text = group.header,
+                                                text = headerText,
                                                 style = MaterialTheme.typography.titleMedium,
                                                 fontWeight = FontWeight.Bold,
                                                 textAlign = TextAlign.Center
@@ -373,7 +383,10 @@ fun ResultsList(
                                     )
                                 }
                                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                                ResultsListHeader(isGrouped = true, resultsType = resultsType, inCard = true)
+                                val isWeaponClassGrouping = resultsUiState.groupingMode == GroupingMode.WEAPON_CLASS
+                                val isMedlGrouping = resultsUiState.groupingMode == GroupingMode.MEDL
+                                val isClubGrouping = resultsUiState.groupingMode == GroupingMode.CLUB
+                                ResultsListHeader(isGrouped = true, resultsType = resultsType, inCard = true, showMedal = !isMedlGrouping, showWeaponClass = !isWeaponClassGrouping)
                                 HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
                                 group.items.forEachIndexed { index, result ->
                                     ResultItem(
@@ -383,6 +396,9 @@ fun ResultsList(
                                         resultsType = resultsType,
                                         loggedInUserId = resultsUiState.loggedInUserId,
                                         inCard = true,
+                                        showMedal = !isMedlGrouping,
+                                        showClub = !isClubGrouping,
+                                        showWeaponClass = !isWeaponClassGrouping,
                                         onItemClick = {
                                             navController.navigate(
                                                 Screen.ShooterResult.createRoute(
@@ -405,7 +421,7 @@ fun ResultsList(
 }
 
 @Composable
-fun ResultsListHeader(isGrouped: Boolean, resultsType: ResultsType, inCard: Boolean = false) {
+fun ResultsListHeader(isGrouped: Boolean, resultsType: ResultsType, inCard: Boolean = false, showMedal: Boolean = true, showWeaponClass: Boolean = true) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -419,11 +435,11 @@ fun ResultsListHeader(isGrouped: Boolean, resultsType: ResultsType, inCard: Bool
         HeaderText(R.string.name, modifier = Modifier.weight(10f))
 
         Row(
-            modifier = Modifier.weight(if (isGrouped) 8f else 9f),
+            modifier = Modifier.weight(if (isGrouped) 5f else 6f),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (!isGrouped) {
+            if (showWeaponClass) {
                 HeaderText(
                     R.string.weapon_class_short,
                     modifier = Modifier
@@ -431,19 +447,16 @@ fun ResultsListHeader(isGrouped: Boolean, resultsType: ResultsType, inCard: Bool
                         .padding(start = 4.dp)
                 )
             }
-            HeaderText(R.string.medal_short, modifier = Modifier.weight(1f))
+            if (showMedal) HeaderText(R.string.medal_short, modifier = Modifier.weight(1f))
             when (resultsType) {
                 ResultsType.FIELD,
                 ResultsType.POINTS_FIELD -> {
-                    HeaderText(R.string.hits_short, modifier = Modifier.weight(1f))
-                    HeaderText(R.string.figures_short, modifier = Modifier.weight(1f))
-                    HeaderText(R.string.points_short, modifier = Modifier.weight(1f))
+                    HeaderText(R.string.hfp, modifier = Modifier.weight(2f))
                 }
 
                 ResultsType.PRECISION,
                 ResultsType.MILITARY -> {
-                    HeaderText(R.string.points_short, modifier = Modifier.weight(1f))
-                    HeaderText(R.string.x, modifier = Modifier.weight(1f))
+                    HeaderText(R.string.px, modifier = Modifier.weight(2f))
                 }
             }
         }
@@ -559,6 +572,9 @@ fun ResultItem(
     resultsType: ResultsType = ResultsType.FIELD,
     loggedInUserId: Long = -1L,
     inCard: Boolean = false,
+    showMedal: Boolean = true,
+    showClub: Boolean = true,
+    showWeaponClass: Boolean = true,
     onItemClick: () -> Unit
 ) {
     val isCurrentUser = result.signup.user.userID == loggedInUserId
@@ -594,28 +610,34 @@ fun ResultItem(
                 style = itemStyle,
                 overflow = TextOverflow.Ellipsis
             )
-            ItemText(
+            if (showClub) ItemText(
                 text = result.signup.club?.name ?: stringResource(R.string.unknown_club),
                 overflow = TextOverflow.Ellipsis
             )
         }
 
+        val weights = (if (showWeaponClass) 2f else 0f) + (if (showMedal) 1f else 0f ) +3f
+
         Row(
-            modifier = Modifier.weight(if (isGrouped) 8f else 9f),
+            modifier = Modifier.weight(weights),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            if (!isGrouped) {
+            if (showWeaponClass) {
                 ItemText(
                     text = result.weaponClass.classname,
                     style = itemStyle,
                     modifier = Modifier
-                        .weight(1f)
+                        .weight(2f)
                         .padding(start = 4.dp)
                 )
             }
-            ItemText(
-                text = result.stdMedal?.value ?: stringResource(R.string.dash),
+            if (showMedal) ItemText(
+                text = when (result.stdMedal) {
+                    StdMedal.S -> stringResource(R.string.silver)
+                    StdMedal.B -> stringResource(R.string.bronze)
+                    null -> stringResource(R.string.dash)
+                },
                 style = itemStyle,
                 modifier = Modifier.weight(1f)
             )
@@ -623,33 +645,18 @@ fun ResultItem(
                 ResultsType.FIELD,
                 ResultsType.POINTS_FIELD -> {
                     ItemText(
-                        text = result.hits.toString(),
+                        text = result.hits.toString()+"/"+result.figureHits.toString()+"/"+result.points.toString(),
                         style = itemStyle,
-                        modifier = Modifier.weight(1f)
-                    )
-                    ItemText(
-                        text = result.figureHits.toString(),
-                        style = itemStyle,
-                        modifier = Modifier.weight(1f)
-                    )
-                    ItemText(
-                        text = result.points.toString(),
-                        style = itemStyle,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(3f)
                     )
                 }
 
                 ResultsType.PRECISION,
                 ResultsType.MILITARY -> {
                     ItemText(
-                        text = result.points.toString(),
+                        text = result.points.toString()+"/"+result.hits.toString(),
                         style = itemStyle,
-                        modifier = Modifier.weight(1f)
-                    )
-                    ItemText(
-                        text = result.hits.toString(),
-                        style = itemStyle,
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(3f)
                     )
                 }
             }
