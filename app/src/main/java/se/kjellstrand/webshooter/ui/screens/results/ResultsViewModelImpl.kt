@@ -162,7 +162,7 @@ open class ResultsViewModelImpl @Inject constructor(
             val weaponClasses = results.map { it.weaponClass.classname }.distinct().sorted()
             return weaponClasses.mapNotNull { weaponClass ->
                 val grouped = results.filter { it.weaponClass.classname == weaponClass }
-                    .sortedByDescending { calculateSortOrder(it, resultsType) }
+                    .sortedBy { it.placement } //calculateSortOrder(it, resultsType) }
                 if (grouped.isNotEmpty()) GroupedItem(weaponClass, grouped) else null
             }
         }
