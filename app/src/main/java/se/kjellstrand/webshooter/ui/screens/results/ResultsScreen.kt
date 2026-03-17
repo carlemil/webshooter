@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,13 +16,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material.icons.filled.FilterList
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -308,7 +306,11 @@ fun ResultsList(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Column(modifier = Modifier.padding(12.dp)) {
-                            ResultsListHeader(isGrouped = false, resultsType = resultsType, inCard = true)
+                            ResultsListHeader(
+                                isGrouped = false,
+                                resultsType = resultsType,
+                                inCard = true
+                            )
                             HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
                             resultsUiState.filterResults.forEachIndexed { index, result ->
                                 ResultItem(
@@ -347,7 +349,8 @@ fun ResultsList(
                                     modifier = Modifier.fillMaxWidth(),
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    val countText = "${group.items.size}/${resultsUiState.results.size}"
+                                    val countText =
+                                        "${group.items.size}/${resultsUiState.results.size}"
                                     // Ghost spacer mirrors count width so center slot is symmetric
                                     Text(
                                         text = countText,
@@ -366,15 +369,16 @@ fun ResultsList(
                                                 size = WeaponClassBadgeSize.Large
                                             )
                                         } else {
-                                            val headerText = if (resultsUiState.groupingMode == GroupingMode.MEDL) {
-                                                when (group.header) {
-                                                    StdMedal.S.value -> stringResource(R.string.silver)
-                                                    StdMedal.B.value -> stringResource(R.string.bronze)
-                                                    else -> group.header
+                                            val headerText =
+                                                if (resultsUiState.groupingMode == GroupingMode.MEDL) {
+                                                    when (group.header) {
+                                                        StdMedal.S.value -> stringResource(R.string.silver)
+                                                        StdMedal.B.value -> stringResource(R.string.bronze)
+                                                        else -> group.header
+                                                    }
+                                                } else {
+                                                    group.header
                                                 }
-                                            } else {
-                                                group.header
-                                            }
                                             Text(
                                                 text = headerText,
                                                 style = MaterialTheme.typography.titleMedium,
@@ -392,10 +396,19 @@ fun ResultsList(
                                     )
                                 }
                                 HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-                                val isWeaponClassGrouping = resultsUiState.groupingMode == GroupingMode.WEAPON_CLASS
-                                val isMedlGrouping = resultsUiState.groupingMode == GroupingMode.MEDL
-                                val isClubGrouping = resultsUiState.groupingMode == GroupingMode.CLUB
-                                ResultsListHeader(isGrouped = true, resultsType = resultsType, inCard = true, showMedal = !isMedlGrouping, showWeaponClass = !isWeaponClassGrouping)
+                                val isWeaponClassGrouping =
+                                    resultsUiState.groupingMode == GroupingMode.WEAPON_CLASS
+                                val isMedlGrouping =
+                                    resultsUiState.groupingMode == GroupingMode.MEDL
+                                val isClubGrouping =
+                                    resultsUiState.groupingMode == GroupingMode.CLUB
+                                ResultsListHeader(
+                                    isGrouped = true,
+                                    resultsType = resultsType,
+                                    inCard = true,
+                                    showMedal = !isMedlGrouping,
+                                    showWeaponClass = !isWeaponClassGrouping
+                                )
                                 HorizontalDivider(modifier = Modifier.padding(vertical = 4.dp))
                                 group.items.forEachIndexed { index, result ->
                                     ResultItem(
@@ -428,7 +441,13 @@ fun ResultsList(
 }
 
 @Composable
-fun ResultsListHeader(isGrouped: Boolean, resultsType: ResultsType, inCard: Boolean = false, showMedal: Boolean = true, showWeaponClass: Boolean = true) {
+fun ResultsListHeader(
+    isGrouped: Boolean,
+    resultsType: ResultsType,
+    inCard: Boolean = false,
+    showMedal: Boolean = true,
+    showWeaponClass: Boolean = true
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -558,14 +577,16 @@ fun FilterOptionsContent(
                 weaponGroupName = weaponGroup,
                 isHighlighted = isSelected,
                 size = WeaponClassBadgeSize.Large,
-                modifier = Modifier.clickable {
-                    val newSelectedGroups = if (isSelected) {
-                        filterState.selectedWeaponGroups - weaponGroup
-                    } else {
-                        filterState.selectedWeaponGroups + weaponGroup
+                modifier = Modifier
+                    .clickable {
+                        val newSelectedGroups = if (isSelected) {
+                            filterState.selectedWeaponGroups - weaponGroup
+                        } else {
+                            filterState.selectedWeaponGroups + weaponGroup
+                        }
+                        onFilterChange(filterState.copy(selectedWeaponGroups = newSelectedGroups))
                     }
-                    onFilterChange(filterState.copy(selectedWeaponGroups = newSelectedGroups))
-                }.padding(2.dp)
+                    .padding(2.dp)
             )
         }
     }
@@ -621,7 +642,7 @@ fun ResultItem(
             )
         }
 
-        val weights = (if (showWeaponClass) 2f else 0f) + (if (showMedal) 1f else 0f ) +3f
+        val weights = (if (showWeaponClass) 2f else 0f) + (if (showMedal) 1f else 0f) + 3f
 
         Row(
             modifier = Modifier.weight(weights),
@@ -650,7 +671,7 @@ fun ResultItem(
                 ResultsType.FIELD,
                 ResultsType.POINTS_FIELD -> {
                     ItemText(
-                        text = result.hits.toString()+"/"+result.figureHits.toString()+"/"+result.points.toString(),
+                        text = result.hits.toString() + "/" + result.figureHits.toString() + "/" + result.points.toString(),
                         style = itemStyle,
                         modifier = Modifier.weight(3f)
                     )
@@ -659,7 +680,7 @@ fun ResultItem(
                 ResultsType.PRECISION,
                 ResultsType.MILITARY -> {
                     ItemText(
-                        text = result.points.toString()+"/"+result.hits.toString(),
+                        text = result.points.toString() + "/" + result.hits.toString(),
                         style = itemStyle,
                         modifier = Modifier.weight(3f)
                     )
