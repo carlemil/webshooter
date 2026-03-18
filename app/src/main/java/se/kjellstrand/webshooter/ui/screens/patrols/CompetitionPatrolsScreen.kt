@@ -65,21 +65,20 @@ fun CompetitionPatrolsScreen(
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
-    // Per-signup-row indices: item 0..N for patrol 0, then N+1.. for patrol 1, etc.
-    val currentUserSignupIndices = remember(uiState.patrols, uiState.currentUserId) {
+    // Patrol header indices for patrols that contain the current user
+    val currentUserPatrolHeaderIndices = remember(uiState.patrols, uiState.currentUserId) {
         val userId = uiState.currentUserId ?: return@remember emptyList()
         val indices = mutableListOf<Int>()
         var base = 0
         uiState.patrols.forEach { patrol ->
+            val headerIndex = base
             base++ // header item
-            patrol.signups.forEachIndexed { i, signup ->
-                if (signup.user.userId == userId) indices.add(base + i)
-            }
+            if (patrol.signups.any { it.user.userId == userId }) indices.add(headerIndex)
             base += patrol.signups.size
         }
         indices
     }
-    var occurrenceIdx by remember(currentUserSignupIndices) { mutableStateOf(-1) }
+    var occurrenceIdx by remember(currentUserPatrolHeaderIndices) { mutableStateOf(-1) }
 
     Scaffold(
         topBar = {
@@ -93,13 +92,13 @@ fun CompetitionPatrolsScreen(
             )
         },
         floatingActionButton = {
-            val ffEnabled = currentUserSignupIndices.isNotEmpty()
+            val ffEnabled = currentUserPatrolHeaderIndices.isNotEmpty()
             SmallFloatingActionButton(
                 onClick = {
                     if (ffEnabled) {
-                        val nextIdx = (occurrenceIdx + 1) % currentUserSignupIndices.size
+                        val nextIdx = (occurrenceIdx + 1) % currentUserPatrolHeaderIndices.size
                         occurrenceIdx = nextIdx
-                        coroutineScope.launch { listState.animateScrollToItem(currentUserSignupIndices[nextIdx]) }
+                        coroutineScope.launch { listState.animateScrollToItem(currentUserPatrolHeaderIndices[nextIdx]) }
                     }
                 },
                 containerColor = if (ffEnabled) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
