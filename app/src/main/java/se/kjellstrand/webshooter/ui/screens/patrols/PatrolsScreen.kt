@@ -58,7 +58,7 @@ import se.kjellstrand.webshooter.ui.theme.appColors
 @Composable
 fun CompetitionPatrolsScreen(
     navController: NavController,
-    viewModel: CompetitionPatrolsViewModel = hiltViewModel<CompetitionPatrolsViewModelImpl>()
+    viewModel: PatrolsViewModel = hiltViewModel<PatrolsViewModelImpl>()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isFalt = uiState.competitionTypeId in setOf(2, 3, 9, 10)
