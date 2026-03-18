@@ -75,17 +75,16 @@ fun CompetitionSignupsScreen(
     // grouped: List<Map.Entry<clubName, entries>> in insertion order
     val grouped = displayed.groupBy { it.club.name }.entries.toList()
 
-    // Per-user-row indices: 1 header item per club + N user rows per club
+    // Club header indices for clubs that contain the current user
     val currentUserIndices = remember(grouped, uiState.currentUserFullName) {
         val name = uiState.currentUserFullName ?: return@remember emptyList()
         val indices = mutableListOf<Int>()
         var base = 0
         grouped.forEach { (_, entries) ->
+            val headerIndex = base
             base++ // club header item
             val byUser = entries.groupBy { "${it.user.name} ${it.user.lastname}" }.entries.toList()
-            byUser.forEachIndexed { i, (userName, _) ->
-                if (userName == name) indices.add(base + i)
-            }
+            if (byUser.any { (userName, _) -> userName == name }) indices.add(headerIndex)
             base += byUser.size
         }
         indices
