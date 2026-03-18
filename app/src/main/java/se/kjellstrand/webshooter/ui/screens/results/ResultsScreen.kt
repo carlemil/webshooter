@@ -195,7 +195,10 @@ fun CompetitionResultsScreen(
                         if (ffEnabled) {
                             val nextIdx = (occurrenceIdx + 1) % currentUserIndices.size
                             occurrenceIdx = nextIdx
-                            coroutineScope.launch { listState.animateScrollToItem(currentUserIndices[nextIdx]) }
+                            coroutineScope.launch {
+                                val offset = -(listState.layoutInfo.viewportSize.height / 2)
+                                listState.animateScrollToItem(currentUserIndices[nextIdx], scrollOffset = offset)
+                            }
                         }
                     },
                     containerColor = if (ffEnabled) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
