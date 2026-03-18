@@ -34,7 +34,7 @@ import se.kjellstrand.webshooter.data.mysignups.remote.SignupEntry
 
 @Composable
 fun MyEntriesScreen(
-    viewModel: SignupsViewModel = hiltViewModel<SignupsViewModelImpl>()
+    viewModel: MySignupsViewModel = hiltViewModel<MySignupsViewModelImpl>()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
