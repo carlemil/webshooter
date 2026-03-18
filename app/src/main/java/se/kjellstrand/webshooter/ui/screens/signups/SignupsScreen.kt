@@ -64,7 +64,7 @@ import se.kjellstrand.webshooter.ui.theme.appColors
 @Composable
 fun CompetitionSignupsScreen(
     navController: NavController,
-    viewModel: CompetitionSignupsViewModel = hiltViewModel<CompetitionSignupsViewModelImpl>()
+    viewModel: SignupsViewModel = hiltViewModel<SignupsViewModelImpl>()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var isFilterSheetOpen by remember { mutableStateOf(false) }

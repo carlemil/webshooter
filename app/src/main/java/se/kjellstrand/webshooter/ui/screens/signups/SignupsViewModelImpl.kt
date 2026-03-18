@@ -14,11 +14,11 @@ import se.kjellstrand.webshooter.data.settings.SettingsRepository
 import javax.inject.Inject
 
 @HiltViewModel
-class CompetitionSignupsViewModelImpl @Inject constructor(
+class SignupsViewModelImpl @Inject constructor(
     private val repository: CompetitionSignupsRepository,
     private val settingsRepository: SettingsRepository,
     savedStateHandle: SavedStateHandle
-) : ViewModel(), CompetitionSignupsViewModel {
+) : ViewModel(), SignupsViewModel {
 
     private val competitionId: Long = savedStateHandle["competitionId"] ?: -1L
 

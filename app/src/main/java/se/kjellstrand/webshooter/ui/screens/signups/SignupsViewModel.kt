@@ -2,7 +2,7 @@ package se.kjellstrand.webshooter.ui.screens.signups
 
 import kotlinx.coroutines.flow.StateFlow
 
-interface CompetitionSignupsViewModel {
+interface SignupsViewModel {
     val uiState: StateFlow<CompetitionSignupsUiState>
     fun loadNextPage()
     fun setFilterClub(club: String?)

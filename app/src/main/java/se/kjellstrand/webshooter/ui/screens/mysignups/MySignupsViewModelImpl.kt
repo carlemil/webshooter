@@ -12,12 +12,12 @@ import se.kjellstrand.webshooter.data.mysignups.SignupsRepository
 import javax.inject.Inject
 
 @HiltViewModel
-class SignupsViewModelImpl @Inject constructor(
+class MySignupsViewModelImpl @Inject constructor(
     private val repository: SignupsRepository
-) : ViewModel(), SignupsViewModel {
+) : ViewModel(), MySignupsViewModel {
 
-    private val _uiState = MutableStateFlow(SignupsUiState(isLoading = true))
-    override val uiState: StateFlow<SignupsUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(MySignupsUiState(isLoading = true))
+    override val uiState: StateFlow<MySignupsUiState> = _uiState.asStateFlow()
 
     init {
         load()
@@ -45,7 +45,7 @@ class SignupsViewModelImpl @Inject constructor(
     }
 
     override fun reload() {
-        _uiState.value = SignupsUiState(isLoading = true)
+        _uiState.value = MySignupsUiState(isLoading = true)
         load()
     }
 }

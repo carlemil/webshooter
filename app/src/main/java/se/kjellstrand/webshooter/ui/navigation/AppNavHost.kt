@@ -20,9 +20,9 @@ import se.kjellstrand.webshooter.ui.screens.results.CompetitionResultsScreen
 import se.kjellstrand.webshooter.ui.screens.results.ResultsViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.shooterresult.ShooterResultScreen
 import se.kjellstrand.webshooter.ui.screens.patrols.CompetitionPatrolsScreen
-import se.kjellstrand.webshooter.ui.screens.patrols.CompetitionPatrolsViewModelImpl
+import se.kjellstrand.webshooter.ui.screens.patrols.PatrolsViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.signups.CompetitionSignupsScreen
-import se.kjellstrand.webshooter.ui.screens.signups.CompetitionSignupsViewModelImpl
+import se.kjellstrand.webshooter.ui.screens.signups.SignupsViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.signup.SignupScreen
 import se.kjellstrand.webshooter.ui.screens.signup.SignupViewModel
 
@@ -68,7 +68,7 @@ fun AppNavHost(navController: NavHostController) {
             route = Screen.CompetitionSignupsList.route,
             arguments = listOf(navArgument("competitionId") { type = NavType.LongType })
         ) {
-            val signupsListViewModel: CompetitionSignupsViewModelImpl = hiltViewModel()
+            val signupsListViewModel: SignupsViewModelImpl = hiltViewModel()
             CompetitionSignupsScreen(navController, signupsListViewModel)
         }
         composable(
@@ -78,7 +78,7 @@ fun AppNavHost(navController: NavHostController) {
                 navArgument("competitionTypeId") { type = NavType.IntType }
             )
         ) {
-            val patrolsViewModel: CompetitionPatrolsViewModelImpl = hiltViewModel()
+            val patrolsViewModel: PatrolsViewModelImpl = hiltViewModel()
             CompetitionPatrolsScreen(navController, patrolsViewModel)
         }
         composable(
