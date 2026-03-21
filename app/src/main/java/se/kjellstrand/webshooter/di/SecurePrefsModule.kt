@@ -17,6 +17,7 @@ class SecurePrefs @Inject constructor(@ApplicationContext context: Context) {
         private const val FILE_NAME = "secure_prefs"
         private const val KEY_USERNAME = "username"
         private const val KEY_PASSWORD = "password"
+        private const val KEY_REMEMBER_ME = "remember_me"
         private const val TAG = "SecurePrefs"
     }
 
@@ -57,6 +58,12 @@ class SecurePrefs @Inject constructor(@ApplicationContext context: Context) {
 
     fun getUsername(): String = sharedPrefs.getString(KEY_USERNAME, "") ?: ""
     fun getPassword(): String = sharedPrefs.getString(KEY_PASSWORD, "") ?: ""
+
+    fun saveRememberMe(value: Boolean) {
+        sharedPrefs.edit { putBoolean(KEY_REMEMBER_ME, value) }
+    }
+
+    fun getRememberMe(): Boolean = sharedPrefs.getBoolean(KEY_REMEMBER_ME, false)
 
     fun clearCredentials() {
         sharedPrefs.edit {
