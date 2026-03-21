@@ -90,6 +90,7 @@
     <!-- ### LOGIN ### -->
     <string name="login_login">Inloggning</string>
     <string name="login_username">Användarnamn</string>
+    <string name="login_remember_me">Kom ihåg mig</string>
 
     <!-- ### RESULTS ### -->
     <string name="results_done_button">Klar</string>

@@ -29,7 +29,7 @@ class LoginViewModel @Inject constructor(
     val savedUsername = securePrefs.getUsername()
     val savedPassword = securePrefs.getPassword()
 
-    private val _uiState = MutableStateFlow(LoginUiState())
+    private val _uiState = MutableStateFlow(LoginUiState(rememberMe = securePrefs.getRememberMe()))
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
@@ -52,7 +52,8 @@ class LoginViewModel @Inject constructor(
             if (username == "mockuser" && password == "mockpassword") {
                 MockModeManager.isMockMode = true
                 authTokenManager.storeToken("mock_token")
-                securePrefs.saveCredentials(username, password)
+                if (_uiState.value.rememberMe) securePrefs.saveCredentials(username, password)
+                else securePrefs.clearCredentials()
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     isSuccess = true,
@@ -73,7 +74,8 @@ class LoginViewModel @Inject constructor(
                                 autoLoginAttempted = true
                             )
                             _eventFlow.emit(UiEvent.NavigateToLandingPage)
-                            securePrefs.saveCredentials(username, password)
+                            if (_uiState.value.rememberMe) securePrefs.saveCredentials(username, password)
+                            else securePrefs.clearCredentials()
                         }
 
                         is Resource.Error -> {
@@ -93,6 +95,11 @@ class LoginViewModel @Inject constructor(
                     }
                 }
         }
+    }
+
+    fun setRememberMe(value: Boolean) {
+        securePrefs.saveRememberMe(value)
+        _uiState.value = _uiState.value.copy(rememberMe = value)
     }
 
     fun getCookies() {
