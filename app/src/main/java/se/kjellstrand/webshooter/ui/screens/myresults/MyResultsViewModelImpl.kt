@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.screens.mysignups
+package se.kjellstrand.webshooter.ui.screens.myresults
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,12 +12,12 @@ import se.kjellstrand.webshooter.data.mysignups.SignupsRepository
 import javax.inject.Inject
 
 @HiltViewModel
-class MySignupsViewModelImpl @Inject constructor(
+class MyResultsViewModelImpl @Inject constructor(
     private val repository: SignupsRepository
-) : ViewModel(), MySignupsViewModel {
+) : ViewModel(), MyResultsViewModel {
 
-    private val _uiState = MutableStateFlow(MySignupsUiState(isLoading = true))
-    override val uiState: StateFlow<MySignupsUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(MyResultsUiState(isLoading = true))
+    override val uiState: StateFlow<MyResultsUiState> = _uiState.asStateFlow()
 
     init {
         load()
@@ -30,7 +30,10 @@ class MySignupsViewModelImpl @Inject constructor(
                     is Resource.Success -> {
                         _uiState.value = _uiState.value.copy(
                             groupedEntries = resource.data
-                                .mapValues { (_, group) -> group.signups }
+                                .mapValues { (_, group) ->
+                                    group.signups.filter { it.resultsPlacements != null }
+                                }
+                                .filterValues { it.isNotEmpty() }
                                 .toSortedMap(compareByDescending { it }),
                             isLoading = false
                         )
@@ -45,7 +48,7 @@ class MySignupsViewModelImpl @Inject constructor(
     }
 
     override fun reload() {
-        _uiState.value = MySignupsUiState(isLoading = true)
+        _uiState.value = MyResultsUiState(isLoading = true)
         load()
     }
 }

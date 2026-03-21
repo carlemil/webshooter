@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.screens.mysignups
+package se.kjellstrand.webshooter.ui.screens.myresults
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -34,7 +34,7 @@ import se.kjellstrand.webshooter.data.mysignups.remote.SignupEntry
 
 @Composable
 fun MyEntriesScreen(
-    viewModel: MySignupsViewModel = hiltViewModel<MySignupsViewModelImpl>()
+    viewModel: MyResultsViewModel = hiltViewModel<MyResultsViewModelImpl>()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
