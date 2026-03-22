@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -70,12 +71,117 @@ fun MyEntriesScreen(
                             modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
                         )
                     }
+                    item(key = "summary_$year") {
+                        YearlySummaryCard(entries, uiState.resultStats)
+                    }
                     val byCompetition = entries.groupBy { it.competition.id }
                         .values.toList()
                     items(
                         byCompetition.size,
                         key = { byCompetition[it].first().competition.id }) { index ->
                         CompetitionSignupsItem(byCompetition[index])
+                    }
+                }
+            }
+        }
+    }
+}
+
+private data class SummaryRow(
+    val weaponClass: String,
+    val competitionType: String,
+    val avgScore: Double,
+    val avgHits: Double,
+    val avgFigureHits: Double,
+    val avgPlacement: Double,
+    val medalCount: Int,
+    val medalScore: Int
+)
+
+@Composable
+private fun YearlySummaryCard(entries: List<SignupEntry>, resultStats: Map<Long, ResultStats>) {
+    val relevantTypes = listOf("Fält", "Precision", "Militär snabbmatch")
+    val rowsByType = remember(entries, resultStats) {
+        val allRows = entries
+            .filter { it.resultsPlacements != null && it.competition.resultsTypeHuman in relevantTypes }
+            .groupBy { it.weaponclass.classname to it.competition.resultsTypeHuman }
+            .map { (key, group) ->
+                val placements = group.map { it.resultsPlacements!! }
+                val avgScore = group.mapNotNull { entry ->
+                    val stations = resultStats[entry.id]?.stationCount?.takeIf { it > 0 }
+                        ?: return@mapNotNull entry.resultsPlacements!!.points.toDouble()
+                    entry.resultsPlacements!!.points.toDouble() / stations
+                }.average()
+                val avgHits = group.mapNotNull { entry -> resultStats[entry.id]?.hits?.toDouble() }.average()
+                val avgFigureHits = group.mapNotNull { entry -> resultStats[entry.id]?.figureHits?.toDouble() }.average()
+                SummaryRow(
+                    weaponClass = key.first,
+                    competitionType = key.second,
+                    avgScore = avgScore,
+                    avgHits = if (avgHits.isNaN()) 0.0 else avgHits,
+                    avgFigureHits = if (avgFigureHits.isNaN()) 0.0 else avgFigureHits,
+                    avgPlacement = placements.map { it.placement }.average(),
+                    medalCount = placements.count { it.stdMedal != null },
+                    medalScore = placements.sumOf {
+                        when (it.stdMedal) { "B" -> 1; "S" -> 2; else -> 0 }.toInt()
+                    }
+                )
+            }
+        relevantTypes.mapNotNull { type ->
+            val rows = allRows.filter { it.competitionType == type }.sortedBy { it.weaponClass }
+            if (rows.isEmpty()) null else type to rows
+        }
+    }
+    if (rowsByType.isEmpty()) return
+
+    Card(
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(12.dp)) {
+            Text(
+                text = stringResource(R.string.my_results_summary),
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(bottom = 6.dp)
+            )
+            rowsByType.forEachIndexed { sectionIndex, (type, rows) ->
+                if (sectionIndex > 0) Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = type,
+                    style = MaterialTheme.typography.bodySmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+                val isFalt = type == "Fält"
+                GridRow {
+                    GridCell(stringResource(R.string.my_results_summary_class), 2f, fontWeight = FontWeight.Bold)
+                    if (isFalt) {
+                        GridCell(stringResource(R.string.my_results_summary_avg_hits), 1.5f, fontWeight = FontWeight.Bold)
+                        GridCell(stringResource(R.string.my_results_summary_avg_figures), 1.5f, fontWeight = FontWeight.Bold)
+                    } else {
+                        GridCell(stringResource(R.string.my_results_summary_avg_score), 1.5f, fontWeight = FontWeight.Bold)
+                        GridCell(stringResource(R.string.my_results_summary_avg_pos), 1.5f, fontWeight = FontWeight.Bold)
+                    }
+                    GridCell(stringResource(R.string.my_results_summary_medals), 1.2f, fontWeight = FontWeight.Bold)
+                    GridCell(stringResource(R.string.my_results_summary_medal_pts), 1.2f, fontWeight = FontWeight.Bold)
+                }
+                HorizontalDivider(modifier = Modifier.padding(vertical = 2.dp))
+                rows.forEach { row ->
+                    GridRow {
+                        GridCell(row.weaponClass, 2f)
+                        if (isFalt) {
+                            GridCell("%.1f".format(row.avgHits), 1.5f)
+                            GridCell("%.1f".format(row.avgFigureHits), 1.5f)
+                        } else {
+                            GridCell("%.1f".format(row.avgScore), 1.5f)
+                            GridCell("%.1f".format(row.avgPlacement), 1.5f)
+                        }
+                        GridCell(row.medalCount.toString(), 1.2f)
+                        GridCell(row.medalScore.toString(), 1.2f)
                     }
                 }
             }

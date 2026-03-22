@@ -193,6 +193,14 @@
     <string name="signups_start_time">Start tid: %1$s</string>
     <string name="signups_team">Lag: %1$s</string>
     <string name="signups_weapon_class">Klass: %1$s</string>
+    <string name="my_results_summary">Sammanfattning</string>
+    <string name="my_results_summary_class">Klass</string>
+    <string name="my_results_summary_avg_score">Snitt p.</string>
+    <string name="my_results_summary_avg_hits">Snitt t.</string>
+    <string name="my_results_summary_avg_figures">Snitt f.</string>
+    <string name="my_results_summary_avg_pos">Snitt pl.</string>
+    <string name="my_results_summary_medals">Medalj</string>
+    <string name="my_results_summary_medal_pts">Med. p.</string>
     <string name="yes">Ja</string>
     <string name="no">Nej</string>
     <string name="updates_in">Uppdateras om %1$ds</string>
