@@ -93,7 +93,6 @@ private data class SummaryRow(
     val avgScore: Double,
     val avgHits: Double,
     val avgFigureHits: Double,
-    val avgPlacement: Double,
     val medalCount: Int,
     val medalScore: Int
 )
@@ -120,7 +119,6 @@ private fun YearlySummaryCard(entries: List<SignupEntry>, resultStats: Map<Long,
                     avgScore = avgScore,
                     avgHits = if (avgHits.isNaN()) 0.0 else avgHits,
                     avgFigureHits = if (avgFigureHits.isNaN()) 0.0 else avgFigureHits,
-                    avgPlacement = placements.map { it.placement }.average(),
                     medalCount = placements.count { it.stdMedal != null },
                     medalScore = placements.sumOf {
                         when (it.stdMedal) { "B" -> 1; "S" -> 2; else -> 0 }.toInt()
@@ -164,7 +162,6 @@ private fun YearlySummaryCard(entries: List<SignupEntry>, resultStats: Map<Long,
                         GridCell(stringResource(R.string.my_results_summary_avg_figures), 1.5f, fontWeight = FontWeight.Bold)
                     } else {
                         GridCell(stringResource(R.string.my_results_summary_avg_score), 1.5f, fontWeight = FontWeight.Bold)
-                        GridCell(stringResource(R.string.my_results_summary_avg_pos), 1.5f, fontWeight = FontWeight.Bold)
                     }
                     GridCell(stringResource(R.string.my_results_summary_medals), 1.2f, fontWeight = FontWeight.Bold)
                     GridCell(stringResource(R.string.my_results_summary_medal_pts), 1.2f, fontWeight = FontWeight.Bold)
@@ -178,7 +175,6 @@ private fun YearlySummaryCard(entries: List<SignupEntry>, resultStats: Map<Long,
                             GridCell("%.1f".format(row.avgFigureHits), 1.5f)
                         } else {
                             GridCell("%.1f".format(row.avgScore), 1.5f)
-                            GridCell("%.1f".format(row.avgPlacement), 1.5f)
                         }
                         GridCell(row.medalCount.toString(), 1.2f)
                         GridCell(row.medalScore.toString(), 1.2f)
