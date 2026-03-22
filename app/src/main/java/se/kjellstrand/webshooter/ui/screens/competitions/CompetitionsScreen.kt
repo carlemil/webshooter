@@ -393,25 +393,24 @@ fun CompetitionItem(
                             )
                         }
                     }
-                    IconButton(
-                        onClick = {
-                            val uri = when {
-                                competition.lat != 0.0 || competition.lng != 0.0 ->
-                                    "geo:${competition.lat},${competition.lng}?q=${competition.lat},${competition.lng}".toUri()
+                    if (hasLocation) {
+                        IconButton(
+                            onClick = {
+                                val uri = when {
+                                    competition.lat != 0.0 || competition.lng != 0.0 ->
+                                        "geo:${competition.lat},${competition.lng}?q=${competition.lat},${competition.lng}".toUri()
 
-                                !competition.googleMaps.isNullOrBlank() ->
-                                    competition.googleMaps!!.replace("/maps/embed", "/maps").toUri()
-
-                                else -> "geo:0,0".toUri()
+                                    else ->
+                                        competition.googleMaps!!.replace("/maps/embed", "/maps").toUri()
+                                }
+                                context.startActivity(Intent(Intent.ACTION_VIEW, uri))
                             }
-                            context.startActivity(Intent(Intent.ACTION_VIEW, uri))
-                        },
-                        enabled = hasLocation
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Map,
-                            contentDescription = stringResource(R.string.competitions_open_map)
-                        )
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.map_search),
+                                contentDescription = stringResource(R.string.competitions_open_map)
+                            )
+                        }
                     }
                 }
                 Spacer(modifier = Modifier.height(6.dp))
