@@ -1,6 +1,7 @@
 package se.kjellstrand.webshooter.ui.screens.competitions
 
 import android.content.Intent
+import android.provider.CalendarContract
 import androidx.compose.foundation.clickable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Arrangement
@@ -20,12 +21,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.ui.res.painterResource
 import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Today
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -40,6 +43,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -70,6 +74,9 @@ import se.kjellstrand.webshooter.ui.common.WeaponClassBadges
 import se.kjellstrand.webshooter.ui.mock.CompetitionsViewModelMock
 import se.kjellstrand.webshooter.ui.navigation.Screen
 import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.ZoneId
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -216,7 +223,7 @@ fun CompetitionsScreen(
                 containerColor = if (ffEnabled) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
                 contentColor = if (ffEnabled) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
             ) {
-                Icon(imageVector = Icons.Default.FastForward, contentDescription = "Scroll to next signed-up competition")
+                Icon(painter = painterResource(R.drawable.fast_forward), contentDescription = "Scroll to next signed-up competition")
             }
             SmallFloatingActionButton(
                 onClick = {
@@ -227,10 +234,10 @@ fun CompetitionsScreen(
                 containerColor = if (upcomingIndex >= 0) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
                 contentColor = if (upcomingIndex >= 0) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
             ) {
-                Icon(imageVector = Icons.Default.Today, contentDescription = "Scroll to next upcoming competition")
+                Icon(painter = painterResource(R.drawable.event_upcoming), contentDescription = "Scroll to next upcoming competition")
             }
             FloatingActionButton(onClick = { isFilterBottomSheetOpen = true }) {
-                Icon(imageVector = Icons.Default.FilterList, contentDescription = "Open Filters")
+                Icon(painter = painterResource(R.drawable.filter_list), contentDescription = "Open Filters")
             }
         }
     }
@@ -331,6 +338,7 @@ fun CompetitionItem(
     onPatrolsOrRelayClick: () -> Unit = {}
 ) {
     var isExpanded by remember { mutableStateOf(false) }
+    var showCalendarDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val hasLocation =
         competition.lat != 0.0 || competition.lng != 0.0 || !competition.googleMaps.isNullOrBlank()
@@ -372,6 +380,12 @@ fun CompetitionItem(
                             ),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    IconButton(onClick = { showCalendarDialog = true }) {
+                        Icon(
+                            painter = painterResource(R.drawable.calendar_add_on),
+                            contentDescription = stringResource(R.string.competitions_add_to_calendar)
                         )
                     }
                     IconButton(
@@ -488,6 +502,62 @@ fun CompetitionItem(
                 }
             }
         }
+    }
+
+    if (showCalendarDialog) {
+        val weaponClassMap = competition.weaponClasses.associate { it.id to it.classname }
+        val signedUpClasses = competition.userSignups
+            .mapNotNull { weaponClassMap[it.weaponClassesID] }
+            .distinct()
+        val classesStr = if (signedUpClasses.isNotEmpty()) " - ${signedUpClasses.joinToString(", ")}" else ""
+        val eventTitle = competition.name + classesStr
+
+        val startTimeStr = competition.userSignups
+            .mapNotNull { it.startTimeHuman.takeIf { t -> t.isNotBlank() && t != "01:00" } }
+            .minOrNull()
+        val endTimeStr = competition.userSignups
+            .mapNotNull { it.endTimeHuman.takeIf { t -> t.isNotBlank() } }
+            .maxOrNull()
+
+        val startMillis = runCatching {
+            LocalDateTime.of(LocalDate.parse(competition.date), LocalTime.parse(startTimeStr ?: "00:00"))
+                .atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        }.getOrNull()
+        val endMillis = runCatching {
+            LocalDateTime.of(LocalDate.parse(competition.date), LocalTime.parse(endTimeStr ?: "23:59"))
+                .atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+        }.getOrNull()
+
+        AlertDialog(
+            onDismissRequest = { showCalendarDialog = false },
+            title = { Text(eventTitle) },
+            text = {
+                Column {
+                    Text(competition.date)
+                    if (startTimeStr != null) Text("$startTimeStr – ${endTimeStr ?: ""}")
+                }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    showCalendarDialog = false
+                    val intent = Intent(Intent.ACTION_INSERT).apply {
+                        data = CalendarContract.Events.CONTENT_URI
+                        putExtra(CalendarContract.Events.TITLE, eventTitle)
+                        if (startMillis != null) putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startMillis)
+                        if (endMillis != null) putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endMillis)
+                        if (startMillis == null) putExtra(CalendarContract.Events.ALL_DAY, true)
+                    }
+                    context.startActivity(intent)
+                }) {
+                    Text(stringResource(R.string.competitions_add_to_calendar))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showCalendarDialog = false }) {
+                    Text(stringResource(R.string.settings_cancel))
+                }
+            }
+        )
     }
 }
 
