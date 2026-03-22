@@ -256,7 +256,7 @@ fun CompetitionResultsScreen(
     }
 
     if (isFilterBottomSheetOpen) {
-        FilterBottomSheet(
+        GroupingAndFilterBottomSheet(
             allWeaponGroups = resultsUiState.allWeaponGroups,
             filterState = FilterState(
                 selectedWeaponGroups = resultsUiState.selectedWeaponGroups,
@@ -528,7 +528,7 @@ fun ResultsListHeader(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FilterBottomSheet(
+fun GroupingAndFilterBottomSheet(
     allWeaponGroups: List<String>,
     filterState: FilterState,
     onFilterChange: (FilterState) -> Unit,
