@@ -8,23 +8,20 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.ui.draw.clip
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.FastForward
-import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -52,6 +49,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
@@ -198,7 +196,10 @@ fun CompetitionResultsScreen(
                             occurrenceIdx = nextIdx
                             coroutineScope.launch {
                                 val offset = -(listState.layoutInfo.viewportSize.height / 2)
-                                listState.animateScrollToItem(currentUserIndices[nextIdx], scrollOffset = offset)
+                                listState.animateScrollToItem(
+                                    currentUserIndices[nextIdx],
+                                    scrollOffset = offset
+                                )
                             }
                         }
                     },
@@ -498,8 +499,11 @@ fun ResultsListHeader(
         )
         HeaderText(R.string.name, modifier = Modifier.weight(10f))
 
+        val isFieldType = resultsType == ResultsType.FIELD || resultsType == ResultsType.POINTS_FIELD
+        val headerScoreWeight = if (isFieldType) 3f else 2f
+        val headerRightWeight = if (isGrouped) 5f else 6f + if (isFieldType) 1f else 0f
         Row(
-            modifier = Modifier.weight(if (isGrouped) 5f else 6f),
+            modifier = Modifier.weight(headerRightWeight),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -515,12 +519,12 @@ fun ResultsListHeader(
             when (resultsType) {
                 ResultsType.FIELD,
                 ResultsType.POINTS_FIELD -> {
-                    HeaderText(R.string.hfp, modifier = Modifier.weight(2f))
+                    HeaderText(R.string.hfp, modifier = Modifier.weight(headerScoreWeight))
                 }
 
                 ResultsType.PRECISION,
                 ResultsType.MILITARY -> {
-                    HeaderText(R.string.px, modifier = Modifier.weight(2f))
+                    HeaderText(R.string.px, modifier = Modifier.weight(headerScoreWeight))
                 }
             }
         }
@@ -667,7 +671,7 @@ fun ResultItem(
         )
 
         Column(
-            modifier = Modifier.weight(10f)
+            modifier = Modifier.weight(if (showWeaponClass) 8f else 10f)
         ) {
             ItemText(
                 text = "${result.signup.user.name} ${result.signup.user.lastname}",
@@ -680,7 +684,9 @@ fun ResultItem(
             )
         }
 
-        val weights = (if (showWeaponClass) 2f else 0f) + (if (showMedal) 1f else 0f) + 3f
+        val isFieldType = resultsType == ResultsType.FIELD || resultsType == ResultsType.POINTS_FIELD
+        val scoreWeight = if (isFieldType) 4f else 3f
+        val weights = (if (showWeaponClass) 2f else 0f) + (if (showMedal) 1f else 0f) + scoreWeight
 
         Row(
             modifier = Modifier.weight(weights),
@@ -711,7 +717,7 @@ fun ResultItem(
                     ItemText(
                         text = result.hits.toString() + "/" + result.figureHits.toString() + "/" + result.points.toString(),
                         style = itemStyle,
-                        modifier = Modifier.weight(3f)
+                        modifier = Modifier.weight(scoreWeight)
                     )
                 }
 
@@ -720,7 +726,7 @@ fun ResultItem(
                     ItemText(
                         text = result.points.toString() + "/" + result.hits.toString(),
                         style = itemStyle,
-                        modifier = Modifier.weight(3f)
+                        modifier = Modifier.weight(scoreWeight)
                     )
                 }
             }

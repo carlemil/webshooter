@@ -6,8 +6,8 @@ plugins {
     alias(libs.plugins.compose.compiler)
 }
 
-val appVersionCode = 15
-val appVersionName = "1.7.8"
+val appVersionCode = 16
+val appVersionName = "1.7.9"
 
 // ---- Generate release notes ----
 // Make release notes for everything in between appVersionName 1.7.7 and appVersionName 1.7.8.
