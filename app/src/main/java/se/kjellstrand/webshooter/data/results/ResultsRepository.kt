@@ -60,6 +60,42 @@ open class ResultsRepository @Inject constructor(
         }
     }
 
+    fun getPreferCached(competitionId: Int): Flow<Resource<ResultsResponse, UserError>> {
+        return flow {
+            emit(Resource.Loading(true))
+            try {
+                val cached = dao.getByCompetition(competitionId)
+                if (cached.isNotEmpty()) {
+                    emit(Resource.Success(ResultsResponse(results = cached.map { it.toDomain(gson) })))
+                    return@flow
+                }
+            } catch (e: Exception) {
+                dao.deleteByCompetition(competitionId)
+            }
+
+            val auth = "Bearer eyJ0eXA"
+            val result = try {
+                resultsRemoteDataSource.getResults(auth, competitionId)
+            } catch (e: IOException) {
+                e.printStackTrace()
+                emit(Resource.Error(UserError.IOError))
+                return@flow
+            } catch (e: HttpException) {
+                e.printStackTrace()
+                emit(Resource.Error(UserError.HttpError))
+                return@flow
+            } catch (e: Exception) {
+                e.printStackTrace()
+                emit(Resource.Error(UserError.UnknownError))
+                return@flow
+            }
+
+            dao.deleteByCompetition(competitionId)
+            dao.insertAll(result.results.map { it.toEntity(gson) })
+            emit(Resource.Success(result))
+        }
+    }
+
     fun getShooterResults(competitionId: Int, shooterId: Int): Flow<Resource<ResultsResponse, UserError>> {
         return flow {
             emit(Resource.Loading(true))
