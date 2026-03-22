@@ -672,7 +672,8 @@ fun CompetitionDetail(competition: Datum, modifier: Modifier = Modifier) {
                     label = stringResource(R.string.competitions_website),
                     value = competition.website ?: "",
                     onClick = competition.website?.takeIf { it.isNotEmpty() }?.let {
-                        { context.startActivity(Intent(Intent.ACTION_VIEW, it.toUri())) }
+                        val url = if (it.startsWith("http://") || it.startsWith("https://")) it else "https://$it"
+                        { context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri())) }
                     }
                 )
             }
