@@ -59,7 +59,7 @@ class MyResultsViewModelImpl @Inject constructor(
             viewModelScope.launch {
                 val entriesForComp = allEntries.filter { it.competition.id.toInt() == compId }
                 val newStats = mutableMapOf<Long, ResultStats>()
-                resultsRepository.get(compId).collect { resource ->
+                resultsRepository.getPreferCached(compId).collect { resource ->
                     if (resource is Resource.Success) {
                         resource.data.results.forEach { result ->
                             val entry = entriesForComp.firstOrNull { it.id == result.signupsID }
