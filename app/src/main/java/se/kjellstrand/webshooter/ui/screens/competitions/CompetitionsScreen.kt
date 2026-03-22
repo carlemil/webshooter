@@ -382,11 +382,16 @@ fun CompetitionItem(
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-                    IconButton(onClick = { showCalendarDialog = true }) {
-                        Icon(
-                            painter = painterResource(R.drawable.calendar_add_on),
-                            contentDescription = stringResource(R.string.competitions_add_to_calendar)
-                        )
+                    val isFutureCompetition = remember(competition.date) {
+                        runCatching { LocalDate.parse(competition.date) >= LocalDate.now() }.getOrDefault(false)
+                    }
+                    if (isFutureCompetition) {
+                        IconButton(onClick = { showCalendarDialog = true }) {
+                            Icon(
+                                painter = painterResource(R.drawable.calendar_add_on),
+                                contentDescription = stringResource(R.string.competitions_add_to_calendar)
+                            )
+                        }
                     }
                     IconButton(
                         onClick = {
