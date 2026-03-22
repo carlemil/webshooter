@@ -54,11 +54,19 @@ open class ResultsViewModelImpl @Inject constructor(
         getLoggedInUserId()
     }
 
+    private var myClubId: Long = -1L
+
     private fun getLoggedInUserId() {
         viewModelScope.launch {
             settingsRepository.getUserProfile().collect { resource ->
                 if (resource is Resource.Success) {
-                    _uiState.update { it.copy(loggedInUserId = resource.data.userId) }
+                    myClubId = resource.data.clubsId
+                    _uiState.update { current ->
+                        current.copy(
+                            loggedInUserId = resource.data.userId,
+                            groupedResults = groupResults(current.filterResults, resultsType, current.groupingMode, context, myClubId)
+                        )
+                    }
                 }
             }
         }
@@ -76,7 +84,7 @@ open class ResultsViewModelImpl @Inject constructor(
                                 current.copy(
                                     results = resource.data.results,
                                     filterResults = filterResults(resource.data.results, resultsType),
-                                    groupedResults = groupResults(resource.data.results, resultsType, current.groupingMode, context),
+                                    groupedResults = groupResults(resource.data.results, resultsType, current.groupingMode, context, myClubId),
                                     allWeaponGroups = getWeaponGroups(resource.data.results).toList().sorted(),
                                     selectedWeaponGroups = getWeaponGroups(resource.data.results),
                                     isLoading = false,
@@ -123,7 +131,7 @@ open class ResultsViewModelImpl @Inject constructor(
         _uiState.update { currentState ->
             currentState.copy(
                 filterResults = filtered,
-                groupedResults = groupResults(filtered, resultsType, currentGroupingMode, context)
+                groupedResults = groupResults(filtered, resultsType, currentGroupingMode, context, myClubId)
             )
         }
     }
@@ -137,7 +145,7 @@ open class ResultsViewModelImpl @Inject constructor(
         _uiState.update { currentState ->
             currentState.copy(
                 groupingMode = groupingMode,
-                groupedResults = groupResults(filtered, resultsType, groupingMode, context)
+                groupedResults = groupResults(filtered, resultsType, groupingMode, context, myClubId)
             )
         }
     }
@@ -147,11 +155,12 @@ open class ResultsViewModelImpl @Inject constructor(
             results: List<Result>,
             resultsType: ResultsType,
             groupingMode: GroupingMode = GroupingMode.WEAPON_CLASS,
-            context: Context? = null
+            context: Context? = null,
+            myClubId: Long = -1L
         ): List<GroupedItem> {
             return when (groupingMode) {
                 GroupingMode.WEAPON_CLASS -> groupByWeaponClass(results, resultsType)
-                GroupingMode.CLUB -> groupByClub(results, resultsType, context)
+                GroupingMode.CLUB -> groupByClub(results, resultsType, context, myClubId)
                 GroupingMode.MEDL -> groupByMedl(results, resultsType, context)
                 GroupingMode.NONE -> emptyList()
             }
@@ -166,9 +175,14 @@ open class ResultsViewModelImpl @Inject constructor(
             }
         }
 
-        private fun groupByClub(results: List<Result>, resultsType: ResultsType, context: Context?): List<GroupedItem> {
+        private fun groupByClub(results: List<Result>, resultsType: ResultsType, context: Context?, myClubId: Long = -1L): List<GroupedItem> {
             val unknown = context?.getString(R.string.unknown) ?: "Unknown"
-            val clubs = results.map { it.signup.club?.name ?: unknown }.distinct().sorted()
+            val clubIdByName = results.mapNotNull { it.signup.club }.associate { it.name to it.id }
+            val clubs = results.map { it.signup.club?.name ?: unknown }.distinct()
+                .sortedWith(compareBy(
+                    { if ((clubIdByName[it] ?: -1L) == myClubId) 0 else 1 },
+                    { it }
+                ))
             return clubs.mapNotNull { club ->
                 val grouped = results.filter { (it.signup.club?.name ?: unknown) == club }
                     .sortedByDescending { calculateSortOrder(it, resultsType) }
