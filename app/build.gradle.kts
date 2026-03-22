@@ -6,8 +6,13 @@ plugins {
     alias(libs.plugins.compose.compiler)
 }
 
-val appVersionCode = 14
-val appVersionName = "1.7.7"
+val appVersionCode = 15
+val appVersionName = "1.7.8"
+
+// ---- Generate release notes ----
+// Make release notes for everything in between appVersionName 1.7.7 and appVersionName 1.7.8.
+// Focus on what the USER experiences, not what the dev team did. Max 500 characters.
+// Short, user-friendly language. No technical jargon.
 
 val dbVersionDir = layout.buildDirectory.dir("generated/source/dbversion")
 
