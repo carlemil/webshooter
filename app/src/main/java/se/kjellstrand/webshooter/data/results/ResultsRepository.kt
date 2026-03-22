@@ -36,9 +36,8 @@ open class ResultsRepository @Inject constructor(
                 dao.deleteByCompetition(competitionId)
             }
 
-            val auth = "Bearer eyJ0eXA"
             val result = try {
-                resultsRemoteDataSource.getResults(auth, competitionId)
+                resultsRemoteDataSource.getResults(competitionId)
             } catch (e: IOException) {
                 e.printStackTrace()
                 if (!hasCached) emit(Resource.Error(UserError.IOError))
@@ -73,9 +72,8 @@ open class ResultsRepository @Inject constructor(
                 dao.deleteByCompetition(competitionId)
             }
 
-            val auth = "Bearer eyJ0eXA"
             val result = try {
-                resultsRemoteDataSource.getResults(auth, competitionId)
+                resultsRemoteDataSource.getResults(competitionId)
             } catch (e: IOException) {
                 e.printStackTrace()
                 emit(Resource.Error(UserError.IOError))
@@ -114,9 +112,8 @@ open class ResultsRepository @Inject constructor(
                 dao.deleteByCompetition(competitionId)
             }
 
-            val auth = "Bearer eyJ0eXA"
             val result = try {
-                resultsRemoteDataSource.getResults(auth, competitionId)
+                resultsRemoteDataSource.getResults(competitionId)
             } catch (e: IOException) {
                 e.printStackTrace()
                 emit(Resource.Error(UserError.IOError))
