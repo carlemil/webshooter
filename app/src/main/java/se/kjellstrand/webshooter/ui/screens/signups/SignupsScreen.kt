@@ -49,6 +49,7 @@ import androidx.compose.ui.Alignment
 import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -122,10 +123,10 @@ fun CompetitionSignupsScreen(
                     containerColor = if (ffEnabled) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
                     contentColor = if (ffEnabled) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
                 ) {
-                    Icon(Icons.Default.FastForward, contentDescription = "Fast forward to current user")
+                    Icon(painterResource(R.drawable.fast_forward), contentDescription = "Fast forward to current user")
                 }
                 FloatingActionButton(onClick = { isFilterSheetOpen = true }) {
-                    Icon(Icons.Default.FilterList, contentDescription = "Filter")
+                    Icon(painterResource(R.drawable.filter_list), contentDescription = "Filter")
                 }
             }
         }
