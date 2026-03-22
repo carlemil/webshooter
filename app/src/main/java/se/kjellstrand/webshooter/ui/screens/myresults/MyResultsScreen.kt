@@ -99,8 +99,11 @@ private data class SummaryRow(
 
 @Composable
 private fun YearlySummaryCard(entries: List<SignupEntry>, resultStats: Map<Long, ResultStats>) {
-    val relevantTypes = listOf("Fält", "Precision", "Militär snabbmatch")
     val rowsByType = remember(entries, resultStats) {
+        val relevantTypes = entries
+            .filter { it.resultsPlacements != null }
+            .map { it.competition.resultsTypeHuman }
+            .distinct()
         val allRows = entries
             .filter { it.resultsPlacements != null && it.competition.resultsTypeHuman in relevantTypes }
             .groupBy { it.weaponclass.classname to it.competition.resultsTypeHuman }
