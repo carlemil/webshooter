@@ -20,6 +20,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -85,6 +86,12 @@ fun CompetitionsScreen(
         val today = LocalDate.now()
         competitionsState.filteredData.indexOfLast { competition ->
             runCatching { !LocalDate.parse(competition.date).isBefore(today) }.getOrDefault(false)
+        }
+    }
+
+    val signedUpIndices = remember(competitionsState.filteredData) {
+        competitionsState.filteredData.mapIndexedNotNull { i, datum ->
+            if (datum.userSignups.isNotEmpty()) i else null
         }
     }
 
@@ -196,6 +203,21 @@ fun CompetitionsScreen(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalAlignment = Alignment.End
         ) {
+            val ffEnabled = signedUpIndices.isNotEmpty()
+            SmallFloatingActionButton(
+                onClick = {
+                    if (ffEnabled) {
+                        val firstVisible = listState.firstVisibleItemIndex
+                        val nextIndex = signedUpIndices.firstOrNull { it > firstVisible }
+                            ?: signedUpIndices.first()
+                        coroutineScope.launch { listState.animateScrollToItem(nextIndex) }
+                    }
+                },
+                containerColor = if (ffEnabled) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                contentColor = if (ffEnabled) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+            ) {
+                Icon(imageVector = Icons.Default.FastForward, contentDescription = "Scroll to next signed-up competition")
+            }
             SmallFloatingActionButton(
                 onClick = {
                     if (upcomingIndex >= 0) {
