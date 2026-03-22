@@ -44,6 +44,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -132,7 +133,44 @@ fun CompetitionsScreen(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Scaffold(
+        floatingActionButton = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.End
+            ) {
+                val ffEnabled = signedUpIndices.isNotEmpty()
+                SmallFloatingActionButton(
+                    onClick = {
+                        if (ffEnabled) {
+                            val firstVisible = listState.firstVisibleItemIndex
+                            val nextIndex = signedUpIndices.firstOrNull { it > firstVisible }
+                                ?: signedUpIndices.first()
+                            coroutineScope.launch { listState.animateScrollToItem(nextIndex) }
+                        }
+                    },
+                    containerColor = if (ffEnabled) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                    contentColor = if (ffEnabled) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+                ) {
+                    Icon(painter = painterResource(R.drawable.fast_forward), contentDescription = "Scroll to next signed-up competition")
+                }
+                SmallFloatingActionButton(
+                    onClick = {
+                        if (upcomingIndex >= 0) {
+                            coroutineScope.launch { listState.animateScrollToItem(upcomingIndex) }
+                        }
+                    },
+                    containerColor = if (upcomingIndex >= 0) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
+                    contentColor = if (upcomingIndex >= 0) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
+                ) {
+                    Icon(painter = painterResource(R.drawable.event_upcoming), contentDescription = "Scroll to next upcoming competition")
+                }
+                FloatingActionButton(onClick = { isFilterBottomSheetOpen = true }) {
+                    Icon(painter = painterResource(R.drawable.filter_list), contentDescription = "Open Filters")
+                }
+            }
+        }
+    ) { paddingValues ->
         competitionsState.competitions?.let {
             val filteredData = competitionsState.filteredData
             if (filteredData.isEmpty()) {
@@ -144,7 +182,10 @@ fun CompetitionsScreen(
                     state = listState,
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(
-                        top = 8.dp, start = 16.dp, end = 16.dp, bottom = 80.dp
+                        top = paddingValues.calculateTopPadding() + 8.dp,
+                        start = 16.dp,
+                        end = 16.dp,
+                        bottom = paddingValues.calculateBottomPadding()
                     ),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -200,44 +241,6 @@ fun CompetitionsScreen(
                 } else {
                     CircularProgressIndicator()
                 }
-            }
-        }
-
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalAlignment = Alignment.End
-        ) {
-            val ffEnabled = signedUpIndices.isNotEmpty()
-            SmallFloatingActionButton(
-                onClick = {
-                    if (ffEnabled) {
-                        val firstVisible = listState.firstVisibleItemIndex
-                        val nextIndex = signedUpIndices.firstOrNull { it > firstVisible }
-                            ?: signedUpIndices.first()
-                        coroutineScope.launch { listState.animateScrollToItem(nextIndex) }
-                    }
-                },
-                containerColor = if (ffEnabled) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
-                contentColor = if (ffEnabled) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
-            ) {
-                Icon(painter = painterResource(R.drawable.fast_forward), contentDescription = "Scroll to next signed-up competition")
-            }
-            SmallFloatingActionButton(
-                onClick = {
-                    if (upcomingIndex >= 0) {
-                        coroutineScope.launch { listState.animateScrollToItem(upcomingIndex) }
-                    }
-                },
-                containerColor = if (upcomingIndex >= 0) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
-                contentColor = if (upcomingIndex >= 0) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
-            ) {
-                Icon(painter = painterResource(R.drawable.event_upcoming), contentDescription = "Scroll to next upcoming competition")
-            }
-            FloatingActionButton(onClick = { isFilterBottomSheetOpen = true }) {
-                Icon(painter = painterResource(R.drawable.filter_list), contentDescription = "Open Filters")
             }
         }
     }
