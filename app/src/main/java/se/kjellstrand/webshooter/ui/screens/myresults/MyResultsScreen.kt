@@ -93,6 +93,9 @@ private data class SummaryRow(
     val avgScore: Double,
     val avgHits: Double,
     val avgFigureHits: Double,
+    val totalScore: Double,
+    val totalHits: Int,
+    val totalFigureHits: Int,
     val medalCount: Int,
     val medalScore: Int
 )
@@ -114,14 +117,19 @@ private fun YearlySummaryCard(entries: List<SignupEntry>, resultStats: Map<Long,
                         ?: return@mapNotNull entry.resultsPlacements!!.points.toDouble()
                     entry.resultsPlacements!!.points.toDouble() / stations
                 }.average()
-                val avgHits = group.mapNotNull { entry -> resultStats[entry.id]?.hits?.toDouble() }.average()
-                val avgFigureHits = group.mapNotNull { entry -> resultStats[entry.id]?.figureHits?.toDouble() }.average()
+                val hits = group.mapNotNull { entry -> resultStats[entry.id]?.hits }
+                val figureHits = group.mapNotNull { entry -> resultStats[entry.id]?.figureHits }
+                val avgHits = if (hits.isEmpty()) 0.0 else hits.map { it.toDouble() }.average()
+                val avgFigureHits = if (figureHits.isEmpty()) 0.0 else figureHits.map { it.toDouble() }.average()
                 SummaryRow(
                     weaponClass = key.first,
                     competitionType = key.second,
                     avgScore = avgScore,
-                    avgHits = if (avgHits.isNaN()) 0.0 else avgHits,
-                    avgFigureHits = if (avgFigureHits.isNaN()) 0.0 else avgFigureHits,
+                    avgHits = avgHits,
+                    avgFigureHits = avgFigureHits,
+                    totalScore = group.sumOf { it.resultsPlacements!!.points.toDouble() },
+                    totalHits = hits.sumOf { it.toInt() },
+                    totalFigureHits = figureHits.sumOf { it.toInt() },
                     medalCount = placements.count { it.stdMedal != null },
                     medalScore = placements.sumOf {
                         when (it.stdMedal) { "B" -> 1; "S" -> 2; else -> 0 }.toInt()
@@ -182,6 +190,18 @@ private fun YearlySummaryCard(entries: List<SignupEntry>, resultStats: Map<Long,
                         GridCell(row.medalCount.toString(), 1.2f)
                         GridCell(row.medalScore.toString(), 1.2f)
                     }
+                }
+                HorizontalDivider(modifier = Modifier.padding(vertical = 2.dp))
+                GridRow {
+                    GridCell("Σ", 2f, fontWeight = FontWeight.Bold)
+                    if (isFalt) {
+                        GridCell(rows.sumOf { it.totalHits }.toString(), 1.5f, fontWeight = FontWeight.Bold)
+                        GridCell(rows.sumOf { it.totalFigureHits }.toString(), 1.5f, fontWeight = FontWeight.Bold)
+                    } else {
+                        GridCell("%.1f".format(rows.sumOf { it.totalScore }), 1.5f, fontWeight = FontWeight.Bold)
+                    }
+                    GridCell(rows.sumOf { it.medalCount }.toString(), 1.2f, fontWeight = FontWeight.Bold)
+                    GridCell(rows.sumOf { it.medalScore }.toString(), 1.2f, fontWeight = FontWeight.Bold)
                 }
             }
         }
