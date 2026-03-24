@@ -15,14 +15,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,16 +29,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
-import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -63,23 +55,14 @@ fun CompetitionPatrolsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isFalt = uiState.competitionTypeId in setOf(2, 3, 9, 10)
-    val listState = rememberLazyListState()
-    val coroutineScope = rememberCoroutineScope()
 
-    // Patrol header indices for patrols that contain the current user
-    val currentUserPatrolHeaderIndices = remember(uiState.patrols, uiState.currentUserId) {
-        val userId = uiState.currentUserId ?: return@remember emptyList()
-        val indices = mutableListOf<Int>()
-        var base = 0
-        uiState.patrols.forEach { patrol ->
-            val headerIndex = base
-            base++ // header item
-            if (patrol.signups.any { it.user.userId == userId }) indices.add(headerIndex)
-            base += patrol.signups.size
-        }
-        indices
+    val sortedPatrols = remember(uiState.patrols, uiState.currentUserId) {
+        val userId = uiState.currentUserId
+        uiState.patrols.sortedWith(
+            compareByDescending<PatrolEntry> { patrol -> userId != null && patrol.signups.any { it.user.userId == userId } }
+                .thenBy { it.startTimeHuman }
+        )
     }
-    var occurrenceIdx by remember(currentUserPatrolHeaderIndices) { mutableStateOf(-1) }
 
     Scaffold(
         topBar = {
@@ -92,22 +75,6 @@ fun CompetitionPatrolsScreen(
                 }
             )
         },
-        floatingActionButton = {
-            val ffEnabled = currentUserPatrolHeaderIndices.isNotEmpty()
-            SmallFloatingActionButton(
-                onClick = {
-                    if (ffEnabled) {
-                        val nextIdx = (occurrenceIdx + 1) % currentUserPatrolHeaderIndices.size
-                        occurrenceIdx = nextIdx
-                        coroutineScope.launch { listState.animateScrollToItem(currentUserPatrolHeaderIndices[nextIdx]) }
-                    }
-                },
-                containerColor = if (ffEnabled) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
-                contentColor = if (ffEnabled) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
-            ) {
-                Icon(painterResource(R.drawable.fast_forward), contentDescription = "Fast forward to current user")
-            }
-        }
     ) { paddingValues ->
         Box(
             modifier = Modifier
@@ -128,7 +95,6 @@ fun CompetitionPatrolsScreen(
 
                 else -> {
                     LazyColumn(
-                        state = listState,
                         modifier = Modifier.fillMaxSize(),
                         contentPadding = PaddingValues(
                             start = 16.dp, end = 16.dp,
@@ -136,7 +102,7 @@ fun CompetitionPatrolsScreen(
                             bottom = paddingValues.calculateBottomPadding() + 8.dp
                         )
                     ) {
-                        uiState.patrols.forEach { patrol ->
+                        sortedPatrols.forEach { patrol ->
                             // Header item: top-rounded card + patrol info + column header
                             item(key = "header_${patrol.id}") {
                                 PatrolHeaderItem(patrol = patrol, isFalt = isFalt)
