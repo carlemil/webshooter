@@ -515,7 +515,7 @@ fun ResultsListHeader(
                         .padding(start = 4.dp)
                 )
             }
-            if (showMedal) HeaderText(R.string.medal_short, modifier = Modifier.weight(1f))
+            if (showMedal) HeaderText(R.string.medal, modifier = Modifier.weight(1f))
             when (resultsType) {
                 ResultsType.FIELD,
                 ResultsType.POINTS_FIELD -> {
