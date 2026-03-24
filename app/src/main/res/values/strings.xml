@@ -4,8 +4,7 @@
     <string name="app_name">App Shooter</string>
     <string name="clear">Återställ</string>
     <string name="dash">-</string>
-    <string name="details">Detaljer</string>
-    <string name="email">E-post</string>
+<string name="email">E-post</string>
     <string name="female">Kvinna</string>
     <string name="figures">Figurer</string>
     <string name="figures_short">F</string>
@@ -13,9 +12,8 @@
     <string name="hits_short">T</string>
     <string name="hfp">T/F/P</string>
     <string name="px">P/X</string>
-    <string name="landing_screen">Startsida</string>
-    <string name="male">Man</string>
-    <string name="medal_short">Mdlj</string>
+<string name="male">Man</string>
+    <string name="medal">🏅</string>
     <string name="my_results">Mina resultat</string>
     <string name="name">Namn</string>
     <string name="password">Lösenord</string>
@@ -33,6 +31,9 @@
     <string name="unknown">Okänd</string>
     <string name="unknown_club">Okänd klubb</string>
     <string name="x">X</string>
+    <string name="yes">Ja</string>
+    <string name="no">Nej</string>
+    <string name="updates_in">Uppdateras om %1$ds</string>
 
     <!-- ### CLUB ### -->
     <string name="club_address">Adress</string>
@@ -45,15 +46,7 @@
     <string name="club_postgiro">Postgiro</string>
     <string name="club_swish">Swish</string>
 
-    <!-- ### COMPETITION ### -->
-    <string name="competition_not_found">Tävling ej hittad.</string>
-    <string name="competition_status_all">Alla</string>
-    <string name="competition_status_closed">Stängd</string>
-    <string name="competition_status_completed">Avslutad</string>
-    <string name="competition_status_open">Öppen</string>
-    <string name="competition_status_upcoming">Kommande</string>
-
-    <!-- ### COMPETITIONS ### -->
+<!-- ### COMPETITIONS ### -->
     <string name="competitions_collapse">Komprimera</string>
     <string name="competitions_competition_type">Tävlingstyp: %1$s</string>
     <string name="competitions_information">Information</string>
@@ -181,31 +174,17 @@
     <string name="signups_col_fee">Avgift</string>
     <string name="signups_col_lane">Bana</string>
     <string name="signups_col_note">Notering</string>
-    <string name="signups_col_placement">Placering</string>
-    <string name="signups_col_start">Start</string>
+<string name="signups_col_start">Start</string>
     <string name="signups_col_team">Lag</string>
-    <string name="signups_lane">Bana: %1$s</string>
-    <string name="signups_medal">Medalj: %1$s</string>
-    <string name="signups_no_entries">Inga tävlingar</string>
-    <string name="signups_note">Önskemål: %1$s</string>
-    <string name="signups_placement">Placering: %1$d</string>
-    <string name="signups_registration_fee">Avgift: %1$d kr</string>
-    <string name="signups_start_time">Start tid: %1$s</string>
-    <string name="signups_team">Lag: %1$s</string>
-    <string name="signups_weapon_class">Klass: %1$s</string>
+<string name="signups_no_entries">Inga tävlingar</string>
 
-
-
+    <!-- ### MY RESULTS ### -->
     <string name="my_results_summary">Sammanfattning</string>
     <string name="my_results_summary_class">Klass</string>
     <string name="my_results_summary_avg_score">x̄ p.</string>
-    <string name="my_results_summary_avg_hits">x̄ t.</string>
-    <string name="my_results_summary_avg_figures">x̄ f.</string>
-    <string name="my_results_summary_avg_pos">x̄ pl.</string>
-    <string name="my_results_summary_medals">Medalj</string>
-    <string name="my_results_summary_medal_pts">Med. p.</string>
-    <string name="yes">Ja</string>
-    <string name="no">Nej</string>
-    <string name="updates_in">Uppdateras om %1$ds</string>
+    <string name="my_results_summary_avg_hits_falt">x̄ h.</string>
+    <string name="my_results_summary_avg_hits_pres">x̄ X</string>
+    <string name="my_results_summary_figures">Σ f.</string>
+<string name="my_results_summary_medal_pts">🏅 p.</string>
 
 </resources>
