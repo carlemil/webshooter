@@ -79,7 +79,7 @@ fun MyEntriesScreen(
                     items(
                         byCompetition.size,
                         key = { byCompetition[it].first().competition.id }) { index ->
-                        CompetitionSignupsItem(byCompetition[index])
+                        CompetitionSignupsItem(byCompetition[index], uiState.resultStats)
                     }
                 }
             }
@@ -215,8 +215,9 @@ private fun YearlySummaryCard(entries: List<SignupEntry>, resultStats: Map<Long,
 }
 
 @Composable
-private fun CompetitionSignupsItem(entries: List<SignupEntry>) {
+private fun CompetitionSignupsItem(entries: List<SignupEntry>, resultStats: Map<Long, ResultStats>) {
     val competition = entries.first().competition
+    val isFalt = competition.resultsTypeHuman == "Fält"
 
     Card(
         shape = RoundedCornerShape(12.dp),
@@ -236,62 +237,46 @@ private fun CompetitionSignupsItem(entries: List<SignupEntry>) {
             )
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Header row
             GridRow {
-                GridCell(
-                    stringResource(R.string.signups_col_class),
-                    1.5f,
-                    fontWeight = FontWeight.Bold
-                )
-                GridCell(
-                    stringResource(R.string.signups_col_start),
-                    1.5f,
-                    fontWeight = FontWeight.Bold
-                )
-                GridCell(
-                    stringResource(R.string.signups_col_lane),
-                    1f,
-                    fontWeight = FontWeight.Bold
-                )
-                GridCell(
-                    stringResource(R.string.signups_col_team),
-                    2f,
-                    fontWeight = FontWeight.Bold
-                )
-                GridCell(stringResource(R.string.placement), 1.0f, fontWeight = FontWeight.Bold)
-                GridCell(
-                    stringResource(R.string.signups_col_fee),
-                    1.5f,
-                    fontWeight = FontWeight.Bold
-                )
+                GridCell(stringResource(R.string.my_results_summary_class), 2f, fontWeight = FontWeight.Bold)
+                if (isFalt) {
+                    GridCell(stringResource(R.string.my_results_summary_avg_hits_falt), 1.5f, fontWeight = FontWeight.Bold)
+                    GridCell(stringResource(R.string.my_results_summary_figures), 1.5f, fontWeight = FontWeight.Bold)
+                } else {
+                    GridCell(stringResource(R.string.my_results_summary_avg_score), 1.5f, fontWeight = FontWeight.Bold)
+                    GridCell(stringResource(R.string.my_results_summary_avg_hits_pres), 1.5f, fontWeight = FontWeight.Bold)
+                }
+                GridCell(stringResource(R.string.medal), 1.2f, fontWeight = FontWeight.Bold)
+                GridCell(stringResource(R.string.my_results_summary_medal_pts), 1.2f, fontWeight = FontWeight.Bold)
             }
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 2.dp))
 
-            // Value rows
-            entries.sortedBy { it.startTimeHuman }.forEach { entry ->
-                val startTime = entry.patrol?.startTimeHuman?.takeIf(String::isNotBlank)
-                    ?: entry.startTimeHuman.takeIf { it.isNotBlank() && it != "01:00" }
-                val placement = entry.resultsPlacements?.let { rp ->
-                    "${rp.placement}" + (rp.stdMedal?.let { medal ->
-                        " " + when (medal) {
-                            "B" -> stringResource(R.string.bronze)
-                            "S" -> stringResource(R.string.silver)
-                            else -> ""
-                        }
-                    } ?: "")
-                }
+            entries.sortedBy { it.weaponclass.classname }.forEach { entry ->
+                val stats = resultStats[entry.id]
+                val rp = entry.resultsPlacements
+                val avgScore = if (rp != null) {
+                    val stations = stats?.stationCount?.takeIf { it > 0 }
+                    if (stations != null) rp.points.toDouble() / stations else rp.points.toDouble()
+                } else null
+                val avgHits = if (stats != null && stats.stationCount > 0) {
+                    stats.hits.toDouble() / stats.stationCount
+                } else null
+                val figureHits = stats?.figureHits
+                val medalCount = if (rp?.stdMedal != null) 1 else 0
+                val medalScore = when (rp?.stdMedal) { "B" -> 1; "S" -> 2; else -> 0 }
 
                 GridRow {
-                    GridCell(entry.weaponclass.classname, 1.5f)
-                    GridCell(startTime ?: "-", 1.5f)
-                    GridCell(if (entry.lane > 0) entry.lane.toString() else "-", 1f)
-                    GridCell(entry.team.firstOrNull()?.name ?: "-", 2f)
-                    GridCell(placement ?: "-", 1.0f)
-                    GridCell(
-                        if (entry.registrationFee == 0L) "-" else entry.registrationFee.toString(),
-                        1.5f
-                    )
+                    GridCell(entry.weaponclass.classname, 2f)
+                    if (isFalt) {
+                        GridCell(if (avgHits != null) "%.1f".format(avgHits) else "-", 1.5f)
+                        GridCell(if (figureHits != null) figureHits.toString() else "-", 1.5f)
+                    } else {
+                        GridCell(if (avgScore != null) "%.1f".format(avgScore) else "-", 1.5f)
+                        GridCell(if (avgHits != null) "%.1f".format(avgHits) else "-", 1.5f)
+                    }
+                    GridCell(medalCount.toString(), 1.2f)
+                    GridCell(medalScore.toString(), 1.2f)
                 }
             }
         }
