@@ -92,7 +92,7 @@ private data class SummaryRow(
     val competitionType: String,
     val avgScore: Double,
     val avgHits: Double,
-    val avgFigureHits: Double,
+    val figureHits: Double,
     val totalScore: Double,
     val totalHits: Int,
     val totalFigureHits: Int,
@@ -119,14 +119,17 @@ private fun YearlySummaryCard(entries: List<SignupEntry>, resultStats: Map<Long,
                 }.average()
                 val hits = group.mapNotNull { entry -> resultStats[entry.id]?.hits }
                 val figureHits = group.mapNotNull { entry -> resultStats[entry.id]?.figureHits }
-                val avgHits = if (hits.isEmpty()) 0.0 else hits.map { it.toDouble() }.average()
+                val avgHits = group.mapNotNull { entry ->
+                    val stations = resultStats[entry.id]?.stationCount?.takeIf { it > 0 } ?: return@mapNotNull null
+                    resultStats[entry.id]!!.hits.toDouble() / stations
+                }.let { if (it.isEmpty()) 0.0 else it.average() }
                 val avgFigureHits = if (figureHits.isEmpty()) 0.0 else figureHits.map { it.toDouble() }.average()
                 SummaryRow(
                     weaponClass = key.first,
                     competitionType = key.second,
                     avgScore = avgScore,
                     avgHits = avgHits,
-                    avgFigureHits = avgFigureHits,
+                    figureHits = avgFigureHits,
                     totalScore = group.sumOf { it.resultsPlacements!!.points.toDouble() },
                     totalHits = hits.sumOf { it.toInt() },
                     totalFigureHits = figureHits.sumOf { it.toInt() },
@@ -169,12 +172,13 @@ private fun YearlySummaryCard(entries: List<SignupEntry>, resultStats: Map<Long,
                 GridRow {
                     GridCell(stringResource(R.string.my_results_summary_class), 2f, fontWeight = FontWeight.Bold)
                     if (isFalt) {
-                        GridCell(stringResource(R.string.my_results_summary_avg_hits), 1.5f, fontWeight = FontWeight.Bold)
-                        GridCell(stringResource(R.string.my_results_summary_avg_figures), 1.5f, fontWeight = FontWeight.Bold)
+                        GridCell(stringResource(R.string.my_results_summary_avg_hits_falt), 1.5f, fontWeight = FontWeight.Bold)
+                        GridCell(stringResource(R.string.my_results_summary_figures), 1.5f, fontWeight = FontWeight.Bold)
                     } else {
                         GridCell(stringResource(R.string.my_results_summary_avg_score), 1.5f, fontWeight = FontWeight.Bold)
+                        GridCell(stringResource(R.string.my_results_summary_avg_hits_pres), 1.5f, fontWeight = FontWeight.Bold)
                     }
-                    GridCell(stringResource(R.string.my_results_summary_medals), 1.2f, fontWeight = FontWeight.Bold)
+                    GridCell(stringResource(R.string.medal), 1.2f, fontWeight = FontWeight.Bold)
                     GridCell(stringResource(R.string.my_results_summary_medal_pts), 1.2f, fontWeight = FontWeight.Bold)
                 }
                 HorizontalDivider(modifier = Modifier.padding(vertical = 2.dp))
@@ -183,9 +187,10 @@ private fun YearlySummaryCard(entries: List<SignupEntry>, resultStats: Map<Long,
                         GridCell(row.weaponClass, 2f)
                         if (isFalt) {
                             GridCell("%.1f".format(row.avgHits), 1.5f)
-                            GridCell("%.1f".format(row.avgFigureHits), 1.5f)
+                            GridCell("%.1f".format(row.figureHits), 1.5f)
                         } else {
                             GridCell("%.1f".format(row.avgScore), 1.5f)
+                            GridCell("%.1f".format(row.avgHits), 1.5f)
                         }
                         GridCell(row.medalCount.toString(), 1.2f)
                         GridCell(row.medalScore.toString(), 1.2f)
@@ -199,6 +204,7 @@ private fun YearlySummaryCard(entries: List<SignupEntry>, resultStats: Map<Long,
                         GridCell(rows.sumOf { it.totalFigureHits }.toString(), 1.5f, fontWeight = FontWeight.Bold)
                     } else {
                         GridCell("%.1f".format(rows.sumOf { it.totalScore }), 1.5f, fontWeight = FontWeight.Bold)
+                        GridCell(rows.sumOf { it.totalHits }.toString(), 1.5f, fontWeight = FontWeight.Bold)
                     }
                     GridCell(rows.sumOf { it.medalCount }.toString(), 1.2f, fontWeight = FontWeight.Bold)
                     GridCell(rows.sumOf { it.medalScore }.toString(), 1.2f, fontWeight = FontWeight.Bold)
