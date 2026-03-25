@@ -38,9 +38,7 @@ class SignupsViewModelImpl @Inject constructor(
                 if (resource is Resource.Success) {
                     val profile = resource.data
                     _uiState.value = _uiState.value.copy(
-                        currentUserFullName = "${profile.name} ${profile.lastname}",
-                        currentUserClubName = profile.clubs.firstOrNull { it.id == profile.clubsId }?.name
-                            ?: profile.clubs.firstOrNull()?.name
+                        currentUserFullName = "${profile.name} ${profile.lastname}"
                     )
                 }
             }
