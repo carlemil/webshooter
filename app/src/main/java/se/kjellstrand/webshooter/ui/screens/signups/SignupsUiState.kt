@@ -15,8 +15,7 @@ data class CompetitionSignupsUiState(
     val filterWeaponGroup: String? = null,
     val sortField: SignupsListSortField = SignupsListSortField.Name,
     val sortDirection: SortDirection = SortDirection.Ascending,
-    val currentUserFullName: String? = null,
-    val currentUserClubName: String? = null
+    val currentUserFullName: String? = null
 ) {
     val uniquePersonCount: Int
         get() = allSignups.map { "${it.user.name} ${it.user.lastname}" }.distinct().size
@@ -29,6 +28,11 @@ data class CompetitionSignupsUiState(
 
     val availableWeaponGroups: List<String>
         get() = allSignups.map { it.weaponclass.classnameGeneral }.distinct().sorted()
+
+    val currentUserClub: String?
+        get() = currentUserFullName?.let { name ->
+            allSignups.firstOrNull { "${it.user.name} ${it.user.lastname}" == name }?.club?.name
+        }
 
     val filteredAndSorted: List<CompetitionSignupEntry>
         get() {
@@ -49,7 +53,7 @@ data class CompetitionSignupsUiState(
             } else {
                 result.sortedWith(comparator.reversed())
             }
-            val myClub = currentUserClubName ?: return sorted
+            val myClub = currentUserClub ?: return sorted
             return sorted.sortedWith(compareByDescending { it.club.name == myClub })
         }
 }
