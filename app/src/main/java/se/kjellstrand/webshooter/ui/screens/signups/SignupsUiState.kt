@@ -29,11 +29,6 @@ data class CompetitionSignupsUiState(
     val availableWeaponGroups: List<String>
         get() = allSignups.map { it.weaponclass.classnameGeneral }.distinct().sorted()
 
-    val currentUserClub: String?
-        get() = currentUserFullName?.let { name ->
-            allSignups.firstOrNull { "${it.user.name} ${it.user.lastname}" == name }?.club?.name
-        }
-
     val filteredAndSorted: List<CompetitionSignupEntry>
         get() {
             var result = allSignups
@@ -48,12 +43,10 @@ data class CompetitionSignupsUiState(
                 SignupsListSortField.Club -> compareBy { it.club.name }
                 SignupsListSortField.WeaponGroup -> compareBy { it.weaponclass.classnameGeneral }
             }
-            val sorted = if (sortDirection == SortDirection.Ascending) {
+            return if (sortDirection == SortDirection.Ascending) {
                 result.sortedWith(comparator)
             } else {
                 result.sortedWith(comparator.reversed())
             }
-            val myClub = currentUserClub ?: return sorted
-            return sorted.sortedWith(compareByDescending { it.club.name == myClub })
         }
 }

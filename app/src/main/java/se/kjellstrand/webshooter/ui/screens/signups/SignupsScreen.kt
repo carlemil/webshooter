@@ -66,7 +66,14 @@ fun CompetitionSignupsScreen(
     var isFilterSheetOpen by remember { mutableStateOf(false) }
 
     val displayed = uiState.filteredAndSorted
-    val grouped = displayed.groupBy { it.club.name }.entries.toList()
+    val currentUserClub = remember(displayed, uiState.currentUserFullName) {
+        val name = uiState.currentUserFullName ?: return@remember null
+        displayed.firstOrNull { "${it.user.name} ${it.user.lastname}" == name }?.club?.name
+    }
+    val grouped = remember(displayed, currentUserClub) {
+        displayed.groupBy { it.club.name }.entries
+            .sortedWith(compareByDescending { it.key == currentUserClub })
+    }
 
     Scaffold(
         topBar = {
