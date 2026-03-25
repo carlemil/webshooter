@@ -17,18 +17,15 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.FastForward
 import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,10 +40,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import kotlinx.coroutines.launch
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
@@ -69,28 +64,16 @@ fun CompetitionSignupsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var isFilterSheetOpen by remember { mutableStateOf(false) }
-    val listState = rememberLazyListState()
-    val coroutineScope = rememberCoroutineScope()
 
     val displayed = uiState.filteredAndSorted
-    // grouped: List<Map.Entry<clubName, entries>> in insertion order
-    val grouped = displayed.groupBy { it.club.name }.entries.toList()
-
-    // Club header indices for clubs that contain the current user
-    val currentUserIndices = remember(grouped, uiState.currentUserFullName) {
-        val name = uiState.currentUserFullName ?: return@remember emptyList()
-        val indices = mutableListOf<Int>()
-        var base = 0
-        grouped.forEach { (_, entries) ->
-            val headerIndex = base
-            base++ // club header item
-            val byUser = entries.groupBy { "${it.user.name} ${it.user.lastname}" }.entries.toList()
-            if (byUser.any { (userName, _) -> userName == name }) indices.add(headerIndex)
-            base += byUser.size
-        }
-        indices
+    val currentUserClub = remember(displayed, uiState.currentUserFullName) {
+        val name = uiState.currentUserFullName ?: return@remember null
+        displayed.firstOrNull { "${it.user.name} ${it.user.lastname}" == name }?.club?.name
     }
-    var occurrenceIdx by remember(currentUserIndices) { mutableStateOf(-1) }
+    val grouped = remember(displayed, currentUserClub) {
+        displayed.groupBy { it.club.name }.entries
+            .sortedWith(compareByDescending { it.key == currentUserClub })
+    }
 
     Scaffold(
         topBar = {
@@ -107,27 +90,8 @@ fun CompetitionSignupsScreen(
             )
         },
         floatingActionButton = {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalAlignment = Alignment.End
-            ) {
-                val ffEnabled = currentUserIndices.isNotEmpty()
-                SmallFloatingActionButton(
-                    onClick = {
-                        if (ffEnabled) {
-                            val nextIdx = (occurrenceIdx + 1) % currentUserIndices.size
-                            occurrenceIdx = nextIdx
-                            coroutineScope.launch { listState.animateScrollToItem(currentUserIndices[nextIdx]) }
-                        }
-                    },
-                    containerColor = if (ffEnabled) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
-                    contentColor = if (ffEnabled) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
-                ) {
-                    Icon(painterResource(R.drawable.fast_forward), contentDescription = "Fast forward to current user")
-                }
-                FloatingActionButton(onClick = { isFilterSheetOpen = true }) {
-                    Icon(painterResource(R.drawable.filter_list), contentDescription = "Filter")
-                }
+            FloatingActionButton(onClick = { isFilterSheetOpen = true }) {
+                Icon(painterResource(R.drawable.filter_list), contentDescription = "Filter")
             }
         }
     ) { paddingValues ->
@@ -142,7 +106,6 @@ fun CompetitionSignupsScreen(
             }
         } else {
             LazyColumn(
-                state = listState,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(top = paddingValues.calculateTopPadding()),
