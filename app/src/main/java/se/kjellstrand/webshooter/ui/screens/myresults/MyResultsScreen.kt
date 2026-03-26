@@ -74,8 +74,17 @@ fun MyEntriesScreen(
                     item(key = "summary_$year") {
                         YearlySummaryCard(entries, uiState.resultStats)
                     }
+                }
+                item(key = "header_competitions") {
+                    Text(
+                        text = stringResource(R.string.my_results_competitions),
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                    )
+                }
+                uiState.groupedEntries.forEach { (_, entries) ->
                     val byCompetition = entries.groupBy { it.competition.id }
-                        .values.toList()
+                        .values.sortedByDescending { it.first().competition.date }
                     items(
                         byCompetition.size,
                         key = { byCompetition[it].first().competition.id }) { index ->
