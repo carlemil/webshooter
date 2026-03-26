@@ -186,5 +186,6 @@
     <string name="my_results_summary_avg_hits_pres">x̄ X</string>
     <string name="my_results_summary_figures">Σ f.</string>
 <string name="my_results_summary_medal_pts">🏅 p.</string>
+    <string name="my_results_competitions">Tävlingar</string>
 
 </resources>
