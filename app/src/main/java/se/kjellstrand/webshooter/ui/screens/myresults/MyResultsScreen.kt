@@ -105,6 +105,8 @@ fun MyEntriesScreen(
     }
 }
 
+private const val FMT_1F = "%.2f"
+
 private data class SummaryRow(
     val weaponClass: String,
     val competitionType: String,
@@ -201,7 +203,40 @@ private fun YearlySummaryCard(entries: List<SignupEntry>, resultStats: Map<Long,
             }
         relevantTypes.mapNotNull { type ->
             val rows = allRows.filter { it.competitionType == type }.sortedBy { it.weaponClass }
-            if (rows.isEmpty()) null else type to rows
+            if (rows.isEmpty()) null else {
+                val typeEntries = entries.filter {
+                    it.resultsPlacements != null && it.competition.resultsTypeHuman == type
+                }
+                val placements = typeEntries.map { it.resultsPlacements!! }
+                val avgScore = typeEntries.mapNotNull { entry ->
+                    val stations = resultStats[entry.id]?.stationCount?.takeIf { it > 0 }
+                        ?: return@mapNotNull entry.resultsPlacements!!.points.toDouble()
+                    entry.resultsPlacements!!.points.toDouble() / stations
+                }.average()
+                val hits = typeEntries.mapNotNull { entry -> resultStats[entry.id]?.hits }
+                val figureHits = typeEntries.mapNotNull { entry -> resultStats[entry.id]?.figureHits }
+                val avgHits = typeEntries.mapNotNull { entry ->
+                    val stations = resultStats[entry.id]?.stationCount?.takeIf { it > 0 } ?: return@mapNotNull null
+                    resultStats[entry.id]!!.hits.toDouble() / stations
+                }.let { if (it.isEmpty()) 0.0 else it.average() }
+                val avgFigureHits = if (figureHits.isEmpty()) 0.0 else figureHits.map { it.toDouble() }.average()
+                val totalRow = SummaryRow(
+                    weaponClass = rows.joinToString(", ") { it.weaponClass },
+                    competitionType = type,
+                    count = typeEntries.size,
+                    avgScore = avgScore,
+                    avgHits = avgHits,
+                    avgX = avgHits,
+                    figureHits = avgFigureHits,
+                    totalScore = typeEntries.sumOf { it.resultsPlacements!!.points.toDouble() },
+                    totalHits = hits.sumOf { it.toInt() },
+                    totalFigureHits = figureHits.sumOf { it.toInt() },
+                    medalScore = placements.sumOf {
+                        when (it.stdMedal) { "B" -> 1; "S" -> 2; else -> 0 }.toInt()
+                    }
+                )
+                Triple(type, rows, totalRow)
+            }
         }
     }
     if (rowsByType.isEmpty()) return
@@ -235,7 +270,7 @@ private fun YearlySummaryCard(entries: List<SignupEntry>, resultStats: Map<Long,
                     )
                 }
             }
-            rowsByType.forEachIndexed { sectionIndex, (type, rows) ->
+            rowsByType.forEachIndexed { sectionIndex, (type, rows, totalRow) ->
                 if (sectionIndex > 0) Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     text = type,
@@ -253,33 +288,33 @@ private fun YearlySummaryCard(entries: List<SignupEntry>, resultStats: Map<Long,
                         GridCell(stringResource(R.string.my_results_summary_avg_score), 1.5f, fontWeight = FontWeight.Bold)
                         GridCell(stringResource(R.string.my_results_summary_avg_hits_pres), 1.5f, fontWeight = FontWeight.Bold)
                     }
-                    GridCell(stringResource(R.string.my_results_summary_medal_pts), 1.2f, fontWeight = FontWeight.Bold)
+                    GridCell(stringResource(R.string.my_results_summary_medal_pts), 0.8f, fontWeight = FontWeight.Bold)
                 }
                 HorizontalDivider(modifier = Modifier.padding(vertical = 2.dp))
                 rows.forEach { row ->
                     GridRow {
                         GridCell("${row.weaponClass}/${row.count}", 1.5f)
                         if (isFalt) {
-                            GridCell("x̄ %.1f (%d)".format(row.avgHits, row.totalHits), 1.5f)
-                            GridCell("%.1f (%d)".format(row.figureHits, row.totalFigureHits), 1.5f)
+                            GridCell(FMT_1F.format(row.avgHits), 1.5f)
+                            GridCell(FMT_1F.format(row.figureHits), 1.5f)
                         } else {
-                            GridCell("x̄ %.1f (%.0f)".format(row.avgScore, row.totalScore), 1.5f)
-                            GridCell("%.1f (%d)".format(row.avgHits, row.totalHits), 1.5f)
+                            GridCell(FMT_1F.format(row.avgScore), 1.5f)
+                            GridCell(FMT_1F.format(row.avgHits), 1.5f)
                         }
-                        GridCell(row.medalScore.toString(), 1.2f)
+                        GridCell(row.medalScore.toString(), 0.8f)
                     }
                 }
                 HorizontalDivider(modifier = Modifier.padding(vertical = 2.dp))
                 GridRow {
-                    GridCell("Σ", 1.5f, fontWeight = FontWeight.Bold)
+                    GridCell("Alla", 1.5f, fontWeight = FontWeight.Bold)
                     if (isFalt) {
-                        GridCell(rows.sumOf { it.totalHits }.toString(), 1.5f, fontWeight = FontWeight.Bold)
-                        GridCell(rows.sumOf { it.totalFigureHits }.toString(), 1.5f, fontWeight = FontWeight.Bold)
+                        GridCell(FMT_1F.format(totalRow.avgHits), 1.5f, fontWeight = FontWeight.Bold)
+                        GridCell(FMT_1F.format(totalRow.figureHits), 1.5f, fontWeight = FontWeight.Bold)
                     } else {
-                        GridCell("%.1f".format(rows.sumOf { it.totalScore }), 1.5f, fontWeight = FontWeight.Bold)
-                        GridCell(rows.sumOf { it.totalHits }.toString(), 1.5f, fontWeight = FontWeight.Bold)
+                        GridCell(FMT_1F.format(totalRow.avgScore), 1.5f, fontWeight = FontWeight.Bold)
+                        GridCell(FMT_1F.format(totalRow.avgHits), 1.5f, fontWeight = FontWeight.Bold)
                     }
-                    GridCell(rows.sumOf { it.medalScore }.toString(), 1.2f, fontWeight = FontWeight.Bold)
+                    GridCell(totalRow.medalScore.toString(), 0.8f, fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -341,11 +376,11 @@ private fun CompetitionSignupsItem(entries: List<SignupEntry>, resultStats: Map<
                 GridRow {
                     GridCell(entry.weaponclass.classname, 2f)
                     if (isFalt) {
-                        GridCell(if (avgHits != null) "%.1f".format(avgHits) else "-", 1.5f)
+                        GridCell(if (avgHits != null) FMT_1F.format(avgHits) else "-", 1.5f)
                         GridCell(if (figureHits != null) figureHits.toString() else "-", 1.5f)
                     } else {
-                        GridCell(if (avgScore != null) "%.1f".format(avgScore) else "-", 1.5f)
-                        GridCell(if (avgHits != null) "%.1f".format(avgHits) else "-", 1.5f)
+                        GridCell(if (avgScore != null) FMT_1F.format(avgScore) else "-", 1.5f)
+                        GridCell(if (avgHits != null) FMT_1F.format(avgHits) else "-", 1.5f)
                     }
                     GridCell(medalCount.toString(), 1.2f)
                     GridCell(medalScore.toString(), 1.2f)
