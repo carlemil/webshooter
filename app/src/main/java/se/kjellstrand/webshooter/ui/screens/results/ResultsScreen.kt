@@ -316,7 +316,6 @@ fun ResultsList(
                             .padding(start = 12.dp, end = 12.dp, top = 12.dp)
                     ) {
                         ResultsListHeader(
-                            isGrouped = false,
                             resultsType = resultsType,
                             inCard = true
                         )
@@ -426,7 +425,6 @@ fun ResultsList(
                             }
                             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
                             ResultsListHeader(
-                                isGrouped = true,
                                 resultsType = resultsType,
                                 inCard = true,
                                 showMedal = !isMedlGrouping,
@@ -481,12 +479,15 @@ fun ResultsList(
 
 @Composable
 fun ResultsListHeader(
-    isGrouped: Boolean,
     resultsType: ResultsType,
     inCard: Boolean = false,
     showMedal: Boolean = true,
     showWeaponClass: Boolean = true
 ) {
+    val isFieldType = resultsType == ResultsType.FIELD || resultsType == ResultsType.POINTS_FIELD
+    val scoreWeight = if (isFieldType) 4f else 3f
+    val nameWeight = if (showWeaponClass) 8f else 10f
+    val rightWeight = (if (showWeaponClass) 2f else 0f) + (if (showMedal) 1f else 0f) + scoreWeight
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -497,13 +498,10 @@ fun ResultsListHeader(
         HeaderText(
             R.string.placement, modifier = Modifier.weight(2f)
         )
-        HeaderText(R.string.name, modifier = Modifier.weight(10f))
+        HeaderText(R.string.name, modifier = Modifier.weight(nameWeight))
 
-        val isFieldType = resultsType == ResultsType.FIELD || resultsType == ResultsType.POINTS_FIELD
-        val headerScoreWeight = if (isFieldType) 3f else 2f
-        val headerRightWeight = if (isGrouped) 5f else 6f + if (isFieldType) 1f else 0f
         Row(
-            modifier = Modifier.weight(headerRightWeight),
+            modifier = Modifier.weight(rightWeight),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -511,7 +509,7 @@ fun ResultsListHeader(
                 HeaderText(
                     R.string.weapon_class_short,
                     modifier = Modifier
-                        .weight(1f)
+                        .weight(2f)
                         .padding(start = 4.dp)
                 )
             }
@@ -519,12 +517,12 @@ fun ResultsListHeader(
             when (resultsType) {
                 ResultsType.FIELD,
                 ResultsType.POINTS_FIELD -> {
-                    HeaderText(R.string.hfp, modifier = Modifier.weight(headerScoreWeight))
+                    HeaderText(R.string.hfp, modifier = Modifier.weight(scoreWeight))
                 }
 
                 ResultsType.PRECISION,
                 ResultsType.MILITARY -> {
-                    HeaderText(R.string.px, modifier = Modifier.weight(headerScoreWeight))
+                    HeaderText(R.string.px, modifier = Modifier.weight(scoreWeight))
                 }
             }
         }
