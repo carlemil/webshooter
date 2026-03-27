@@ -66,10 +66,7 @@ fun CompetitionSignupsScreen(
     var isFilterSheetOpen by remember { mutableStateOf(false) }
 
     val displayed = uiState.filteredAndSorted
-    val currentUserClub = remember(displayed, uiState.currentUserFullName) {
-        val name = uiState.currentUserFullName ?: return@remember null
-        displayed.firstOrNull { "${it.user.name} ${it.user.lastname}" == name }?.club?.name
-    }
+    val currentUserClub = uiState.currentUserClubName
     val grouped = remember(displayed, currentUserClub) {
         displayed.groupBy { it.club.name }.entries
             .sortedWith(compareByDescending { it.key == currentUserClub })
@@ -79,7 +76,7 @@ fun CompetitionSignupsScreen(
         topBar = {
             ScreenTopBar(
                 title = if (uiState.totalSignupsCount > 0)
-                    "${stringResource(R.string.competition_signups_list_participants)}  ${uiState.uniquePersonCount} / ${uiState.totalSignupsCount}"
+                    stringResource(R.string.competition_signups_list_participants_count, uiState.uniquePersonCount, uiState.totalSignupsCount)
                 else
                     stringResource(R.string.competition_signups_list_participants),
                 navigationIcon = {

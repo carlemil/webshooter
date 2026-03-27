@@ -15,7 +15,8 @@ data class CompetitionSignupsUiState(
     val filterWeaponGroup: String? = null,
     val sortField: SignupsListSortField = SignupsListSortField.Name,
     val sortDirection: SortDirection = SortDirection.Ascending,
-    val currentUserFullName: String? = null
+    val currentUserFullName: String? = null,
+    val currentUserClubName: String? = null
 ) {
     val uniquePersonCount: Int
         get() = allSignups.map { "${it.user.name} ${it.user.lastname}" }.distinct().size
