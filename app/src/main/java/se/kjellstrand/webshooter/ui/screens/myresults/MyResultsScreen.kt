@@ -125,7 +125,6 @@ private data class SummaryRow(
 private fun SymbolInfoDialog(onDismiss: () -> Unit) {
     val symbols = listOf(
         stringResource(R.string.my_results_symbol_xbar) to stringResource(R.string.my_results_symbol_xbar_desc),
-        stringResource(R.string.my_results_symbol_sigma) to stringResource(R.string.my_results_symbol_sigma_desc),
         stringResource(R.string.my_results_symbol_x) to stringResource(R.string.my_results_symbol_x_desc),
         stringResource(R.string.my_results_symbol_medal_pts) to stringResource(R.string.my_results_symbol_medal_pts_desc),
     )
@@ -164,20 +163,25 @@ private fun YearlySummaryCard(entries: List<SignupEntry>, resultStats: Map<Long,
     var showSymbolInfo by remember { mutableStateOf(false) }
     if (showSymbolInfo) SymbolInfoDialog(onDismiss = { showSymbolInfo = false })
     val rowsByType = remember(entries, resultStats) {
-        val relevantTypes = entries
-            .filter { it.resultsPlacements != null }
+        fun isRelevant(entry: SignupEntry): Boolean =
+            entry.resultsPlacements != null ||
+                (entry.competition.resultsTypeHuman == "Fält" && resultStats[entry.id] != null)
+
+        val relevantTypes = entries.filter { isRelevant(it) }
             .map { it.competition.resultsTypeHuman }
             .distinct()
+            .sortedBy { if (it == "Fält") 1 else 0 }
         val allRows = entries
-            .filter { it.resultsPlacements != null && it.competition.resultsTypeHuman in relevantTypes }
+            .filter { isRelevant(it) && it.competition.resultsTypeHuman in relevantTypes }
             .groupBy { it.weaponclass.classname to it.competition.resultsTypeHuman }
             .map { (key, group) ->
-                val placements = group.map { it.resultsPlacements!! }
+                val placements = group.mapNotNull { it.resultsPlacements }
                 val avgScore = group.mapNotNull { entry ->
+                    val rp = entry.resultsPlacements ?: return@mapNotNull null
                     val stations = resultStats[entry.id]?.stationCount?.takeIf { it > 0 }
-                        ?: return@mapNotNull entry.resultsPlacements!!.points.toDouble()
-                    entry.resultsPlacements!!.points.toDouble() / stations
-                }.average()
+                        ?: return@mapNotNull rp.points.toDouble()
+                    rp.points.toDouble() / stations
+                }.let { if (it.isEmpty()) 0.0 else it.average() }
                 val hits = group.mapNotNull { entry -> resultStats[entry.id]?.hits }
                 val figureHits = group.mapNotNull { entry -> resultStats[entry.id]?.figureHits }
                 val avgHits = group.mapNotNull { entry ->
@@ -193,26 +197,25 @@ private fun YearlySummaryCard(entries: List<SignupEntry>, resultStats: Map<Long,
                     avgHits = avgHits,
                     avgX = avgHits,
                     figureHits = avgFigureHits,
-                    totalScore = group.sumOf { it.resultsPlacements!!.points.toDouble() },
+                    totalScore = group.sumOf { it.resultsPlacements?.points?.toDouble() ?: 0.0 },
                     totalHits = hits.sumOf { it.toInt() },
                     totalFigureHits = figureHits.sumOf { it.toInt() },
                     medalScore = placements.sumOf {
-                        when (it.stdMedal) { "B" -> 1; "S" -> 2; else -> 0 }.toInt()
+                        when (it.stdMedal) { "B" -> 1; "S" -> 2; else -> 0 }
                     }
                 )
             }
         relevantTypes.mapNotNull { type ->
             val rows = allRows.filter { it.competitionType == type }.sortedBy { it.weaponClass }
             if (rows.isEmpty()) null else {
-                val typeEntries = entries.filter {
-                    it.resultsPlacements != null && it.competition.resultsTypeHuman == type
-                }
-                val placements = typeEntries.map { it.resultsPlacements!! }
+                val typeEntries = entries.filter { isRelevant(it) && it.competition.resultsTypeHuman == type }
+                val placements = typeEntries.mapNotNull { it.resultsPlacements }
                 val avgScore = typeEntries.mapNotNull { entry ->
+                    val rp = entry.resultsPlacements ?: return@mapNotNull null
                     val stations = resultStats[entry.id]?.stationCount?.takeIf { it > 0 }
-                        ?: return@mapNotNull entry.resultsPlacements!!.points.toDouble()
-                    entry.resultsPlacements!!.points.toDouble() / stations
-                }.average()
+                        ?: return@mapNotNull rp.points.toDouble()
+                    rp.points.toDouble() / stations
+                }.let { if (it.isEmpty()) 0.0 else it.average() }
                 val hits = typeEntries.mapNotNull { entry -> resultStats[entry.id]?.hits }
                 val figureHits = typeEntries.mapNotNull { entry -> resultStats[entry.id]?.figureHits }
                 val avgHits = typeEntries.mapNotNull { entry ->
@@ -228,11 +231,11 @@ private fun YearlySummaryCard(entries: List<SignupEntry>, resultStats: Map<Long,
                     avgHits = avgHits,
                     avgX = avgHits,
                     figureHits = avgFigureHits,
-                    totalScore = typeEntries.sumOf { it.resultsPlacements!!.points.toDouble() },
+                    totalScore = typeEntries.sumOf { it.resultsPlacements?.points?.toDouble() ?: 0.0 },
                     totalHits = hits.sumOf { it.toInt() },
                     totalFigureHits = figureHits.sumOf { it.toInt() },
                     medalScore = placements.sumOf {
-                        when (it.stdMedal) { "B" -> 1; "S" -> 2; else -> 0 }.toInt()
+                        when (it.stdMedal) { "B" -> 1; "S" -> 2; else -> 0 }
                     }
                 )
                 Triple(type, rows, totalRow)
@@ -377,7 +380,7 @@ private fun CompetitionSignupsItem(entries: List<SignupEntry>, resultStats: Map<
                     GridCell(entry.weaponclass.classname, 2f)
                     if (isFalt) {
                         GridCell(if (avgHits != null) FMT_1F.format(avgHits) else "-", 1.5f)
-                        GridCell(if (figureHits != null) figureHits.toString() else "-", 1.5f)
+                        GridCell(figureHits?.toString() ?: "-", 1.5f)
                     } else {
                         GridCell(if (avgScore != null) FMT_1F.format(avgScore) else "-", 1.5f)
                         GridCell(if (avgHits != null) FMT_1F.format(avgHits) else "-", 1.5f)
