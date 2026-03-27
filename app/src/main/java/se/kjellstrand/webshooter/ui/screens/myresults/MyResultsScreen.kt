@@ -201,7 +201,7 @@ private fun YearlySummaryCard(entries: List<SignupEntry>, resultStats: Map<Long,
                     totalHits = hits.sumOf { it.toInt() },
                     totalFigureHits = figureHits.sumOf { it.toInt() },
                     medalScore = placements.sumOf {
-                        when (it.stdMedal) { "B" -> 1; "S" -> 2; else -> 0 }
+                        when (it.stdMedal) { "B" -> 1; "S" -> 2; else -> 0 }.toInt()
                     }
                 )
             }
@@ -235,7 +235,7 @@ private fun YearlySummaryCard(entries: List<SignupEntry>, resultStats: Map<Long,
                     totalHits = hits.sumOf { it.toInt() },
                     totalFigureHits = figureHits.sumOf { it.toInt() },
                     medalScore = placements.sumOf {
-                        when (it.stdMedal) { "B" -> 1; "S" -> 2; else -> 0 }
+                        when (it.stdMedal) { "B" -> 1; "S" -> 2; else -> 0 }.toInt()
                     }
                 )
                 Triple(type, rows, totalRow)
@@ -380,7 +380,7 @@ private fun CompetitionSignupsItem(entries: List<SignupEntry>, resultStats: Map<
                     GridCell(entry.weaponclass.classname, 2f)
                     if (isFalt) {
                         GridCell(if (avgHits != null) FMT_1F.format(avgHits) else "-", 1.5f)
-                        GridCell(figureHits?.toString() ?: "-", 1.5f)
+                        GridCell(if (figureHits != null) figureHits.toString() else "-", 1.5f)
                     } else {
                         GridCell(if (avgScore != null) FMT_1F.format(avgScore) else "-", 1.5f)
                         GridCell(if (avgHits != null) FMT_1F.format(avgHits) else "-", 1.5f)
