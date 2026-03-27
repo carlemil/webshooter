@@ -80,12 +80,9 @@ fun MyEntriesScreen(
                     )
                 }
                 item(key = "summary_all_time") {
-                    YearlySummaryCard(
-                        uiState.groupedEntries.values.flatten(),
-                        uiState.resultStats
-                    )
+                    YearlySummaryCard(uiState.allTimeSummaryRows)
                 }
-                uiState.groupedEntries.forEach { (year, entries) ->
+                uiState.groupedEntries.keys.forEach { year ->
                     item(key = "header_$year") {
                         Text(
                             text = year,
@@ -94,7 +91,7 @@ fun MyEntriesScreen(
                         )
                     }
                     item(key = "summary_$year") {
-                        YearlySummaryCard(entries, uiState.resultStats)
+                        YearlySummaryCard(uiState.yearlySummaryRows[year] ?: emptyList())
                     }
                 }
                 item(key = "header_competitions") {
@@ -104,14 +101,11 @@ fun MyEntriesScreen(
                         modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
                     )
                 }
-                uiState.groupedEntries.forEach { (_, entries) ->
-                    val byCompetition = entries.groupBy { it.competition.id }
-                        .values.sortedByDescending { it.first().competition.date }
-                    items(
-                        byCompetition.size,
-                        key = { byCompetition[it].first().competition.id }) { index ->
-                        CompetitionSignupsItem(byCompetition[index], uiState.resultStats)
-                    }
+                items(
+                    uiState.allCompetitions.size,
+                    key = { uiState.allCompetitions[it].first().competition.id }
+                ) { index ->
+                    CompetitionSignupsItem(uiState.allCompetitions[index], uiState.resultStats)
                 }
             }
         }
@@ -119,20 +113,6 @@ fun MyEntriesScreen(
 }
 
 private const val FMT_1F = "%.2f"
-
-private data class SummaryRow(
-    val weaponClass: String,
-    val competitionType: String,
-    val count: Int,
-    val avgScore: Double,
-    val avgHits: Double,
-    val avgX: Double,
-    val figureHits: Double,
-    val totalScore: Double,
-    val totalHits: Int,
-    val totalFigureHits: Int,
-    val medalScore: Int
-)
 
 @Composable
 private fun SymbolInfoDialog(onDismiss: () -> Unit) {
@@ -172,89 +152,9 @@ private fun SymbolInfoDialog(onDismiss: () -> Unit) {
 }
 
 @Composable
-private fun YearlySummaryCard(entries: List<SignupEntry>, resultStats: Map<Long, ResultStats>) {
+private fun YearlySummaryCard(rowsByType: List<Triple<String, List<SummaryRow>, SummaryRow>>) {
     var showSymbolInfo by remember { mutableStateOf(false) }
     if (showSymbolInfo) SymbolInfoDialog(onDismiss = { showSymbolInfo = false })
-    val rowsByType = remember(entries, resultStats) {
-        fun isRelevant(entry: SignupEntry): Boolean =
-            entry.resultsPlacements != null ||
-                (entry.competition.resultsTypeHuman == "Fält" && resultStats[entry.id] != null)
-
-        val relevantTypes = entries.filter { isRelevant(it) }
-            .map { it.competition.resultsTypeHuman }
-            .distinct()
-            .sortedBy { if (it == "Fält") 1 else 0 }
-        val allRows = entries
-            .filter { isRelevant(it) && it.competition.resultsTypeHuman in relevantTypes }
-            .groupBy { it.weaponclass.classname to it.competition.resultsTypeHuman }
-            .map { (key, group) ->
-                val placements = group.mapNotNull { it.resultsPlacements }
-                val avgScore = group.mapNotNull { entry ->
-                    val rp = entry.resultsPlacements ?: return@mapNotNull null
-                    val stations = resultStats[entry.id]?.stationCount?.takeIf { it > 0 }
-                        ?: return@mapNotNull rp.points.toDouble()
-                    rp.points.toDouble() / stations
-                }.let { if (it.isEmpty()) 0.0 else it.average() }
-                val hits = group.mapNotNull { entry -> resultStats[entry.id]?.hits }
-                val figureHits = group.mapNotNull { entry -> resultStats[entry.id]?.figureHits }
-                val avgHits = group.mapNotNull { entry ->
-                    val stations = resultStats[entry.id]?.stationCount?.takeIf { it > 0 } ?: return@mapNotNull null
-                    resultStats[entry.id]!!.hits.toDouble() / stations
-                }.let { if (it.isEmpty()) 0.0 else it.average() }
-                val avgFigureHits = if (figureHits.isEmpty()) 0.0 else figureHits.map { it.toDouble() }.average()
-                SummaryRow(
-                    weaponClass = key.first,
-                    competitionType = key.second,
-                    count = group.size,
-                    avgScore = avgScore,
-                    avgHits = avgHits,
-                    avgX = avgHits,
-                    figureHits = avgFigureHits,
-                    totalScore = group.sumOf { it.resultsPlacements?.points?.toDouble() ?: 0.0 },
-                    totalHits = hits.sumOf { it.toInt() },
-                    totalFigureHits = figureHits.sumOf { it.toInt() },
-                    medalScore = placements.sumOf {
-                        when (it.stdMedal) { "B" -> 1; "S" -> 2; else -> 0 }.toInt()
-                    }
-                )
-            }
-        relevantTypes.mapNotNull { type ->
-            val rows = allRows.filter { it.competitionType == type }.sortedBy { it.weaponClass }
-            if (rows.isEmpty()) null else {
-                val typeEntries = entries.filter { isRelevant(it) && it.competition.resultsTypeHuman == type }
-                val placements = typeEntries.mapNotNull { it.resultsPlacements }
-                val avgScore = typeEntries.mapNotNull { entry ->
-                    val rp = entry.resultsPlacements ?: return@mapNotNull null
-                    val stations = resultStats[entry.id]?.stationCount?.takeIf { it > 0 }
-                        ?: return@mapNotNull rp.points.toDouble()
-                    rp.points.toDouble() / stations
-                }.let { if (it.isEmpty()) 0.0 else it.average() }
-                val hits = typeEntries.mapNotNull { entry -> resultStats[entry.id]?.hits }
-                val figureHits = typeEntries.mapNotNull { entry -> resultStats[entry.id]?.figureHits }
-                val avgHits = typeEntries.mapNotNull { entry ->
-                    val stations = resultStats[entry.id]?.stationCount?.takeIf { it > 0 } ?: return@mapNotNull null
-                    resultStats[entry.id]!!.hits.toDouble() / stations
-                }.let { if (it.isEmpty()) 0.0 else it.average() }
-                val avgFigureHits = if (figureHits.isEmpty()) 0.0 else figureHits.map { it.toDouble() }.average()
-                val totalRow = SummaryRow(
-                    weaponClass = rows.joinToString(", ") { it.weaponClass },
-                    competitionType = type,
-                    count = typeEntries.size,
-                    avgScore = avgScore,
-                    avgHits = avgHits,
-                    avgX = avgHits,
-                    figureHits = avgFigureHits,
-                    totalScore = typeEntries.sumOf { it.resultsPlacements?.points?.toDouble() ?: 0.0 },
-                    totalHits = hits.sumOf { it.toInt() },
-                    totalFigureHits = figureHits.sumOf { it.toInt() },
-                    medalScore = placements.sumOf {
-                        when (it.stdMedal) { "B" -> 1; "S" -> 2; else -> 0 }.toInt()
-                    }
-                )
-                Triple(type, rows, totalRow)
-            }
-        }
-    }
     if (rowsByType.isEmpty()) return
 
     Card(
