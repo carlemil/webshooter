@@ -137,6 +137,10 @@ dependencies {
     // Extended Icons
     implementation(libs.androidx.material.icons.extended)
 
+    // Vico Charts
+    implementation(libs.vico.compose)
+    implementation(libs.vico.compose.m3)
+
     // Test
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)

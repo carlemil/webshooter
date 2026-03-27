@@ -42,6 +42,8 @@ import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsViewModelIm
 import se.kjellstrand.webshooter.ui.screens.myresults.MyEntriesScreen
 import se.kjellstrand.webshooter.ui.navigation.Screen
 import se.kjellstrand.webshooter.ui.screens.settings.SettingsScreen
+import se.kjellstrand.webshooter.ui.screens.charts.ChartScreen
+import se.kjellstrand.webshooter.ui.screens.charts.ChartViewModelImpl
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,12 +54,14 @@ fun WebShooterScreen(navController: NavController) {
     val navigationItems = listOf(
         NavigationItem(stringResource(R.string.web_shooter_competitions), Screen.CompetitionsList.route),
         NavigationItem(stringResource(R.string.my_results), Screen.MyEntries.route),
+        NavigationItem(stringResource(R.string.charts), Screen.Charts.route),
         NavigationItem(stringResource(R.string.web_shooter_club), Screen.Club.route),
         NavigationItem(stringResource(R.string.web_shooter_settings), Screen.Settings.route)
     )
 
     var selectedRoute by remember { mutableStateOf(Screen.CompetitionsList.route) }
     val competitionsViewModel: CompetitionsViewModelImpl = hiltViewModel()
+    val chartViewModel: ChartViewModelImpl = hiltViewModel()
 
     ModalNavigationDrawer(
         drawerContent = {
@@ -111,6 +115,7 @@ fun WebShooterScreen(navController: NavController) {
                 Screen.MyEntries.route -> {
                     MyEntriesScreen()
                 }
+                Screen.Charts.route -> ChartScreen(chartViewModel)
                 Screen.Club.route -> ClubScreen()
                 Screen.Settings.route -> SettingsScreen(
                     onLoggedOut = {
