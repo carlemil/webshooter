@@ -37,8 +37,10 @@ class SignupsViewModelImpl @Inject constructor(
             settingsRepository.getUserProfile().collect { resource ->
                 if (resource is Resource.Success) {
                     val profile = resource.data
+                    val primaryClub = profile.clubs.firstOrNull { it.id == profile.clubsId }?.name
                     _uiState.value = _uiState.value.copy(
-                        currentUserFullName = "${profile.name} ${profile.lastname}"
+                        currentUserFullName = "${profile.name} ${profile.lastname}",
+                        currentUserClubName = primaryClub
                     )
                 }
             }

@@ -4,7 +4,7 @@
     <string name="app_name">App Shooter</string>
     <string name="clear">Återställ</string>
     <string name="dash">-</string>
-<string name="email">E-post</string>
+    <string name="email">E-post</string>
     <string name="female">Kvinna</string>
     <string name="figures">Figurer</string>
     <string name="figures_short">F</string>
@@ -12,7 +12,7 @@
     <string name="hits_short">T</string>
     <string name="hfp">T/F/P</string>
     <string name="px">P/X</string>
-<string name="male">Man</string>
+    <string name="male">Man</string>
     <string name="medal">🏅</string>
     <string name="my_results">Mina resultat</string>
     <string name="name">Namn</string>
@@ -46,7 +46,7 @@
     <string name="club_postgiro">Postgiro</string>
     <string name="club_swish">Swish</string>
 
-<!-- ### COMPETITIONS ### -->
+    <!-- ### COMPETITIONS ### -->
     <string name="competitions_collapse">Komprimera</string>
     <string name="competitions_competition_type">Tävlingstyp: %1$s</string>
     <string name="competitions_information">Information</string>
@@ -159,6 +159,7 @@
 
     <!-- ### COMPETITION_SIGNUPS_LIST ### -->
     <string name="competition_signups_list_participants">Deltagare</string>
+    <string name="competition_signups_list_participants_count">%1$d Deltagare / %2$d Starter</string>
     <string name="competition_signups_list_filter_all">Alla</string>
     <string name="competition_signups_list_sort_name">Namn</string>
     <string name="competition_signups_list_sort_club">Klubb</string>
@@ -174,9 +175,9 @@
     <string name="signups_col_fee">Avgift</string>
     <string name="signups_col_lane">Bana</string>
     <string name="signups_col_note">Notering</string>
-<string name="signups_col_start">Start</string>
+    <string name="signups_col_start">Start</string>
     <string name="signups_col_team">Lag</string>
-<string name="signups_no_entries">Inga tävlingar</string>
+    <string name="signups_no_entries">Inga tävlingar</string>
 
     <!-- ### MY RESULTS ### -->
     <string name="my_results_summary">Sammanfattning</string>
@@ -185,7 +186,7 @@
     <string name="my_results_summary_avg_hits_falt">x̄ h.</string>
     <string name="my_results_summary_avg_hits_pres">x̄ X</string>
     <string name="my_results_summary_figures">Σ f.</string>
-<string name="my_results_summary_medal_pts">🏅 p.</string>
+    <string name="my_results_summary_medal_pts">🏅 p.</string>
     <string name="my_results_competitions">Tävlingar</string>
     <string name="my_results_symbols_title">Symbolförklaring</string>
     <string name="my_results_symbols_close">Stäng</string>
