@@ -291,7 +291,7 @@ private fun YearlySummaryCard(entries: List<SignupEntry>, resultStats: Map<Long,
                         GridCell(stringResource(R.string.my_results_summary_avg_score), 1.5f, fontWeight = FontWeight.Bold)
                         GridCell(stringResource(R.string.my_results_summary_avg_hits_pres), 1.5f, fontWeight = FontWeight.Bold)
                     }
-                    GridCell(stringResource(R.string.my_results_summary_medal_pts), 0.8f, fontWeight = FontWeight.Bold)
+                    GridCell(stringResource(R.string.my_results_symbol_medal_pts), 0.8f, fontWeight = FontWeight.Bold)
                 }
                 HorizontalDivider(modifier = Modifier.padding(vertical = 2.dp))
                 rows.forEach { row ->
@@ -357,7 +357,7 @@ private fun CompetitionSignupsItem(entries: List<SignupEntry>, resultStats: Map<
                     GridCell(stringResource(R.string.my_results_summary_avg_hits_pres), 1.5f, fontWeight = FontWeight.Bold)
                 }
                 GridCell(stringResource(R.string.medal), 1.2f, fontWeight = FontWeight.Bold)
-                GridCell(stringResource(R.string.my_results_summary_medal_pts), 1.2f, fontWeight = FontWeight.Bold)
+                GridCell(stringResource(R.string.my_results_symbol_medal_pts), 1.2f, fontWeight = FontWeight.Bold)
             }
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 2.dp))
