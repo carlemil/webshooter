@@ -181,28 +181,28 @@
 
     <!-- ### MY RESULTS ### -->
     <string name="my_results_summary">Sammanfattning</string>
-    <string name="my_results_summary_class">Klass</string>
-    <string name="my_results_summary_avg_score">x̄ p.</string>
-    <string name="my_results_summary_avg_hits_falt">x̄ h.</string>
+    <string name="my_results_summary_class">Klass/starter</string>
+    <string name="my_results_summary_avg_score">x̄ Poäng</string>
+    <string name="my_results_summary_avg_hits_falt">x̄ Träff</string>
     <string name="my_results_summary_avg_hits_pres">x̄ X</string>
-    <string name="my_results_summary_figures">Σ f.</string>
-    <string name="my_results_summary_medal_pts">🏅 p.</string>
+    <string name="my_results_summary_figures">Σ Figurer.</string>
+    <string name="my_results_summary_medal_pts">🏅</string>
     <string name="my_results_competitions">Tävlingar</string>
     <string name="my_results_symbols_title">Symbolförklaring</string>
     <string name="my_results_symbols_close">Stäng</string>
     <string name="my_results_symbol_xbar">x̄</string>
-    <string name="my_results_symbol_xbar_desc">Medelvärde (genomsnitt per station)</string>
+    <string name="my_results_symbol_xbar_desc">Medelvärde per station/serie</string>
     <string name="my_results_symbol_sigma">Σ</string>
-    <string name="my_results_symbol_sigma_desc">Summa / totalt</string>
+    <string name="my_results_symbol_sigma_desc">Summa</string>
     <string name="my_results_symbol_p">p.</string>
     <string name="my_results_symbol_p_desc">Poäng</string>
-    <string name="my_results_symbol_h">h.</string>
+    <string name="my_results_symbol_h">t.</string>
     <string name="my_results_symbol_h_desc">Träffar</string>
     <string name="my_results_symbol_x">X</string>
-    <string name="my_results_symbol_x_desc">X-ringträffar (precision)</string>
+    <string name="my_results_symbol_x_desc">Innertior</string>
     <string name="my_results_symbol_f">f.</string>
     <string name="my_results_symbol_f_desc">Figurträffar</string>
     <string name="my_results_symbol_medal_pts">🏅 p.</string>
-    <string name="my_results_symbol_medal_pts_desc">Medalpoäng (Brons\=1, Silver\=2)</string>
+    <string name="my_results_symbol_medal_pts_desc">Standardmedalj poäng (Silver\=2, Brons\=1)</string>
 
 </resources>
