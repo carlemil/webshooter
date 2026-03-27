@@ -72,6 +72,19 @@ fun MyEntriesScreen(
                 ),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                item(key = "header_all_time") {
+                    Text(
+                        text = stringResource(R.string.my_results_all_time),
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
+                    )
+                }
+                item(key = "summary_all_time") {
+                    YearlySummaryCard(
+                        uiState.groupedEntries.values.flatten(),
+                        uiState.resultStats
+                    )
+                }
                 uiState.groupedEntries.forEach { (year, entries) ->
                     item(key = "header_$year") {
                         Text(
