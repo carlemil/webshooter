@@ -185,14 +185,13 @@
     <string name="my_results_summary_avg_score">x̄ Poäng</string>
     <string name="my_results_summary_avg_hits_falt">x̄ Träff</string>
     <string name="my_results_summary_avg_hits_pres">x̄ X</string>
-    <string name="my_results_summary_figures">Σ Figurer.</string>
+    <string name="my_results_summary_figures">Figurer</string>
     <string name="my_results_summary_medal_pts">🏅</string>
     <string name="my_results_competitions">Tävlingar</string>
     <string name="my_results_symbols_title">Symbolförklaring</string>
     <string name="my_results_symbols_close">Stäng</string>
     <string name="my_results_symbol_xbar">x̄</string>
     <string name="my_results_symbol_xbar_desc">Medelvärde per station/serie</string>
-    <string name="my_results_symbol_sigma">Σ</string>
     <string name="my_results_symbol_sigma_desc">Summa</string>
     <string name="my_results_symbol_p">p.</string>
     <string name="my_results_symbol_p_desc">Poäng</string>
