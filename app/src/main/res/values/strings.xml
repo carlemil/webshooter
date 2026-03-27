@@ -186,7 +186,6 @@
     <string name="my_results_summary_avg_hits_falt">x̄ Träff</string>
     <string name="my_results_summary_avg_hits_pres">x̄ X</string>
     <string name="my_results_summary_figures">Figurer</string>
-    <string name="my_results_summary_medal_pts">🏅</string>
     <string name="my_results_competitions">Tävlingar</string>
     <string name="my_results_symbols_title">Symbolförklaring</string>
     <string name="my_results_symbols_close">Stäng</string>
@@ -201,7 +200,7 @@
     <string name="my_results_symbol_x_desc">Innertior</string>
     <string name="my_results_symbol_f">f.</string>
     <string name="my_results_symbol_f_desc">Figurträffar</string>
-    <string name="my_results_symbol_medal_pts">🏅 p.</string>
+    <string name="my_results_symbol_medal_pts">🏅</string>
     <string name="my_results_symbol_medal_pts_desc">Standardmedalj poäng (Silver\=2, Brons\=1)</string>
 
 </resources>
