@@ -4,13 +4,14 @@ plugins {
     id("com.google.dagger.hilt.android")
     alias(libs.plugins.ksp)
     alias(libs.plugins.compose.compiler)
+    id("com.github.triplet.play") version "3.11.0"
 }
 
-val appVersionCode = 16
-val appVersionName = "1.7.9"
+val appVersionCode = 17
+val appVersionName = "1.8.0"
 
 // ---- Generate release notes ----
-// Make release notes for everything in between appVersionName 1.7.7 and appVersionName 1.7.8.
+// Make release notes for everything in between appVersionName 1.7.9 and appVersionName 1.8.0.
 // Focus on what the USER experiences, not what the dev team did. Max 500 characters.
 // Short, user-friendly language. No technical jargon.
 
@@ -37,6 +38,24 @@ android {
     namespace = "se.kjellstrand.webshooter"
     compileSdk = 36
 
+    signingConfigs {
+        create("release") {
+            val propsFile = rootProject.file("keystore.properties")
+            val propsMap = if (propsFile.exists()) {
+                propsFile.readLines()
+                    .filter { it.contains('=') && !it.trimStart().startsWith('#') }
+                    .associate { line ->
+                        val idx = line.indexOf('=')
+                        line.substring(0, idx).trim() to line.substring(idx + 1).trim()
+                    }
+            } else emptyMap()
+            storeFile = rootProject.file(propsMap["storeFile"] ?: "keystore")
+            storePassword = propsMap["storePassword"]
+            keyAlias = propsMap["keyAlias"]
+            keyPassword = propsMap["keyPassword"]
+        }
+    }
+
     defaultConfig {
         applicationId = "se.kjellstrand.webshooter"
         minSdk = 26
@@ -54,6 +73,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 
@@ -97,6 +117,12 @@ android {
         jvmTarget = "17"
     }
 
+}
+
+play {
+    serviceAccountCredentials.set(rootProject.file("play-account.json"))
+    track.set("internal")
+    defaultToAppBundles.set(true)
 }
 
 dependencies {
