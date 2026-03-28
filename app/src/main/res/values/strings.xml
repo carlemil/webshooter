@@ -133,12 +133,6 @@
     <string name="weapon_group">Vapengrupp: </string>
     <string name="weapon_groups">Vapengrupper: </string>
 
-    <!-- ### CHARTS ### -->
-    <string name="charts">Grafer</string>
-    <string name="charts_precision_title">Precisionstävlingar – x̄ poäng/serie</string>
-    <string name="charts_field_title">Fälttävlingar – x̄ träff/station</string>
-    <string name="charts_empty">Inga resultat hittades</string>
-
     <!-- ### WEB_SHOOTER ### -->
     <string name="web_shooter_club">Förening</string>
     <string name="web_shooter_competitions">Tävlingar</string>
