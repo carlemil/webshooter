@@ -10,11 +10,6 @@ plugins {
 val appVersionCode = 18
 val appVersionName = "1.9.0"
 
-// ---- Generate release notes ----
-// Make release notes for everything in between appVersionName 1.8.0 and appVersionName 1.9.0.
-// Focus on what the USER experiences, not what the dev team did. Max 500 characters.
-// Short, user-friendly language. No technical jargon.
-
 val dbVersionDir = layout.buildDirectory.dir("generated/source/dbversion")
 
 val generateDbVersion = tasks.register("generateDbVersion") {
