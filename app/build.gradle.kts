@@ -7,11 +7,11 @@ plugins {
     id("com.github.triplet.play") version "3.11.0"
 }
 
-val appVersionCode = 17
-val appVersionName = "1.8.0"
+val appVersionCode = 18
+val appVersionName = "1.9.0"
 
 // ---- Generate release notes ----
-// Make release notes for everything in between appVersionName 1.7.9 and appVersionName 1.8.0.
+// Make release notes for everything in between appVersionName 1.8.0 and appVersionName 1.9.0.
 // Focus on what the USER experiences, not what the dev team did. Max 500 characters.
 // Short, user-friendly language. No technical jargon.
 
