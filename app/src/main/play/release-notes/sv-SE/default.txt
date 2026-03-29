@@ -1,6 +1,3 @@
-• My Results screen now shows an all-time summary card at the top
-• Yearly stats now include average scores, hit counts, and totals per competition type
-• Fält competitions now appear in yearly summaries
-• Added a legend explaining the stats symbols
-• Signups list sorts your club to the top
-• My patrols appear first in the patrols list
+• Förbättrad stabilitet med kraschrapportering
+• Fixat navigeringsproblem vid snabb bakåtnavigering
+• Felkorrigeringar och prestandaförbättringar
