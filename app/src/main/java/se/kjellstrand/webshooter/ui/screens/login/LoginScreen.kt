@@ -64,7 +64,7 @@ fun LoginScreen(
             when (event) {
                 is UiEvent.NavigateToLandingPage -> {
                     navController.navigate(Screen.LandingScreen.route) {
-                        popUpTo(Screen.LoginScreen.route) { inclusive = true }
+                        popUpTo(0) { inclusive = true }
                     }
                 }
 

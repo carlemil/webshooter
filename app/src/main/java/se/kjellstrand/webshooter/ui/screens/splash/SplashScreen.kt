@@ -35,7 +35,7 @@ fun SplashScreen(
         delay(800)
         val destination = if (viewModel.hasToken()) Screen.LandingScreen.route else Screen.LoginScreen.route
         navController.navigate(destination) {
-            popUpTo(Screen.SplashScreen.route) { inclusive = true }
+            popUpTo(0) { inclusive = true }
         }
     }
 
