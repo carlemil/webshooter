@@ -49,6 +49,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import se.kjellstrand.webshooter.ui.navigation.safePopBackStack
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitionsignups.remote.CompetitionSignupEntry
 import se.kjellstrand.webshooter.ui.common.ScreenTopBar
@@ -80,7 +81,7 @@ fun CompetitionSignupsScreen(
                 else
                     stringResource(R.string.competition_signups_list_participants),
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { navController.safePopBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }

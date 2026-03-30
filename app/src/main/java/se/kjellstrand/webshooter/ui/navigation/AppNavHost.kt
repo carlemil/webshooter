@@ -98,7 +98,7 @@ fun AppNavHost(navController: NavHostController) {
             }
             LaunchedEffect(signupState.isSuccess) {
                 if (signupState.isSuccess) {
-                    navController.popBackStack()
+                    navController.safePopBackStack()
                     competitionsViewModel.reload()
                 }
             }

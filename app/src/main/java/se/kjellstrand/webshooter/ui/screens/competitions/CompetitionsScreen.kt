@@ -68,6 +68,7 @@ import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import se.kjellstrand.webshooter.ui.navigation.safeNavigate
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.common.CompetitionType
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
@@ -197,7 +198,7 @@ fun CompetitionsScreen(
                                 else -> R.string.competitions_relays_button
                             },
                             onResultsClick = {
-                                navController.navigate(
+                                navController.safeNavigate(
                                     Screen.CompetitionResults.createRoute(
                                         competition.id.toInt(),
                                         (competition.resultsType).name,
@@ -207,17 +208,17 @@ fun CompetitionsScreen(
                                 )
                             },
                             onSignupClick = {
-                                navController.navigate(
+                                navController.safeNavigate(
                                     Screen.CompetitionSignup.createRoute(competition.id)
                                 )
                             },
                             onSignupsListClick = {
-                                navController.navigate(
+                                navController.safeNavigate(
                                     Screen.CompetitionSignupsList.createRoute(competition.id)
                                 )
                             },
                             onPatrolsOrRelayClick = {
-                                navController.navigate(
+                                navController.safeNavigate(
                                     Screen.CompetitionPatrols.createRoute(
                                         competition.id,
                                         competition.competitionType.id
