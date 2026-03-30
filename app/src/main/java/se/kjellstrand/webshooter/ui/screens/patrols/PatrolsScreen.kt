@@ -43,6 +43,7 @@ import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitionpatrols.remote.PatrolEntry
 import se.kjellstrand.webshooter.data.competitionpatrols.remote.PatrolSignupEntry
 import se.kjellstrand.webshooter.ui.common.ScreenTopBar
+import se.kjellstrand.webshooter.ui.navigation.safePopBackStack
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
 import se.kjellstrand.webshooter.ui.theme.appColors
@@ -69,7 +70,7 @@ fun CompetitionPatrolsScreen(
             ScreenTopBar(
                 title = stringResource(if (isFalt) R.string.competitions_patrols_button else R.string.competitions_relays_button),
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { navController.safePopBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }

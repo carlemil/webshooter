@@ -65,6 +65,8 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
+import se.kjellstrand.webshooter.ui.navigation.safeNavigate
+import se.kjellstrand.webshooter.ui.navigation.safePopBackStack
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.R
@@ -166,7 +168,7 @@ fun CompetitionResultsScreen(
                         context.getString(R.string.results_no_results_found),
                         Toast.LENGTH_LONG
                     ).show()
-                    navController.popBackStack()
+                    navController.safePopBackStack()
                 }
             }
         }
@@ -177,7 +179,7 @@ fun CompetitionResultsScreen(
             ScreenTopBar(
                 title = resultsUiState.competitionName,
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = { navController.safePopBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
@@ -345,7 +347,7 @@ fun ResultsList(
                             loggedInUserId = resultsUiState.loggedInUserId,
                             inCard = true,
                             onItemClick = {
-                                navController.navigate(
+                                navController.safeNavigate(
                                     Screen.ShooterResult.createRoute(
                                         competitionId,
                                         result.signup.user.userID.toInt(),
@@ -459,7 +461,7 @@ fun ResultsList(
                                 showClub = !isClubGrouping,
                                 showWeaponClass = !isWeaponClassGrouping,
                                 onItemClick = {
-                                    navController.navigate(
+                                    navController.safeNavigate(
                                         Screen.ShooterResult.createRoute(
                                             competitionId,
                                             result.signup.user.userID.toInt(),
