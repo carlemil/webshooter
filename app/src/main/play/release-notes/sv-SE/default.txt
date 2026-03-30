@@ -1,3 +1,2 @@
-• Förbättrad stabilitet med kraschrapportering
-• Fixat navigeringsproblem vid snabb bakåtnavigering
-• Felkorrigeringar och prestandaförbättringar
+- Fixat ett problem där snabba tryck på bakåt/framåt kunde orsaka dubbel navigering
+- Förbättrad sekretess genom att ta bort onödig annonsspårning
