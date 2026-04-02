@@ -1,0 +1,13 @@
+package se.kjellstrand.webshooter.data.competitionteams.local
+
+import androidx.room.Entity
+
+@Entity(tableName = "teams", primaryKeys = ["id", "competitionId"])
+data class TeamEntity(
+    val id: Long,
+    val competitionId: Long,
+    val name: String,
+    val clubsId: Long,
+    val weapongroupsId: Long,
+    val signupsJson: String
+)
