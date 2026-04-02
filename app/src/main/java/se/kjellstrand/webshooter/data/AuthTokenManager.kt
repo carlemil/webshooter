@@ -13,7 +13,7 @@ class AuthTokenManager(context: Context) {
     init {
         // MasterKey and EncryptedSharedPreferences perform unavoidable
         // keystore/disk I/O during initialization.
-        val oldPolicy = StrictMode.allowThreadDiskReads()
+        val oldPolicy = StrictMode.allowThreadDiskWrites()
         try {
             masterKeyAlias = MasterKey.Builder(context)
                 .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
