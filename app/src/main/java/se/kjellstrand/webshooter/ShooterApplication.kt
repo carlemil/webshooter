@@ -17,7 +17,16 @@ class ShooterApplication : Application() {
             )
             StrictMode.setVmPolicy(
                 StrictMode.VmPolicy.Builder()
-                    .detectAll()
+                    .detectLeakedSqlLiteObjects()
+                    .detectLeakedClosableObjects()
+                    .detectActivityLeaks()
+                    .detectLeakedRegistrationObjects()
+                    .detectFileUriExposure()
+                    .detectCleartextNetwork()
+                    .detectContentUriWithoutPermission()
+                    // Intentionally omitting detectUntaggedSockets() -
+                    // triggered by Google's datatransport library (Firebase/Crashlytics)
+                    // which we cannot control.
                     .penaltyLog()
                     .build()
             )
