@@ -224,6 +224,11 @@ fun CompetitionsScreen(
                                         competition.competitionType.id
                                     )
                                 )
+                            },
+                            onTeamsClick = {
+                                navController.safeNavigate(
+                                    Screen.CompetitionTeams.createRoute(competition.id)
+                                )
                             }
                         )
                     }
@@ -339,7 +344,8 @@ fun CompetitionItem(
     onResultsClick: () -> Unit,
     onSignupClick: () -> Unit = {},
     onSignupsListClick: () -> Unit = {},
-    onPatrolsOrRelayClick: () -> Unit = {}
+    onPatrolsOrRelayClick: () -> Unit = {},
+    onTeamsClick: () -> Unit = {}
 ) {
     var isExpanded by remember { mutableStateOf(false) }
     var showCalendarDialog by remember { mutableStateOf(false) }
@@ -471,6 +477,20 @@ fun CompetitionItem(
                             text = stringResource(patrolOrRelayButtonText),
                             textAlign = TextAlign.Center
                         )
+                    }
+                    if (competition.allowTeams > 0) {
+                        Button(
+                            modifier = Modifier.weight(1f),
+                            onClick = onTeamsClick,
+                            shape = shape,
+                            contentPadding = buttonContentPadding
+                        ) {
+                            Text(
+                                style = MaterialTheme.typography.bodySmall,
+                                text = stringResource(R.string.competitions_teams_button),
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                     Button(
                         modifier = Modifier.weight(1f),

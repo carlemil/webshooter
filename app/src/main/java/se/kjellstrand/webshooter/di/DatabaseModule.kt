@@ -9,6 +9,7 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import se.kjellstrand.webshooter.data.club.local.ClubDao
 import se.kjellstrand.webshooter.data.competitionpatrols.local.PatrolsDao
+import se.kjellstrand.webshooter.data.competitionteams.local.TeamsDao
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionsDao
 import se.kjellstrand.webshooter.data.competitionsignups.local.CompetitionSignupsDao
 import se.kjellstrand.webshooter.data.db.AppDatabase
@@ -31,6 +32,7 @@ object DatabaseModule {
     @Provides fun provideCompetitionsDao(db: AppDatabase): CompetitionsDao = db.competitionsDao()
     @Provides fun provideResultsDao(db: AppDatabase): ResultsDao = db.resultsDao()
     @Provides fun providePatrolsDao(db: AppDatabase): PatrolsDao = db.patrolsDao()
+    @Provides fun provideTeamsDao(db: AppDatabase): TeamsDao = db.teamsDao()
     @Provides fun provideCompetitionSignupsDao(db: AppDatabase): CompetitionSignupsDao = db.competitionSignupsDao()
     @Provides fun provideSignupsDao(db: AppDatabase): SignupsDao = db.signupsDao()
     @Provides fun provideClubDao(db: AppDatabase): ClubDao = db.clubDao()
