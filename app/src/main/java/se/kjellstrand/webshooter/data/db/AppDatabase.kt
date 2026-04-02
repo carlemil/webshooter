@@ -6,6 +6,8 @@ import se.kjellstrand.webshooter.data.club.local.ClubDao
 import se.kjellstrand.webshooter.data.club.local.ClubEntity
 import se.kjellstrand.webshooter.data.competitionpatrols.local.PatrolEntity
 import se.kjellstrand.webshooter.data.competitionpatrols.local.PatrolsDao
+import se.kjellstrand.webshooter.data.competitionteams.local.TeamEntity
+import se.kjellstrand.webshooter.data.competitionteams.local.TeamsDao
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionEntity
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionsDao
 import se.kjellstrand.webshooter.data.competitionsignups.local.CompetitionSignupEntity
@@ -22,6 +24,7 @@ import se.kjellstrand.webshooter.data.mysignups.local.SignupsDao
         CompetitionEntity::class,
         ResultEntity::class,
         PatrolEntity::class,
+        TeamEntity::class,
         CompetitionSignupEntity::class,
         SignupEntryEntity::class,
         ClubEntity::class,
@@ -34,6 +37,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun competitionsDao(): CompetitionsDao
     abstract fun resultsDao(): ResultsDao
     abstract fun patrolsDao(): PatrolsDao
+    abstract fun teamsDao(): TeamsDao
     abstract fun competitionSignupsDao(): CompetitionSignupsDao
     abstract fun signupsDao(): SignupsDao
     abstract fun clubDao(): ClubDao
