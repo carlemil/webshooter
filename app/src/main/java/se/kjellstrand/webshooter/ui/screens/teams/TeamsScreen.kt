@@ -110,7 +110,10 @@ fun CompetitionTeamsScreen(
                                         .fillMaxWidth()
                                         .then(
                                             if (isLast) Modifier.clip(
-                                                RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
+                                                RoundedCornerShape(
+                                                    bottomStart = 12.dp,
+                                                    bottomEnd = 12.dp
+                                                )
                                             ) else Modifier
                                         )
                                         .background(MaterialTheme.colorScheme.surfaceContainerHigh)
@@ -162,7 +165,7 @@ private fun TeamHeaderItem(team: TeamEntry) {
                     )
                 }
                 Text(
-                    text = "$uniqueShooters / ${team.signups.size}",
+                    text = stringResource(R.string.shooters, team.signups.size),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
