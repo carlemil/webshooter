@@ -441,18 +441,19 @@ fun CompetitionItem(
                             runCatching {
                                 !LocalDate.parse(competition.date).isAfter(LocalDate.now())
                             }.getOrDefault(false)
-                    Button(
-                        modifier = Modifier.weight(1f),
-                        enabled = resultsEnabled,
-                        onClick = onResultsClick,
-                        shape = shape,
-                        contentPadding = buttonContentPadding
-                    ) {
-                        Text(
-                            style = MaterialTheme.typography.bodySmall,
-                            text = stringResource(R.string.competitions_result),
-                            textAlign = TextAlign.Center
-                        )
+                    if (resultsEnabled) {
+                        Button(
+                            modifier = Modifier.weight(1f),
+                            onClick = onResultsClick,
+                            shape = shape,
+                            contentPadding = buttonContentPadding
+                        ) {
+                            Text(
+                                style = MaterialTheme.typography.bodySmall,
+                                text = stringResource(R.string.competitions_result),
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                     Button(
                         modifier = Modifier.weight(1f),
@@ -492,18 +493,19 @@ fun CompetitionItem(
                             )
                         }
                     }
-                    Button(
-                        modifier = Modifier.weight(1f),
-                        enabled = competition.status == "open",
-                        shape = shape,
-                        onClick = onSignupClick,
-                        contentPadding = buttonContentPadding
-                    ) {
-                        Text(
-                            style = MaterialTheme.typography.bodySmall,
-                            text = stringResource(R.string.sign_up),
-                            textAlign = TextAlign.Center
-                        )
+                    if (competition.status == "open") {
+                        Button(
+                            modifier = Modifier.weight(1f),
+                            shape = shape,
+                            onClick = onSignupClick,
+                            contentPadding = buttonContentPadding
+                        ) {
+                            Text(
+                                style = MaterialTheme.typography.bodySmall,
+                                text = stringResource(R.string.sign_up),
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                 }
             }
