@@ -208,5 +208,6 @@
     <string name="my_results_symbol_f_desc">Figurträffar</string>
     <string name="my_results_symbol_medal_pts">🏅</string>
     <string name="my_results_symbol_medal_pts_desc">Standardmedalj poäng (Silver\=2, Brons\=1)</string>
+    <string name="shooters">%1$d skyttar</string>
 
 </resources>
