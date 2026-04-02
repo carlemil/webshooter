@@ -77,7 +77,7 @@
     <string name="competitions_team_signup">Lagtävling: %1$s</string>
     <string name="competitions_teams_button">Lag</string>
     <string name="competition_teams_no_teams">Inga lag</string>
-    <string name="competition_teams_title_count">%1$d Lag / %2$d Skyttar / %3$d Starter</string>
+    <string name="competition_teams_title_count">%1$d Lag / %2$d Skyttar</string>
     <string name="competition_teams_member_count">%1$d skyttar</string>
     <string name="competition_name">Namn</string>
     <string name="competitions_yes">Ja</string>
