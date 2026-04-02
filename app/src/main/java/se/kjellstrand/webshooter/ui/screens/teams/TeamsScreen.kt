@@ -53,13 +53,12 @@ fun CompetitionTeamsScreen(
     val totalShooters = uiState.teams.sumOf { team ->
         team.signups.map { it.user.userId }.distinct().size
     }
-    val totalSignups = uiState.teams.sumOf { it.signups.size }
 
     Scaffold(
         topBar = {
             ScreenTopBar(
-                title = if (totalSignups > 0)
-                    stringResource(R.string.competition_teams_title_count, uiState.teams.size, totalShooters, totalSignups)
+                title = if (uiState.teams.isNotEmpty())
+                    stringResource(R.string.competition_teams_title_count, uiState.teams.size, totalShooters)
                 else
                     stringResource(R.string.competitions_teams_button),
                 navigationIcon = {
