@@ -67,9 +67,7 @@ class CompetitionsViewModelImpl @Inject constructor(
                         )
                     }
 
-                    else -> {
-                        println("loadCompetitions page: $page")
-                    }
+                    else -> {}
                 }
             }
         }
