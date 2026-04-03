@@ -98,8 +98,8 @@ class AuthTokenManager(context: Context) {
         private const val TOKEN_EXPIRES_AT_KEY = "token_expires_at"
         private const val PREFS_FILE = "auth_prefs"
         private const val TAG = "AuthTokenManager"
-        @Volatile var token: String? = null
-        @Volatile var refreshToken: String? = null
-        @Volatile var tokenExpiresAtMillis: Long? = null
+        var token: String? = null
+        var refreshToken: String? = null
+        var tokenExpiresAtMillis: Long? = null
     }
 }

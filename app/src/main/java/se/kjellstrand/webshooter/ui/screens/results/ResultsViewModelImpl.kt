@@ -99,7 +99,9 @@ open class ResultsViewModelImpl @Inject constructor(
                         _uiState.update { it.copy(isLoading = false, refreshVersion = it.refreshVersion + 1) }
                     }
 
-                    else -> {}
+                    else -> {
+                        println("getResults is loading competitionId: $competitionId")
+                    }
                 }
             }
         }
