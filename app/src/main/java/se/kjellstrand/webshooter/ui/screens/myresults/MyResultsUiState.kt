@@ -28,5 +28,6 @@ data class MyResultsUiState(
     val allTimeSummaryRows: List<Triple<String, List<SummaryRow>, SummaryRow>> = emptyList(),
     val yearlySummaryRows: Map<String, List<Triple<String, List<SummaryRow>, SummaryRow>>> = emptyMap(),
     val allCompetitions: List<List<SignupEntry>> = emptyList(),
-    val isLoading: Boolean = false
+    val isLoading: Boolean = false,
+    val isLoadingStats: Boolean = false
 )

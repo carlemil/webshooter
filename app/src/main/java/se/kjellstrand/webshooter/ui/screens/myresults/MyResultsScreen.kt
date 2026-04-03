@@ -72,6 +72,18 @@ fun MyEntriesScreen(
                 ),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                if (uiState.isLoadingStats) {
+                    item(key = "loading_stats") {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(modifier = Modifier.size(24.dp))
+                        }
+                    }
+                }
                 item(key = "header_all_time") {
                     Text(
                         text = stringResource(R.string.my_results_all_time),
