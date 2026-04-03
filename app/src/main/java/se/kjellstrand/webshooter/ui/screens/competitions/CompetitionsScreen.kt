@@ -200,7 +200,7 @@ fun CompetitionsScreen(
                             onResultsClick = {
                                 navController.safeNavigate(
                                     Screen.CompetitionResults.createRoute(
-                                        competition.id,
+                                        competition.id.toInt(),
                                         (competition.resultsType).name,
                                         competition.name,
                                         competition.date

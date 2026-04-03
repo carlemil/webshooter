@@ -1,5 +1,6 @@
 package se.kjellstrand.webshooter.ui.screens.shooterresult
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -20,8 +21,8 @@ class ShooterResultViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val competitionId: Long = checkNotNull(savedStateHandle["competitionId"])
-    private val shooterId: Long = checkNotNull(savedStateHandle["shooterId"])
+    private val competitionId: Int = checkNotNull(savedStateHandle["competitionId"])
+    private val shooterId: Int = checkNotNull(savedStateHandle["shooterId"])
     private val resultsType: ResultsType = try {
         ResultsType.valueOf(checkNotNull(savedStateHandle["resultsType"]))
     } catch (e: Exception) {
@@ -32,12 +33,14 @@ class ShooterResultViewModel @Inject constructor(
     val uiState: StateFlow<ShooterResultUiState> = _uiState.asStateFlow()
 
     init {
+        Log.d("ShooterResultViewModel", "competitionId: $competitionId, shooterId: $shooterId")
         getShooterResults(competitionId, shooterId)
     }
 
-    private fun getShooterResults(competitionId: Long, shooterId: Long) {
+    private fun getShooterResults(competitionId: Int, shooterId: Int) {
         viewModelScope.launch {
             resultsRepository.getShooterResults(competitionId, shooterId).collect { resource ->
+                Log.d("ShooterResultViewModel", "resource: $resource")
                 when (resource) {
                     is Resource.Success -> {
                         val results = resource.data.results
