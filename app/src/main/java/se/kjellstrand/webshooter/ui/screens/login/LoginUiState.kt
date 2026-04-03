@@ -4,6 +4,5 @@ data class LoginUiState(
     val isLoading: Boolean = false,
     val isSuccess: Boolean = false,
     val errorMessage: String? = null,
-    val autoLoginAttempted: Boolean = false,
-    val rememberMe: Boolean = false
+    val autoLoginAttempted: Boolean = false
 )

@@ -166,7 +166,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun logout() {
-        securePrefs.clearCredentials()
+        securePrefs.clearUsername()
         authTokenManager.clearToken()
         _uiState.value = _uiState.value.copy(loggedOut = true)
     }

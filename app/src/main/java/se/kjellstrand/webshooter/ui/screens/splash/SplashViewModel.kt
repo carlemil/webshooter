@@ -9,5 +9,6 @@ import javax.inject.Inject
 class SplashViewModel @Inject constructor(
     private val authTokenManager: AuthTokenManager
 ) : ViewModel() {
-    fun hasToken(): Boolean = authTokenManager.readToken() != null
+    fun hasSession(): Boolean =
+        authTokenManager.readToken() != null || authTokenManager.readRefreshToken() != null
 }

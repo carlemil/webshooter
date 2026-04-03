@@ -51,24 +51,55 @@ class AuthTokenManager(context: Context) {
         token = newToken
     }
 
+    fun storeTokens(accessToken: String, newRefreshToken: String, expiresInSeconds: Long) {
+        val expiresAt = System.currentTimeMillis() + expiresInSeconds * 1000
+        with(sharedPreferences.edit()) {
+            putString(AUTH_TOKEN_KEY, accessToken)
+            putString(REFRESH_TOKEN_KEY, newRefreshToken)
+            putLong(TOKEN_EXPIRES_AT_KEY, expiresAt)
+            apply()
+        }
+        token = accessToken
+        refreshToken = newRefreshToken
+        tokenExpiresAtMillis = expiresAt
+    }
+
     fun readToken(): String? {
         token = sharedPreferences.getString(AUTH_TOKEN_KEY, null)
-
         return token
+    }
+
+    fun readRefreshToken(): String? {
+        refreshToken = sharedPreferences.getString(REFRESH_TOKEN_KEY, null)
+        return refreshToken
+    }
+
+    fun isTokenExpired(): Boolean {
+        val expiresAt = tokenExpiresAtMillis
+            ?: sharedPreferences.getLong(TOKEN_EXPIRES_AT_KEY, 0L)
+        return expiresAt > 0 && System.currentTimeMillis() >= expiresAt
     }
 
     fun clearToken() {
         with(sharedPreferences.edit()) {
             remove(AUTH_TOKEN_KEY)
+            remove(REFRESH_TOKEN_KEY)
+            remove(TOKEN_EXPIRES_AT_KEY)
             apply()
         }
         token = null
+        refreshToken = null
+        tokenExpiresAtMillis = null
     }
 
     companion object {
         private const val AUTH_TOKEN_KEY = "auth_token"
+        private const val REFRESH_TOKEN_KEY = "refresh_token"
+        private const val TOKEN_EXPIRES_AT_KEY = "token_expires_at"
         private const val PREFS_FILE = "auth_prefs"
         private const val TAG = "AuthTokenManager"
         var token: String? = null
+        var refreshToken: String? = null
+        var tokenExpiresAtMillis: Long? = null
     }
 }
