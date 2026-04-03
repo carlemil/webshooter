@@ -90,18 +90,11 @@ class LoginViewModel @Inject constructor(
             cookiesRepository.getCookies()
                 .collect { resource ->
                     when (resource) {
-                        is Resource.Success -> {
-                            println("getCookies Success: ${resource.data}")
-                        }
-
                         is Resource.Error -> {
-                            println("getCookies Failed: ${resource.error}")
                             _eventFlow.emit(UiEvent.ShowErrorMessage(resource.error.toString()))
                         }
 
-                        is Resource.Loading -> {
-                            println("getCookies isLoading = true")
-                        }
+                        else -> {}
                     }
                 }
         }

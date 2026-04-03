@@ -1,5 +1,6 @@
 package se.kjellstrand.webshooter.data.mysignups
 
+import android.util.Log
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -21,6 +22,10 @@ class SignupsRepository @Inject constructor(
     private val dao: SignupsDao,
     private val gson: Gson
 ) {
+    companion object {
+        private const val TAG = "SignupsRepository"
+    }
+
     fun getSignups(): Flow<Resource<Map<String, SignupGroup>, UserError>> = flow {
         emit(Resource.Loading(true))
 
@@ -45,13 +50,13 @@ class SignupsRepository @Inject constructor(
             }
             emit(Resource.Success(result.groupedSignups))
         } catch (e: IOException) {
-            e.printStackTrace()
+            Log.w(TAG, "Network error", e)
             if (!hasCached) emit(Resource.Error(UserError.IOError))
         } catch (e: HttpException) {
-            e.printStackTrace()
+            Log.w(TAG, "Network error", e)
             if (!hasCached) emit(Resource.Error(UserError.HttpError))
         } catch (e: Exception) {
-            e.printStackTrace()
+            Log.w(TAG, "Network error", e)
             if (!hasCached) emit(Resource.Error(UserError.UnknownError))
         }
         emit(Resource.Loading(false))
