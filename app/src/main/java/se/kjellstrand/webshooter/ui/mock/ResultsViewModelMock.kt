@@ -32,11 +32,17 @@ class ResultsViewModelMock() : ViewModel(),
         }
     override val resultsEvent: SharedFlow<ResultsEvent> = MutableSharedFlow()
 
-    override fun setMode(mode: Mode) {}
+    override fun setMode(mode: Mode) {
+        TODO("Not yet implemented")
+    }
 
-    override fun setSelectedWeaponGroups(selectedWeaponGroups: Set<String>) {}
+    override fun setSelectedWeaponGroups(selectedWeaponGroups: Set<String>) {
+        TODO("Not yet implemented")
+    }
 
-    override fun setGroupingMode(groupingMode: GroupingMode) {}
+    override fun setGroupingMode(groupingMode: GroupingMode) {
+        TODO("Not yet implemented")
+    }
 
     override fun refresh() {}
 }

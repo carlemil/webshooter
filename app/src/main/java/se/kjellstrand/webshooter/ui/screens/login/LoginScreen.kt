@@ -1,6 +1,5 @@
 package se.kjellstrand.webshooter.ui.screens.login
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -68,7 +67,7 @@ fun LoginScreen(
                 }
 
                 is UiEvent.ShowErrorMessage -> {
-                    Log.w("LoginScreen", "Error: ${event.message}")
+                    println("Error: ${event.message}")
                 }
             }
         }

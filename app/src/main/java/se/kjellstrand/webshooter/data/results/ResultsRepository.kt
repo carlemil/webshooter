@@ -1,6 +1,5 @@
 package se.kjellstrand.webshooter.data.results
 
-import android.util.Log
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -22,10 +21,6 @@ open class ResultsRepository @Inject constructor(
     private val dao: ResultsDao,
     private val gson: Gson
 ) {
-    companion object {
-        private const val TAG = "ResultsRepository"
-    }
-
     fun get(competitionId: Int): Flow<Resource<ResultsResponse, UserError>> {
         return flow {
             emit(Resource.Loading(true))
@@ -44,15 +39,15 @@ open class ResultsRepository @Inject constructor(
             val result = try {
                 resultsRemoteDataSource.getResults(competitionId)
             } catch (e: IOException) {
-                Log.w(TAG, "Network error", e)
+                e.printStackTrace()
                 if (!hasCached) emit(Resource.Error(UserError.IOError))
                 return@flow
             } catch (e: HttpException) {
-                Log.w(TAG, "Network error", e)
+                e.printStackTrace()
                 if (!hasCached) emit(Resource.Error(UserError.HttpError))
                 return@flow
             } catch (e: Exception) {
-                Log.w(TAG, "Network error", e)
+                e.printStackTrace()
                 if (!hasCached) emit(Resource.Error(UserError.UnknownError))
                 return@flow
             }
@@ -80,15 +75,15 @@ open class ResultsRepository @Inject constructor(
             val result = try {
                 resultsRemoteDataSource.getResults(competitionId)
             } catch (e: IOException) {
-                Log.w(TAG, "Network error", e)
+                e.printStackTrace()
                 emit(Resource.Error(UserError.IOError))
                 return@flow
             } catch (e: HttpException) {
-                Log.w(TAG, "Network error", e)
+                e.printStackTrace()
                 emit(Resource.Error(UserError.HttpError))
                 return@flow
             } catch (e: Exception) {
-                Log.w(TAG, "Network error", e)
+                e.printStackTrace()
                 emit(Resource.Error(UserError.UnknownError))
                 return@flow
             }
@@ -120,15 +115,15 @@ open class ResultsRepository @Inject constructor(
             val result = try {
                 resultsRemoteDataSource.getResults(competitionId)
             } catch (e: IOException) {
-                Log.w(TAG, "Network error", e)
+                e.printStackTrace()
                 emit(Resource.Error(UserError.IOError))
                 return@flow
             } catch (e: HttpException) {
-                Log.w(TAG, "Network error", e)
+                e.printStackTrace()
                 emit(Resource.Error(UserError.HttpError))
                 return@flow
             } catch (e: Exception) {
-                Log.w(TAG, "Network error", e)
+                e.printStackTrace()
                 emit(Resource.Error(UserError.UnknownError))
                 return@flow
             }
