@@ -61,29 +61,36 @@ class MyResultsViewModelImpl @Inject constructor(
     private fun fetchResultStats(groupedEntries: Map<String, List<SignupEntry>>) {
         val allEntries = groupedEntries.values.flatten()
         val competitionIds = allEntries.map { it.competition.id.toInt() }.distinct()
-        competitionIds.forEach { compId ->
-            viewModelScope.launch {
-                val entriesForComp = allEntries.filter { it.competition.id.toInt() == compId }
-                val newStats = mutableMapOf<Long, ResultStats>()
-                resultsRepository.getPreferCached(compId).collect { resource ->
-                    if (resource is Resource.Success) {
-                        resource.data.results.forEach { result ->
-                            val entry = entriesForComp.firstOrNull { it.id == result.signupsID }
-                            if (entry != null) {
-                                newStats[entry.id] = ResultStats(
-                                    stationCount = result.results.size,
-                                    hits = result.hits,
-                                    figureHits = result.figureHits
-                                )
+        if (competitionIds.isEmpty()) return
+        _uiState.update { it.copy(isLoadingStats = true) }
+        viewModelScope.launch {
+            val jobs = competitionIds.map { compId ->
+                launch {
+                    val entriesForComp = allEntries.filter { it.competition.id.toInt() == compId }
+                    val newStats = mutableMapOf<Long, ResultStats>()
+                    resultsRepository.getPreferCached(compId).collect { resource ->
+                        if (resource is Resource.Success) {
+                            resource.data.results.forEach { result ->
+                                val entry =
+                                    entriesForComp.firstOrNull { it.id == result.signupsID }
+                                if (entry != null) {
+                                    newStats[entry.id] = ResultStats(
+                                        stationCount = result.results.size,
+                                        hits = result.hits,
+                                        figureHits = result.figureHits
+                                    )
+                                }
                             }
                         }
                     }
-                }
-                if (newStats.isNotEmpty()) {
-                    _uiState.update { it.copy(resultStats = it.resultStats + newStats) }
-                    computeDerivedData()
+                    if (newStats.isNotEmpty()) {
+                        _uiState.update { it.copy(resultStats = it.resultStats + newStats) }
+                        computeDerivedData()
+                    }
                 }
             }
+            jobs.forEach { it.join() }
+            _uiState.update { it.copy(isLoadingStats = false) }
         }
     }
 
