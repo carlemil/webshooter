@@ -32,7 +32,7 @@ open class ResultsViewModelImpl @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel(), ResultsViewModel {
 
-    override val competitionId: Long = checkNotNull(savedStateHandle["competitionId"])
+    override val competitionId: Int = checkNotNull(savedStateHandle["competitionId"])
     override val competitionDate: String = savedStateHandle["competitionDate"] ?: ""
 
     private val resultsType: ResultsType = try {
@@ -72,7 +72,7 @@ open class ResultsViewModelImpl @Inject constructor(
         }
     }
 
-    private fun getResults(competitionId: Long) {
+    private fun getResults(competitionId: Int) {
         viewModelScope.launch {
             resultsRepository.get(competitionId).collect { resource ->
                 when (resource) {
