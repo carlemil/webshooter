@@ -18,6 +18,9 @@ import se.kjellstrand.webshooter.data.AuthTokenManager
 import se.kjellstrand.webshooter.data.CookieHeadersInterceptor
 import se.kjellstrand.webshooter.data.GeneralHeadersInterceptor
 import se.kjellstrand.webshooter.data.MockInterceptor
+import se.kjellstrand.webshooter.data.SessionManager
+import se.kjellstrand.webshooter.data.TokenAuthenticator
+import se.kjellstrand.webshooter.data.login.remote.LoginRemoteDataSource
 import javax.inject.Singleton
 
 @Module
@@ -35,7 +38,8 @@ class NetworkModule {
         cookieHeadersInterceptor: CookieHeadersInterceptor,
         mockInterceptor: MockInterceptor,
         cookieJar: AuthCookieJar,
-        authInterceptor: AuthInterceptor
+        authInterceptor: AuthInterceptor,
+        tokenAuthenticator: TokenAuthenticator
     ): OkHttpClient {
         val okHttpClient = OkHttpClient.Builder()
             .followRedirects(followRedirects = true)
@@ -47,6 +51,7 @@ class NetworkModule {
         okHttpClient.addInterceptor(cookieHeadersInterceptor)
         okHttpClient.addInterceptor(HttpLoggingInterceptor().apply { level = HttpLoggingInterceptor.Level.BASIC })
         okHttpClient.addInterceptor(mockInterceptor)
+        okHttpClient.authenticator(tokenAuthenticator)
 
         return okHttpClient.build()
     }
@@ -99,5 +104,15 @@ class NetworkModule {
     @Singleton
     fun provideAuthTokenManager(@ApplicationContext context: Context): AuthTokenManager {
         return AuthTokenManager(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTokenAuthenticator(
+        authTokenManager: AuthTokenManager,
+        loginRemoteDataSource: dagger.Lazy<LoginRemoteDataSource>,
+        sessionManager: SessionManager
+    ): TokenAuthenticator {
+        return TokenAuthenticator(authTokenManager, loginRemoteDataSource, sessionManager)
     }
 }

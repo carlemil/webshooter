@@ -3,7 +3,6 @@ package se.kjellstrand.webshooter.ui.screens.login
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,7 +13,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -52,7 +50,7 @@ fun LoginScreen(
     val eventFlow = loginViewModel.eventFlow
 
     var username by remember(loginViewModel.savedUsername) { mutableStateOf(loginViewModel.savedUsername) }
-    var password by remember(loginViewModel.savedPassword) { mutableStateOf(loginViewModel.savedPassword) }
+    var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
@@ -123,16 +121,7 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !uiState.isLoading
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Checkbox(
-                    checked = uiState.rememberMe,
-                    onCheckedChange = { loginViewModel.setRememberMe(it) },
-                    enabled = !uiState.isLoading
-                )
-                Text(stringResource(R.string.login_remember_me))
-            }
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Button(
                 onClick = {

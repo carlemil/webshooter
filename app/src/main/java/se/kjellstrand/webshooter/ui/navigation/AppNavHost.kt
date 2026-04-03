@@ -11,6 +11,8 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import kotlinx.coroutines.flow.collectLatest
+import se.kjellstrand.webshooter.data.SessionManager
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsScreen
 import se.kjellstrand.webshooter.ui.screens.splash.SplashScreen
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsViewModelImpl
@@ -30,6 +32,20 @@ import se.kjellstrand.webshooter.ui.screens.teams.TeamsViewModelImpl
 
 @Composable
 fun AppNavHost(navController: NavHostController) {
+    val sessionViewModel: SessionViewModel = hiltViewModel()
+
+    LaunchedEffect(Unit) {
+        sessionViewModel.sessionManager.events.collectLatest { event ->
+            when (event) {
+                is SessionManager.SessionEvent.Expired -> {
+                    navController.navigate(Screen.LoginScreen.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                }
+            }
+        }
+    }
+
     NavHost(navController, startDestination = Screen.SplashScreen.route) {
         composable(Screen.SplashScreen.route) {
             SplashScreen(navController)

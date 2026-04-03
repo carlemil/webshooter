@@ -33,7 +33,7 @@ fun SplashScreen(
     LaunchedEffect(Unit) {
         alpha.animateTo(1f, animationSpec = tween(600))
         delay(800)
-        val destination = if (viewModel.hasToken()) Screen.LandingScreen.route else Screen.LoginScreen.route
+        val destination = if (viewModel.hasSession()) Screen.LandingScreen.route else Screen.LoginScreen.route
         navController.navigate(destination) {
             popUpTo(0) { inclusive = true }
         }

@@ -27,37 +27,24 @@ class LoginViewModel @Inject constructor(
 ) : ViewModel() {
 
     val savedUsername = securePrefs.getUsername()
-    val savedPassword = securePrefs.getPassword()
 
-    private val _uiState = MutableStateFlow(LoginUiState(rememberMe = securePrefs.getRememberMe()))
+    private val _uiState = MutableStateFlow(
+        LoginUiState(autoLoginAttempted = true)
+    )
     val uiState: StateFlow<LoginUiState> = _uiState.asStateFlow()
 
     private val _eventFlow = MutableSharedFlow<UiEvent>()
     val eventFlow = _eventFlow.asSharedFlow()
 
-    init {
-        attemptAutoLogin()
-    }
-
-    private fun attemptAutoLogin() {
-        if (savedUsername.isNotEmpty() && savedPassword.isNotEmpty()) {
-            login(savedUsername, savedPassword, isAutoLogin = true)
-        } else {
-            _uiState.value = _uiState.value.copy(autoLoginAttempted = true)
-        }
-    }
-
-    fun login(username: String, password: String, isAutoLogin: Boolean = false) {
+    fun login(username: String, password: String) {
         viewModelScope.launch {
             if (username == "mockuser" && password == "mockpassword") {
                 MockModeManager.isMockMode = true
-                authTokenManager.storeToken("mock_token")
-                if (_uiState.value.rememberMe) securePrefs.saveCredentials(username, password)
-                else securePrefs.clearCredentials()
+                authTokenManager.storeTokens("mock_token", "mock_refresh_token", 3600)
+                securePrefs.saveUsername(username)
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    isSuccess = true,
-                    autoLoginAttempted = true
+                    isSuccess = true
                 )
                 _eventFlow.emit(UiEvent.NavigateToLandingPage)
                 return@launch
@@ -67,26 +54,27 @@ class LoginViewModel @Inject constructor(
                 .collect { resource ->
                     when (resource) {
                         is Resource.Success -> {
-                            resource.data.body()?.accessToken?.let { authTokenManager.storeToken(it) }
+                            resource.data.body()?.let { loginResponse ->
+                                authTokenManager.storeTokens(
+                                    loginResponse.accessToken,
+                                    loginResponse.refreshToken,
+                                    loginResponse.expiresIn
+                                )
+                            }
                             _uiState.value = _uiState.value.copy(
                                 isLoading = false,
-                                isSuccess = true,
-                                autoLoginAttempted = true
+                                isSuccess = true
                             )
                             _eventFlow.emit(UiEvent.NavigateToLandingPage)
-                            if (_uiState.value.rememberMe) securePrefs.saveCredentials(username, password)
-                            else securePrefs.clearCredentials()
+                            securePrefs.saveUsername(username)
                         }
 
                         is Resource.Error -> {
                             _uiState.value = _uiState.value.copy(
                                 isLoading = false,
-                                errorMessage = resource.error.toString(),
-                                autoLoginAttempted = true
+                                errorMessage = resource.error.toString()
                             )
-                            if (!isAutoLogin) {
-                                _eventFlow.emit(UiEvent.ShowErrorMessage(resource.error.toString()))
-                            }
+                            _eventFlow.emit(UiEvent.ShowErrorMessage(resource.error.toString()))
                         }
 
                         is Resource.Loading -> {
@@ -95,11 +83,6 @@ class LoginViewModel @Inject constructor(
                     }
                 }
         }
-    }
-
-    fun setRememberMe(value: Boolean) {
-        securePrefs.saveRememberMe(value)
-        _uiState.value = _uiState.value.copy(rememberMe = value)
     }
 
     fun getCookies() {
