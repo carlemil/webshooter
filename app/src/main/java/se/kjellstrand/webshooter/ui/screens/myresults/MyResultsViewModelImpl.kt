@@ -60,13 +60,13 @@ class MyResultsViewModelImpl @Inject constructor(
 
     private fun fetchResultStats(groupedEntries: Map<String, List<SignupEntry>>) {
         val allEntries = groupedEntries.values.flatten()
-        val competitionIds = allEntries.map { it.competition.id }.distinct()
+        val competitionIds = allEntries.map { it.competition.id.toInt() }.distinct()
         if (competitionIds.isEmpty()) return
         _uiState.update { it.copy(isLoadingStats = true) }
         viewModelScope.launch {
             val jobs = competitionIds.map { compId ->
                 launch {
-                    val entriesForComp = allEntries.filter { it.competition.id == compId }
+                    val entriesForComp = allEntries.filter { it.competition.id.toInt() == compId }
                     val newStats = mutableMapOf<Long, ResultStats>()
                     resultsRepository.getPreferCached(compId).collect { resource ->
                         if (resource is Resource.Success) {
