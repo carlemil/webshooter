@@ -1,6 +1,6 @@
 package se.kjellstrand.webshooter.ui.screens.shooterresult
 
-import android.util.Log
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,7 +47,6 @@ fun ShooterResultScreen(
     viewModel: ShooterResultViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    Log.d("ShooterResultScreen", "uiState.isLoading: ${uiState.isLoading}")
     Scaffold(
         topBar = {
             ScreenTopBar(
