@@ -15,9 +15,9 @@ data class CompetitionSignupsPaged(
 
 data class CompetitionSignupEntry(
     val id: Long,
-    val user: CompetitionSignupUser,
-    val club: CompetitionSignupClub,
-    val weaponclass: CompetitionSignupWeaponClass
+    val user: CompetitionSignupUser?,
+    val club: CompetitionSignupClub?,
+    val weaponclass: CompetitionSignupWeaponClass?
 )
 
 data class CompetitionSignupUser(val name: String, val lastname: String)

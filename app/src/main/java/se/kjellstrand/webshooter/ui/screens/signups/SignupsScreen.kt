@@ -69,7 +69,7 @@ fun CompetitionSignupsScreen(
     val displayed = uiState.filteredAndSorted
     val currentUserClub = uiState.currentUserClubName
     val grouped = remember(displayed, currentUserClub) {
-        displayed.groupBy { it.club.name }.entries
+        displayed.groupBy { it.club?.name ?: "" }.entries
             .sortedWith(compareByDescending { it.key == currentUserClub })
     }
 
@@ -114,7 +114,7 @@ fun CompetitionSignupsScreen(
                 )
             ) {
                 grouped.forEach { (clubName, entries) ->
-                    val byUser = entries.groupBy { "${it.user.name} ${it.user.lastname}" }.entries.toList()
+                    val byUser = entries.groupBy { "${it.user?.name} ${it.user?.lastname}" }.entries.toList()
 
                     // Header item: top-rounded card + club name + divider
                     item(key = "club_header_$clubName") {
@@ -171,7 +171,7 @@ fun CompetitionSignupsScreen(
 
 @Composable
 private fun ClubHeaderItem(clubName: String, entries: List<CompetitionSignupEntry>) {
-    val uniquePersons = entries.map { "${it.user.name} ${it.user.lastname}" }.distinct().size
+    val uniquePersons = entries.map { "${it.user?.name} ${it.user?.lastname}" }.distinct().size
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -308,14 +308,14 @@ private fun SignupRow(entries: List<CompetitionSignupEntry>, isCurrentUser: Bool
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "${user.name} ${user.lastname}",
+            text = "${user?.name ?: ""} ${user?.lastname ?: ""}".trim(),
             style = MaterialTheme.typography.bodySmall,
             modifier = Modifier.weight(1f)
         )
         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
             entries.forEach { entry ->
                 WeaponClassBadge(
-                    weaponGroupName = entry.weaponclass.classname,
+                    weaponGroupName = entry.weaponclass?.classname ?: "",
                     isHighlighted = false,
                     size = WeaponClassBadgeSize.Small
                 )
