@@ -15,6 +15,8 @@ class AuthCookieJar : CookieJar {
     }
 
     override fun loadForRequest(url: HttpUrl): List<Cookie> {
+        val now = System.currentTimeMillis()
+        cookieStore.entries.removeAll { it.value.expiresAt <= now }
         return cookieStore.values.filter { cookie ->
             url.host.endsWith(cookie.domain) && url.encodedPath.startsWith(cookie.path)
         }
