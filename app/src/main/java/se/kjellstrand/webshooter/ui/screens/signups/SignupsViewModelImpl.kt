@@ -84,12 +84,24 @@ class SignupsViewModelImpl @Inject constructor(
         }
     }
 
-    override fun setFilterClub(club: String?) {
-        _uiState.value = _uiState.value.copy(filterClub = club)
+    override fun toggleFilterClub(club: String) {
+        val current = _uiState.value.filterClubs
+        val updated = if (club in current) current - club else current + club
+        _uiState.value = _uiState.value.copy(filterClubs = updated)
     }
 
-    override fun setFilterWeaponGroup(group: String?) {
-        _uiState.value = _uiState.value.copy(filterWeaponGroup = group)
+    override fun clearFilterClubs() {
+        _uiState.value = _uiState.value.copy(filterClubs = emptySet())
+    }
+
+    override fun toggleFilterWeaponGroup(group: String) {
+        val current = _uiState.value.filterWeaponGroups
+        val updated = if (group in current) current - group else current + group
+        _uiState.value = _uiState.value.copy(filterWeaponGroups = updated)
+    }
+
+    override fun clearFilterWeaponGroups() {
+        _uiState.value = _uiState.value.copy(filterWeaponGroups = emptySet())
     }
 
     override fun setSortField(field: SignupsListSortField) {

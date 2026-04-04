@@ -162,8 +162,10 @@ fun CompetitionSignupsScreen(
     if (isFilterSheetOpen) {
         SignupsFilterSheet(
             uiState = uiState,
-            onSetFilterClub = { viewModel.setFilterClub(it) },
-            onSetFilterWeaponGroup = { viewModel.setFilterWeaponGroup(it) },
+            onToggleFilterClub = { viewModel.toggleFilterClub(it) },
+            onClearFilterClubs = { viewModel.clearFilterClubs() },
+            onToggleFilterWeaponGroup = { viewModel.toggleFilterWeaponGroup(it) },
+            onClearFilterWeaponGroups = { viewModel.clearFilterWeaponGroups() },
             onDismiss = { isFilterSheetOpen = false }
         )
     }
@@ -204,8 +206,10 @@ private fun ClubHeaderItem(clubName: String, entries: List<CompetitionSignupEntr
 @Composable
 private fun SignupsFilterSheet(
     uiState: CompetitionSignupsUiState,
-    onSetFilterClub: (String?) -> Unit,
-    onSetFilterWeaponGroup: (String?) -> Unit,
+    onToggleFilterClub: (String) -> Unit,
+    onClearFilterClubs: () -> Unit,
+    onToggleFilterWeaponGroup: (String) -> Unit,
+    onClearFilterWeaponGroups: () -> Unit,
     onDismiss: () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState()
@@ -229,16 +233,14 @@ private fun SignupsFilterSheet(
                 Spacer(modifier = Modifier.height(4.dp))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     FilterChip(
-                        selected = uiState.filterClub == null,
-                        onClick = { onSetFilterClub(null) },
+                        selected = uiState.filterClubs.isEmpty(),
+                        onClick = { onClearFilterClubs() },
                         label = { Text(stringResource(R.string.competition_signups_list_filter_all)) }
                     )
                     uiState.availableClubs.forEach { club ->
                         FilterChip(
-                            selected = uiState.filterClub == club,
-                            onClick = {
-                                onSetFilterClub(if (uiState.filterClub == club) null else club)
-                            },
+                            selected = club in uiState.filterClubs,
+                            onClick = { onToggleFilterClub(club) },
                             label = { Text(club) }
                         )
                     }
@@ -257,18 +259,14 @@ private fun SignupsFilterSheet(
                 Spacer(modifier = Modifier.height(4.dp))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     FilterChip(
-                        selected = uiState.filterWeaponGroup == null,
-                        onClick = { onSetFilterWeaponGroup(null) },
+                        selected = uiState.filterWeaponGroups.isEmpty(),
+                        onClick = { onClearFilterWeaponGroups() },
                         label = { Text(stringResource(R.string.competition_signups_list_filter_all)) }
                     )
                     uiState.availableWeaponGroups.forEach { group ->
                         FilterChip(
-                            selected = uiState.filterWeaponGroup == group,
-                            onClick = {
-                                onSetFilterWeaponGroup(
-                                    if (uiState.filterWeaponGroup == group) null else group
-                                )
-                            },
+                            selected = group in uiState.filterWeaponGroups,
+                            onClick = { onToggleFilterWeaponGroup(group) },
                             label = { Text(group) }
                         )
                     }
@@ -284,8 +282,8 @@ private fun SignupsFilterSheet(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 TextButton(onClick = {
-                    onSetFilterClub(null)
-                    onSetFilterWeaponGroup(null)
+                    onClearFilterClubs()
+                    onClearFilterWeaponGroups()
                 }) {
                     Text(stringResource(R.string.competition_signups_list_clear_filters))
                 }
