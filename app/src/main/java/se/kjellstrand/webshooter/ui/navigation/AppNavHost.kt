@@ -5,12 +5,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import android.util.Log
+import android.widget.Toast
 import kotlinx.coroutines.flow.collectLatest
 import se.kjellstrand.webshooter.data.SessionManager
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsScreen
@@ -110,10 +113,20 @@ fun AppNavHost(navController: NavHostController) {
             route = Screen.CompetitionSignup.route,
             arguments = listOf(navArgument("competitionId") { type = NavType.LongType })
         ) { backStackEntry ->
+            val context = LocalContext.current
+            val competitionId = try {
+                NavigationArguments.requireLong(backStackEntry.arguments, "competitionId")
+            } catch (e: IllegalArgumentException) {
+                Log.e("AppNavHost", "CompetitionSignup: ${e.message}")
+                LaunchedEffect(Unit) {
+                    Toast.makeText(context, "Failed to open signup: missing competition", Toast.LENGTH_LONG).show()
+                    navController.safePopBackStack()
+                }
+                return@composable
+            }
             val parentEntry = remember(backStackEntry) {
                 navController.getBackStackEntry(Screen.LandingScreen.route)
             }
-            val competitionId = backStackEntry.arguments?.getLong("competitionId") ?: -1L
             val competitionsViewModel: CompetitionsViewModelImpl = hiltViewModel(parentEntry)
             val signupViewModel: SignupViewModel = hiltViewModel()
             val competitionsState by competitionsViewModel.uiState.collectAsState()
