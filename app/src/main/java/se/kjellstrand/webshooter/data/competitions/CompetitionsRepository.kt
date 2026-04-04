@@ -82,8 +82,12 @@ open class CompetitionsRepository @Inject constructor(
                 return@flow
             }
 
-            if (page == 1) dao.deleteAll()
-            dao.insertAll(result.competitions.data.map { it.toEntity(gson) })
+            val entities = result.competitions.data.map { it.toEntity(gson) }
+            if (page == 1) {
+                dao.replaceAll(entities)
+            } else {
+                dao.insertAll(entities)
+            }
 
             emit(Resource.Success(result))
         }.flowOn(Dispatchers.Default)
