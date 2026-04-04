@@ -1,6 +1,0 @@
-Add a new screen showing all participants for a specific competition, reachable from the competition list.
-The screen displays "Name Lastname · Club · WeaponGroup" rows with client-side filtering by club/weapon
-group and sortable columns. Uses the same scroll-to-load-more pagination as CompetitionsScreen.
-
-Login username: erbsman@gmail.com password:
-API endpoint: GET /api/v4.1.9/competitions/{id}/signups?page=X&per_page=10
