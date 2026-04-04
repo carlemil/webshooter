@@ -19,30 +19,30 @@ data class CompetitionSignupsUiState(
     val currentUserClubName: String? = null
 ) {
     val uniquePersonCount: Int
-        get() = allSignups.map { "${it.user.name} ${it.user.lastname}" }.distinct().size
+        get() = allSignups.map { "${it.user?.name} ${it.user?.lastname}" }.distinct().size
 
     val totalSignupsCount: Int
         get() = allSignups.size
 
     val availableClubs: List<String>
-        get() = allSignups.map { it.club.name }.distinct().sorted()
+        get() = allSignups.mapNotNull { it.club?.name }.distinct().sorted()
 
     val availableWeaponGroups: List<String>
-        get() = allSignups.map { it.weaponclass.classnameGeneral }.distinct().sorted()
+        get() = allSignups.mapNotNull { it.weaponclass?.classnameGeneral }.distinct().sorted()
 
     val filteredAndSorted: List<CompetitionSignupEntry>
         get() {
             var result = allSignups
             if (filterClub != null) {
-                result = result.filter { it.club.name == filterClub }
+                result = result.filter { it.club?.name == filterClub }
             }
             if (filterWeaponGroup != null) {
-                result = result.filter { it.weaponclass.classnameGeneral == filterWeaponGroup }
+                result = result.filter { it.weaponclass?.classnameGeneral == filterWeaponGroup }
             }
             val comparator: Comparator<CompetitionSignupEntry> = when (sortField) {
-                SignupsListSortField.Name -> compareBy { "${it.user.name} ${it.user.lastname}" }
-                SignupsListSortField.Club -> compareBy { it.club.name }
-                SignupsListSortField.WeaponGroup -> compareBy { it.weaponclass.classnameGeneral }
+                SignupsListSortField.Name -> compareBy { "${it.user?.name} ${it.user?.lastname}" }
+                SignupsListSortField.Club -> compareBy { it.club?.name }
+                SignupsListSortField.WeaponGroup -> compareBy { it.weaponclass?.classnameGeneral }
             }
             return if (sortDirection == SortDirection.Ascending) {
                 result.sortedWith(comparator)
