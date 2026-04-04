@@ -94,23 +94,23 @@ private fun ClubInformationTab(club: ClubData?) {
                     value = club.email,
                     onClick = { clipboardManager.setText(AnnotatedString(club.email)) }
                 )
-                if (!club.phone.isNullOrBlank() && club.phone != "null") InfoRow(
+                if (!club.phone.isNullOrBlank()) InfoRow(
                     stringResource(R.string.phone),
                     club.phone
                 )
 
-                val street = club.addressStreet?.takeIf { it != "null" } ?: ""
-                val zip = club.addressZipcode?.takeIf { it != "null" } ?: ""
-                val city = club.addressCity?.takeIf { it != "null" } ?: ""
-                val country = club.addressCountry?.takeIf { it != "null" } ?: ""
+                val street = club.addressStreet ?: ""
+                val zip = club.addressZipcode ?: ""
+                val city = club.addressCity ?: ""
+                val country = club.addressCountry ?: ""
                 if (street.isNotBlank()) InfoRow(
                     stringResource(R.string.club_address),
                     "$street, $zip, $city".trim()
                 )
                 if (country.isNotBlank()) InfoRow("", country)
 
-                val hasBankgiro = !club.bankgiro.isNullOrBlank() && club.bankgiro != "null"
-                val hasPostgiro = !club.postgiro.isNullOrBlank() && club.postgiro != "null"
+                val hasBankgiro = !club.bankgiro.isNullOrBlank()
+                val hasPostgiro = !club.postgiro.isNullOrBlank()
                 val hasSwish = !club.swish.isNullOrBlank()
                 if (hasBankgiro || hasPostgiro || hasSwish) {
                     if (hasBankgiro) InfoRow(
