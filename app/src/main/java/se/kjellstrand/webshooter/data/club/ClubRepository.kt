@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.flow
 import okio.IOException
 import retrofit2.HttpException
 import se.kjellstrand.webshooter.data.club.local.ClubDao
+import se.kjellstrand.webshooter.data.club.local.sanitizeNullStrings
 import se.kjellstrand.webshooter.data.club.local.toDomain
 import se.kjellstrand.webshooter.data.club.local.toEntity
 import se.kjellstrand.webshooter.data.club.remote.ClubInfoResponse
@@ -41,8 +42,9 @@ class ClubRepository @Inject constructor(
             val response = remoteDataSource.getUserClub()
             val body = response.body()
             if (response.isSuccessful && body != null) {
-                dao.insert(body.club.toEntity(gson))
-                emit(Resource.Success(body))
+                val sanitized = body.copy(club = body.club.sanitizeNullStrings())
+                dao.insert(sanitized.club.toEntity(gson))
+                emit(Resource.Success(sanitized))
             } else {
                 if (cached == null) emit(Resource.Error(UserError.HttpError))
             }

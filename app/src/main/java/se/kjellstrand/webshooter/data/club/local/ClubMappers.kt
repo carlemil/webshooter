@@ -6,6 +6,20 @@ import se.kjellstrand.webshooter.data.club.remote.ClubData
 import se.kjellstrand.webshooter.data.club.remote.ClubInfoResponse
 import se.kjellstrand.webshooter.data.club.remote.ClubMember
 
+private fun String?.nullIfLiteralNull(): String? = if (this == "null") null else this
+
+fun ClubData.sanitizeNullStrings(): ClubData = copy(
+    phone = phone.nullIfLiteralNull(),
+    addressStreet = addressStreet.nullIfLiteralNull(),
+    addressStreet2 = addressStreet2.nullIfLiteralNull(),
+    addressZipcode = addressZipcode.nullIfLiteralNull(),
+    addressCity = addressCity.nullIfLiteralNull(),
+    addressCountry = addressCountry.nullIfLiteralNull(),
+    bankgiro = bankgiro.nullIfLiteralNull(),
+    postgiro = postgiro.nullIfLiteralNull(),
+    swish = swish.nullIfLiteralNull()
+)
+
 fun ClubData.toEntity(gson: Gson): ClubEntity = ClubEntity(
     id = id,
     clubsNr = clubsNr,
