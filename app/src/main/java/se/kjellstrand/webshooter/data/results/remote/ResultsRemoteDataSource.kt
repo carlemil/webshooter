@@ -8,6 +8,6 @@ interface ResultsRemoteDataSource {
 
     @GET("/api/v4.1.9/competitions/{id}/results")
     suspend fun getResults(
-        @Path("id") id: Int,
+        @Path("id") id: Long,
     ): ResultsResponse
 }

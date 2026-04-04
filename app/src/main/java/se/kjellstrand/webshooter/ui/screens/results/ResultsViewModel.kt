@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface ResultsViewModel {
     val uiState: StateFlow<ResultsUiState>
-    val competitionId: Int
+    val competitionId: Long
     val competitionDate: String
     val resultsEvent: SharedFlow<ResultsEvent>
     fun setMode(mode: Mode)

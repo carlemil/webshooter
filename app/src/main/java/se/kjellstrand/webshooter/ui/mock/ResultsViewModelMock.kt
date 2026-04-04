@@ -15,7 +15,7 @@ import se.kjellstrand.webshooter.ui.screens.results.ResultsViewModelImpl
 
 class ResultsViewModelMock() : ViewModel(),
     ResultsViewModel {
-    override val competitionId: Int = 0
+    override val competitionId: Long = 0L
     override val competitionDate: String = ""
     override val uiState: StateFlow<ResultsUiState>
         get() {
