@@ -12,6 +12,7 @@ import se.kjellstrand.webshooter.data.competitionpatrols.local.PatrolsDao
 import se.kjellstrand.webshooter.data.competitionteams.local.TeamsDao
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionsDao
 import se.kjellstrand.webshooter.data.competitionsignups.local.CompetitionSignupsDao
+import se.kjellstrand.webshooter.BuildConfig
 import se.kjellstrand.webshooter.data.db.AppDatabase
 import se.kjellstrand.webshooter.data.results.local.ResultsDao
 import se.kjellstrand.webshooter.data.settings.local.UserProfileDao
@@ -26,7 +27,7 @@ object DatabaseModule {
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
         Room.databaseBuilder(context, AppDatabase::class.java, "webshooter.db")
-            .fallbackToDestructiveMigration()
+            .apply { if (BuildConfig.DEBUG) fallbackToDestructiveMigration() }
             .build()
 
     @Provides fun provideCompetitionsDao(db: AppDatabase): CompetitionsDao = db.competitionsDao()
