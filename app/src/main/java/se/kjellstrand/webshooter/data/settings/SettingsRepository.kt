@@ -32,11 +32,10 @@ class SettingsRepository @Inject constructor(
         } catch (e: Exception) {
             null
         }
-        try {
-            if (cached != null) {
-                emit(Resource.Success(cached.toDomain(gson)))
-            }
-        } catch (e: Exception) {
+        val profile = cached?.toDomain(gson)
+        if (profile != null) {
+            emit(Resource.Success(profile))
+        } else {
             cached = null
         }
 

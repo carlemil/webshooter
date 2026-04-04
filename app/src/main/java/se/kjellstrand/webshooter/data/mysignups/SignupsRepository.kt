@@ -30,7 +30,7 @@ class SignupsRepository @Inject constructor(
             hasCached = cached.isNotEmpty()
             if (hasCached) {
                 val grouped = cached.groupBy { it.groupKey }
-                    .mapValues { (_, entities) -> SignupGroup(signups = entities.map { it.toDomain(gson) }) }
+                    .mapValues { (_, entities) -> SignupGroup(signups = entities.mapNotNull { it.toDomain(gson) }) }
                 emit(Resource.Success(grouped))
             }
         } catch (e: Exception) {
