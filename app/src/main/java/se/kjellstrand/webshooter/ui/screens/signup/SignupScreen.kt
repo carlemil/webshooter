@@ -124,9 +124,9 @@ fun SignupScreen(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        if (uiState.error != null) {
+        uiState.error?.let { errorText ->
             Text(
-                text = uiState.error!!,
+                text = errorText,
                 color = MaterialTheme.colorScheme.error,
                 style = MaterialTheme.typography.bodySmall
             )
