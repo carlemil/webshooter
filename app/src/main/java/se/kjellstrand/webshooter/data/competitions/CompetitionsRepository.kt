@@ -37,10 +37,7 @@ open class CompetitionsRepository @Inject constructor(
                     val cached = dao.getAll()
                     if (cached.isNotEmpty()) {
                         val domains = cached.mapNotNull { entity ->
-                            try { entity.toDomain(gson) } catch (e: Exception) {
-                                e.printStackTrace()
-                                null
-                            }
+                            entity.toDomain(gson)
                         }
                         if (domains.isNotEmpty()) {
                             emit(Resource.Success(CompetitionsResponse(

@@ -30,7 +30,7 @@ open class ResultsRepository @Inject constructor(
                 val cached = dao.getByCompetition(competitionId)
                 hasCached = cached.isNotEmpty()
                 if (hasCached) {
-                    emit(Resource.Success(ResultsResponse(results = cached.map { it.toDomain(gson) })))
+                    emit(Resource.Success(ResultsResponse(results = cached.mapNotNull { it.toDomain(gson) })))
                 }
             } catch (e: Exception) {
                 dao.deleteByCompetition(competitionId)
@@ -65,7 +65,7 @@ open class ResultsRepository @Inject constructor(
             try {
                 val cached = dao.getByCompetition(competitionId)
                 if (cached.isNotEmpty()) {
-                    emit(Resource.Success(ResultsResponse(results = cached.map { it.toDomain(gson) })))
+                    emit(Resource.Success(ResultsResponse(results = cached.mapNotNull { it.toDomain(gson) })))
                     return@flow
                 }
             } catch (e: Exception) {
@@ -103,7 +103,7 @@ open class ResultsRepository @Inject constructor(
                 val cached = dao.getByCompetition(competitionId)
                 if (cached.isNotEmpty()) {
                     hasCached = true
-                    val filtered = cached.map { it.toDomain(gson) }
+                    val filtered = cached.mapNotNull { it.toDomain(gson) }
                         .filter { it.signup.user.userID == shooterId.toLong() }
                     emit(Resource.Success(ResultsResponse(results = filtered)))
                     return@flow
