@@ -11,8 +11,8 @@ data class CompetitionSignupsUiState(
     val totalPages: Int = 1,
     val total: Int = 0,
     val isLoading: Boolean = false,
-    val filterClub: String? = null,
-    val filterWeaponGroup: String? = null,
+    val filterClubs: Set<String> = emptySet(),
+    val filterWeaponGroups: Set<String> = emptySet(),
     val sortField: SignupsListSortField = SignupsListSortField.Name,
     val sortDirection: SortDirection = SortDirection.Ascending,
     val currentUserFullName: String? = null,
@@ -33,11 +33,11 @@ data class CompetitionSignupsUiState(
     val filteredAndSorted: List<CompetitionSignupEntry>
         get() {
             var result = allSignups
-            if (filterClub != null) {
-                result = result.filter { it.club?.name == filterClub }
+            if (filterClubs.isNotEmpty()) {
+                result = result.filter { it.club?.name in filterClubs }
             }
-            if (filterWeaponGroup != null) {
-                result = result.filter { it.weaponclass?.classnameGeneral == filterWeaponGroup }
+            if (filterWeaponGroups.isNotEmpty()) {
+                result = result.filter { it.weaponclass?.classnameGeneral in filterWeaponGroups }
             }
             val comparator: Comparator<CompetitionSignupEntry> = when (sortField) {
                 SignupsListSortField.Name -> compareBy { "${it.user?.name} ${it.user?.lastname}" }
