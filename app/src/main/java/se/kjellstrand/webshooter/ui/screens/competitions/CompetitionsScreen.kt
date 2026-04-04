@@ -190,7 +190,7 @@ fun CompetitionsScreen(
                     ),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    items(filteredData) { competition ->
+                    items(filteredData, key = { it.id }) { competition ->
                         CompetitionItem(
                             competition = competition,
                             patrolOrRelayButtonText = when (competition.competitionType.id) {
