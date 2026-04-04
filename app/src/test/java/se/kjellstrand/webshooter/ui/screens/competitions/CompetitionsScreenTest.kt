@@ -31,6 +31,24 @@ class CompetitionsScreenTest {
         )
     }
 
+    @Test
+    fun `CompetitionItem is decomposed with CompetitionItemHeader`() {
+        val source = sourceFile.readText()
+        assertTrue(
+            "CompetitionItem should call extracted CompetitionItemHeader composable",
+            source.contains("fun CompetitionItemHeader(")
+        )
+    }
+
+    @Test
+    fun `CompetitionItem is decomposed with CompetitionItemButtons`() {
+        val source = sourceFile.readText()
+        assertTrue(
+            "CompetitionItem should call extracted CompetitionItemButtons composable",
+            source.contains("fun CompetitionItemButtons(")
+        )
+    }
+
     // --- Guard tests (should PASS before and after fix) ---
 
     @Test

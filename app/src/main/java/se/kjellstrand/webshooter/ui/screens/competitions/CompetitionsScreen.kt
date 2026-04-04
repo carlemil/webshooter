@@ -367,147 +367,27 @@ fun CompetitionItem(
                     .fillMaxWidth()
                     .padding(12.dp)
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.Top
-                ) {
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = competition.name,
-                            style = MaterialTheme.typography.titleSmall
-                        )
-                        Spacer(modifier = Modifier.height(4.dp))
-                        Text(
-                            text = "${competition.date}  •  ${competition.statusHuman}",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                        Spacer(modifier = Modifier.height(2.dp))
-                        Text(
-                            text = stringResource(
-                                R.string.competitions_competition_type,
-                                competition.competitionType.name
-                            ),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                    val isFutureCompetition = remember(competition.date) {
-                        runCatching { LocalDate.parse(competition.date) >= LocalDate.now() }.getOrDefault(false)
-                    }
-                    if (isFutureCompetition) {
-                        IconButton(onClick = { showCalendarDialog = true }) {
-                            Icon(
-                                painter = painterResource(R.drawable.calendar_add_on),
-                                contentDescription = stringResource(R.string.competitions_add_to_calendar)
-                            )
-                        }
-                    }
-                    if (hasLocation) {
-                        IconButton(
-                            onClick = {
-                                val uri = when {
-                                    competition.lat != 0.0 || competition.lng != 0.0 ->
-                                        "geo:${competition.lat},${competition.lng}?q=${competition.lat},${competition.lng}".toUri()
-
-                                    else ->
-                                        competition.googleMaps!!.replace("/maps/embed", "/maps").toUri()
-                                }
-                                context.startActivity(Intent(Intent.ACTION_VIEW, uri))
-                            }
-                        ) {
-                            Icon(
-                                painter = painterResource(R.drawable.map_search),
-                                contentDescription = stringResource(R.string.competitions_open_map)
-                            )
-                        }
-                    }
-                }
+                CompetitionItemHeader(
+                    competition = competition,
+                    hasLocation = hasLocation,
+                    onCalendarClick = { showCalendarDialog = true },
+                    context = context
+                )
                 Spacer(modifier = Modifier.height(6.dp))
                 WeaponClassBadges(
                     weaponClasses = competition.weaponClasses,
                     userSignups = competition.userSignups
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(4.dp)
-                ) {
-                    val shape =
-                        RoundedCornerShape(integerResource(R.integer.rounded_corner_shape_percent))
-
-                    val buttonContentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp)
-                    val resultsEnabled = competition.status == "completed" ||
-                            runCatching {
-                                !LocalDate.parse(competition.date).isAfter(LocalDate.now())
-                            }.getOrDefault(false)
-                    if (resultsEnabled) {
-                        Button(
-                            modifier = Modifier.weight(1f),
-                            onClick = onResultsClick,
-                            shape = shape,
-                            contentPadding = buttonContentPadding
-                        ) {
-                            Text(
-                                style = MaterialTheme.typography.bodySmall,
-                                text = stringResource(R.string.competitions_result),
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    }
-                    Button(
-                        modifier = Modifier.weight(1f),
-                        onClick = onSignupsListClick,
-                        shape = shape,
-                        contentPadding = buttonContentPadding
-                    ) {
-                        Text(
-                            style = MaterialTheme.typography.bodySmall,
-                            text = stringResource(R.string.competition_signups_list_participants),
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                    Button(
-                        modifier = Modifier.weight(1f),
-                        onClick = onPatrolsOrRelayClick,
-                        shape = shape,
-                        contentPadding = buttonContentPadding
-                    ) {
-                        Text(
-                            style = MaterialTheme.typography.bodySmall,
-                            text = stringResource(patrolOrRelayButtonText),
-                            textAlign = TextAlign.Center
-                        )
-                    }
-                    if (competition.allowTeams > 0) {
-                        Button(
-                            modifier = Modifier.weight(1f),
-                            onClick = onTeamsClick,
-                            shape = shape,
-                            contentPadding = buttonContentPadding
-                        ) {
-                            Text(
-                                style = MaterialTheme.typography.bodySmall,
-                                text = stringResource(R.string.competitions_teams_button),
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    }
-                    if (competition.status == "open") {
-                        Button(
-                            modifier = Modifier.weight(1f),
-                            shape = shape,
-                            onClick = onSignupClick,
-                            contentPadding = buttonContentPadding
-                        ) {
-                            Text(
-                                style = MaterialTheme.typography.bodySmall,
-                                text = stringResource(R.string.sign_up),
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    }
-                }
+                CompetitionItemButtons(
+                    competition = competition,
+                    patrolOrRelayButtonText = patrolOrRelayButtonText,
+                    onResultsClick = onResultsClick,
+                    onSignupClick = onSignupClick,
+                    onSignupsListClick = onSignupsListClick,
+                    onPatrolsOrRelayClick = onPatrolsOrRelayClick,
+                    onTeamsClick = onTeamsClick
+                )
             }
 
             HorizontalDivider()
@@ -588,6 +468,160 @@ fun CompetitionItem(
                 }
             }
         )
+    }
+}
+
+@Composable
+private fun CompetitionItemHeader(
+    competition: Datum,
+    hasLocation: Boolean,
+    onCalendarClick: () -> Unit,
+    context: android.content.Context
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.Top
+    ) {
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = competition.name,
+                style = MaterialTheme.typography.titleSmall
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = "${competition.date}  •  ${competition.statusHuman}",
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(2.dp))
+            Text(
+                text = stringResource(
+                    R.string.competitions_competition_type,
+                    competition.competitionType.name
+                ),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        val isFutureCompetition = remember(competition.date) {
+            runCatching { LocalDate.parse(competition.date) >= LocalDate.now() }.getOrDefault(false)
+        }
+        if (isFutureCompetition) {
+            IconButton(onClick = onCalendarClick) {
+                Icon(
+                    painter = painterResource(R.drawable.calendar_add_on),
+                    contentDescription = stringResource(R.string.competitions_add_to_calendar)
+                )
+            }
+        }
+        if (hasLocation) {
+            IconButton(
+                onClick = {
+                    val uri = when {
+                        competition.lat != 0.0 || competition.lng != 0.0 ->
+                            "geo:${competition.lat},${competition.lng}?q=${competition.lat},${competition.lng}".toUri()
+
+                        else ->
+                            competition.googleMaps!!.replace("/maps/embed", "/maps").toUri()
+                    }
+                    context.startActivity(Intent(Intent.ACTION_VIEW, uri))
+                }
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.map_search),
+                    contentDescription = stringResource(R.string.competitions_open_map)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun CompetitionItemButtons(
+    competition: Datum,
+    patrolOrRelayButtonText: Int,
+    onResultsClick: () -> Unit,
+    onSignupClick: () -> Unit,
+    onSignupsListClick: () -> Unit,
+    onPatrolsOrRelayClick: () -> Unit,
+    onTeamsClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        val shape = RoundedCornerShape(integerResource(R.integer.rounded_corner_shape_percent))
+        val buttonContentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp)
+        val resultsEnabled = competition.status == "completed" ||
+                runCatching {
+                    !LocalDate.parse(competition.date).isAfter(LocalDate.now())
+                }.getOrDefault(false)
+        if (resultsEnabled) {
+            Button(
+                modifier = Modifier.weight(1f),
+                onClick = onResultsClick,
+                shape = shape,
+                contentPadding = buttonContentPadding
+            ) {
+                Text(
+                    style = MaterialTheme.typography.bodySmall,
+                    text = stringResource(R.string.competitions_result),
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+        Button(
+            modifier = Modifier.weight(1f),
+            onClick = onSignupsListClick,
+            shape = shape,
+            contentPadding = buttonContentPadding
+        ) {
+            Text(
+                style = MaterialTheme.typography.bodySmall,
+                text = stringResource(R.string.competition_signups_list_participants),
+                textAlign = TextAlign.Center
+            )
+        }
+        Button(
+            modifier = Modifier.weight(1f),
+            onClick = onPatrolsOrRelayClick,
+            shape = shape,
+            contentPadding = buttonContentPadding
+        ) {
+            Text(
+                style = MaterialTheme.typography.bodySmall,
+                text = stringResource(patrolOrRelayButtonText),
+                textAlign = TextAlign.Center
+            )
+        }
+        if (competition.allowTeams > 0) {
+            Button(
+                modifier = Modifier.weight(1f),
+                onClick = onTeamsClick,
+                shape = shape,
+                contentPadding = buttonContentPadding
+            ) {
+                Text(
+                    style = MaterialTheme.typography.bodySmall,
+                    text = stringResource(R.string.competitions_teams_button),
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+        if (competition.status == "open") {
+            Button(
+                modifier = Modifier.weight(1f),
+                shape = shape,
+                onClick = onSignupClick,
+                contentPadding = buttonContentPadding
+            ) {
+                Text(
+                    style = MaterialTheme.typography.bodySmall,
+                    text = stringResource(R.string.sign_up),
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
     }
 }
 
