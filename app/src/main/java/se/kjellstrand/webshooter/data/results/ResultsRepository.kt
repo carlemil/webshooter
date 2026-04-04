@@ -21,7 +21,7 @@ open class ResultsRepository @Inject constructor(
     private val dao: ResultsDao,
     private val gson: Gson
 ) {
-    fun get(competitionId: Int): Flow<Resource<ResultsResponse, UserError>> {
+    fun get(competitionId: Long): Flow<Resource<ResultsResponse, UserError>> {
         return flow {
             emit(Resource.Loading(true))
 
@@ -59,7 +59,7 @@ open class ResultsRepository @Inject constructor(
         }
     }
 
-    fun getPreferCached(competitionId: Int): Flow<Resource<ResultsResponse, UserError>> {
+    fun getPreferCached(competitionId: Long): Flow<Resource<ResultsResponse, UserError>> {
         return flow {
             emit(Resource.Loading(true))
             try {
@@ -94,7 +94,7 @@ open class ResultsRepository @Inject constructor(
         }
     }
 
-    fun getShooterResults(competitionId: Int, shooterId: Int): Flow<Resource<ResultsResponse, UserError>> {
+    fun getShooterResults(competitionId: Long, shooterId: Long): Flow<Resource<ResultsResponse, UserError>> {
         return flow {
             emit(Resource.Loading(true))
 
@@ -104,7 +104,7 @@ open class ResultsRepository @Inject constructor(
                 if (cached.isNotEmpty()) {
                     hasCached = true
                     val filtered = cached.mapNotNull { it.toDomain(gson) }
-                        .filter { it.signup.user.userID == shooterId.toLong() }
+                        .filter { it.signup.user.userID == shooterId }
                     emit(Resource.Success(ResultsResponse(results = filtered)))
                     return@flow
                 }
@@ -131,7 +131,7 @@ open class ResultsRepository @Inject constructor(
             dao.deleteByCompetition(competitionId)
             dao.insertAll(result.results.map { it.toEntity(gson) })
 
-            val filtered = result.results.filter { it.signup.user.userID == shooterId.toLong() }
+            val filtered = result.results.filter { it.signup.user.userID == shooterId }
             emit(Resource.Success(result.copy(results = filtered)))
         }
     }
