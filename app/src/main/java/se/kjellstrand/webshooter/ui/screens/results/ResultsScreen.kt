@@ -278,7 +278,7 @@ fun CompetitionResultsScreen(
 @Composable
 fun ResultsList(
     resultsUiState: ResultsUiState,
-    competitionId: Int,
+    competitionId: Long,
     navController: NavController,
     resultsType: ResultsType = ResultsType.FIELD,
     listState: LazyListState = rememberLazyListState(),
@@ -350,7 +350,7 @@ fun ResultsList(
                                 navController.safeNavigate(
                                     Screen.ShooterResult.createRoute(
                                         competitionId,
-                                        result.signup.user.userID.toInt(),
+                                        result.signup.user.userID,
                                         resultsType.name
                                     )
                                 )
@@ -464,7 +464,7 @@ fun ResultsList(
                                     navController.safeNavigate(
                                         Screen.ShooterResult.createRoute(
                                             competitionId,
-                                            result.signup.user.userID.toInt(),
+                                            result.signup.user.userID,
                                             resultsType.name
                                         )
                                     )

@@ -21,8 +21,8 @@ class ShooterResultViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
-    private val competitionId: Int = checkNotNull(savedStateHandle["competitionId"])
-    private val shooterId: Int = checkNotNull(savedStateHandle["shooterId"])
+    private val competitionId: Long = checkNotNull(savedStateHandle["competitionId"])
+    private val shooterId: Long = checkNotNull(savedStateHandle["shooterId"])
     private val resultsType: ResultsType = try {
         ResultsType.valueOf(checkNotNull(savedStateHandle["resultsType"]))
     } catch (e: Exception) {
@@ -37,7 +37,7 @@ class ShooterResultViewModel @Inject constructor(
         getShooterResults(competitionId, shooterId)
     }
 
-    private fun getShooterResults(competitionId: Int, shooterId: Int) {
+    private fun getShooterResults(competitionId: Long, shooterId: Long) {
         viewModelScope.launch {
             resultsRepository.getShooterResults(competitionId, shooterId).collect { resource ->
                 Log.d("ShooterResultViewModel", "resource: $resource")

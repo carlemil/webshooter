@@ -66,7 +66,7 @@ fun AppNavHost(navController: NavHostController) {
         composable(
             route = Screen.CompetitionResults.route,
             arguments = listOf(
-                navArgument("competitionId") { type = NavType.IntType },
+                navArgument("competitionId") { type = NavType.LongType },
                 navArgument("resultsType") { type = NavType.StringType },
                 navArgument("competitionName") { type = NavType.StringType; defaultValue = "" },
                 navArgument("competitionDate") { type = NavType.StringType; defaultValue = "" }
@@ -78,8 +78,8 @@ fun AppNavHost(navController: NavHostController) {
         composable(
             route = Screen.ShooterResult.route,
             arguments = listOf(
-                navArgument("competitionId") { type = NavType.IntType },
-                navArgument("shooterId") { type = NavType.IntType },
+                navArgument("competitionId") { type = NavType.LongType },
+                navArgument("shooterId") { type = NavType.LongType },
                 navArgument("resultsType") { type = NavType.StringType }
             )
         ) {
