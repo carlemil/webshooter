@@ -1,6 +1,7 @@
 package se.kjellstrand.webshooter.data.results.local
 
 import com.google.gson.Gson
+import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import se.kjellstrand.webshooter.data.common.WeaponClass
 import se.kjellstrand.webshooter.data.results.remote.Result
@@ -23,19 +24,24 @@ fun Result.toEntity(gson: Gson): ResultEntity = ResultEntity(
     stationResultsJson = gson.toJson(results)
 )
 
-fun ResultEntity.toDomain(gson: Gson): Result = Result(
-    id = id,
-    competitionsID = competitionsId,
-    signupsID = signupsId,
-    placement = placement,
-    figureHits = figureHits,
-    hits = hits,
-    points = points,
-    weaponclassesID = weaponClassesId,
-    stdMedal = stdMedal?.let { StdMedal.fromValue(it) },
-    signup = gson.fromJson(signupJson, Signup::class.java),
-    weaponClass = gson.fromJson(weaponClassJson, WeaponClass::class.java),
-    results = gson.fromJson(stationResultsJson, object : TypeToken<List<StationResult>>() {}.type),
-    resultsDistinguish = emptyList(),
-    resultsFinals = emptyList()
-)
+fun ResultEntity.toDomain(gson: Gson): Result? = try {
+    Result(
+        id = id,
+        competitionsID = competitionsId,
+        signupsID = signupsId,
+        placement = placement,
+        figureHits = figureHits,
+        hits = hits,
+        points = points,
+        weaponclassesID = weaponClassesId,
+        stdMedal = stdMedal?.let { StdMedal.fromValue(it) },
+        signup = gson.fromJson(signupJson, Signup::class.java),
+        weaponClass = gson.fromJson(weaponClassJson, WeaponClass::class.java),
+        results = gson.fromJson(stationResultsJson, object : TypeToken<List<StationResult>>() {}.type),
+        resultsDistinguish = emptyList(),
+        resultsFinals = emptyList()
+    )
+} catch (e: JsonSyntaxException) {
+    e.printStackTrace()
+    null
+}
