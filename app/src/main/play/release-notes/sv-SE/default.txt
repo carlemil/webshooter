@@ -1,2 +1,6 @@
-- Fixat ett problem där snabba tryck på bakåt/framåt kunde orsaka dubbel navigering
-- Förbättrad sekretess genom att ta bort onödig annonsspårning
+- Förbättrad stabilitet och kraschfixar
+- Filtrering på klubb och vapenklass vid anmälningar
+- Snabbare laddning med databasindex och cachning
+- Säkerhetsförbättringar för inloggning och sessionshantering
+- Bättre stöd för skärmrotation utan att tappa inmatad data
+- Diverse buggfixar och prestandaförbättringar
