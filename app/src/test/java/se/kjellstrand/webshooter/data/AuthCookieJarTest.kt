@@ -118,16 +118,16 @@ class AuthCookieJarTest {
     }
 
     @Test
-    fun `getSessionCookies returns only session-related cookies`() {
-        val xsrf = buildCookie("XSRF-TOKEN", "xval")
-        val session = buildCookie("laravel_session", "sval")
+    fun `getSessionCookies returns only session-related cookies with masked values`() {
+        val xsrf = buildCookie("XSRF-TOKEN", "xsrftokenvalue123")
+        val session = buildCookie("laravel_session", "sessionvalue456")
         val other = buildCookie("other", "oval")
         cookieJar.saveFromResponse(testUrl, listOf(xsrf, session, other))
 
         val result = cookieJar.getSessionCookies()
 
-        assertTrue(result.contains("XSRF-TOKEN=xval"))
-        assertTrue(result.contains("laravel_session=sval"))
-        assertFalse(result.contains("other=oval"))
+        assertTrue(result.contains("XSRF-TOKEN=xsrf****"))
+        assertTrue(result.contains("laravel_session=sess****"))
+        assertFalse(result.contains("other"))
     }
 }
