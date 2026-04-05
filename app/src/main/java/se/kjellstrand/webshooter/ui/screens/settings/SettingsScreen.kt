@@ -43,6 +43,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -128,7 +129,7 @@ private fun ProfileTab(uiState: SettingsUiState, viewModel: SettingsViewModel) {
 
 @Composable
 private fun ViewProfileContent(profile: UserProfile?, onEditClick: () -> Unit, onLogoutClick: () -> Unit) {
-    var showLogoutDialog by remember { mutableStateOf(false) }
+    var showLogoutDialog by rememberSaveable { mutableStateOf(false) }
 
     if (showLogoutDialog) {
         AlertDialog(
@@ -333,7 +334,7 @@ private fun GenderDropdown(selected: Gender, onSelect: (Gender) -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun BirthYearDropdown(selected: Int?, onSelect: (Int) -> Unit) {
-    val currentYear = 2026
+    val currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
     val years = (currentYear downTo 1916).toList()
     var expanded by remember { mutableStateOf(false) }
 
