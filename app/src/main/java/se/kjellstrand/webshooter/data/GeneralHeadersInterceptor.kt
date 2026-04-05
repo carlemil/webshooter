@@ -15,14 +15,14 @@ class GeneralHeadersInterceptor : Interceptor {
                 )
                 .header("Connection", "keep-alive")
                 .header("DNT", "1")
-                .header("Host", "webshooter.se")
+                .header("Host", chain.request().url.host)
                 .header("Referer", "https://webshooter.se/app/")
                 .header("Sec-Fetch-Dest", "empty")
                 .header("Sec-Fetch-Mode", "cors")
                 .header("Sec-Fetch-Site", "same-origin")
                 .header(
                     "User-agent",
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"
+                    "Webshooter-Android/${se.kjellstrand.webshooter.BuildConfig.VERSION_NAME}"
                 )
                 .header("X-Requested-With", "XMLHttpRequest")
                 .header(

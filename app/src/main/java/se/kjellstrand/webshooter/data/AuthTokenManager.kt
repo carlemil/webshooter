@@ -46,7 +46,7 @@ class AuthTokenManager(context: Context) {
     fun storeToken(newToken: String) {
         with(sharedPreferences.edit()) {
             putString(AUTH_TOKEN_KEY, newToken)
-            apply()
+            commit()
         }
         token = newToken
     }
@@ -57,7 +57,7 @@ class AuthTokenManager(context: Context) {
             putString(AUTH_TOKEN_KEY, accessToken)
             putString(REFRESH_TOKEN_KEY, newRefreshToken)
             putLong(TOKEN_EXPIRES_AT_KEY, expiresAt)
-            apply()
+            commit()
         }
         token = accessToken
         refreshToken = newRefreshToken
@@ -85,7 +85,7 @@ class AuthTokenManager(context: Context) {
             remove(AUTH_TOKEN_KEY)
             remove(REFRESH_TOKEN_KEY)
             remove(TOKEN_EXPIRES_AT_KEY)
-            apply()
+            commit()
         }
         token = null
         refreshToken = null
