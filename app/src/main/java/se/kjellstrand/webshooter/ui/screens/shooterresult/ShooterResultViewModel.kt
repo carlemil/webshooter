@@ -1,6 +1,5 @@
 package se.kjellstrand.webshooter.ui.screens.shooterresult
 
-import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -33,14 +32,12 @@ class ShooterResultViewModel @Inject constructor(
     val uiState: StateFlow<ShooterResultUiState> = _uiState.asStateFlow()
 
     init {
-        Log.d("ShooterResultViewModel", "competitionId: $competitionId, shooterId: $shooterId")
         getShooterResults(competitionId, shooterId)
     }
 
     private fun getShooterResults(competitionId: Long, shooterId: Long) {
         viewModelScope.launch {
             resultsRepository.getShooterResults(competitionId, shooterId).collect { resource ->
-                Log.d("ShooterResultViewModel", "resource: $resource")
                 when (resource) {
                     is Resource.Success -> {
                         val results = resource.data.results

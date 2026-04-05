@@ -1,5 +1,6 @@
 package se.kjellstrand.webshooter.data.cookies
 
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okio.IOException
@@ -15,21 +16,25 @@ import javax.inject.Singleton
 open class CookiesRepository @Inject constructor(
     private val cookiesRemoteDataSource: CookiesRemoteDataSource
 ) {
+    companion object {
+        private const val TAG = "CookiesRepository"
+    }
+
     fun getCookies(): Flow<Resource<Response<Unit>, UserError>> {
         return flow {
             emit(Resource.Loading(true))
             val result = try {
                 cookiesRemoteDataSource.getCookies()
             } catch (e: IOException) {
-                e.printStackTrace()
+                Log.w(TAG, "Error", e)
                 emit(Resource.Error(UserError.IOError))
                 return@flow
             } catch (e: HttpException) {
-                e.printStackTrace()
+                Log.w(TAG, "Error", e)
                 emit(Resource.Error(UserError.HttpError))
                 return@flow
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.w(TAG, "Error", e)
                 emit(Resource.Error(UserError.UnknownError))
                 return@flow
             }

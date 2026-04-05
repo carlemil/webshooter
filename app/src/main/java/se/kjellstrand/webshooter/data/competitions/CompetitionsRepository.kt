@@ -1,5 +1,6 @@
 package se.kjellstrand.webshooter.data.competitions
 
+import android.util.Log
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -25,6 +26,10 @@ open class CompetitionsRepository @Inject constructor(
     private val dao: CompetitionsDao,
     private val gson: Gson
 ) {
+    companion object {
+        private const val TAG = "CompetitionsRepository"
+    }
+
     fun get(
         page: Int,
         pageSize: Int
@@ -59,22 +64,22 @@ open class CompetitionsRepository @Inject constructor(
                         }
                     }
                 } catch (e: Exception) {
-                    e.printStackTrace()
+                    Log.w(TAG, "Error", e)
                 }
             }
 
             val result = try {
                 competitionsRemoteDataSource.getCompetitions(page, pageSize, "all", 0, 0)
             } catch (e: IOException) {
-                e.printStackTrace()
+                Log.w(TAG, "Error", e)
                 emit(Resource.Error(UserError.IOError))
                 return@flow
             } catch (e: HttpException) {
-                e.printStackTrace()
+                Log.w(TAG, "Error", e)
                 emit(Resource.Error(UserError.HttpError))
                 return@flow
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.w(TAG, "Error", e)
                 emit(Resource.Error(UserError.UnknownError))
                 return@flow
             }

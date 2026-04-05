@@ -1,10 +1,13 @@
 package se.kjellstrand.webshooter.data.settings.local
 
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import se.kjellstrand.webshooter.data.settings.remote.Club
 import se.kjellstrand.webshooter.data.settings.remote.UserProfile
+
+private const val TAG = "UserProfileMappers"
 
 fun UserProfile.toEntity(gson: Gson): UserProfileEntity = UserProfileEntity(
     userId = userId,
@@ -47,6 +50,6 @@ fun UserProfileEntity.toDomain(gson: Gson): UserProfile? = try {
         clubs = gson.fromJson(clubsJson, object : TypeToken<List<Club>>() {}.type)
     )
 } catch (e: JsonSyntaxException) {
-    e.printStackTrace()
+    Log.w(TAG, "Error", e)
     null
 }
