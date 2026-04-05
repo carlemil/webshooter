@@ -32,7 +32,10 @@ class AuthCookieJar : CookieJar {
     fun getSessionCookies(): String {
         val cookies = cookieStore.values
             .filter { cookie -> cookie.name == "XSRF-TOKEN" || cookie.name == "laravel_session" }
-            .joinToString(separator = "; ") { cookie -> "${cookie.name}=${cookie.value}" }
+            .joinToString(separator = "; ") { cookie ->
+                val masked = if (cookie.value.length > 8) cookie.value.take(4) + "****" else "****"
+                "${cookie.name}=$masked"
+            }
         return cookies
     }
 }

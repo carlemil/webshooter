@@ -194,7 +194,7 @@ fun CompetitionsScreen(
                         CompetitionItem(
                             competition = competition,
                             patrolOrRelayButtonText = when (competition.competitionType.id) {
-                                2, 3, 9, 10 -> R.string.competitions_patrols_button
+                                in CompetitionType.FALT_TYPE_IDS -> R.string.competitions_patrols_button
                                 else -> R.string.competitions_relays_button
                             },
                             onResultsClick = {
