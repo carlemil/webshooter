@@ -189,7 +189,7 @@ private fun YearlySummaryCard(rowsByType: List<Triple<String, List<SummaryRow>, 
                 )
                 IconButton(
                     onClick = { showSymbolInfo = true },
-                    modifier = Modifier.size(20.dp)
+                    modifier = Modifier.size(48.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Info,

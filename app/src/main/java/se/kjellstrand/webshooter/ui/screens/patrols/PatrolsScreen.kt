@@ -1,5 +1,6 @@
 package se.kjellstrand.webshooter.ui.screens.patrols
 
+import se.kjellstrand.webshooter.data.common.CompetitionType
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -55,7 +56,7 @@ fun CompetitionPatrolsScreen(
     viewModel: PatrolsViewModel = hiltViewModel<PatrolsViewModelImpl>()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val isFalt = uiState.competitionTypeId in setOf(2, 3, 9, 10)
+    val isFalt = uiState.competitionTypeId in CompetitionType.FALT_TYPE_IDS
 
     val sortedPatrols = remember(uiState.patrols, uiState.currentUserId) {
         val userId = uiState.currentUserId
