@@ -67,7 +67,6 @@ fun LoginScreen(
                 }
 
                 is UiEvent.ShowErrorMessage -> {
-                    println("Error: ${event.message}")
                 }
             }
         }

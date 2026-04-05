@@ -1,5 +1,6 @@
 package se.kjellstrand.webshooter.data.competitions.local
 
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
@@ -12,6 +13,8 @@ import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.competitions.remote.Translations
 import se.kjellstrand.webshooter.data.competitions.remote.Usersignup
+
+private const val TAG = "CompetitionMappers"
 
 fun Datum.toEntity(gson: Gson): CompetitionEntity = CompetitionEntity(
     id = id,
@@ -110,6 +113,6 @@ fun CompetitionEntity.toDomain(gson: Gson): Datum? = try {
         club = gson.fromJson(clubJson, Club::class.java)
     )
 } catch (e: JsonSyntaxException) {
-    e.printStackTrace()
+    Log.w(TAG, "Error", e)
     null
 }

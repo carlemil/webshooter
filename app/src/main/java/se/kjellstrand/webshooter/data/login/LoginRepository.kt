@@ -1,5 +1,6 @@
 package se.kjellstrand.webshooter.data.login
 
+import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okio.IOException
@@ -18,6 +19,10 @@ import javax.inject.Singleton
 open class LoginRepository @Inject constructor(
     private val loginRemoteDataSource: LoginRemoteDataSource
 ) {
+    companion object {
+        private const val TAG = "LoginRepository"
+    }
+
     fun login(
         email: String,
         username: String,
@@ -37,15 +42,15 @@ open class LoginRepository @Inject constructor(
                     )
                 )
             } catch (e: IOException) {
-                e.printStackTrace()
+                Log.w(TAG, "Error", e)
                 emit(Resource.Error(UserError.IOError))
                 return@flow
             } catch (e: HttpException) {
-                e.printStackTrace()
+                Log.w(TAG, "Error", e)
                 emit(Resource.Error(UserError.HttpError))
                 return@flow
             } catch (e: Exception) {
-                e.printStackTrace()
+                Log.w(TAG, "Error", e)
                 emit(Resource.Error(UserError.UnknownError))
                 return@flow
             }
