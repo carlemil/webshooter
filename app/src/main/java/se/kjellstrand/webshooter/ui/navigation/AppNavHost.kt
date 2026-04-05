@@ -12,6 +12,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.navigation.navDeepLink
 import android.util.Log
 import android.widget.Toast
 import kotlinx.coroutines.flow.collectLatest
@@ -70,6 +71,9 @@ fun AppNavHost(navController: NavHostController) {
                 navArgument("resultsType") { type = NavType.StringType },
                 navArgument("competitionName") { type = NavType.StringType; defaultValue = "" },
                 navArgument("competitionDate") { type = NavType.StringType; defaultValue = "" }
+            ),
+            deepLinks = listOf(
+                navDeepLink { uriPattern = Screen.CompetitionResults.deepLink }
             )
         ) {
             val resultsViewModel: ResultsViewModelImpl = hiltViewModel()
@@ -125,7 +129,19 @@ fun AppNavHost(navController: NavHostController) {
                 return@composable
             }
             val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(Screen.LandingScreen.route)
+                try {
+                    navController.getBackStackEntry(Screen.LandingScreen.route)
+                } catch (e: IllegalArgumentException) {
+                    Log.e("AppNavHost", "CompetitionSignup: LandingScreen not in back stack", e)
+                    null
+                }
+            }
+            if (parentEntry == null) {
+                LaunchedEffect(Unit) {
+                    Toast.makeText(context, "Failed to open signup: navigation error", Toast.LENGTH_LONG).show()
+                    navController.safePopBackStack()
+                }
+                return@composable
             }
             val competitionsViewModel: CompetitionsViewModelImpl = hiltViewModel(parentEntry)
             val signupViewModel: SignupViewModel = hiltViewModel()
