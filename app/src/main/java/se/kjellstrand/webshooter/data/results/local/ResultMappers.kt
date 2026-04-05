@@ -1,5 +1,6 @@
 package se.kjellstrand.webshooter.data.results.local
 
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
@@ -8,6 +9,8 @@ import se.kjellstrand.webshooter.data.results.remote.Result
 import se.kjellstrand.webshooter.data.results.remote.Signup
 import se.kjellstrand.webshooter.data.results.remote.StationResult
 import se.kjellstrand.webshooter.data.results.remote.StdMedal
+
+private const val TAG = "ResultMappers"
 
 fun Result.toEntity(gson: Gson): ResultEntity = ResultEntity(
     id = id,
@@ -42,6 +45,6 @@ fun ResultEntity.toDomain(gson: Gson): Result? = try {
         resultsFinals = emptyList()
     )
 } catch (e: JsonSyntaxException) {
-    e.printStackTrace()
+    Log.w(TAG, "Error", e)
     null
 }

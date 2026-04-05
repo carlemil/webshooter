@@ -1,5 +1,6 @@
 package se.kjellstrand.webshooter.data.mysignups.local
 
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
@@ -9,6 +10,8 @@ import se.kjellstrand.webshooter.data.mysignups.remote.SignupPatrol
 import se.kjellstrand.webshooter.data.mysignups.remote.SignupResultsPlacement
 import se.kjellstrand.webshooter.data.mysignups.remote.SignupTeam
 import se.kjellstrand.webshooter.data.mysignups.remote.SignupWeaponClass
+
+private const val TAG = "SignupMappers"
 
 fun SignupEntry.toEntity(groupKey: String, gson: Gson): SignupEntryEntity = SignupEntryEntity(
     id = id,
@@ -52,6 +55,6 @@ fun SignupEntryEntity.toDomain(gson: Gson): SignupEntry? = try {
         resultsPlacements = resultsPlacementsJson?.let { gson.fromJson(it, SignupResultsPlacement::class.java) }
     )
 } catch (e: JsonSyntaxException) {
-    e.printStackTrace()
+    Log.w(TAG, "Error", e)
     null
 }
