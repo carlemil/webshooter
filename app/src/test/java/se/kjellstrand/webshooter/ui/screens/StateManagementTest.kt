@@ -22,11 +22,11 @@ class StateManagementTest {
     }
 
     @Test
-    fun `selectedRoute uses rememberSaveable`() {
+    fun `selectedRoute is derived from currentBackStackEntryAsState`() {
         val source = webShooterScreen.readText()
         assertTrue(
-            "selectedRoute should use rememberSaveable for config change survival",
-            source.contains("var selectedRoute by rememberSaveable")
+            "selectedRoute should be derived from currentBackStackEntryAsState for NavController sync",
+            source.contains("currentBackStackEntryAsState")
         )
     }
 

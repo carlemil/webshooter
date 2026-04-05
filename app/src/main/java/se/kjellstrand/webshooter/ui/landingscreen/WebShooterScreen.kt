@@ -21,12 +21,9 @@ import androidx.compose.material3.Text
 import se.kjellstrand.webshooter.ui.common.ScreenTopBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
@@ -34,6 +31,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.R
@@ -57,7 +57,14 @@ fun WebShooterScreen(navController: NavController) {
         NavigationItem(stringResource(R.string.web_shooter_settings), Screen.Settings.route)
     )
 
-    var selectedRoute by rememberSaveable { mutableStateOf(Screen.CompetitionsList.route) }
+    val drawerNavController = rememberNavController()
+    val navBackStackEntry by drawerNavController.currentBackStackEntryAsState()
+    val selectedRoute = navBackStackEntry?.destination?.route ?: Screen.CompetitionsList.route
+
+    BackHandler(selectedRoute != Screen.CompetitionsList.route) {
+        drawerNavController.popBackStack(Screen.CompetitionsList.route, inclusive = false)
+    }
+
     val competitionsViewModel: CompetitionsViewModelImpl = hiltViewModel()
 
     ModalNavigationDrawer(
@@ -75,7 +82,11 @@ fun WebShooterScreen(navController: NavController) {
                         label = { Text(item.label) },
                         selected = item.route == selectedRoute,
                         onClick = {
-                            selectedRoute = item.route
+                            drawerNavController.navigate(item.route) {
+                                popUpTo(Screen.CompetitionsList.route) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
                             scope.launch {
                                 drawerState.close()
                             }
@@ -105,21 +116,28 @@ fun WebShooterScreen(navController: NavController) {
                     }
                 }
             )
-            when (selectedRoute) {
-                Screen.CompetitionsList.route -> {
+            NavHost(
+                navController = drawerNavController,
+                startDestination = Screen.CompetitionsList.route
+            ) {
+                composable(Screen.CompetitionsList.route) {
                     CompetitionsScreen(navController, competitionsViewModel)
                 }
-                Screen.MyEntries.route -> {
+                composable(Screen.MyEntries.route) {
                     MyEntriesScreen()
                 }
-                Screen.Club.route -> ClubScreen()
-                Screen.Settings.route -> SettingsScreen(
-                    onLoggedOut = {
-                        navController.navigate(Screen.LoginScreen.route) {
-                            popUpTo(0) { inclusive = true }
+                composable(Screen.Club.route) {
+                    ClubScreen()
+                }
+                composable(Screen.Settings.route) {
+                    SettingsScreen(
+                        onLoggedOut = {
+                            navController.navigate(Screen.LoginScreen.route) {
+                                popUpTo(0) { inclusive = true }
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
     }
