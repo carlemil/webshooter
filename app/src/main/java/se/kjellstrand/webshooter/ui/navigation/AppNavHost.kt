@@ -30,7 +30,7 @@ import se.kjellstrand.webshooter.ui.screens.patrols.PatrolsViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.signups.CompetitionSignupsScreen
 import se.kjellstrand.webshooter.ui.screens.signups.SignupsViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.signup.SignupScreen
-import se.kjellstrand.webshooter.ui.screens.signup.SignupViewModel
+import se.kjellstrand.webshooter.ui.screens.signup.SignupViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.teams.CompetitionTeamsScreen
 import se.kjellstrand.webshooter.ui.screens.teams.TeamsViewModelImpl
 
@@ -144,7 +144,7 @@ fun AppNavHost(navController: NavHostController) {
                 return@composable
             }
             val competitionsViewModel: CompetitionsViewModelImpl = hiltViewModel(parentEntry)
-            val signupViewModel: SignupViewModel = hiltViewModel()
+            val signupViewModel: SignupViewModelImpl = hiltViewModel()
             val competitionsState by competitionsViewModel.uiState.collectAsState()
             val signupState by signupViewModel.uiState.collectAsState()
             val competition = remember(competitionId) {
