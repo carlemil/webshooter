@@ -30,13 +30,11 @@ data class ChartsUiState(
         }
 
     val filteredComparedShooters: Map<Long, ShooterChartInfo>
-        get() {
-            if (selectedWeaponClasses.isEmpty()) return comparedShooters
-            return comparedShooters.mapValues { (_, info) ->
-                info.copy(chartData = info.chartData.filter {
-                    it.weaponClass in selectedWeaponClasses && it.resultsType == selectedResultsType
-                })
-            }
+        get() = comparedShooters.mapValues { (_, info) ->
+            info.copy(chartData = info.chartData.filter {
+                it.resultsType == selectedResultsType &&
+                    (selectedWeaponClasses.isEmpty() || it.weaponClass in selectedWeaponClasses)
+            })
         }
 
     val filteredClubMembers: List<ClubMember>

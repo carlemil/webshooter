@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.data.charts.ChartData
 import se.kjellstrand.webshooter.data.charts.ChartDataPoint
 import se.kjellstrand.webshooter.data.charts.ChartsRepository
+import se.kjellstrand.webshooter.data.charts.CompetitionMeta
 import se.kjellstrand.webshooter.data.club.ClubRepository
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.settings.SettingsRepository
@@ -131,11 +132,19 @@ class ChartsViewModelImpl @Inject constructor(
         val shooterName = member.fullname ?: "${member.name} ${member.lastname ?: ""}".trim()
 
         val competitionIds = allChartDataPoints.map { it.competitionId }.distinct()
+        val competitionMetadata = allChartDataPoints.associate { dp ->
+            dp.competitionId to CompetitionMeta(
+                name = dp.competitionName,
+                date = dp.date,
+                resultsType = dp.resultsType
+            )
+        }
 
         viewModelScope.launch {
             chartsRepository.getShooterChartData(
                 shooterIds = listOf(userId),
-                competitionIds = competitionIds
+                competitionIds = competitionIds,
+                competitionMetadata = competitionMetadata
             ).collect { resource ->
                 when (resource) {
                     is Resource.Success -> {
