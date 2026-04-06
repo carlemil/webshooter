@@ -184,7 +184,7 @@ private fun InfoRow(
 private fun ClubMemberListTab(members: List<ClubMember>) {
     if (members.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
+            Text(stringResource(R.string.club_no_members))
         }
         return
     }

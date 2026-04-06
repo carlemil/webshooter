@@ -445,7 +445,7 @@ private fun PasswordField(value: String, onValueChange: (String) -> Unit, label:
             IconButton(onClick = { visible = !visible }) {
                 Icon(
                     imageVector = if (visible) Icons.Default.Visibility else Icons.Default.VisibilityOff,
-                    contentDescription = null
+                    contentDescription = stringResource(R.string.toggle_password_visibility)
                 )
             }
         },

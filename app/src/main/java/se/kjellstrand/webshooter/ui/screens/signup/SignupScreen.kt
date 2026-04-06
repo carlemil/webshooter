@@ -57,7 +57,7 @@ fun SignupScreen(
                 title = competition.name,
                 navigationIcon = {
                     IconButton(onClick = { navController.safePopBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.navigate_back))
                     }
                 }
             )
