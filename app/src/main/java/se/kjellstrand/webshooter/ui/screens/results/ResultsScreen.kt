@@ -168,7 +168,7 @@ fun CompetitionResultsScreen(
                         context.getString(R.string.results_no_results_found),
                         Toast.LENGTH_LONG
                     ).show()
-                    navController.safePopBackStack()
+                    navController.popBackStack()
                 }
             }
         }
