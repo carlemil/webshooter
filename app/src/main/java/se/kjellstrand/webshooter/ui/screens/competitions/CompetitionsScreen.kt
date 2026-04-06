@@ -789,11 +789,45 @@ private fun DetailRow(label: String, value: String, onClick: (() -> Unit)? = nul
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Competitions - Loaded")
 @Composable
 fun CompetitionsScreenPreview() {
     val navController = rememberNavController()
     CompetitionsScreen(
         navController = navController, competitionsViewModel = CompetitionsViewModelMock()
+    )
+}
+
+@Preview(showBackground = true, name = "Competitions - Loading")
+@Composable
+fun CompetitionsScreenLoadingPreview() {
+    CompetitionsScreen(
+        navController = rememberNavController(),
+        competitionsViewModel = CompetitionsViewModelMock(CompetitionsUiState(isLoading = true))
+    )
+}
+
+@Preview(showBackground = true, name = "Competitions - Error")
+@Composable
+fun CompetitionsScreenErrorPreview() {
+    CompetitionsScreen(
+        navController = rememberNavController(),
+        competitionsViewModel = CompetitionsViewModelMock(CompetitionsUiState(hasError = true))
+    )
+}
+
+@Preview(showBackground = true, name = "Competitions - Empty")
+@Composable
+fun CompetitionsScreenEmptyPreview() {
+    CompetitionsScreen(
+        navController = rememberNavController(),
+        competitionsViewModel = CompetitionsViewModelMock(
+            CompetitionsUiState(competitions = se.kjellstrand.webshooter.data.competitions.remote.Competitions(
+                currentPage = 1, data = emptyList(), firstPageURL = "", from = 0, lastPage = 1,
+                lastPageURL = "", links = emptyList(), nextPageURL = null, path = "", perPage = 10,
+                prevPageURL = null, to = 0, total = 0, search = null, status = "",
+                clubsID = null, type = 0, userSignup = null, competitionTypes = emptyList()
+            ))
+        )
     )
 }

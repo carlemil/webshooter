@@ -49,6 +49,35 @@ class CompetitionsScreenTest {
         )
     }
 
+    // --- Fixed behavior for previews (should FAIL before fix, PASS after fix) ---
+
+    @Test
+    fun `CompetitionsScreen should have loading preview`() {
+        val source = sourceFile.readText()
+        assertTrue("Should have CompetitionsScreenLoadingPreview", source.contains("CompetitionsScreenLoadingPreview"))
+    }
+
+    @Test
+    fun `CompetitionsScreen should have error preview`() {
+        val source = sourceFile.readText()
+        assertTrue("Should have CompetitionsScreenErrorPreview", source.contains("CompetitionsScreenErrorPreview"))
+    }
+
+    @Test
+    fun `CompetitionsScreen should have empty preview`() {
+        val source = sourceFile.readText()
+        assertTrue("Should have CompetitionsScreenEmptyPreview", source.contains("CompetitionsScreenEmptyPreview"))
+    }
+
+    @Test
+    fun `CompetitionsViewModelMock should accept UiState constructor parameter`() {
+        val clazz = Class.forName("se.kjellstrand.webshooter.ui.mock.CompetitionsViewModelMock")
+        val hasUiStateParam = clazz.declaredConstructors.any { c ->
+            c.parameterTypes.any { it.simpleName == "CompetitionsUiState" }
+        }
+        assertTrue("CompetitionsViewModelMock should accept CompetitionsUiState param", hasUiStateParam)
+    }
+
     // --- Guard tests (should PASS before and after fix) ---
 
     @Test

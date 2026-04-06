@@ -7,32 +7,18 @@ import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsUiState
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsViewModel
 
-class CompetitionsViewModelMock() : ViewModel(),
+class CompetitionsViewModelMock(
+    initialState: CompetitionsUiState = CompetitionsUiState(MockCompetitions().competitions)
+) : ViewModel(),
     CompetitionsViewModel {
-    override val uiState: StateFlow<CompetitionsUiState>
-        get() {
-            return MutableStateFlow(
-                CompetitionsUiState(MockCompetitions().competitions)
-            )
-        }
+    override val uiState: StateFlow<CompetitionsUiState> = MutableStateFlow(initialState)
 
     override fun getCompetitionById(competitionId: Long): Datum? {
-        return MockCompetitions().competitions.data.find { it.id == competitionId }
+        return uiState.value.competitions?.data?.find { it.id == competitionId }
     }
 
-    override fun loadNextPage() {
-        // Do nothing in mock.
-    }
-
-    override fun reload() {
-        // Do nothing in mock.
-    }
-
-    override fun setSelectedCompetitionTypeIds(ids: Set<Int>) {
-        // Do nothing in mock.
-    }
-
-    override fun setSelectedStatuses(statuses: Set<String>) {
-        // Do nothing in mock.
-    }
+    override fun loadNextPage() {}
+    override fun reload() {}
+    override fun setSelectedCompetitionTypeIds(ids: Set<Int>) {}
+    override fun setSelectedStatuses(statuses: Set<String>) {}
 }
