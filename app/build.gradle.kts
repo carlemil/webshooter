@@ -184,6 +184,9 @@ dependencies {
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.analytics)
 
+    // Charts
+    implementation(libs.mpandroidchart)
+
     // Extended Icons
     implementation(libs.androidx.material.icons.extended)
 
