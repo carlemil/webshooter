@@ -30,11 +30,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitionteams.remote.TeamEntry
+import se.kjellstrand.webshooter.ui.mock.TeamsViewModelMock
 import se.kjellstrand.webshooter.data.competitionteams.remote.TeamSignupEntry
 import se.kjellstrand.webshooter.ui.common.GroupCardHeader
 import se.kjellstrand.webshooter.ui.common.ScreenTopBar
@@ -185,4 +188,31 @@ private fun TeamSignupRow(signup: TeamSignupEntry, isCurrentUser: Boolean) {
             modifier = Modifier.weight(1f)
         )
     }
+}
+
+@Preview(showBackground = true, name = "Teams - Loaded")
+@Composable
+fun TeamsScreenPreview() {
+    CompetitionTeamsScreen(
+        navController = rememberNavController(),
+        viewModel = TeamsViewModelMock()
+    )
+}
+
+@Preview(showBackground = true, name = "Teams - Loading")
+@Composable
+fun TeamsScreenLoadingPreview() {
+    CompetitionTeamsScreen(
+        navController = rememberNavController(),
+        viewModel = TeamsViewModelMock(CompetitionTeamsUiState(isLoading = true))
+    )
+}
+
+@Preview(showBackground = true, name = "Teams - Empty")
+@Composable
+fun TeamsScreenEmptyPreview() {
+    CompetitionTeamsScreen(
+        navController = rememberNavController(),
+        viewModel = TeamsViewModelMock(CompetitionTeamsUiState())
+    )
 }

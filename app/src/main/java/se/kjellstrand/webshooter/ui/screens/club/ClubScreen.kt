@@ -28,10 +28,12 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.club.remote.ClubData
 import se.kjellstrand.webshooter.data.club.remote.ClubMember
+import se.kjellstrand.webshooter.ui.mock.ClubViewModelMock
 
 @Composable
 fun ClubScreen(viewModel: ClubViewModel = hiltViewModel<ClubViewModelImpl>()) {
@@ -199,6 +201,40 @@ private fun ClubMemberListTab(members: List<ClubMember>) {
             Spacer(modifier = Modifier.height(6.dp))
         }
     }
+}
+
+@Preview(showBackground = true, name = "Club - Information")
+@Composable
+fun ClubScreenPreview() {
+    ClubScreen(viewModel = ClubViewModelMock())
+}
+
+@Preview(showBackground = true, name = "Club - Loading")
+@Composable
+fun ClubScreenLoadingPreview() {
+    ClubScreen(viewModel = ClubViewModelMock(ClubUiState(isLoading = true)))
+}
+
+@Preview(showBackground = true, name = "Club - Admins")
+@Composable
+fun ClubScreenAdminsPreview() {
+    ClubScreen(viewModel = ClubViewModelMock(
+        ClubUiState(clubData = se.kjellstrand.webshooter.ui.mock.MockClub().clubData, selectedTab = ClubTab.ADMINS)
+    ))
+}
+
+@Preview(showBackground = true, name = "Club - Users")
+@Composable
+fun ClubScreenUsersPreview() {
+    ClubScreen(viewModel = ClubViewModelMock(
+        ClubUiState(clubData = se.kjellstrand.webshooter.ui.mock.MockClub().clubData, selectedTab = ClubTab.USERS)
+    ))
+}
+
+@Preview(showBackground = true, name = "Club - Error")
+@Composable
+fun ClubScreenErrorPreview() {
+    ClubScreen(viewModel = ClubViewModelMock(ClubUiState(error = "NetworkError")))
 }
 
 @Composable

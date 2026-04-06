@@ -35,12 +35,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import se.kjellstrand.webshooter.ui.navigation.safePopBackStack
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.common.WeaponClass
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
+import se.kjellstrand.webshooter.ui.mock.MockCompetitions
+import se.kjellstrand.webshooter.ui.mock.SignupViewModelMock
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -188,4 +192,34 @@ private fun WeaponClassDropdown(
             }
         }
     }
+}
+
+@Preview(showBackground = true, name = "Signup - Default")
+@Composable
+fun SignupScreenPreview() {
+    SignupScreen(
+        competition = MockCompetitions().competitions.data.first(),
+        viewModel = SignupViewModelMock(),
+        navController = rememberNavController()
+    )
+}
+
+@Preview(showBackground = true, name = "Signup - Loading")
+@Composable
+fun SignupScreenLoadingPreview() {
+    SignupScreen(
+        competition = MockCompetitions().competitions.data.first(),
+        viewModel = SignupViewModelMock(SignupUiState(isLoading = true)),
+        navController = rememberNavController()
+    )
+}
+
+@Preview(showBackground = true, name = "Signup - Error")
+@Composable
+fun SignupScreenErrorPreview() {
+    SignupScreen(
+        competition = MockCompetitions().competitions.data.first(),
+        viewModel = SignupViewModelMock(SignupUiState(error = "Registration failed")),
+        navController = rememberNavController()
+    )
 }

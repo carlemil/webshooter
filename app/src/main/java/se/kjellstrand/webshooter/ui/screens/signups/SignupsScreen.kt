@@ -47,12 +47,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import se.kjellstrand.webshooter.ui.navigation.safePopBackStack
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitionsignups.remote.CompetitionSignupEntry
+import se.kjellstrand.webshooter.ui.mock.SignupsViewModelMock
 import se.kjellstrand.webshooter.ui.common.ScreenTopBar
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
@@ -321,4 +324,31 @@ private fun SignupRow(entries: List<CompetitionSignupEntry>, isCurrentUser: Bool
             }
         }
     }
+}
+
+@Preview(showBackground = true, name = "Signups - Loaded")
+@Composable
+fun SignupsScreenPreview() {
+    CompetitionSignupsScreen(
+        navController = rememberNavController(),
+        viewModel = SignupsViewModelMock()
+    )
+}
+
+@Preview(showBackground = true, name = "Signups - Loading")
+@Composable
+fun SignupsScreenLoadingPreview() {
+    CompetitionSignupsScreen(
+        navController = rememberNavController(),
+        viewModel = SignupsViewModelMock(CompetitionSignupsUiState(isLoading = true))
+    )
+}
+
+@Preview(showBackground = true, name = "Signups - Empty")
+@Composable
+fun SignupsScreenEmptyPreview() {
+    CompetitionSignupsScreen(
+        navController = rememberNavController(),
+        viewModel = SignupsViewModelMock(CompetitionSignupsUiState())
+    )
 }

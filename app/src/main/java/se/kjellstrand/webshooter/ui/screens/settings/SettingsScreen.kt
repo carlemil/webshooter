@@ -51,10 +51,13 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.settings.remote.Gender
+import se.kjellstrand.webshooter.ui.mock.MockSettings
+import se.kjellstrand.webshooter.ui.mock.SettingsViewModelMock
 import se.kjellstrand.webshooter.data.settings.remote.UserProfile
 
 @Composable
@@ -451,4 +454,46 @@ private fun PasswordField(value: String, onValueChange: (String) -> Unit, label:
         },
         modifier = Modifier.fillMaxWidth()
     )
+}
+
+@Preview(showBackground = true, name = "Settings - Profile View")
+@Composable
+fun SettingsScreenPreview() {
+    SettingsScreen(viewModel = SettingsViewModelMock())
+}
+
+@Preview(showBackground = true, name = "Settings - Loading")
+@Composable
+fun SettingsScreenLoadingPreview() {
+    SettingsScreen(viewModel = SettingsViewModelMock(SettingsUiState(isLoading = true)))
+}
+
+@Preview(showBackground = true, name = "Settings - Edit Mode")
+@Composable
+fun SettingsScreenEditPreview() {
+    SettingsScreen(viewModel = SettingsViewModelMock(SettingsUiState(
+        profile = MockSettings().userProfile,
+        isEditMode = true,
+        editName = "Erik",
+        editLastname = "Svensson",
+        editEmail = "erik@example.se"
+    )))
+}
+
+@Preview(showBackground = true, name = "Settings - Password Tab")
+@Composable
+fun SettingsScreenPasswordPreview() {
+    SettingsScreen(viewModel = SettingsViewModelMock(SettingsUiState(
+        profile = MockSettings().userProfile,
+        selectedTab = SettingsTab.PASSWORD
+    )))
+}
+
+@Preview(showBackground = true, name = "Settings - Error")
+@Composable
+fun SettingsScreenErrorPreview() {
+    SettingsScreen(viewModel = SettingsViewModelMock(SettingsUiState(
+        profile = MockSettings().userProfile,
+        errorMessage = "Failed to save profile"
+    )))
 }
