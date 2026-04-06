@@ -17,6 +17,7 @@ sealed class Screen(val route: String) {
     }
     object Club : Screen("club")
     object MyEntries : Screen("my_entries")
+    object Charts : Screen("charts")
     object Settings : Screen("settings")
     object ShooterResult : Screen("shooter_result/{competitionId}/{shooterId}/{resultsType}") {
         const val deepLink = "$DEEP_LINK_BASE_URI/shooter_result/{competitionId}/{shooterId}/{resultsType}"

@@ -53,6 +53,7 @@ fun WebShooterScreen(navController: NavController) {
     val navigationItems = listOf(
         NavigationItem(stringResource(R.string.web_shooter_competitions), Screen.CompetitionsList.route),
         NavigationItem(stringResource(R.string.my_results), Screen.MyEntries.route),
+        NavigationItem(stringResource(R.string.web_shooter_charts), Screen.Charts.route),
         NavigationItem(stringResource(R.string.web_shooter_club), Screen.Club.route),
         NavigationItem(stringResource(R.string.web_shooter_settings), Screen.Settings.route)
     )
@@ -125,6 +126,10 @@ fun WebShooterScreen(navController: NavController) {
                 }
                 composable(Screen.MyEntries.route) {
                     MyEntriesScreen()
+                }
+                composable(Screen.Charts.route) {
+                    // TODO: Replace with ChartsScreen when implemented
+                    Text(stringResource(R.string.web_shooter_charts))
                 }
                 composable(Screen.Club.route) {
                     ClubScreen()
