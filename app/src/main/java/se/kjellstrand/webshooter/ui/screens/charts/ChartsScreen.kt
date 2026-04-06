@@ -27,7 +27,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.TabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -40,11 +40,11 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.charts.ScatterChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.data.ScatterData
+import com.github.mikephil.charting.data.ScatterDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.charts.ChartDataPoint
@@ -54,13 +54,31 @@ import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
 
 private val CHART_COLORS = listOf(
     AndroidColor.rgb(76, 175, 80),   // Green (user)
+    AndroidColor.rgb(233, 30, 99),   // Pink
     AndroidColor.rgb(33, 150, 243),  // Blue
     AndroidColor.rgb(255, 152, 0),   // Orange
     AndroidColor.rgb(156, 39, 176),  // Purple
-    AndroidColor.rgb(244, 67, 54),   // Red
-    AndroidColor.rgb(0, 188, 212),   // Cyan
     AndroidColor.rgb(121, 85, 72),   // Brown
+    AndroidColor.rgb(0, 188, 212),   // Cyan
     AndroidColor.rgb(255, 235, 59),  // Yellow
+    AndroidColor.rgb(244, 67, 54),   // Red
+    AndroidColor.rgb(0, 77, 64),     // Teal dark
+    AndroidColor.rgb(170, 102, 204), // Lavender
+    AndroidColor.rgb(255, 111, 0),   // Amber dark
+    AndroidColor.rgb(21, 101, 192),  // Blue dark
+    AndroidColor.rgb(130, 119, 23),  // Olive
+    AndroidColor.rgb(198, 40, 40),   // Crimson
+    AndroidColor.rgb(0, 137, 123),   // Teal
+)
+
+private val CHART_SHAPES = listOf(
+    ScatterChart.ScatterShape.CIRCLE,
+    ScatterChart.ScatterShape.SQUARE,
+    ScatterChart.ScatterShape.TRIANGLE,
+    ScatterChart.ScatterShape.CROSS,
+    ScatterChart.ScatterShape.X,
+    ScatterChart.ScatterShape.CHEVRON_DOWN,
+    ScatterChart.ScatterShape.CHEVRON_UP
 )
 
 @Composable
@@ -112,9 +130,8 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ChartsViewModel) {
             val selectedIndex = uiState.availableResultsTypes.indexOf(uiState.selectedResultsType)
                 .coerceAtLeast(0)
 
-            ScrollableTabRow(
-                selectedTabIndex = selectedIndex,
-                edgePadding = 8.dp
+            TabRow(
+                selectedTabIndex = selectedIndex
             ) {
                 uiState.availableResultsTypes.forEach { type ->
                     Tab(
@@ -161,7 +178,7 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ChartsViewModel) {
                 )
             }
         } else {
-            ChartLineChart(
+            ChartScatterChart(
                 myData = chartData,
                 comparedShooters = comparedShooters,
                 modifier = Modifier
@@ -188,7 +205,7 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ChartsViewModel) {
 }
 
 @Composable
-fun ChartLineChart(
+fun ChartScatterChart(
     myData: List<ChartDataPoint>,
     comparedShooters: Map<Long, ShooterChartInfo>,
     modifier: Modifier = Modifier
@@ -198,7 +215,7 @@ fun ChartLineChart(
     AndroidView(
         modifier = modifier,
         factory = { context ->
-            LineChart(context).apply {
+            ScatterChart(context).apply {
                 description.isEnabled = false
                 setPinchZoom(true)
                 isDragEnabled = true
@@ -218,13 +235,11 @@ fun ChartLineChart(
             }
         },
         update = { chart ->
-            val dataSets = mutableListOf<LineDataSet>()
-            val allDates = mutableListOf<String>()
+            val dataSets = mutableListOf<ScatterDataSet>()
 
             // Collect all dates for X axis
             val allDataPoints = myData + comparedShooters.values.flatMap { it.chartData }
             val sortedDates = allDataPoints.map { it.date }.distinct().sorted()
-            allDates.addAll(sortedDates)
             val dateIndexMap = sortedDates.withIndex().associate { (i, d) -> d to i.toFloat() }
 
             // My data
@@ -232,11 +247,10 @@ fun ChartLineChart(
                 val entries = myData.sortedBy { it.date }.map { dp ->
                     Entry(dateIndexMap[dp.date] ?: 0f, dp.averageSerieScore.toFloat())
                 }
-                val myDataSet = LineDataSet(entries, chart.context.getString(R.string.charts_my_results)).apply {
+                val myDataSet = ScatterDataSet(entries, chart.context.getString(R.string.charts_my_results)).apply {
                     color = CHART_COLORS[0]
-                    setCircleColor(CHART_COLORS[0])
-                    lineWidth = 2f
-                    circleRadius = 4f
+                    setScatterShape(CHART_SHAPES[0])
+                    scatterShapeSize = 12f
                     setDrawValues(false)
                 }
                 dataSets.add(myDataSet)
@@ -246,14 +260,14 @@ fun ChartLineChart(
             comparedShooters.entries.forEachIndexed { index, (_, info) ->
                 if (info.chartData.isNotEmpty()) {
                     val colorIndex = (index + 1) % CHART_COLORS.size
+                    val shapeIndex = (index + 1) % CHART_SHAPES.size
                     val entries = info.chartData.sortedBy { it.date }.map { dp ->
                         Entry(dateIndexMap[dp.date] ?: 0f, dp.averageSerieScore.toFloat())
                     }
-                    val dataSet = LineDataSet(entries, info.name).apply {
+                    val dataSet = ScatterDataSet(entries, info.name).apply {
                         color = CHART_COLORS[colorIndex]
-                        setCircleColor(CHART_COLORS[colorIndex])
-                        lineWidth = 2f
-                        circleRadius = 3f
+                        setScatterShape(CHART_SHAPES[shapeIndex])
+                        scatterShapeSize = 12f
                         setDrawValues(false)
                     }
                     dataSets.add(dataSet)
@@ -261,7 +275,7 @@ fun ChartLineChart(
             }
 
             if (dataSets.isNotEmpty()) {
-                chart.data = LineData(dataSets.toList())
+                chart.data = ScatterData(dataSets.toList())
                 chart.xAxis.valueFormatter = IndexAxisValueFormatter(sortedDates)
                 chart.xAxis.labelCount = minOf(sortedDates.size, 6)
             } else {

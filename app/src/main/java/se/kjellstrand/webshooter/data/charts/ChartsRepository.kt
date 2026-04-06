@@ -29,6 +29,12 @@ data class ChartData(
     val dataPoints: List<ChartDataPoint>
 )
 
+data class CompetitionMeta(
+    val name: String,
+    val date: String,
+    val resultsType: String
+)
+
 @Singleton
 class ChartsRepository @Inject constructor(
     private val signupsRepository: SignupsRepository,
@@ -85,7 +91,8 @@ class ChartsRepository @Inject constructor(
 
     fun getShooterChartData(
         shooterIds: List<Long>,
-        competitionIds: List<Long>
+        competitionIds: List<Long>,
+        competitionMetadata: Map<Long, CompetitionMeta>
     ): Flow<Resource<Map<Long, ChartData>, UserError>> = flow {
         emit(Resource.Loading(true))
 
@@ -94,6 +101,7 @@ class ChartsRepository @Inject constructor(
 
         for (competitionId in competitionIds) {
             val resultsResult = lastNonLoading(resultsRepository.getPreferCached(competitionId))
+            val meta = competitionMetadata[competitionId]
 
             if (resultsResult is Resource.Success) {
                 for (shooterId in shooterIds) {
@@ -107,11 +115,11 @@ class ChartsRepository @Inject constructor(
                         result[shooterId]?.add(
                             ChartDataPoint(
                                 competitionId = r.competitionsID,
-                                competitionName = "",
-                                date = "",
+                                competitionName = meta?.name ?: "",
+                                date = meta?.date ?: "",
                                 averageSerieScore = avgScore,
                                 weaponClass = r.weaponClass.classname,
-                                resultsType = ""
+                                resultsType = meta?.resultsType ?: ""
                             )
                         )
                     }
