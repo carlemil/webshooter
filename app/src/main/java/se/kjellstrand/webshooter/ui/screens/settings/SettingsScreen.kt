@@ -60,7 +60,7 @@ import se.kjellstrand.webshooter.data.settings.remote.UserProfile
 @Composable
 fun SettingsScreen(
     onLoggedOut: () -> Unit = {},
-    viewModel: SettingsViewModel = hiltViewModel()
+    viewModel: SettingsViewModel = hiltViewModel<SettingsViewModel>()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 

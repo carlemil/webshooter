@@ -49,7 +49,7 @@ class SettingsViewModel @Inject constructor(
                         )
                     }
                     is Resource.Error -> {
-                        _uiState.value = _uiState.value.copy(errorMessage = resource.error.name)
+                        _uiState.value = _uiState.value.copy(errorMessage = resource.error::class.simpleName)
                     }
                 }
             }

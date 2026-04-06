@@ -56,7 +56,7 @@ class ShooterResultViewModel @Inject constructor(
                     is Resource.Error -> {
                         _uiState.value = ShooterResultUiState(
                             isLoading = false,
-                            error = resource.error.name
+                            error = resource.error::class.simpleName
                         )
                     }
 

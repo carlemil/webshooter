@@ -43,7 +43,7 @@ import se.kjellstrand.webshooter.ui.common.ScreenTopBar
 @Composable
 fun ShooterResultScreen(
     navController: NavController,
-    viewModel: ShooterResultViewModel = hiltViewModel()
+    viewModel: ShooterResultViewModel = hiltViewModel<ShooterResultViewModel>()
 ) {
     val uiState by viewModel.uiState.collectAsState()
     Scaffold(

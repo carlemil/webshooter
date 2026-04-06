@@ -54,7 +54,7 @@ class SignupsRepository @Inject constructor(
             if (!hasCached) emit(Resource.Error(UserError.IOError))
         } catch (e: HttpException) {
             Log.w(TAG, "Error", e)
-            if (!hasCached) emit(Resource.Error(UserError.HttpError))
+            if (!hasCached) emit(Resource.Error(UserError.HttpError(e.code())))
         } catch (e: Exception) {
             Log.w(TAG, "Error", e)
             if (!hasCached) emit(Resource.Error(UserError.UnknownError))

@@ -49,7 +49,7 @@ open class ResultsRepository @Inject constructor(
                 return@flow
             } catch (e: HttpException) {
                 Log.w(TAG, "Error", e)
-                if (!hasCached) emit(Resource.Error(UserError.HttpError))
+                if (!hasCached) emit(Resource.Error(UserError.HttpError(e.code())))
                 return@flow
             } catch (e: Exception) {
                 Log.w(TAG, "Error", e)
@@ -85,7 +85,7 @@ open class ResultsRepository @Inject constructor(
                 return@flow
             } catch (e: HttpException) {
                 Log.w(TAG, "Error", e)
-                emit(Resource.Error(UserError.HttpError))
+                emit(Resource.Error(UserError.HttpError(e.code())))
                 return@flow
             } catch (e: Exception) {
                 Log.w(TAG, "Error", e)
@@ -125,7 +125,7 @@ open class ResultsRepository @Inject constructor(
                 return@flow
             } catch (e: HttpException) {
                 Log.w(TAG, "Error", e)
-                emit(Resource.Error(UserError.HttpError))
+                emit(Resource.Error(UserError.HttpError(e.code())))
                 return@flow
             } catch (e: Exception) {
                 Log.w(TAG, "Error", e)

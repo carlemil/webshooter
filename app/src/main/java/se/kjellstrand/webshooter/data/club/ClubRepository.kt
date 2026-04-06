@@ -46,12 +46,12 @@ class ClubRepository @Inject constructor(
                 dao.insert(sanitized.club.toEntity(gson))
                 emit(Resource.Success(sanitized))
             } else {
-                if (cached == null) emit(Resource.Error(UserError.HttpError))
+                if (cached == null) emit(Resource.Error(UserError.HttpError(response.code())))
             }
         } catch (e: IOException) {
             if (cached == null) emit(Resource.Error(UserError.IOError))
         } catch (e: HttpException) {
-            if (cached == null) emit(Resource.Error(UserError.HttpError))
+            if (cached == null) emit(Resource.Error(UserError.HttpError(e.code())))
         } catch (e: Exception) {
             if (cached == null) emit(Resource.Error(UserError.UnknownError))
         }

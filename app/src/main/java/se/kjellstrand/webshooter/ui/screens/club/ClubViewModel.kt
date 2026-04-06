@@ -32,7 +32,7 @@ class ClubViewModel @Inject constructor(
                         it.copy(clubData = resource.data.club, isLoading = false, error = null)
                     }
                     is Resource.Error -> _uiState.update {
-                        it.copy(error = resource.error.name, isLoading = false)
+                        it.copy(error = resource.error::class.simpleName, isLoading = false)
                     }
                     is Resource.Loading -> _uiState.update { it.copy(isLoading = resource.isLoading) }
                 }

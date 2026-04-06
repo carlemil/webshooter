@@ -33,7 +33,7 @@ fun <T> cachedResourceFlow(
         return@flow
     } catch (e: HttpException) {
         Log.w(tag, "Network error", e)
-        if (cachedData == null) emit(Resource.Error(UserError.HttpError))
+        if (cachedData == null) emit(Resource.Error(UserError.HttpError(e.code())))
         return@flow
     } catch (e: Exception) {
         Log.w(tag, "Network error", e)
