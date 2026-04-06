@@ -66,7 +66,7 @@
     <string name="competitions_last_signup_date">Sista anmälningsdag: %1$s</string>
     <string name="competitions_late_signup">Efteranmälan: %1$s</string>
     <string name="competitions_no">Nej</string>
-    <string name="competitions_no_competitions_match_filter">Din aktuella sökning matchar inte någon tävling.</string>
+    <string name="competitions_no_competitions_match_filter">Hittar inte någon tävling.</string>
     <string name="competitions_load_error">Kunde inte ladda tävlingar.</string>
     <string name="competitions_retry">Försök igen</string>
     <string name="competitions_open_for_team_signup">Öppnen för laganmälan: %1$s</string>
@@ -147,6 +147,7 @@
     <string name="weapon_groups">Vapengrupper: </string>
 
     <!-- ### WEB_SHOOTER ### -->
+    <string name="web_shooter_charts">Diagram</string>
     <string name="web_shooter_club">Förening</string>
     <string name="web_shooter_competitions">Tävlingar</string>
     <string name="web_shooter_menu">Meny</string>
