@@ -6,12 +6,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.R
@@ -46,8 +45,8 @@ open class ResultsViewModelImpl @Inject constructor(
     private val _uiState = MutableStateFlow(ResultsUiState(isLoading = true, competitionName = competitionName))
     override val uiState: StateFlow<ResultsUiState> = _uiState.asStateFlow()
 
-    private val _resultsEvent = MutableSharedFlow<ResultsEvent>()
-    override val resultsEvent: SharedFlow<ResultsEvent> = _resultsEvent.asSharedFlow()
+    private val _resultsEvent = Channel<ResultsEvent>(Channel.BUFFERED)
+    override val resultsEvent = _resultsEvent.receiveAsFlow()
 
     init {
         getResults(competitionId)
@@ -78,7 +77,8 @@ open class ResultsViewModelImpl @Inject constructor(
                 when (resource) {
                     is Resource.Success -> {
                         if (resource.data.results.isEmpty()) {
-                            _resultsEvent.emit(ResultsEvent.Empty)
+                            _uiState.update { it.copy(isLoading = false) }
+                            _resultsEvent.send(ResultsEvent.Empty)
                         } else {
                             _uiState.update { current ->
                                 current.copy(

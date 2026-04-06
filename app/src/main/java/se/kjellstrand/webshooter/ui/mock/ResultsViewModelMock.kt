@@ -1,10 +1,10 @@
 package se.kjellstrand.webshooter.ui.mock
 
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.emptyFlow
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.ui.screens.results.GroupingMode
 import se.kjellstrand.webshooter.ui.screens.results.Mode
@@ -30,7 +30,7 @@ class ResultsViewModelMock() : ViewModel(),
                 )
             )
         }
-    override val resultsEvent: SharedFlow<ResultsEvent> = MutableSharedFlow()
+    override val resultsEvent: Flow<ResultsEvent> = emptyFlow()
 
     override fun setMode(mode: Mode) {
         TODO("Not yet implemented")
