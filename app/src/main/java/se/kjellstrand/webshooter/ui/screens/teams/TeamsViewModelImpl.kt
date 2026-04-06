@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.competitionteams.CompetitionTeamsRepository
+import se.kjellstrand.webshooter.data.competitionteams.remote.TeamEntry
 import se.kjellstrand.webshooter.data.settings.SettingsRepository
 import javax.inject.Inject
 
@@ -34,7 +35,11 @@ class TeamsViewModelImpl @Inject constructor(
         viewModelScope.launch {
             settingsRepository.getUserProfile().collect { resource ->
                 if (resource is Resource.Success) {
-                    _uiState.value = _uiState.value.copy(currentUserId = resource.data.userId)
+                    val userId = resource.data.userId
+                    _uiState.value = _uiState.value.copy(
+                        currentUserId = userId,
+                        teams = sortTeams(_uiState.value.teams, userId)
+                    )
                 }
             }
         }
@@ -46,12 +51,20 @@ class TeamsViewModelImpl @Inject constructor(
                 when (resource) {
                     is Resource.Loading -> _uiState.value = _uiState.value.copy(isLoading = true)
                     is Resource.Success -> _uiState.value = _uiState.value.copy(
-                        teams = resource.data.teams.sortedBy { it.name },
+                        teams = sortTeams(resource.data.teams, _uiState.value.currentUserId),
                         isLoading = false
                     )
                     is Resource.Error -> _uiState.value = _uiState.value.copy(isLoading = false)
                 }
             }
         }
+    }
+
+    private fun sortTeams(teams: List<TeamEntry>, currentUserId: Long?): List<TeamEntry> {
+        return teams.sortedWith(
+            compareByDescending<TeamEntry> { team ->
+                currentUserId != null && team.signups.any { it.user.userId == currentUserId }
+            }.thenBy { it.name }
+        )
     }
 }
