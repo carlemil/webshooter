@@ -3,7 +3,7 @@ package se.kjellstrand.webshooter.data.charts
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.lastOrNull
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
 import se.kjellstrand.webshooter.data.mysignups.SignupsRepository
@@ -46,10 +46,10 @@ class ChartsRepository @Inject constructor(
     fun getChartData(userId: Long): Flow<Resource<ChartData, UserError>> = flow {
         emit(Resource.Loading(true))
 
-        val signupsResult = signupsRepository.getSignups().first { it !is Resource.Loading }
+        val signupsResult = lastNonLoading(signupsRepository.getSignups())
 
-        if (signupsResult is Resource.Error) {
-            emit(Resource.Error(signupsResult.error))
+        if (signupsResult == null || signupsResult is Resource.Error) {
+            emit(Resource.Error((signupsResult as? Resource.Error)?.error ?: UserError.UnknownError))
             emit(Resource.Loading(false))
             return@flow
         }
@@ -69,7 +69,7 @@ class ChartsRepository @Inject constructor(
                 resultsRepository.getPreferCached(competitionId)
             }
 
-            val resultsResult = resultsFlow.first { it !is Resource.Loading }
+            val resultsResult = lastNonLoading(resultsFlow)
 
             if (resultsResult is Resource.Success) {
                 val shooterResults = resultsResult.data.results.filter {
@@ -93,8 +93,7 @@ class ChartsRepository @Inject constructor(
         shooterIds.forEach { result[it] = mutableListOf() }
 
         for (competitionId in competitionIds) {
-            val resultsResult = resultsRepository.getPreferCached(competitionId)
-                .first { it !is Resource.Loading }
+            val resultsResult = lastNonLoading(resultsRepository.getPreferCached(competitionId))
 
             if (resultsResult is Resource.Success) {
                 for (shooterId in shooterIds) {
@@ -145,6 +144,18 @@ class ChartsRepository @Inject constructor(
                 resultsType = signup.competition.resultsType
             )
         }
+    }
+
+    private suspend fun <T, E : se.kjellstrand.webshooter.data.common.Error> lastNonLoading(
+        flow: Flow<Resource<T, E>>
+    ): Resource<T, E>? {
+        var last: Resource<T, E>? = null
+        flow.collect { resource ->
+            if (resource !is Resource.Loading) {
+                last = resource
+            }
+        }
+        return last
     }
 
     private fun isCompetitionToday(dateStr: String): Boolean {
