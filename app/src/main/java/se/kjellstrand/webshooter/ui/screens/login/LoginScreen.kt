@@ -45,7 +45,7 @@ import se.kjellstrand.webshooter.ui.navigation.Screen
 @Composable
 fun LoginScreen(
     navController: NavController,
-    loginViewModel: LoginViewModel = hiltViewModel<LoginViewModel>()
+    loginViewModel: LoginViewModel = hiltViewModel<LoginViewModelImpl>()
 ) {
     val uiState by loginViewModel.uiState.collectAsState()
     val eventFlow = loginViewModel.eventFlow
@@ -151,11 +151,39 @@ fun LoginScreen(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Login - Default")
 @Composable
 fun LoginScreenPreview() {
     MaterialTheme {
-        val navController = rememberNavController()
-        LoginScreen(navController)
+        LoginScreen(
+            navController = rememberNavController(),
+            loginViewModel = se.kjellstrand.webshooter.ui.mock.LoginViewModelMock()
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Login - Loading")
+@Composable
+fun LoginScreenLoadingPreview() {
+    MaterialTheme {
+        LoginScreen(
+            navController = rememberNavController(),
+            loginViewModel = se.kjellstrand.webshooter.ui.mock.LoginViewModelMock(
+                LoginUiState(isLoading = true, autoLoginAttempted = true)
+            )
+        )
+    }
+}
+
+@Preview(showBackground = true, name = "Login - Error")
+@Composable
+fun LoginScreenErrorPreview() {
+    MaterialTheme {
+        LoginScreen(
+            navController = rememberNavController(),
+            loginViewModel = se.kjellstrand.webshooter.ui.mock.LoginViewModelMock(
+                LoginUiState(errorMessage = "Invalid credentials", autoLoginAttempted = true)
+            )
+        )
     }
 }
