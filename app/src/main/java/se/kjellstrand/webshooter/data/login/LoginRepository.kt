@@ -8,6 +8,7 @@ import retrofit2.HttpException
 import retrofit2.Response
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
+import se.kjellstrand.webshooter.BuildConfig
 import se.kjellstrand.webshooter.data.AuthTokenManager
 import se.kjellstrand.webshooter.data.login.remote.LoginRemoteDataSource
 import se.kjellstrand.webshooter.data.login.remote.LoginRequest
@@ -33,12 +34,10 @@ open class LoginRepository @Inject constructor(
             val result = try {
                 loginRemoteDataSource.login(
                     LoginRequest(
-                        1,
-                        "REMOVED-CLIENT-SECRET",
-                        email,
-                        "password",
-                        password,
-                        username
+                        client_secret = BuildConfig.CLIENT_SECRET,
+                        email = email,
+                        password = password,
+                        username = username
                     )
                 )
             } catch (e: IOException) {

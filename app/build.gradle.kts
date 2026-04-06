@@ -69,7 +69,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -93,6 +94,17 @@ android {
         create("prod") {
             dimension = "server"
             buildConfigField("String", "BASE_URL", "\"https://webshooter.se/\"")
+
+            val propsFile = rootProject.file("local.properties")
+            val clientSecret = if (propsFile.exists()) {
+                propsFile.readLines()
+                    .firstOrNull { it.startsWith("CLIENT_SECRET=") }
+                    ?.substringAfter("=")?.trim()
+            } else null
+            buildConfigField(
+                "String", "CLIENT_SECRET",
+                "\"${clientSecret ?: "REMOVED-CLIENT-SECRET"}\""
+            )
         }
     }
 
