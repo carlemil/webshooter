@@ -40,6 +40,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -64,7 +65,7 @@ fun CompetitionSignupsScreen(
     viewModel: SignupsViewModel = hiltViewModel<SignupsViewModelImpl>()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    var isFilterSheetOpen by remember { mutableStateOf(false) }
+    var isFilterSheetOpen by rememberSaveable { mutableStateOf(false) }
 
     val displayed = uiState.filteredAndSorted
     val currentUserClub = uiState.currentUserClubName

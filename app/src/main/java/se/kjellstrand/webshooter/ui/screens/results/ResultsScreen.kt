@@ -46,6 +46,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -90,7 +91,7 @@ fun CompetitionResultsScreen(
     navController: NavController
 ) {
     val resultsUiState by resultsViewModel.uiState.collectAsState()
-    var isFilterBottomSheetOpen by remember { mutableStateOf(false) }
+    var isFilterBottomSheetOpen by rememberSaveable { mutableStateOf(false) }
     val context = LocalContext.current
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
@@ -104,7 +105,7 @@ fun CompetitionResultsScreen(
     val refreshIntervalSeconds = 5 * 60
     var secondsLeft by remember { mutableIntStateOf(refreshIntervalSeconds) }
     var refreshTrigger by remember { mutableIntStateOf(0) }
-    var isRefreshing by remember { mutableStateOf(false) }
+    var isRefreshing by rememberSaveable { mutableStateOf(false) }
     val refreshVersion = resultsUiState.refreshVersion
     var lastSeenRefreshVersion by remember { mutableIntStateOf(refreshVersion) }
 
