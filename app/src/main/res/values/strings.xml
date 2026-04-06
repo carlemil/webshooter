@@ -146,6 +146,15 @@
     <string name="weapon_group">Vapengrupp: </string>
     <string name="weapon_groups">Vapengrupper: </string>
 
+    <!-- ### CHARTS ### -->
+    <string name="charts_add_shooter">Lägg till skytt</string>
+    <string name="charts_search_shooter">Sök skytt</string>
+    <string name="charts_no_data">Ingen data</string>
+    <string name="charts_close">Stäng</string>
+    <string name="charts_remove">Ta bort</string>
+    <string name="charts_my_results">Mina resultat</string>
+    <string name="charts_average_score">Medelpoäng per serie</string>
+
     <!-- ### WEB_SHOOTER ### -->
     <string name="web_shooter_charts">Diagram</string>
     <string name="web_shooter_club">Förening</string>
