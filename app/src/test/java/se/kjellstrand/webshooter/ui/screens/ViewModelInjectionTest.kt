@@ -39,8 +39,8 @@ class ViewModelInjectionTest {
     fun `ClubScreen uses explicit hiltViewModel type`() {
         val source = File("src/main/java/se/kjellstrand/webshooter/ui/screens/club/ClubScreen.kt").readText()
         assertTrue(
-            "ClubScreen should use hiltViewModel<ClubViewModel>()",
-            source.contains("hiltViewModel<ClubViewModel>()")
+            "ClubScreen should use hiltViewModel<ClubViewModelImpl>()",
+            source.contains("hiltViewModel<ClubViewModelImpl>()")
         )
     }
 
