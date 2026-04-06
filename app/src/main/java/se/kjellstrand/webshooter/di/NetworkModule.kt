@@ -50,7 +50,7 @@ class NetworkModule {
         okHttpClient.addInterceptor(authInterceptor)
         okHttpClient.addInterceptor(cookieHeadersInterceptor)
         okHttpClient.addInterceptor(HttpLoggingInterceptor().apply {
-            level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BASIC else HttpLoggingInterceptor.Level.NONE
+            level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
         })
         okHttpClient.addInterceptor(mockInterceptor)
         okHttpClient.authenticator(tokenAuthenticator)
