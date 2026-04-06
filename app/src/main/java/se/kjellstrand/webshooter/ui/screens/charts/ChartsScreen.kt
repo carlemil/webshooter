@@ -2,6 +2,7 @@ package se.kjellstrand.webshooter.ui.screens.charts
 
 import android.graphics.Color as AndroidColor
 import androidx.compose.foundation.clickable
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -359,4 +360,74 @@ private fun formatResultsType(type: String): String {
         "pointfield" -> "Poängfält"
         else -> type.replaceFirstChar { it.uppercase() }
     }
+}
+
+@Preview(showBackground = true, name = "Charts - Default with data")
+@Composable
+fun ChartsScreenDefaultPreview() {
+    val mock = se.kjellstrand.webshooter.ui.mock.MockCharts()
+    ChartsScreen(
+        viewModel = se.kjellstrand.webshooter.ui.mock.ChartsViewModelMock(
+            ChartsUiState(
+                chartData = mock.allChartData,
+                availableResultsTypes = mock.availableResultsTypes,
+                availableWeaponClasses = mock.availableWeaponClasses,
+                selectedResultsType = "precision",
+                clubMembers = mock.clubMembers
+            )
+        )
+    )
+}
+
+@Preview(showBackground = true, name = "Charts - Loading")
+@Composable
+fun ChartsScreenLoadingPreview() {
+    ChartsScreen(
+        viewModel = se.kjellstrand.webshooter.ui.mock.ChartsViewModelMock(
+            ChartsUiState(isLoading = true)
+        )
+    )
+}
+
+@Preview(showBackground = true, name = "Charts - Error")
+@Composable
+fun ChartsScreenErrorPreview() {
+    ChartsScreen(
+        viewModel = se.kjellstrand.webshooter.ui.mock.ChartsViewModelMock(
+            ChartsUiState(hasError = true)
+        )
+    )
+}
+
+@Preview(showBackground = true, name = "Charts - Empty")
+@Composable
+fun ChartsScreenEmptyPreview() {
+    val mock = se.kjellstrand.webshooter.ui.mock.MockCharts()
+    ChartsScreen(
+        viewModel = se.kjellstrand.webshooter.ui.mock.ChartsViewModelMock(
+            ChartsUiState(
+                chartData = emptyMap(),
+                availableResultsTypes = mock.availableResultsTypes,
+                selectedResultsType = "precision"
+            )
+        )
+    )
+}
+
+@Preview(showBackground = true, name = "Charts - With compared shooters")
+@Composable
+fun ChartsScreenComparedPreview() {
+    val mock = se.kjellstrand.webshooter.ui.mock.MockCharts()
+    ChartsScreen(
+        viewModel = se.kjellstrand.webshooter.ui.mock.ChartsViewModelMock(
+            ChartsUiState(
+                chartData = mock.allChartData,
+                comparedShooters = mock.comparedShooters,
+                availableResultsTypes = mock.availableResultsTypes,
+                availableWeaponClasses = mock.availableWeaponClasses,
+                selectedResultsType = "precision",
+                clubMembers = mock.clubMembers
+            )
+        )
+    )
 }
