@@ -294,7 +294,16 @@ fun ResultsList(
                     && resultsUiState.allWeaponGroups.isNotEmpty()
 
             if (noneSelected) {
-                // empty — nothing to show
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(stringResource(R.string.results_no_groups_selected))
+                    }
+                }
             } else if (resultsUiState.isLoading) {
                 item {
                     Box(
@@ -583,7 +592,7 @@ fun GroupingAndFilterBottomSheet(
         sheetState = bottomSheetState,
         content = {
             Column(modifier = Modifier.padding(16.dp)) {
-                Text("Gruppering", style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(R.string.results_grouping), style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(4.dp))
                 GroupingMode.entries.forEach { mode ->
                     Row(
@@ -598,10 +607,10 @@ fun GroupingAndFilterBottomSheet(
                         )
                         Text(
                             text = when (mode) {
-                                GroupingMode.WEAPON_CLASS -> "Vapenklass"
-                                GroupingMode.CLUB -> "Klubb"
-                                GroupingMode.MEDL -> "Medl"
-                                GroupingMode.NONE -> "Ingen"
+                                GroupingMode.WEAPON_CLASS -> stringResource(R.string.results_grouping_weapon_class)
+                                GroupingMode.CLUB -> stringResource(R.string.results_grouping_club)
+                                GroupingMode.MEDL -> stringResource(R.string.results_grouping_medl)
+                                GroupingMode.NONE -> stringResource(R.string.results_grouping_none)
                             }
                         )
                     }

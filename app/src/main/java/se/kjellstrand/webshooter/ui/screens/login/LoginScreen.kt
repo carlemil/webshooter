@@ -115,7 +115,7 @@ fun LoginScreen(
                         Icons.Default.VisibilityOff
 
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(imageVector = image, contentDescription = null)
+                        Icon(imageVector = image, contentDescription = stringResource(R.string.toggle_password_visibility))
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),

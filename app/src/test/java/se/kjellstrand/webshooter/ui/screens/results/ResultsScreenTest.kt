@@ -28,6 +28,46 @@ class ResultsScreenTest {
         )
     }
 
+    @Test
+    fun `GroupingAndFilterBottomSheet does not contain hardcoded Gruppering`() {
+        val source = sourceFile.readText()
+        assertFalse(
+            "Should use stringResource instead of hardcoded 'Gruppering'",
+            source.contains("Text(\"Gruppering\"")
+        )
+    }
+
+    @Test
+    fun `GroupingMode labels do not contain hardcoded Swedish strings`() {
+        val source = sourceFile.readText()
+        val bottomSheetSection = source.substringAfter("GroupingAndFilterBottomSheet")
+        assertFalse(
+            "Should use stringResource instead of hardcoded 'Vapenklass'",
+            bottomSheetSection.contains("\"Vapenklass\"")
+        )
+        assertFalse(
+            "Should use stringResource instead of hardcoded 'Klubb'",
+            bottomSheetSection.contains("\"Klubb\"")
+        )
+        assertFalse(
+            "Should use stringResource instead of hardcoded 'Medl'",
+            bottomSheetSection.contains("\"Medl\"")
+        )
+        assertFalse(
+            "Should use stringResource instead of hardcoded 'Ingen'",
+            bottomSheetSection.contains("\"Ingen\"")
+        )
+    }
+
+    @Test
+    fun `GroupingMode labels use stringResource`() {
+        val source = sourceFile.readText()
+        assertTrue(
+            "GroupingMode labels should use stringResource for localization",
+            source.contains("R.string.results_grouping")
+        )
+    }
+
     // --- Guard tests (should PASS before and after fix) ---
 
     @Test
