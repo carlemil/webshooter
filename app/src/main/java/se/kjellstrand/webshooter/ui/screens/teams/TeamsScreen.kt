@@ -36,6 +36,7 @@ import androidx.navigation.NavController
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitionteams.remote.TeamEntry
 import se.kjellstrand.webshooter.data.competitionteams.remote.TeamSignupEntry
+import se.kjellstrand.webshooter.ui.common.GroupCardHeader
 import se.kjellstrand.webshooter.ui.common.ScreenTopBar
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
@@ -135,14 +136,7 @@ fun CompetitionTeamsScreen(
 @Composable
 private fun TeamHeaderItem(team: TeamEntry) {
     val uniqueShooters = team.signups.map { it.user.userId }.distinct().size
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 8.dp)
-            .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-            .padding(start = 12.dp, end = 12.dp, top = 12.dp)
-    ) {
+    GroupCardHeader {
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,

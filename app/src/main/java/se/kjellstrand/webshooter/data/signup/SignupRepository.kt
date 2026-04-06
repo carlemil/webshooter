@@ -32,12 +32,12 @@ class SignupRepository @Inject constructor(
             if (response.isSuccessful) {
                 emit(Resource.Success(Unit))
             } else {
-                emit(Resource.Error(UserError.HttpError))
+                emit(Resource.Error(UserError.HttpError(response.code())))
             }
         } catch (e: IOException) {
             emit(Resource.Error(UserError.IOError))
         } catch (e: HttpException) {
-            emit(Resource.Error(UserError.HttpError))
+            emit(Resource.Error(UserError.HttpError(e.code())))
         } catch (e: Exception) {
             emit(Resource.Error(UserError.UnknownError))
         }
@@ -51,12 +51,12 @@ class SignupRepository @Inject constructor(
             if (response.isSuccessful) {
                 emit(Resource.Success(Unit))
             } else {
-                emit(Resource.Error(UserError.HttpError))
+                emit(Resource.Error(UserError.HttpError(response.code())))
             }
         } catch (e: IOException) {
             emit(Resource.Error(UserError.IOError))
         } catch (e: HttpException) {
-            emit(Resource.Error(UserError.HttpError))
+            emit(Resource.Error(UserError.HttpError(e.code())))
         } catch (e: Exception) {
             emit(Resource.Error(UserError.UnknownError))
         }

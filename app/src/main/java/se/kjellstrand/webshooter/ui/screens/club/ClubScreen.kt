@@ -34,7 +34,7 @@ import se.kjellstrand.webshooter.data.club.remote.ClubData
 import se.kjellstrand.webshooter.data.club.remote.ClubMember
 
 @Composable
-fun ClubScreen(viewModel: ClubViewModel = hiltViewModel()) {
+fun ClubScreen(viewModel: ClubViewModel = hiltViewModel<ClubViewModel>()) {
     val uiState by viewModel.uiState.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {

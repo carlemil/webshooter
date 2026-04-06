@@ -46,12 +46,12 @@ class SettingsRepository @Inject constructor(
                 dao.insert(profile.toEntity(gson))
                 emit(Resource.Success(profile))
             } else {
-                if (cached == null) emit(Resource.Error(UserError.HttpError))
+                if (cached == null) emit(Resource.Error(UserError.HttpError(response.code())))
             }
         } catch (e: IOException) {
             if (cached == null) emit(Resource.Error(UserError.IOError))
         } catch (e: HttpException) {
-            if (cached == null) emit(Resource.Error(UserError.HttpError))
+            if (cached == null) emit(Resource.Error(UserError.HttpError(e.code())))
         } catch (e: Exception) {
             if (cached == null) emit(Resource.Error(UserError.UnknownError))
         }
@@ -108,12 +108,12 @@ class SettingsRepository @Inject constructor(
                 dao.insert(updated.toEntity(gson))
                 emit(Resource.Success(updated))
             } else {
-                emit(Resource.Error(UserError.HttpError))
+                emit(Resource.Error(UserError.HttpError(response.code())))
             }
         } catch (e: IOException) {
             emit(Resource.Error(UserError.IOError))
         } catch (e: HttpException) {
-            emit(Resource.Error(UserError.HttpError))
+            emit(Resource.Error(UserError.HttpError(e.code())))
         } catch (e: Exception) {
             emit(Resource.Error(UserError.UnknownError))
         }
@@ -136,12 +136,12 @@ class SettingsRepository @Inject constructor(
             if (response.isSuccessful) {
                 emit(Resource.Success(Unit))
             } else {
-                emit(Resource.Error(UserError.HttpError))
+                emit(Resource.Error(UserError.HttpError(response.code())))
             }
         } catch (e: IOException) {
             emit(Resource.Error(UserError.IOError))
         } catch (e: HttpException) {
-            emit(Resource.Error(UserError.HttpError))
+            emit(Resource.Error(UserError.HttpError(e.code())))
         } catch (e: Exception) {
             emit(Resource.Error(UserError.UnknownError))
         }

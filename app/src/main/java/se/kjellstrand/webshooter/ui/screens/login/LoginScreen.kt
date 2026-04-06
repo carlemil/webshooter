@@ -45,7 +45,7 @@ import se.kjellstrand.webshooter.ui.navigation.Screen
 @Composable
 fun LoginScreen(
     navController: NavController,
-    loginViewModel: LoginViewModel = hiltViewModel()
+    loginViewModel: LoginViewModel = hiltViewModel<LoginViewModel>()
 ) {
     val uiState by loginViewModel.uiState.collectAsState()
     val eventFlow = loginViewModel.eventFlow

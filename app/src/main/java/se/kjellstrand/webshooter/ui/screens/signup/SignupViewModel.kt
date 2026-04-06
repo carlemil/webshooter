@@ -52,7 +52,7 @@ class SignupViewModel @Inject constructor(
                 when (resource) {
                     is Resource.Loading -> _uiState.update { it.copy(isLoading = resource.isLoading) }
                     is Resource.Success -> _uiState.update { it.copy(isSuccess = true, isLoading = false, error = null) }
-                    is Resource.Error -> _uiState.update { it.copy(error = resource.error.name, isLoading = false) }
+                    is Resource.Error -> _uiState.update { it.copy(error = resource.error::class.simpleName, isLoading = false) }
                 }
             }
         }
@@ -70,7 +70,7 @@ class SignupViewModel @Inject constructor(
                 when (resource) {
                     is Resource.Loading -> _uiState.update { it.copy(isLoading = resource.isLoading) }
                     is Resource.Success -> _uiState.update { it.copy(isSuccess = true, isLoading = false, error = null) }
-                    is Resource.Error -> _uiState.update { it.copy(error = resource.error.name, isLoading = false) }
+                    is Resource.Error -> _uiState.update { it.copy(error = resource.error::class.simpleName, isLoading = false) }
                 }
             }
         }

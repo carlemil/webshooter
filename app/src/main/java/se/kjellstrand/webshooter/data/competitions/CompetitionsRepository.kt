@@ -76,7 +76,7 @@ open class CompetitionsRepository @Inject constructor(
                 return@flow
             } catch (e: HttpException) {
                 Log.w(TAG, "Error", e)
-                emit(Resource.Error(UserError.HttpError))
+                emit(Resource.Error(UserError.HttpError(e.code())))
                 return@flow
             } catch (e: Exception) {
                 Log.w(TAG, "Error", e)

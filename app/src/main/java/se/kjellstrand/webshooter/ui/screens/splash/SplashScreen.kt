@@ -26,7 +26,7 @@ import se.kjellstrand.webshooter.ui.navigation.Screen
 @Composable
 fun SplashScreen(
     navController: NavController,
-    viewModel: SplashViewModel = hiltViewModel()
+    viewModel: SplashViewModel = hiltViewModel<SplashViewModel>()
 ) {
     val alpha = remember { Animatable(0f) }
 

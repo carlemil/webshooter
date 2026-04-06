@@ -43,6 +43,7 @@ import androidx.navigation.NavController
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitionpatrols.remote.PatrolEntry
 import se.kjellstrand.webshooter.data.competitionpatrols.remote.PatrolSignupEntry
+import se.kjellstrand.webshooter.ui.common.GroupCardHeader
 import se.kjellstrand.webshooter.ui.common.ScreenTopBar
 import se.kjellstrand.webshooter.ui.navigation.safePopBackStack
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
@@ -147,14 +148,7 @@ private fun PatrolHeaderItem(patrol: PatrolEntry, isFalt: Boolean) {
         .distinct()
         .sorted()
 
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 8.dp)
-            .clip(RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp))
-            .background(MaterialTheme.colorScheme.surfaceContainerHigh)
-            .padding(start = 12.dp, end = 12.dp, top = 12.dp)
-    ) {
+    GroupCardHeader {
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
