@@ -37,11 +37,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitionpatrols.remote.PatrolEntry
+import se.kjellstrand.webshooter.ui.mock.PatrolsViewModelMock
 import se.kjellstrand.webshooter.data.competitionpatrols.remote.PatrolSignupEntry
 import se.kjellstrand.webshooter.ui.common.GroupCardHeader
 import se.kjellstrand.webshooter.ui.common.ScreenTopBar
@@ -272,4 +275,31 @@ private fun SignupRow(signup: PatrolSignupEntry, isCurrentUser: Boolean) {
             )
         }
     }
+}
+
+@Preview(showBackground = true, name = "Patrols - Loaded")
+@Composable
+fun PatrolsScreenPreview() {
+    CompetitionPatrolsScreen(
+        navController = rememberNavController(),
+        viewModel = PatrolsViewModelMock()
+    )
+}
+
+@Preview(showBackground = true, name = "Patrols - Loading")
+@Composable
+fun PatrolsScreenLoadingPreview() {
+    CompetitionPatrolsScreen(
+        navController = rememberNavController(),
+        viewModel = PatrolsViewModelMock(CompetitionPatrolsUiState(isLoading = true))
+    )
+}
+
+@Preview(showBackground = true, name = "Patrols - Empty")
+@Composable
+fun PatrolsScreenEmptyPreview() {
+    CompetitionPatrolsScreen(
+        navController = rememberNavController(),
+        viewModel = PatrolsViewModelMock(CompetitionPatrolsUiState())
+    )
 }

@@ -782,11 +782,29 @@ fun ResultItem(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Results - Loaded")
 @Composable
 fun ResultsScreenPreview() {
     CompetitionResultsScreen(
         resultsViewModel = ResultsViewModelMock(),
+        navController = NavController(LocalContext.current)
+    )
+}
+
+@Preview(showBackground = true, name = "Results - Loading")
+@Composable
+fun ResultsScreenLoadingPreview() {
+    CompetitionResultsScreen(
+        resultsViewModel = ResultsViewModelMock(ResultsUiState(isLoading = true)),
+        navController = NavController(LocalContext.current)
+    )
+}
+
+@Preview(showBackground = true, name = "Results - Empty")
+@Composable
+fun ResultsScreenEmptyPreview() {
+    CompetitionResultsScreen(
+        resultsViewModel = ResultsViewModelMock(ResultsUiState()),
         navController = NavController(LocalContext.current)
     )
 }

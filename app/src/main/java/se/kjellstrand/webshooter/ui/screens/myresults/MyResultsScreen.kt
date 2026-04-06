@@ -37,10 +37,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.mysignups.remote.SignupEntry
+import se.kjellstrand.webshooter.ui.mock.MyResultsViewModelMock
 
 @Composable
 fun MyEntriesScreen(
@@ -346,4 +348,22 @@ private fun RowScope.GridCell(
         softWrap = false,
         modifier = Modifier.weight(weight)
     )
+}
+
+@Preview(showBackground = true, name = "MyResults - Loaded")
+@Composable
+fun MyEntriesScreenPreview() {
+    MyEntriesScreen(viewModel = MyResultsViewModelMock())
+}
+
+@Preview(showBackground = true, name = "MyResults - Loading")
+@Composable
+fun MyEntriesScreenLoadingPreview() {
+    MyEntriesScreen(viewModel = MyResultsViewModelMock(MyResultsUiState(isLoading = true)))
+}
+
+@Preview(showBackground = true, name = "MyResults - Empty")
+@Composable
+fun MyEntriesScreenEmptyPreview() {
+    MyEntriesScreen(viewModel = MyResultsViewModelMock(MyResultsUiState()))
 }

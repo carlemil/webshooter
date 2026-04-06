@@ -27,12 +27,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import se.kjellstrand.webshooter.ui.navigation.safePopBackStack
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
+import se.kjellstrand.webshooter.ui.mock.MockResults
+import se.kjellstrand.webshooter.ui.mock.ShooterResultViewModelMock
+import se.kjellstrand.webshooter.ui.screens.results.ResultsViewModelImpl
 import se.kjellstrand.webshooter.data.results.remote.StationResult
 import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.HeaderText
 import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.ItemText
@@ -222,4 +227,37 @@ fun StationResultsGrid(stationResults: List<StationResult>, resultsType: Results
         Spacer(modifier = Modifier.height(16.dp))
     }
 
+}
+
+@Preview(showBackground = true, name = "ShooterResult - Loaded")
+@Composable
+fun ShooterResultScreenPreview() {
+    val mockResults = MockResults().results
+    ShooterResultScreen(
+        navController = rememberNavController(),
+        viewModel = ShooterResultViewModelMock(ShooterResultUiState(
+            isLoading = false,
+            shooterName = "Erik Svensson",
+            results = mockResults,
+            groupedResults = ResultsViewModelImpl.groupResults(mockResults, ResultsType.FIELD)
+        ))
+    )
+}
+
+@Preview(showBackground = true, name = "ShooterResult - Loading")
+@Composable
+fun ShooterResultScreenLoadingPreview() {
+    ShooterResultScreen(
+        navController = rememberNavController(),
+        viewModel = ShooterResultViewModelMock(ShooterResultUiState(isLoading = true))
+    )
+}
+
+@Preview(showBackground = true, name = "ShooterResult - Error")
+@Composable
+fun ShooterResultScreenErrorPreview() {
+    ShooterResultScreen(
+        navController = rememberNavController(),
+        viewModel = ShooterResultViewModelMock(ShooterResultUiState(isLoading = false, error = "NetworkError"))
+    )
 }
