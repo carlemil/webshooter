@@ -91,20 +91,24 @@ android {
     }
 
     productFlavors {
+        val propsFile = rootProject.file("local.properties")
+        val clientSecret = if (propsFile.exists()) {
+            propsFile.readLines()
+                .firstOrNull { it.startsWith("CLIENT_SECRET=") }
+                ?.substringAfter("=")?.trim()
+        } else null
+        val secretField = "\"${clientSecret ?: "52FphTYzOrmuqH30ltL7LrBzhSEURIJiMFNp6Qt0"}\""
+
         create("prod") {
             dimension = "server"
             buildConfigField("String", "BASE_URL", "\"https://webshooter.se/\"")
-
-            val propsFile = rootProject.file("local.properties")
-            val clientSecret = if (propsFile.exists()) {
-                propsFile.readLines()
-                    .firstOrNull { it.startsWith("CLIENT_SECRET=") }
-                    ?.substringAfter("=")?.trim()
-            } else null
-            buildConfigField(
-                "String", "CLIENT_SECRET",
-                "\"${clientSecret ?: "52FphTYzOrmuqH30ltL7LrBzhSEURIJiMFNp6Qt0"}\""
-            )
+            buildConfigField("String", "CLIENT_SECRET", secretField)
+        }
+        create("staging") {
+            dimension = "server"
+            applicationIdSuffix = ".staging"
+            buildConfigField("String", "BASE_URL", "\"https://staging.webshooter.se/\"")
+            buildConfigField("String", "CLIENT_SECRET", secretField)
         }
     }
 
@@ -120,10 +124,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.3"
     }
 
     kotlinOptions {
