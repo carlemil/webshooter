@@ -2,8 +2,8 @@ package se.kjellstrand.webshooter.ui.screens.competitions
 
 import android.content.Intent
 import android.provider.CalendarContract
-import androidx.compose.foundation.clickable
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,15 +21,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.ui.res.painterResource
-import androidx.compose.material.icons.filled.FastForward
-import androidx.compose.material.icons.filled.FilterList
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
-import androidx.compose.material.icons.filled.Map
-import androidx.compose.material.icons.filled.Today
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -42,9 +36,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -55,11 +50,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
-import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.integerResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -68,13 +63,14 @@ import androidx.core.net.toUri
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import se.kjellstrand.webshooter.ui.navigation.safeNavigate
+import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.common.CompetitionType
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadges
 import se.kjellstrand.webshooter.ui.mock.CompetitionsViewModelMock
 import se.kjellstrand.webshooter.ui.navigation.Screen
+import se.kjellstrand.webshooter.ui.navigation.safeNavigate
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -153,7 +149,10 @@ fun CompetitionsScreen(
                     containerColor = if (ffEnabled) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
                     contentColor = if (ffEnabled) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
                 ) {
-                    Icon(painter = painterResource(R.drawable.fast_forward), contentDescription = "Scroll to next signed-up competition")
+                    Icon(
+                        painter = painterResource(R.drawable.fast_forward),
+                        contentDescription = "Scroll to next signed-up competition"
+                    )
                 }
                 SmallFloatingActionButton(
                     onClick = {
@@ -164,10 +163,16 @@ fun CompetitionsScreen(
                     containerColor = if (upcomingIndex >= 0) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.surfaceVariant,
                     contentColor = if (upcomingIndex >= 0) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
                 ) {
-                    Icon(painter = painterResource(R.drawable.event_upcoming), contentDescription = "Scroll to next upcoming competition")
+                    Icon(
+                        painter = painterResource(R.drawable.event_upcoming),
+                        contentDescription = "Scroll to next upcoming competition"
+                    )
                 }
                 FloatingActionButton(onClick = { isFilterBottomSheetOpen = true }) {
-                    Icon(painter = painterResource(R.drawable.filter_list), contentDescription = "Open Filters")
+                    Icon(
+                        painter = painterResource(R.drawable.filter_list),
+                        contentDescription = "Open Filters"
+                    )
                 }
             }
         }
@@ -183,7 +188,7 @@ fun CompetitionsScreen(
                     state = listState,
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(
-                        top = paddingValues.calculateTopPadding() + 8.dp,
+                        top = 8.dp,
                         start = 16.dp,
                         end = 16.dp,
                         bottom = paddingValues.calculateBottomPadding()
@@ -419,7 +424,8 @@ fun CompetitionItem(
         val signedUpClasses = competition.userSignups
             .mapNotNull { weaponClassMap[it.weaponClassesID] }
             .distinct()
-        val classesStr = if (signedUpClasses.isNotEmpty()) " - ${signedUpClasses.joinToString(", ")}" else ""
+        val classesStr =
+            if (signedUpClasses.isNotEmpty()) " - ${signedUpClasses.joinToString(", ")}" else ""
         val eventTitle = competition.name + classesStr
 
         val startTimeStr = competition.userSignups
@@ -430,11 +436,17 @@ fun CompetitionItem(
             .maxOrNull()
 
         val startMillis = runCatching {
-            LocalDateTime.of(LocalDate.parse(competition.date), LocalTime.parse(startTimeStr ?: "00:00"))
+            LocalDateTime.of(
+                LocalDate.parse(competition.date),
+                LocalTime.parse(startTimeStr ?: "00:00")
+            )
                 .atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         }.getOrNull()
         val endMillis = runCatching {
-            LocalDateTime.of(LocalDate.parse(competition.date), LocalTime.parse(endTimeStr ?: "23:59"))
+            LocalDateTime.of(
+                LocalDate.parse(competition.date),
+                LocalTime.parse(endTimeStr ?: "23:59")
+            )
                 .atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
         }.getOrNull()
 
@@ -453,8 +465,14 @@ fun CompetitionItem(
                     val intent = Intent(Intent.ACTION_INSERT).apply {
                         data = CalendarContract.Events.CONTENT_URI
                         putExtra(CalendarContract.Events.TITLE, eventTitle)
-                        if (startMillis != null) putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME, startMillis)
-                        if (endMillis != null) putExtra(CalendarContract.EXTRA_EVENT_END_TIME, endMillis)
+                        if (startMillis != null) putExtra(
+                            CalendarContract.EXTRA_EVENT_BEGIN_TIME,
+                            startMillis
+                        )
+                        if (endMillis != null) putExtra(
+                            CalendarContract.EXTRA_EVENT_END_TIME,
+                            endMillis
+                        )
                         if (startMillis == null) putExtra(CalendarContract.Events.ALL_DAY, true)
                     }
                     context.startActivity(intent)
@@ -485,7 +503,12 @@ private fun CompetitionItemHeader(
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = competition.name,
-                style = MaterialTheme.typography.titleSmall
+                style = MaterialTheme.typography.titleMedium
+            )
+            Text(
+                text = competition.club.name,
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
@@ -670,7 +693,9 @@ fun CompetitionDetail(competition: Datum, modifier: Modifier = Modifier) {
                 )
                 DetailRow(
                     label = stringResource(R.string.competitions_team_signup, ""),
-                    value = if (competition.allowTeams == 1L) stringResource(R.string.competitions_yes) else stringResource(R.string.competitions_no)
+                    value = if (competition.allowTeams == 1L) stringResource(R.string.competitions_yes) else stringResource(
+                        R.string.competitions_no
+                    )
                 )
                 DetailRow(
                     label = stringResource(R.string.competitions_competition_type, ""),
@@ -725,14 +750,22 @@ fun CompetitionDetail(competition: Datum, modifier: Modifier = Modifier) {
                     label = stringResource(R.string.competitions_email),
                     value = competition.contactEmail ?: "",
                     onClick = competition.contactEmail?.takeIf { it.isNotEmpty() }?.let {
-                        { context.startActivity(Intent(Intent.ACTION_SENDTO, "mailto:$it".toUri())) }
+                        {
+                            context.startActivity(
+                                Intent(
+                                    Intent.ACTION_SENDTO,
+                                    "mailto:$it".toUri()
+                                )
+                            )
+                        }
                     }
                 )
                 DetailRow(
                     label = stringResource(R.string.competitions_website),
                     value = competition.website ?: "",
                     onClick = competition.website?.takeIf { it.isNotEmpty() }?.let {
-                        val url = if (it.startsWith("http://") || it.startsWith("https://")) it else "https://$it"
+                        val url =
+                            if (it.startsWith("http://") || it.startsWith("https://")) it else "https://$it"
                         { context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri())) }
                     }
                 )
@@ -822,12 +855,29 @@ fun CompetitionsScreenEmptyPreview() {
     CompetitionsScreen(
         navController = rememberNavController(),
         competitionsViewModel = CompetitionsViewModelMock(
-            CompetitionsUiState(competitions = se.kjellstrand.webshooter.data.competitions.remote.Competitions(
-                currentPage = 1, data = emptyList(), firstPageURL = "", from = 0, lastPage = 1,
-                lastPageURL = "", links = emptyList(), nextPageURL = null, path = "", perPage = 10,
-                prevPageURL = null, to = 0, total = 0, search = null, status = "",
-                clubsID = null, type = 0, userSignup = null, competitionTypes = emptyList()
-            ))
+            CompetitionsUiState(
+                competitions = se.kjellstrand.webshooter.data.competitions.remote.Competitions(
+                    currentPage = 1,
+                    data = emptyList(),
+                    firstPageURL = "",
+                    from = 0,
+                    lastPage = 1,
+                    lastPageURL = "",
+                    links = emptyList(),
+                    nextPageURL = null,
+                    path = "",
+                    perPage = 10,
+                    prevPageURL = null,
+                    to = 0,
+                    total = 0,
+                    search = null,
+                    status = "",
+                    clubsID = null,
+                    type = 0,
+                    userSignup = null,
+                    competitionTypes = emptyList()
+                )
+            )
         )
     )
 }
