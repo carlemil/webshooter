@@ -303,7 +303,8 @@ private fun CompetitionSignupsItem(entries: List<SignupEntry>, resultStats: Map<
                     if (stations != null) rp.points.toDouble() / stations else rp.points.toDouble()
                 } else null
                 val avgHits = if (stats != null && stats.stationCount > 0) {
-                    stats.hits.toDouble() / stats.stationCount
+                    if (isFalt) stats.hits.toDouble() / stats.stationCount
+                    else stats.hits.toDouble() / stats.stationCount * 7
                 } else null
                 val figureHits = stats?.figureHits
                 val medalCount = if (rp?.stdMedal != null) 1 else 0

@@ -145,11 +145,20 @@ class MyResultsViewModelImpl @Inject constructor(
                 }.let { if (it.isEmpty()) 0.0 else it.average() }
                 val hits = group.mapNotNull { entry -> resultStats[entry.id]?.hits }
                 val figureHits = group.mapNotNull { entry -> resultStats[entry.id]?.figureHits }
-                val avgHits = group.mapNotNull { entry ->
-                    val stations = resultStats[entry.id]?.stationCount?.takeIf { it > 0 }
-                        ?: return@mapNotNull null
-                    resultStats[entry.id]!!.hits.toDouble() / stations
-                }.let { if (it.isEmpty()) 0.0 else it.average() }
+                val isFalt = key.second == "Fält"
+                val avgHits = if (isFalt) {
+                    group.mapNotNull { entry ->
+                        val stations = resultStats[entry.id]?.stationCount?.takeIf { it > 0 }
+                            ?: return@mapNotNull null
+                        resultStats[entry.id]!!.hits.toDouble() / stations
+                    }.let { if (it.isEmpty()) 0.0 else it.average() }
+                } else {
+                    group.mapNotNull { entry ->
+                        val stations = resultStats[entry.id]?.stationCount?.takeIf { it > 0 }
+                            ?: return@mapNotNull null
+                        resultStats[entry.id]!!.hits.toDouble() / stations * 7
+                    }.let { if (it.isEmpty()) 0.0 else it.average() }
+                }
                 val avgFigureHits = if (figureHits.isEmpty()) 0.0 else figureHits.map { it.toDouble() }.average()
                 SummaryRow(
                     weaponClass = key.first,
@@ -181,11 +190,20 @@ class MyResultsViewModelImpl @Inject constructor(
                 }.let { if (it.isEmpty()) 0.0 else it.average() }
                 val hits = typeEntries.mapNotNull { entry -> resultStats[entry.id]?.hits }
                 val figureHits = typeEntries.mapNotNull { entry -> resultStats[entry.id]?.figureHits }
-                val avgHits = typeEntries.mapNotNull { entry ->
-                    val stations = resultStats[entry.id]?.stationCount?.takeIf { it > 0 }
-                        ?: return@mapNotNull null
-                    resultStats[entry.id]!!.hits.toDouble() / stations
-                }.let { if (it.isEmpty()) 0.0 else it.average() }
+                val isFalt = type == "Fält"
+                val avgHits = if (isFalt) {
+                    typeEntries.mapNotNull { entry ->
+                        val stations = resultStats[entry.id]?.stationCount?.takeIf { it > 0 }
+                            ?: return@mapNotNull null
+                        resultStats[entry.id]!!.hits.toDouble() / stations
+                    }.let { if (it.isEmpty()) 0.0 else it.average() }
+                } else {
+                    typeEntries.mapNotNull { entry ->
+                        val stations = resultStats[entry.id]?.stationCount?.takeIf { it > 0 }
+                            ?: return@mapNotNull null
+                        resultStats[entry.id]!!.hits.toDouble() / stations * 7
+                    }.let { if (it.isEmpty()) 0.0 else it.average() }
+                }
                 val avgFigureHits = if (figureHits.isEmpty()) 0.0 else figureHits.map { it.toDouble() }.average()
                 val totalRow = SummaryRow(
                     weaponClass = rows.joinToString(", ") { it.weaponClass },
