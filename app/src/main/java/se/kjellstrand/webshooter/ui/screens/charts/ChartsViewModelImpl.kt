@@ -62,10 +62,7 @@ class ChartsViewModelImpl @Inject constructor(
                         allChartDataPoints = resource.data.dataPoints
                         val grouped = resource.data.dataPoints.groupBy { it.resultsType }
                         val availableTypes = grouped.keys.toList().sorted()
-                        val availableClasses = resource.data.dataPoints
-                            .map { it.weaponClass }
-                            .distinct()
-                            .sorted()
+                        val availableClasses = resource.data.allWeaponClasses
                         val selectedType = _uiState.value.selectedResultsType.ifEmpty {
                             availableTypes.firstOrNull() ?: ""
                         }
@@ -74,6 +71,7 @@ class ChartsViewModelImpl @Inject constructor(
                             chartData = grouped,
                             availableResultsTypes = availableTypes,
                             availableWeaponClasses = availableClasses,
+                            allParticipants = resource.data.allParticipants,
                             selectedResultsType = selectedType,
                             isLoading = false,
                             hasError = false
@@ -128,8 +126,12 @@ class ChartsViewModelImpl @Inject constructor(
         if (userId == currentUserId) return
         if (_uiState.value.comparedShooters.containsKey(userId)) return
 
-        val member = _uiState.value.clubMembers.find { it.userId == userId } ?: return
-        val shooterName = member.fullname ?: "${member.name} ${member.lastname ?: ""}".trim()
+        val shooterName = _uiState.value.clubMembers
+            .find { it.userId == userId }
+            ?.let { it.fullname ?: "${it.name} ${it.lastname ?: ""}".trim() }
+            ?: _uiState.value.allParticipants
+                .find { it.userId == userId }?.fullname
+            ?: return
 
         val competitionIds = allChartDataPoints.map { it.competitionId }.distinct()
         val competitionMetadata = allChartDataPoints.associate { dp ->

@@ -1,6 +1,7 @@
 package se.kjellstrand.webshooter.ui.screens.charts
 
 import se.kjellstrand.webshooter.data.charts.ChartDataPoint
+import se.kjellstrand.webshooter.data.charts.Participant
 import se.kjellstrand.webshooter.data.club.remote.ClubMember
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 
@@ -19,6 +20,7 @@ data class ChartsUiState(
     val isLoading: Boolean = false,
     val hasError: Boolean = false,
     val clubMembers: List<ClubMember> = emptyList(),
+    val allParticipants: List<Participant> = emptyList(),
     val searchQuery: String = "",
     val showSearchDialog: Boolean = false
 ) {
@@ -41,8 +43,8 @@ data class ChartsUiState(
         get() {
             if (searchQuery.isBlank()) return clubMembers
             val query = searchQuery.lowercase()
-            return clubMembers.filter {
-                (it.fullname ?: "${it.name} ${it.lastname ?: ""}").lowercase().contains(query)
-            }
+            return allParticipants
+                .filter { it.fullname.lowercase().contains(query) }
+                .map { ClubMember(userId = it.userId, name = it.fullname, fullname = it.fullname) }
         }
 }

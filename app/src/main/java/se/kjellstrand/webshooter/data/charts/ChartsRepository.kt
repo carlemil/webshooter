@@ -25,8 +25,15 @@ data class ChartDataPoint(
     val resultsType: String
 )
 
+data class Participant(
+    val userId: Long,
+    val fullname: String
+)
+
 data class ChartData(
-    val dataPoints: List<ChartDataPoint>
+    val dataPoints: List<ChartDataPoint>,
+    val allWeaponClasses: List<String> = emptyList(),
+    val allParticipants: List<Participant> = emptyList()
 )
 
 data class CompetitionMeta(
@@ -64,6 +71,8 @@ class ChartsRepository @Inject constructor(
         val allSignups = signupGroups.values.flatMap { it.signups }
 
         val dataPoints = mutableListOf<ChartDataPoint>()
+        val allWeaponClasses = mutableSetOf<String>()
+        val allParticipants = mutableMapOf<Long, String>()
 
         for (signup in allSignups) {
             val competitionId = signup.competitionsId
@@ -78,6 +87,11 @@ class ChartsRepository @Inject constructor(
             val resultsResult = lastNonLoading(resultsFlow)
 
             if (resultsResult is Resource.Success) {
+                resultsResult.data.results.forEach { result ->
+                    allWeaponClasses.add(result.weaponClass.classname)
+                    val user = result.signup.user
+                    allParticipants.putIfAbsent(user.userID, user.fullname)
+                }
                 val shooterResults = resultsResult.data.results.filter {
                     it.signup.user.userID == userId
                 }
@@ -85,7 +99,13 @@ class ChartsRepository @Inject constructor(
             }
         }
 
-        emit(Resource.Success(ChartData(dataPoints = dataPoints.sortedBy { it.date })))
+        emit(Resource.Success(ChartData(
+            dataPoints = dataPoints.sortedBy { it.date },
+            allWeaponClasses = allWeaponClasses.sorted(),
+            allParticipants = allParticipants.map { (id, name) ->
+                Participant(userId = id, fullname = name)
+            }.sortedBy { it.fullname }
+        )))
         emit(Resource.Loading(false))
     }
 
