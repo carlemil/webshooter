@@ -49,11 +49,6 @@ class ChartsRepository @Inject constructor(
 ) {
     companion object {
         private const val TAG = "ChartsRepository"
-
-        fun computeAverageStationScore(stationPoints: List<Long>): Double {
-            if (stationPoints.isEmpty()) return 0.0
-            return stationPoints.average()
-        }
     }
 
     fun getChartData(userId: Long): Flow<Resource<ChartData, UserError>> = flow {
@@ -129,17 +124,16 @@ class ChartsRepository @Inject constructor(
                         it.signup.user.userID == shooterId
                     }
                     for (r in shooterResults) {
-                        val avgScore = computeAverageStationScore(
-                            r.results.map { it.points }
-                        )
+                        val resultsType = meta?.resultsType ?: ""
+                        val avg = computeAverageScore(r, resultsType)
                         result[shooterId]?.add(
                             ChartDataPoint(
                                 competitionId = r.competitionsID,
                                 competitionName = meta?.name ?: "",
                                 date = meta?.date ?: "",
-                                averageSerieScore = avgScore,
+                                averageSerieScore = avg,
                                 weaponClass = r.weaponClass.classname,
-                                resultsType = meta?.resultsType ?: ""
+                                resultsType = resultsType
                             )
                         )
                     }
@@ -160,17 +154,25 @@ class ChartsRepository @Inject constructor(
         signup: SignupEntry
     ): List<ChartDataPoint> {
         return shooterResults.map { result ->
-            val avgScore = computeAverageStationScore(
-                result.results.map { it.points }
-            )
+            val avg = computeAverageScore(result, signup.competition.resultsType)
             ChartDataPoint(
                 competitionId = signup.competitionsId,
                 competitionName = signup.competition.name,
                 date = signup.competition.date,
-                averageSerieScore = avgScore,
+                averageSerieScore = avg,
                 weaponClass = result.weaponClass.classname,
                 resultsType = signup.competition.resultsType
             )
+        }
+    }
+
+    private fun computeAverageScore(result: Result, resultsType: String): Double {
+        val stations = result.results
+        if (stations.isEmpty()) return 0.0
+        return if (resultsType == "field" || resultsType == "pointfield") {
+            stations.map { it.hits }.average()
+        } else {
+            stations.map { it.points }.average()
         }
     }
 

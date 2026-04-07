@@ -233,6 +233,8 @@ fun ChartScatterChart(
 
                 legend.textColor = onSurfaceColor
                 legend.isWordWrapEnabled = true
+
+                setExtraBottomOffset(16f)
             }
         },
         update = { chart ->

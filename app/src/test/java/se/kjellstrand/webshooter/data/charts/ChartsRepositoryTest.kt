@@ -36,40 +36,16 @@ class ChartsRepositoryTest {
     }
 
     @Test
-    fun `computeAverageStationScore computes correct average from station results`() {
-        // Test the static/companion computation helper
-        val repoClass = Class.forName("se.kjellstrand.webshooter.data.charts.ChartsRepository")
-        val companionField = repoClass.getDeclaredField("Companion")
-        companionField.isAccessible = true
-        val companion = companionField.get(null)
-
-        val method = companion.javaClass.getDeclaredMethod(
-            "computeAverageStationScore",
-            List::class.java
+    fun `ChartDataPoint uses total result points`() {
+        val point = ChartDataPoint(
+            competitionId = 1L,
+            competitionName = "Test",
+            date = "2024-01-01",
+            averageSerieScore = 285.0,
+            weaponClass = "A",
+            resultsType = "field"
         )
-        method.isAccessible = true
-
-        // Simulate station points: [10, 20, 30] → average = 20.0
-        val stationPoints = listOf(10L, 20L, 30L)
-        val result = method.invoke(companion, stationPoints) as Double
-        assertEquals(20.0, result, 0.001)
-    }
-
-    @Test
-    fun `computeAverageStationScore returns 0 for empty list`() {
-        val repoClass = Class.forName("se.kjellstrand.webshooter.data.charts.ChartsRepository")
-        val companionField = repoClass.getDeclaredField("Companion")
-        companionField.isAccessible = true
-        val companion = companionField.get(null)
-
-        val method = companion.javaClass.getDeclaredMethod(
-            "computeAverageStationScore",
-            List::class.java
-        )
-        method.isAccessible = true
-
-        val result = method.invoke(companion, emptyList<Long>()) as Double
-        assertEquals(0.0, result, 0.001)
+        assertEquals(285.0, point.averageSerieScore, 0.001)
     }
 
     // --- Guard tests (should PASS before and after fix) ---
