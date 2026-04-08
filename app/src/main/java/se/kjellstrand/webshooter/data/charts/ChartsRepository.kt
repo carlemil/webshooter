@@ -3,16 +3,14 @@ package se.kjellstrand.webshooter.data.charts
 import android.util.Log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.lastOrNull
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
-import se.kjellstrand.webshooter.data.mysignups.SignupsRepository
-import se.kjellstrand.webshooter.data.mysignups.remote.SignupEntry
+import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsRemoteDataSource
+import se.kjellstrand.webshooter.data.competitions.remote.Datum
+import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.results.ResultsRepository
 import se.kjellstrand.webshooter.data.results.remote.Result
-import se.kjellstrand.webshooter.data.results.remote.ResultsResponse
 import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -33,7 +31,8 @@ data class Participant(
 data class ChartData(
     val dataPoints: List<ChartDataPoint>,
     val allWeaponClasses: List<String> = emptyList(),
-    val allParticipants: List<Participant> = emptyList()
+    val allParticipants: List<Participant> = emptyList(),
+    val allCompetitionMeta: Map<Long, CompetitionMeta> = emptyMap()
 )
 
 data class CompetitionMeta(
@@ -44,7 +43,7 @@ data class CompetitionMeta(
 
 @Singleton
 class ChartsRepository @Inject constructor(
-    private val signupsRepository: SignupsRepository,
+    private val competitionsRemoteDataSource: CompetitionsRemoteDataSource,
     private val resultsRepository: ResultsRepository
 ) {
     companion object {
@@ -54,32 +53,73 @@ class ChartsRepository @Inject constructor(
     fun getChartData(userId: Long): Flow<Resource<ChartData, UserError>> = flow {
         emit(Resource.Loading(true))
 
-        val signupsResult = lastNonLoading(signupsRepository.getSignups())
+        val oneYearAgo = LocalDate.now().minusYears(1)
+        val competitions = mutableListOf<Datum>()
 
-        if (signupsResult == null || signupsResult is Resource.Error) {
-            emit(Resource.Error((signupsResult as? Resource.Error)?.error ?: UserError.UnknownError))
+        val today = LocalDate.now()
+
+        try {
+            var page = 1
+            var hasMore = true
+            while (hasMore) {
+                val response = competitionsRemoteDataSource.getCompetitions(
+                    page = page,
+                    perPage = 100,
+                    status = "all",
+                    type = 0,
+                    userSignup = 0
+                )
+                val pageData = response.competitions.data
+                for (comp in pageData) {
+                    val compDate = try {
+                        LocalDate.parse(comp.date)
+                    } catch (e: Exception) {
+                        null
+                    }
+                    if (compDate != null && compDate in oneYearAgo..today) {
+                        competitions.add(comp)
+                    }
+                }
+
+                // Check if ALL items on this page are before the cutoff
+                val allBeforeCutoff = pageData.isNotEmpty() && pageData.all { comp ->
+                    try {
+                        LocalDate.parse(comp.date) < oneYearAgo
+                    } catch (e: Exception) {
+                        false
+                    }
+                }
+                hasMore = !allBeforeCutoff &&
+                        pageData.size >= 100 &&
+                        page < response.competitions.lastPage
+                page++
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "Error fetching competitions", e)
+            emit(Resource.Error(UserError.UnknownError))
             emit(Resource.Loading(false))
             return@flow
         }
 
-        val signupGroups = (signupsResult as Resource.Success).data
-        val allSignups = signupGroups.values.flatMap { it.signups }
-
         val dataPoints = mutableListOf<ChartDataPoint>()
         val allWeaponClasses = mutableSetOf<String>()
         val allParticipants = mutableMapOf<Long, String>()
+        val allCompetitionMeta = mutableMapOf<Long, CompetitionMeta>()
 
-        for (signup in allSignups) {
-            val competitionId = signup.competitionsId
-            val isToday = isCompetitionToday(signup.competition.date)
-
-            val resultsFlow = if (isToday) {
-                resultsRepository.get(competitionId)
-            } else {
-                resultsRepository.getPreferCached(competitionId)
+        for (competition in competitions) {
+            val resultsType = try {
+                competition.resultsType.toApiString()
+            } catch (e: Exception) {
+                Log.w(TAG, "Unknown resultsType for competition ${competition.id}, skipping")
+                continue
             }
+            allCompetitionMeta[competition.id] = CompetitionMeta(
+                name = competition.name,
+                date = competition.date,
+                resultsType = resultsType
+            )
 
-            val resultsResult = lastNonLoading(resultsFlow)
+            val resultsResult = lastNonLoading(resultsRepository.getPreferCached(competition.id))
 
             if (resultsResult is Resource.Success) {
                 resultsResult.data.results.forEach { result ->
@@ -90,17 +130,34 @@ class ChartsRepository @Inject constructor(
                 val shooterResults = resultsResult.data.results.filter {
                     it.signup.user.userID == userId
                 }
-                dataPoints.addAll(extractDataPoints(shooterResults, signup))
+                shooterResults.forEach { result ->
+                    val avg = computeAverageScore(result, resultsType)
+                    dataPoints.add(
+                        ChartDataPoint(
+                            competitionId = competition.id,
+                            competitionName = competition.name,
+                            date = competition.date,
+                            averageSerieScore = avg,
+                            weaponClass = result.weaponClass.classname,
+                            resultsType = resultsType
+                        )
+                    )
+                }
             }
         }
 
-        emit(Resource.Success(ChartData(
-            dataPoints = dataPoints.sortedBy { it.date },
-            allWeaponClasses = allWeaponClasses.sorted(),
-            allParticipants = allParticipants.map { (id, name) ->
-                Participant(userId = id, fullname = name)
-            }.sortedBy { it.fullname }
-        )))
+        emit(
+            Resource.Success(
+                ChartData(
+                    dataPoints = dataPoints.sortedBy { it.date },
+                    allWeaponClasses = allWeaponClasses.sorted(),
+                    allParticipants = allParticipants.map { (id, name) ->
+                        Participant(userId = id, fullname = name)
+                    }.sortedBy { it.fullname },
+                    allCompetitionMeta = allCompetitionMeta
+                )
+            )
+        )
         emit(Resource.Loading(false))
     }
 
@@ -141,29 +198,14 @@ class ChartsRepository @Inject constructor(
             }
         }
 
-        emit(Resource.Success(
-            result.mapValues { (_, points) ->
-                ChartData(dataPoints = points.sortedBy { it.date })
-            }
-        ))
-        emit(Resource.Loading(false))
-    }
-
-    private fun extractDataPoints(
-        shooterResults: List<Result>,
-        signup: SignupEntry
-    ): List<ChartDataPoint> {
-        return shooterResults.map { result ->
-            val avg = computeAverageScore(result, signup.competition.resultsType)
-            ChartDataPoint(
-                competitionId = signup.competitionsId,
-                competitionName = signup.competition.name,
-                date = signup.competition.date,
-                averageSerieScore = avg,
-                weaponClass = result.weaponClass.classname,
-                resultsType = signup.competition.resultsType
+        emit(
+            Resource.Success(
+                result.mapValues { (_, points) ->
+                    ChartData(dataPoints = points.sortedBy { it.date })
+                }
             )
-        }
+        )
+        emit(Resource.Loading(false))
     }
 
     private fun computeAverageScore(result: Result, resultsType: String): Double {
@@ -188,13 +230,10 @@ class ChartsRepository @Inject constructor(
         return last
     }
 
-    private fun isCompetitionToday(dateStr: String): Boolean {
-        return try {
-            val competitionDate = LocalDate.parse(dateStr, DateTimeFormatter.ISO_LOCAL_DATE)
-            competitionDate == LocalDate.now()
-        } catch (e: Exception) {
-            Log.w(TAG, "Could not parse date: $dateStr", e)
-            false
-        }
+    private fun ResultsType.toApiString(): String = when (this) {
+        ResultsType.PRECISION -> "precision"
+        ResultsType.MILITARY -> "military"
+        ResultsType.FIELD -> "field"
+        ResultsType.POINTS_FIELD -> "pointfield"
     }
 }
