@@ -20,6 +20,9 @@
     @retrofit2.http.* <methods>;
 }
 
+# Keep Retrofit service interfaces (generic type signatures required at runtime)
+-keep,allowobfuscation interface se.kjellstrand.webshooter.data.**RemoteDataSource { *; }
+
 # --- Gson ---
 -keepattributes Signature
 -keepattributes *Annotation*

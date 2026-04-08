@@ -1,5 +1,7 @@
 # Release: Bump Minor Version and Deploy to Google Play Test Track
 
+**Optional argument:** `<liveVersion>` — the version currently live on Google Play (e.g., `1.10.0`). If provided, release notes will be based on changes since git tag `v<liveVersion>`.
+
 Perform the following steps in order. Stop and report if any step fails or a prerequisite is missing.
 
 ---
@@ -99,23 +101,43 @@ Show the user the old and new version strings before continuing.
 
 ## Step 3 — Generate release notes
 
-### 3a. Get commits since the last release
-Run:
+### 3a. Determine the last released version
+
+**If `<liveVersion>` was provided as an argument:** Use `v<liveVersion>` as the baseline tag. Verify the tag exists with `git tag -l v<liveVersion>`. If the tag doesn't exist, warn the user and ask whether to create it on a specific commit or fall back to other methods.
+
+**Otherwise, use git tags.** Each release is tagged `v<version>` (e.g., `v1.10.0`). Find the most recent release tag:
 ```
-git log --oneline $(git describe --tags --abbrev=0 2>/dev/null || git rev-list --max-parents=0 HEAD)..HEAD
+git describe --tags --abbrev=0 --match "v*" 2>/dev/null
 ```
 
-If `git describe` fails (no tags exist), fall back to finding the previous "Bump version" commit:
+**Verification (when no argument was given): cross-check with Google Play.** Fetch the Play Store listing and extract the live version to verify the tag matches what's actually published:
 ```
-git log --oneline $(git log --grep="^Bump version" --format="%H" | sed -n '2p')..HEAD
+curl -s "https://play.google.com/store/apps/details?id=se.kjellstrand.webshooter&hl=en-US" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | sort -u
+```
+Look through the extracted versions for one that matches the app's version pattern (starts with `1.`). If the Play Store version differs from the latest git tag, tell the user and ask which to use as the baseline.
+
+**Fallback:** If no tags exist, fall back to finding the previous "Bump version" commit:
+```
+git log --grep="^Bump version" --format="%H" -1
 ```
 
-If that also yields nothing useful, use the last 20 commits:
+### 3b. Get commits since the last release
+Using the tag or commit found in 3a, get the commit log:
+```
+git log --oneline v<lastVersion>..HEAD
+```
+
+If using the fallback commit hash:
+```
+git log --oneline <commitHash>..HEAD
+```
+
+If nothing works, use the last 20 commits:
 ```
 git log --oneline -20
 ```
 
-### 3b. Write release notes file
+### 3c. Write release notes file
 Based on the commits, write user-friendly release notes to:
 ```
 app/src/main/play/release-notes/sv-SE/default.txt
@@ -158,7 +180,7 @@ Wait for it to complete. If it fails, show the error output and stop.
 
 ---
 
-## Step 6 — Commit the version bump and release notes
+## Step 6 — Commit and tag the release
 
 Stage and commit the version and release notes:
 ```
@@ -167,12 +189,21 @@ git add app/src/main/play/release-notes/sv-SE/default.txt
 git commit -m "Bump version to <newVersionName> (build <newVersionCode>)"
 ```
 
+Then create a git tag for this release:
+```
+git tag v<newVersionName>
+```
+
+This tag will be used by future releases to determine what changed since this version.
+
 ---
 
 ## Step 7 — Summary
 
 Report:
 - Previous version → New version (e.g., `1.7.9 (16) → 1.8.0 (17)`)
+- Git tag created (e.g., `v1.8.0`)
 - Upload status (success/failure)
 - The release notes that were published
 - Reminder to promote the build from the internal test track in Google Play Console when ready
+- Reminder to push the tag with `git push origin v<newVersionName>`

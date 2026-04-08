@@ -9,8 +9,8 @@ plugins {
     alias(libs.plugins.firebase.crashlytics)
 }
 
-val appVersionCode = 23
-val appVersionName = "1.12.0"
+val appVersionCode = 24
+val appVersionName = "1.13.0"
 
 val dbVersionDir = layout.buildDirectory.dir("generated/source/dbversion")
 
