@@ -255,6 +255,7 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ChartsViewModel) {
         OutlinedButton(
             onClick = { viewModel.setShowSearchDialog(true) },
             modifier = Modifier
+                .align(Alignment.CenterHorizontally)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         ) {
             Icon(

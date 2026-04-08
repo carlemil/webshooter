@@ -10,7 +10,9 @@ import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.results.ResultsRepository
 import se.kjellstrand.webshooter.data.results.remote.Result
+import se.kjellstrand.webshooter.data.results.remote.ResultsResponse
 import java.time.LocalDate
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -50,8 +52,12 @@ class ChartsRepository @Inject constructor(
         private const val TAG = "ChartsRepository"
     }
 
+    private val resultsCache = ConcurrentHashMap<Long, ResultsResponse>()
+
     fun getChartData(userId: Long): Flow<Resource<ChartData, UserError>> = flow {
         emit(Resource.Loading(true))
+
+        // resultsCache.clear()
 
         val oneYearAgo = LocalDate.now().minusYears(1)
         val competitions = mutableListOf<Datum>()
@@ -122,6 +128,7 @@ class ChartsRepository @Inject constructor(
             val resultsResult = lastNonLoading(resultsRepository.getPreferCached(competition.id))
 
             if (resultsResult is Resource.Success) {
+                resultsCache[competition.id] = resultsResult.data
                 resultsResult.data.results.forEach { result ->
                     allWeaponClasses.add(result.weaponClass.classname)
                     val user = result.signup.user
@@ -172,7 +179,12 @@ class ChartsRepository @Inject constructor(
         shooterIds.forEach { result[it] = mutableListOf() }
 
         for (competitionId in competitionIds) {
-            val resultsResult = lastNonLoading(resultsRepository.getPreferCached(competitionId))
+            val cached = resultsCache[competitionId]
+            val resultsResult = if (cached != null) {
+                Resource.Success(cached)
+            } else {
+                lastNonLoading(resultsRepository.getPreferCached(competitionId))
+            }
             val meta = competitionMetadata[competitionId]
 
             if (resultsResult is Resource.Success) {
