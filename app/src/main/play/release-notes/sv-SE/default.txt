@@ -1,5 +1,4 @@
-- Ny statistikvy med diagram för tävlingsresultat
-- Filtrera statistik på vapenklass
-- Klubbnamn visas nu i tävlingslistan
-- Licensinformation för öppen källkod finns nu i menyn
+- Fixat inloggningsproblem som kunde ge felmeddelande
+- Snabbare laddning av statistik tack vare cachning
+- Centrerad knapp för att lägga till skytt
 - Förbättrad stabilitet och buggfixar
