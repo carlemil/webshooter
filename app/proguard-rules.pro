@@ -10,18 +10,19 @@
 -renamesourcefileattribute SourceFile
 
 # --- Retrofit ---
--keep,allowobfuscation interface retrofit2.Call
--keep,allowobfuscation interface retrofit2.Callback
+# Retrofit does reflection on generic parameters. InnerClasses is required to use Signature and
+# EnclosingMethod is required to use InnerClasses.
+-keepattributes Signature,InnerClasses,EnclosingMethod
+-keepattributes Exceptions
+-keepattributes RuntimeVisibleAnnotations,RuntimeVisibleParameterAnnotations,AnnotationDefault
 -dontwarn retrofit2.**
 -keep class retrofit2.** { *; }
--keepattributes Signature
--keepattributes Exceptions
--keepclassmembers,allowobfuscation class * {
+-keepclassmembers,allowshrinking,allowobfuscation interface * {
     @retrofit2.http.* <methods>;
 }
 
 # Keep Retrofit service interfaces (generic type signatures required at runtime)
--keep,allowobfuscation interface se.kjellstrand.webshooter.data.**RemoteDataSource { *; }
+-keep interface se.kjellstrand.webshooter.data.**RemoteDataSource { *; }
 
 # --- Gson ---
 -keepattributes Signature
