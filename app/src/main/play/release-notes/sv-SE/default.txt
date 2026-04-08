@@ -1,2 +1,3 @@
-- Fixat inloggningsproblem som kunde ge felmeddelande
+- Fixat inloggningsproblem
+- Fixat krasch vid uppdatering av appen
 - Förbättrad stabilitet och buggfixar
