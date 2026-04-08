@@ -162,6 +162,7 @@
     <string name="web_shooter_menu">Meny</string>
     <string name="web_shooter_menu_content_description">Meny</string>
     <string name="web_shooter_settings">Inställningar</string>
+    <string name="web_shooter_licenses">Licenser</string>
 
     <!-- ### COMPETITION_PATROLS ### -->
     <string name="competition_patrols_title">Patruller</string>
@@ -226,6 +227,10 @@
     <string name="my_results_symbol_f_desc">Figurträffar</string>
     <string name="my_results_symbol_medal_pts">🏅</string>
     <string name="my_results_symbol_medal_pts_desc">Standardmedalj poäng (Silver\=2, Brons\=1)</string>
+    <!-- ### LICENSES ### -->
+    <string name="licenses_header">Den här appen använder följande bibliotek med öppen källkod.</string>
+    <string name="licenses_apache_license">Apache License 2.0</string>
+
     <string name="loading">Laddar…</string>
     <string name="shooters">%1$d skyttar</string>
 

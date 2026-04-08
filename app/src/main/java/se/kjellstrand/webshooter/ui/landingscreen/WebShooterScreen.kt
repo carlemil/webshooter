@@ -44,6 +44,7 @@ import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsScreen
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.myresults.MyEntriesScreen
 import se.kjellstrand.webshooter.ui.navigation.Screen
+import se.kjellstrand.webshooter.ui.screens.licenses.LicensesScreen
 import se.kjellstrand.webshooter.ui.screens.settings.SettingsScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,7 +58,8 @@ fun WebShooterScreen(navController: NavController) {
         NavigationItem(stringResource(R.string.my_results), Screen.MyEntries.route),
         NavigationItem(stringResource(R.string.web_shooter_charts), Screen.Charts.route),
         NavigationItem(stringResource(R.string.web_shooter_club), Screen.Club.route),
-        NavigationItem(stringResource(R.string.web_shooter_settings), Screen.Settings.route)
+        NavigationItem(stringResource(R.string.web_shooter_settings), Screen.Settings.route),
+        NavigationItem(stringResource(R.string.web_shooter_licenses), Screen.Licenses.route)
     )
 
     val drawerNavController = rememberNavController()
@@ -143,6 +145,9 @@ fun WebShooterScreen(navController: NavController) {
                             }
                         }
                     )
+                }
+                composable(Screen.Licenses.route) {
+                    LicensesScreen()
                 }
             }
         }
