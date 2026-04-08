@@ -1,5 +1,2 @@
 - Fixat inloggningsproblem som kunde ge felmeddelande
-- Fixat problem med nätverksanrop efter appoptimering
-- Snabbare laddning av statistik tack vare cachning
-- Centrerad knapp för att lägga till skytt
 - Förbättrad stabilitet och buggfixar
