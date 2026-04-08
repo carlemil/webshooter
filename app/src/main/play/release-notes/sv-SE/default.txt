@@ -1,6 +1,5 @@
-- Förbättrad stabilitet och kraschfixar
-- Filtrering på klubb och vapenklass vid anmälningar
-- Snabbare laddning med databasindex och cachning
-- Säkerhetsförbättringar för inloggning och sessionshantering
-- Bättre stöd för skärmrotation utan att tappa inmatad data
-- Diverse buggfixar och prestandaförbättringar
+- Ny statistikvy med diagram för tävlingsresultat
+- Filtrera statistik på vapenklass
+- Klubbnamn visas nu i tävlingslistan
+- Licensinformation för öppen källkod finns nu i menyn
+- Förbättrad stabilitet och buggfixar
