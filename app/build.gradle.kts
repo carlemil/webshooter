@@ -9,8 +9,8 @@ plugins {
     alias(libs.plugins.firebase.crashlytics)
 }
 
-val appVersionCode = 25
-val appVersionName = "1.14.0"
+val appVersionCode = 26
+val appVersionName = "1.15.0"
 
 val dbVersionDir = layout.buildDirectory.dir("generated/source/dbversion")
 
@@ -69,12 +69,8 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = true
-            isShrinkResources = true
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
+            isMinifyEnabled = false
+            isShrinkResources = false
             signingConfig = signingConfigs.getByName("release")
         }
     }
