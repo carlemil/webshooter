@@ -7,8 +7,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import se.kjellstrand.webshooter.data.charts.ChartData
-import se.kjellstrand.webshooter.data.charts.ChartDataPoint
 import se.kjellstrand.webshooter.data.charts.ChartsRepository
 import se.kjellstrand.webshooter.data.charts.CompetitionMeta
 import se.kjellstrand.webshooter.data.club.ClubRepository
@@ -27,7 +25,7 @@ class ChartsViewModelImpl @Inject constructor(
     override val uiState: StateFlow<ChartsUiState> = _uiState.asStateFlow()
 
     private var currentUserId: Long = 0L
-    private var allChartDataPoints: List<ChartDataPoint> = emptyList()
+    private var allCompetitionMeta: Map<Long, CompetitionMeta> = emptyMap()
 
     init {
         loadUserAndChartData()
@@ -59,7 +57,7 @@ class ChartsViewModelImpl @Inject constructor(
             chartsRepository.getChartData(userId).collect { resource ->
                 when (resource) {
                     is Resource.Success -> {
-                        allChartDataPoints = resource.data.dataPoints
+                        allCompetitionMeta = resource.data.allCompetitionMeta
                         val grouped = resource.data.dataPoints.groupBy { it.resultsType }
                         val availableTypes = grouped.keys.toList().sorted()
                         val availableClasses = resource.data.allWeaponClasses
@@ -133,14 +131,8 @@ class ChartsViewModelImpl @Inject constructor(
                 .find { it.userId == userId }?.fullname
             ?: return
 
-        val competitionIds = allChartDataPoints.map { it.competitionId }.distinct()
-        val competitionMetadata = allChartDataPoints.associate { dp ->
-            dp.competitionId to CompetitionMeta(
-                name = dp.competitionName,
-                date = dp.date,
-                resultsType = dp.resultsType
-            )
-        }
+        val competitionIds = allCompetitionMeta.keys.toList()
+        val competitionMetadata = allCompetitionMeta
 
         viewModelScope.launch {
             chartsRepository.getShooterChartData(
