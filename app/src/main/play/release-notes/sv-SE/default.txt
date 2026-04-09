@@ -1,3 +1,2 @@
-- Fixat inloggningsproblem
-- Fixat krasch vid uppdatering av appen
-- Förbättrad stabilitet och buggfixar
+- Du kan nu nypa för att zooma och dra för att panorera i diagrammen.
+- Tydligare symboler i punktdiagrammen.
