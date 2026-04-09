@@ -316,7 +316,7 @@ fun ChartScatterChart(
                 val myDataSet = ScatterDataSet(entries, chart.context.getString(R.string.charts_my_results)).apply {
                     color = CHART_COLORS[0]
                     setScatterShape(CHART_SHAPES[0])
-                    scatterShapeSize = 12f
+                    scatterShapeSize = 24f
                     setDrawValues(false)
                 }
                 dataSets.add(myDataSet)
@@ -333,7 +333,7 @@ fun ChartScatterChart(
                     val dataSet = ScatterDataSet(entries, info.name).apply {
                         color = CHART_COLORS[colorIndex]
                         setScatterShape(CHART_SHAPES[shapeIndex])
-                        scatterShapeSize = 12f
+                        scatterShapeSize = 24f
                         setDrawValues(false)
                     }
                     dataSets.add(dataSet)
