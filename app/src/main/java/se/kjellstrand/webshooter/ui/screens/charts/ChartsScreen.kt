@@ -1,6 +1,8 @@
 package se.kjellstrand.webshooter.ui.screens.charts
 
+import android.annotation.SuppressLint
 import android.graphics.Color as AndroidColor
+import android.view.MotionEvent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -268,6 +270,7 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ChartsViewModel) {
     }
 }
 
+@SuppressLint("ClickableViewAccessibility")
 @Composable
 fun ChartScatterChart(
     myData: List<ChartDataPoint>,
@@ -286,6 +289,22 @@ fun ChartScatterChart(
                 setScaleEnabled(true)
                 isDoubleTapToZoomEnabled = true
 
+                // Prevent the Compose host from intercepting multi-touch / drag
+                // gestures before MPAndroidChart sees them.
+                setOnTouchListener { v, event ->
+                    when (event.actionMasked) {
+                        MotionEvent.ACTION_DOWN,
+                        MotionEvent.ACTION_POINTER_DOWN,
+                        MotionEvent.ACTION_MOVE ->
+                            v.parent?.requestDisallowInterceptTouchEvent(true)
+                        MotionEvent.ACTION_UP,
+                        MotionEvent.ACTION_CANCEL ->
+                            v.parent?.requestDisallowInterceptTouchEvent(false)
+                    }
+                    // Return false so the chart's own gesture handling still runs.
+                    false
+                }
+
                 xAxis.position = XAxis.XAxisPosition.BOTTOM
                 xAxis.granularity = 1f
                 xAxis.textColor = onSurfaceColor
@@ -301,12 +320,29 @@ fun ChartScatterChart(
             }
         },
         update = { chart ->
-            val dataSets = mutableListOf<ScatterDataSet>()
-
             // Collect all dates for X axis
             val allDataPoints = myData + comparedShooters.values.flatMap { it.chartData }
             val sortedDates = allDataPoints.map { it.date }.distinct().sorted()
             val dateIndexMap = sortedDates.withIndex().associate { (i, d) -> d to i.toFloat() }
+
+            // Build a signature of the inputs so we can skip rebuilding the
+            // ScatterData (which resets the user's zoom/pan) when nothing changed.
+            val signature = buildString {
+                append(myData.size).append('|')
+                myData.forEach { append(it.date).append(':').append(it.averageSerieScore).append(',') }
+                append('#')
+                comparedShooters.forEach { (id, info) ->
+                    append(id).append('=').append(info.name).append(':')
+                    info.chartData.forEach { append(it.date).append(':').append(it.averageSerieScore).append(',') }
+                    append(';')
+                }
+            }
+            if (chart.tag == signature) {
+                return@AndroidView
+            }
+            chart.tag = signature
+
+            val dataSets = mutableListOf<ScatterDataSet>()
 
             // My data
             if (myData.isNotEmpty()) {
@@ -316,7 +352,7 @@ fun ChartScatterChart(
                 val myDataSet = ScatterDataSet(entries, chart.context.getString(R.string.charts_my_results)).apply {
                     color = CHART_COLORS[0]
                     setScatterShape(CHART_SHAPES[0])
-                    scatterShapeSize = 24f
+                    scatterShapeSize = 20f
                     setDrawValues(false)
                 }
                 dataSets.add(myDataSet)
