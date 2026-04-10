@@ -1,9 +1,18 @@
 package se.kjellstrand.webshooter.data.charts
 
 import android.util.Log
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.sync.withPermit
 import se.kjellstrand.webshooter.data.common.Resource
+import java.time.LocalDate
 import se.kjellstrand.webshooter.data.common.UserError
 import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsRemoteDataSource
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
@@ -11,7 +20,7 @@ import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.results.ResultsRepository
 import se.kjellstrand.webshooter.data.results.remote.Result
 import se.kjellstrand.webshooter.data.results.remote.ResultsResponse
-import java.time.LocalDate
+
 import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -53,119 +62,170 @@ class ChartsRepository @Inject constructor(
     }
 
     private val resultsCache = ConcurrentHashMap<Long, ResultsResponse>()
+    private var competitionsCache: List<Datum>? = null
 
-    fun getChartData(userId: Long): Flow<Resource<ChartData, UserError>> = flow {
-        emit(Resource.Loading(true))
+    fun getChartData(userId: Long): Flow<Resource<ChartData, UserError>> = channelFlow {
+        send(Resource.Loading(true))
 
-        // resultsCache.clear()
-
-        val oneYearAgo = LocalDate.now().minusYears(1)
-        val competitions = mutableListOf<Datum>()
-
-        val today = LocalDate.now()
-
-        try {
-            var page = 1
-            var hasMore = true
-            while (hasMore) {
-                val response = competitionsRemoteDataSource.getCompetitions(
-                    page = page,
-                    perPage = 100,
-                    status = "all",
-                    type = 0,
-                    userSignup = 0
-                )
-                val pageData = response.competitions.data
-                for (comp in pageData) {
-                    val compDate = try {
-                        LocalDate.parse(comp.date)
-                    } catch (e: Exception) {
-                        null
-                    }
-                    if (compDate != null && compDate in oneYearAgo..today) {
-                        competitions.add(comp)
-                    }
-                }
-
-                // Check if ALL items on this page are before the cutoff
-                val allBeforeCutoff = pageData.isNotEmpty() && pageData.all { comp ->
-                    try {
-                        LocalDate.parse(comp.date) < oneYearAgo
-                    } catch (e: Exception) {
-                        false
-                    }
-                }
-                hasMore = !allBeforeCutoff &&
-                        pageData.size >= 100 &&
-                        page < response.competitions.lastPage
-                page++
-            }
+        val competitions: List<Datum> = competitionsCache ?: try {
+            fetchAllCompetitions().also { competitionsCache = it }
         } catch (e: Exception) {
             Log.w(TAG, "Error fetching competitions", e)
-            emit(Resource.Error(UserError.UnknownError))
-            emit(Resource.Loading(false))
-            return@flow
+            send(Resource.Error(UserError.UnknownError))
+            send(Resource.Loading(false))
+            return@channelFlow
         }
 
-        val dataPoints = mutableListOf<ChartDataPoint>()
-        val allWeaponClasses = mutableSetOf<String>()
-        val allParticipants = mutableMapOf<Long, String>()
         val allCompetitionMeta = mutableMapOf<Long, CompetitionMeta>()
-
-        for (competition in competitions) {
+        val competitionsWithType = competitions.mapNotNull { competition ->
             val resultsType = try {
                 competition.resultsType.toApiString()
             } catch (e: Exception) {
                 Log.w(TAG, "Unknown resultsType for competition ${competition.id}, skipping")
-                continue
+                return@mapNotNull null
             }
             allCompetitionMeta[competition.id] = CompetitionMeta(
                 name = competition.name,
                 date = competition.date,
                 resultsType = resultsType
             )
-
-            val resultsResult = lastNonLoading(resultsRepository.getPreferCached(competition.id))
-
-            if (resultsResult is Resource.Success) {
-                resultsCache[competition.id] = resultsResult.data
-                resultsResult.data.results.forEach { result ->
-                    allWeaponClasses.add(result.weaponClass.classname)
-                    val user = result.signup.user
-                    allParticipants.putIfAbsent(user.userID, user.fullname)
-                }
-                val shooterResults = resultsResult.data.results.filter {
-                    it.signup.user.userID == userId
-                }
-                shooterResults.forEach { result ->
-                    val avg = computeAverageScore(result, resultsType)
-                    dataPoints.add(
-                        ChartDataPoint(
-                            competitionId = competition.id,
-                            competitionName = competition.name,
-                            date = competition.date,
-                            averageSerieScore = avg,
-                            weaponClass = result.weaponClass.classname,
-                            resultsType = resultsType
-                        )
-                    )
-                }
-            }
+            competition to resultsType
         }
 
-        emit(
+        // Emit an initial Success containing only metadata so the UI can render
+        // the chart frame and tabs immediately. Datapoints stream in below.
+        send(
             Resource.Success(
                 ChartData(
-                    dataPoints = dataPoints.sortedBy { it.date },
-                    allWeaponClasses = allWeaponClasses.sorted(),
-                    allParticipants = allParticipants.map { (id, name) ->
-                        Participant(userId = id, fullname = name)
-                    }.sortedBy { it.fullname },
-                    allCompetitionMeta = allCompetitionMeta
+                    dataPoints = emptyList(),
+                    allWeaponClasses = emptyList(),
+                    allParticipants = emptyList(),
+                    allCompetitionMeta = allCompetitionMeta.toMap()
                 )
             )
         )
-        emit(Resource.Loading(false))
+
+        // Shared aggregation state, guarded by a mutex because each completed
+        // fetch updates it from its own coroutine before sending a snapshot.
+        val mutex = Mutex()
+        val dataPoints = mutableListOf<ChartDataPoint>()
+        val allWeaponClasses = sortedSetOf<String>()
+        val allParticipants = mutableMapOf<Long, String>()
+
+        // Wait for all per-competition fetches inside coroutineScope so that
+        // the channelFlow block does not return (and close the channel) until
+        // every child has finished sending its progressive snapshot.
+        try {
+            coroutineScope {
+                val semaphore = Semaphore(6)
+                for ((competition, resultsType) in competitionsWithType) {
+                    delay(500)
+                    launch {
+                        val resultsResult: Resource<ResultsResponse, UserError>? = semaphore.withPermit {
+                            fetchResults(competition.id, competition.date)
+                        }
+                        if (resultsResult !is Resource.Success) return@launch
+
+                        val snapshot: ChartData = mutex.withLock {
+                            resultsResult.data.results.forEach { result ->
+                                allWeaponClasses.add(result.weaponClass.classname)
+                                val user = result.signup.user
+                                allParticipants.putIfAbsent(user.userID, user.fullname)
+                            }
+                            resultsResult.data.results
+                                .filter { it.signup.user.userID == userId }
+                                .forEach { result ->
+                                    val avg = computeAverageScore(result, resultsType)
+                                    dataPoints.add(
+                                        ChartDataPoint(
+                                            competitionId = competition.id,
+                                            competitionName = competition.name,
+                                            date = competition.date,
+                                            averageSerieScore = avg,
+                                            weaponClass = result.weaponClass.classname,
+                                            resultsType = resultsType
+                                        )
+                                    )
+                                }
+                            ChartData(
+                                dataPoints = dataPoints.sortedBy { it.date },
+                                allWeaponClasses = allWeaponClasses.toList(),
+                                allParticipants = allParticipants.map { (id, name) ->
+                                    Participant(userId = id, fullname = name)
+                                }.sortedBy { it.fullname },
+                                allCompetitionMeta = allCompetitionMeta.toMap()
+                            )
+                        }
+                        send(Resource.Success(snapshot))
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            Log.w(TAG, "Error fetching chart results", e)
+            send(Resource.Error(UserError.UnknownError))
+        }
+
+        send(Resource.Loading(false))
+    }
+
+    /**
+     * Returns cached results if available, otherwise fetches from Room/network.
+     * For past competitions, results are final so we use cache-first and never
+     * re-fetch once cached. For today's competitions, we always refresh from
+     * the network to pick up live result updates.
+     */
+    private suspend fun fetchResults(
+        competitionId: Long,
+        competitionDate: String
+    ): Resource<ResultsResponse, UserError>? {
+        val cached = resultsCache[competitionId]
+        val isToday = try {
+            LocalDate.parse(competitionDate) == LocalDate.now()
+        } catch (e: Exception) {
+            false
+        }
+
+        if (cached != null && !isToday) {
+            return Resource.Success(cached)
+        }
+
+        val result = runCatching {
+            val repo = if (isToday) {
+                resultsRepository.get(competitionId)
+            } else {
+                resultsRepository.getPreferCached(competitionId)
+            }
+            lastNonLoading(repo)
+        }.getOrElse { e ->
+            Log.w(TAG, "Error fetching results for $competitionId", e)
+            null
+        }
+
+        if (result is Resource.Success) {
+            resultsCache[competitionId] = result.data
+        }
+        return result
+    }
+
+    private suspend fun fetchAllCompetitions(): List<Datum> {
+        val competitions = mutableListOf<Datum>()
+
+        var page = 1
+        var hasMore = true
+        while (hasMore) {
+            val response = competitionsRemoteDataSource.getCompetitions(
+                page = page,
+                perPage = 10,
+                status = "all",
+                type = 0,
+                userSignup = 0
+            )
+            val pageData = response.competitions.data
+            competitions.addAll(pageData)
+            hasMore = pageData.size >= 10 && page < response.competitions.lastPage
+            page++
+        }
+        return competitions
     }
 
     fun getShooterChartData(
@@ -179,13 +239,8 @@ class ChartsRepository @Inject constructor(
         shooterIds.forEach { result[it] = mutableListOf() }
 
         for (competitionId in competitionIds) {
-            val cached = resultsCache[competitionId]
-            val resultsResult = if (cached != null) {
-                Resource.Success(cached)
-            } else {
-                lastNonLoading(resultsRepository.getPreferCached(competitionId))
-            }
             val meta = competitionMetadata[competitionId]
+            val resultsResult = fetchResults(competitionId, meta?.date ?: "")
 
             if (resultsResult is Resource.Success) {
                 for (shooterId in shooterIds) {
@@ -242,10 +297,5 @@ class ChartsRepository @Inject constructor(
         return last
     }
 
-    private fun ResultsType.toApiString(): String = when (this) {
-        ResultsType.PRECISION -> "precision"
-        ResultsType.MILITARY -> "military"
-        ResultsType.FIELD -> "field"
-        ResultsType.POINTS_FIELD -> "pointfield"
-    }
+    private fun ResultsType.toApiString(): String = apiString
 }

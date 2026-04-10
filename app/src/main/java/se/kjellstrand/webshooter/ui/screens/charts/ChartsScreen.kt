@@ -1,7 +1,6 @@
 package se.kjellstrand.webshooter.ui.screens.charts
 
 import android.annotation.SuppressLint
-import android.graphics.Color as AndroidColor
 import android.view.MotionEvent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -15,7 +14,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -60,9 +58,10 @@ import com.github.mikephil.charting.data.ScatterDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.charts.ChartDataPoint
-import se.kjellstrand.webshooter.data.club.remote.ClubMember
+import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
+import android.graphics.Color as AndroidColor
 
 private val CHART_COLORS = listOf(
     AndroidColor.rgb(76, 175, 80),   // Green (user)
@@ -116,7 +115,7 @@ fun ChartsScreen(viewModel: ChartsViewModel) {
                 .fillMaxSize()
         ) {
             when {
-                uiState.isLoading -> {
+                uiState.isLoading && uiState.chartData.isEmpty() -> {
                     Box(
                         modifier = Modifier.fillMaxSize(),
                         contentAlignment = Alignment.Center
@@ -124,6 +123,7 @@ fun ChartsScreen(viewModel: ChartsViewModel) {
                         CircularProgressIndicator()
                     }
                 }
+
                 uiState.hasError -> {
                     Box(
                         modifier = Modifier.fillMaxSize(),
@@ -135,6 +135,7 @@ fun ChartsScreen(viewModel: ChartsViewModel) {
                         )
                     }
                 }
+
                 else -> {
                     ChartsContent(uiState, viewModel)
                 }
@@ -190,7 +191,7 @@ fun ChartsFilterBottomSheet(
                         modifier = Modifier.clickable { onToggleWeaponClass(weaponClass) },
                         weaponGroupName = weaponClass,
                         isHighlighted = weaponClass in selectedWeaponClasses,
-                        size = WeaponClassBadgeSize.Small
+                        size = WeaponClassBadgeSize.Medium
                     )
                 }
             }
@@ -222,7 +223,11 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ChartsViewModel) {
                     Tab(
                         selected = type == uiState.selectedResultsType,
                         onClick = { viewModel.selectTab(type) },
-                        text = { Text(formatResultsType(type)) }
+                        text = {
+                            Text(
+                                ResultsType.fromApiString(type)?.displayName
+                                    ?: type.replaceFirstChar { it.uppercase() })
+                        }
                     )
                 }
             }
@@ -230,8 +235,21 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ChartsViewModel) {
 
         val chartData = uiState.filteredChartData
         val comparedShooters = uiState.filteredComparedShooters
+        val hasAnyData = chartData.isNotEmpty() ||
+                comparedShooters.values.any { it.chartData.isNotEmpty() }
 
-        if (chartData.isEmpty() && comparedShooters.values.all { it.chartData.isEmpty() }) {
+        // Render the chart frame as soon as metadata (tabs) exists, even if no
+        // datapoints have streamed in yet — they pop in progressively.
+        if (uiState.availableResultsTypes.isNotEmpty()) {
+            ChartScatterChart(
+                myData = chartData,
+                comparedShooters = comparedShooters,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            )
+        } else if (!uiState.isLoading && !hasAnyData) {
             Box(
                 modifier = Modifier
                     .weight(1f)
@@ -243,15 +261,6 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ChartsViewModel) {
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
-        } else {
-            ChartScatterChart(
-                myData = chartData,
-                comparedShooters = comparedShooters,
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth()
-                    .padding(8.dp)
-            )
         }
 
         OutlinedButton(
@@ -284,6 +293,7 @@ fun ChartScatterChart(
         factory = { context ->
             ScatterChart(context).apply {
                 description.isEnabled = false
+                setNoDataText("")
                 setPinchZoom(true)
                 isDragEnabled = true
                 setScaleEnabled(true)
@@ -297,6 +307,7 @@ fun ChartScatterChart(
                         MotionEvent.ACTION_POINTER_DOWN,
                         MotionEvent.ACTION_MOVE ->
                             v.parent?.requestDisallowInterceptTouchEvent(true)
+
                         MotionEvent.ACTION_UP,
                         MotionEvent.ACTION_CANCEL ->
                             v.parent?.requestDisallowInterceptTouchEvent(false)
@@ -329,11 +340,15 @@ fun ChartScatterChart(
             // ScatterData (which resets the user's zoom/pan) when nothing changed.
             val signature = buildString {
                 append(myData.size).append('|')
-                myData.forEach { append(it.date).append(':').append(it.averageSerieScore).append(',') }
+                myData.forEach {
+                    append(it.date).append(':').append(it.averageSerieScore).append(',')
+                }
                 append('#')
                 comparedShooters.forEach { (id, info) ->
                     append(id).append('=').append(info.name).append(':')
-                    info.chartData.forEach { append(it.date).append(':').append(it.averageSerieScore).append(',') }
+                    info.chartData.forEach {
+                        append(it.date).append(':').append(it.averageSerieScore).append(',')
+                    }
                     append(';')
                 }
             }
@@ -343,16 +358,20 @@ fun ChartScatterChart(
             chart.tag = signature
 
             val dataSets = mutableListOf<ScatterDataSet>()
+            val scatterShapeSizeDp = 16.dp.value
 
             // My data
             if (myData.isNotEmpty()) {
                 val entries = myData.sortedBy { it.date }.map { dp ->
                     Entry(dateIndexMap[dp.date] ?: 0f, dp.averageSerieScore.toFloat())
                 }
-                val myDataSet = ScatterDataSet(entries, chart.context.getString(R.string.charts_my_results)).apply {
+                val myDataSet = ScatterDataSet(
+                    entries,
+                    chart.context.getString(R.string.charts_my_results)
+                ).apply {
                     color = CHART_COLORS[0]
                     setScatterShape(CHART_SHAPES[0])
-                    scatterShapeSize = 20f
+                    scatterShapeSize = scatterShapeSizeDp
                     setDrawValues(false)
                 }
                 dataSets.add(myDataSet)
@@ -369,7 +388,7 @@ fun ChartScatterChart(
                     val dataSet = ScatterDataSet(entries, info.name).apply {
                         color = CHART_COLORS[colorIndex]
                         setScatterShape(CHART_SHAPES[shapeIndex])
-                        scatterShapeSize = 24f
+                        scatterShapeSize = scatterShapeSizeDp
                         setDrawValues(false)
                     }
                     dataSets.add(dataSet)
@@ -468,15 +487,6 @@ fun AddShooterDialog(
     )
 }
 
-private fun formatResultsType(type: String): String {
-    return when (type) {
-        "precision" -> "Precision"
-        "military" -> "Militär"
-        "field" -> "Fält"
-        "pointfield" -> "Poängfält"
-        else -> type.replaceFirstChar { it.uppercase() }
-    }
-}
 
 @Preview(showBackground = true, name = "Charts - Default with data")
 @Composable
