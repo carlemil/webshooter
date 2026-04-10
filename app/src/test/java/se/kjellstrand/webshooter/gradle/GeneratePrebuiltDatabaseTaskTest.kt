@@ -6,22 +6,31 @@ import java.io.File
 
 class GeneratePrebuiltDatabaseTaskTest {
 
+    private val prebuiltDbFile = File("prebuilt-database.gradle.kts")
     private val buildFile = File("build.gradle.kts")
 
-    // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
+    // --- Prebuilt database task tests ---
 
     @Test
-    fun `build file should register generatePrebuiltDatabase task`() {
-        val content = buildFile.readText()
+    fun `prebuilt database gradle file should exist`() {
         assertTrue(
-            "build.gradle.kts must register a generatePrebuiltDatabase task",
+            "prebuilt-database.gradle.kts must exist",
+            prebuiltDbFile.exists()
+        )
+    }
+
+    @Test
+    fun `prebuilt database file should register generatePrebuiltDatabase task`() {
+        val content = prebuiltDbFile.readText()
+        assertTrue(
+            "prebuilt-database.gradle.kts must register a generatePrebuiltDatabase task",
             content.contains("generatePrebuiltDatabase")
         )
     }
 
     @Test
     fun `generatePrebuiltDatabase task should reference schema location`() {
-        val content = buildFile.readText()
+        val content = prebuiltDbFile.readText()
         assertTrue(
             "task must read the Room schema JSON to create the database",
             content.contains("schemas") && content.contains("AppDatabase")
@@ -30,7 +39,7 @@ class GeneratePrebuiltDatabaseTaskTest {
 
     @Test
     fun `generatePrebuiltDatabase task should create competition_fetch_status table`() {
-        val content = buildFile.readText()
+        val content = prebuiltDbFile.readText()
         assertTrue(
             "task must create a competition_fetch_status tracking table",
             content.contains("competition_fetch_status")
@@ -39,7 +48,7 @@ class GeneratePrebuiltDatabaseTaskTest {
 
     @Test
     fun `generatePrebuiltDatabase task should use sqlite-jdbc`() {
-        val content = buildFile.readText()
+        val content = prebuiltDbFile.readText()
         assertTrue(
             "task must use SQLite JDBC to create the database file",
             content.contains("jdbc:sqlite")
@@ -48,18 +57,18 @@ class GeneratePrebuiltDatabaseTaskTest {
 
     @Test
     fun `generatePrebuiltDatabase task should call results API`() {
-        val content = buildFile.readText()
+        val content = prebuiltDbFile.readText()
         assertTrue(
             "task must call the webshooter results API",
             content.contains("competitions") && content.contains("results")
         )
     }
 
-    // --- Fixed behavior: release build wiring (should FAIL before fix, PASS after fix) ---
+    // --- Release build wiring tests ---
 
     @Test
     fun `assembleProdRelease should depend on generatePrebuiltDatabase`() {
-        val content = buildFile.readText()
+        val content = prebuiltDbFile.readText()
         assertTrue(
             "assembleProdRelease must depend on generatePrebuiltDatabase",
             content.contains("assembleProdRelease") && content.contains("dependsOn(generatePrebuiltDatabase)")
@@ -68,14 +77,23 @@ class GeneratePrebuiltDatabaseTaskTest {
 
     @Test
     fun `bundleProdRelease should depend on generatePrebuiltDatabase`() {
-        val content = buildFile.readText()
+        val content = prebuiltDbFile.readText()
         assertTrue(
             "bundleProdRelease must depend on generatePrebuiltDatabase",
             content.contains("bundleProdRelease") && content.contains("dependsOn(generatePrebuiltDatabase)")
         )
     }
 
-    // --- Guard tests (should PASS before and after fix) ---
+    // --- Guard tests ---
+
+    @Test
+    fun `build file should apply prebuilt database gradle file`() {
+        val content = buildFile.readText()
+        assertTrue(
+            "build.gradle.kts must apply prebuilt-database.gradle.kts",
+            content.contains("prebuilt-database.gradle.kts")
+        )
+    }
 
     @Test
     fun `build file should have ksp room schema location configured`() {
