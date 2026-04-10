@@ -31,24 +31,15 @@ class CompetitionMappersTest {
         signupsOpeningDate = "2026-01-01",
         signupsClosingDate = "2026-01-01",
         allowSignupsAfterClosingDateHuman = null,
-        finalTime = null,
         startTimeHuman = null,
         finalTimeHuman = null,
         signupsCount = 10L,
         patrolsCount = 2L,
         allowTeams = 0L,
-        isPublic = 1L,
-        resultsIsPublic = 1L,
-        patrolsIsPublic = 1L,
-        pdfLogoPath = null,
-        pdfLogoUrl = null,
-        pdfLogo = "\"Webshooter\"",
         competitionTypeJson = """{"id":1,"name":"Precision"}""",
         weaponGroupsJson = "[]",
         weaponClassesJson = "[]",
-        availableLogosJson = "[]",
         userSignupsJson = "[]",
-        translationsJson = null,
         clubJson = validClubJson
     )
 
@@ -90,19 +81,11 @@ class CompetitionMappersTest {
     }
 
     @Test
-    fun `toDomain handles null translationsJson`() {
-        val result = validEntity().copy(translationsJson = null).toDomain(gson)
-        assertNotNull(result)
-        assertNotNull(result!!.translations)
-    }
-
-    @Test
     fun `toDomain handles empty list json fields`() {
         val result = validEntity().toDomain(gson)
         assertNotNull(result)
         assertTrue(result!!.weaponGroups.isEmpty())
         assertTrue(result.weaponClasses.isEmpty())
-        assertTrue(result.availableLogos.isEmpty())
         assertTrue(result.userSignups.isEmpty())
     }
 }

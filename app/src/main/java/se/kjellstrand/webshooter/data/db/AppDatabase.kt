@@ -31,7 +31,7 @@ import se.kjellstrand.webshooter.data.mysignups.local.SignupsDao
         UserProfileEntity::class
     ],
     version = DB_VERSION,
-    exportSchema = false
+    exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun competitionsDao(): CompetitionsDao
