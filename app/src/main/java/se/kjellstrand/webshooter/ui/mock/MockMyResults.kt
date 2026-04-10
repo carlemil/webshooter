@@ -4,7 +4,6 @@ import se.kjellstrand.webshooter.data.mysignups.remote.SignupCompetition
 import se.kjellstrand.webshooter.data.mysignups.remote.SignupEntry
 import se.kjellstrand.webshooter.data.mysignups.remote.SignupPatrol
 import se.kjellstrand.webshooter.data.mysignups.remote.SignupResultsPlacement
-import se.kjellstrand.webshooter.data.mysignups.remote.SignupTeam
 import se.kjellstrand.webshooter.data.mysignups.remote.SignupWeaponClass
 import se.kjellstrand.webshooter.ui.screens.myresults.ResultStats
 import se.kjellstrand.webshooter.ui.screens.myresults.SummaryRow
@@ -39,15 +38,11 @@ class MockMyResults {
             date = compDate,
             status = "Closed",
             statusHuman = "Avslutad",
-            contactName = "Tävlingsledare",
-            contactCity = "Mölle",
-            resultsType = "field",
             resultsTypeHuman = "Fält"
         ),
-        weaponclass = SignupWeaponClass(id = 23, classname = weaponClassname, classnameGeneral = weaponGeneral),
-        patrol = SignupPatrol(id = 1, competitionsId = compId, startTimeHuman = "09:00", endTimeHuman = "10:45"),
-        team = emptyList(),
-        resultsPlacements = SignupResultsPlacement(id = id, placement = placement, stdMedal = medal, points = points)
+        weaponclass = SignupWeaponClass(classname = weaponClassname, classnameGeneral = weaponGeneral),
+        patrol = SignupPatrol(id = 1, startTimeHuman = "09:00", endTimeHuman = "10:45"),
+        resultsPlacements = SignupResultsPlacement(id = id, stdMedal = medal, points = points)
     )
 
     val entries = listOf(

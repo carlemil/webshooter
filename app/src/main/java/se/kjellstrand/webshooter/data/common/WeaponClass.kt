@@ -1,21 +1,14 @@
 package se.kjellstrand.webshooter.data.common
 
 import com.google.gson.annotations.SerializedName
-import se.kjellstrand.webshooter.data.competitions.remote.Pivot
 
 data class WeaponClass(
     val id: Long,
 
-    @SerializedName("weapongroups_id")
-    val weaponGroupsID: Long,
-
     val classname: String,
-    val championship: Long,
 
     @SerializedName("classname_general")
-    val classnameGeneral: ClassnameGeneral,
-
-    val pivot: Pivot?
+    val classnameGeneral: ClassnameGeneral
 )
 
 enum class ClassnameGeneral(val value: String) {

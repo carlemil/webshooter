@@ -11,7 +11,6 @@ private fun String?.nullIfLiteralNull(): String? = if (this == "null") null else
 fun ClubData.sanitizeNullStrings(): ClubData = copy(
     phone = phone.nullIfLiteralNull(),
     addressStreet = addressStreet.nullIfLiteralNull(),
-    addressStreet2 = addressStreet2.nullIfLiteralNull(),
     addressZipcode = addressZipcode.nullIfLiteralNull(),
     addressCity = addressCity.nullIfLiteralNull(),
     addressCountry = addressCountry.nullIfLiteralNull(),
@@ -27,14 +26,12 @@ fun ClubData.toEntity(gson: Gson): ClubEntity = ClubEntity(
     email = email,
     phone = phone,
     addressStreet = addressStreet,
-    addressStreet2 = addressStreet2,
     addressZipcode = addressZipcode,
     addressCity = addressCity,
     addressCountry = addressCountry,
     bankgiro = bankgiro,
     postgiro = postgiro,
     swish = swish,
-    logoUrl = logoUrl,
     adminsJson = gson.toJson(admins),
     usersJson = gson.toJson(users)
 )
@@ -47,14 +44,12 @@ fun ClubEntity.toDomain(gson: Gson): ClubInfoResponse = ClubInfoResponse(
         email = email,
         phone = phone,
         addressStreet = addressStreet,
-        addressStreet2 = addressStreet2,
         addressZipcode = addressZipcode,
         addressCity = addressCity,
         addressCountry = addressCountry,
         bankgiro = bankgiro,
         postgiro = postgiro,
         swish = swish,
-        logoUrl = logoUrl,
         admins = gson.fromJson(adminsJson, object : TypeToken<List<ClubMember>>() {}.type),
         users = gson.fromJson(usersJson, object : TypeToken<List<ClubMember>>() {}.type)
     )

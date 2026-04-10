@@ -21,6 +21,5 @@ data class SignupEntryEntity(
     val competitionJson: String,
     val weaponClassJson: String,
     val patrolJson: String?,
-    val teamJson: String,
     val resultsPlacementsJson: String?
 )

@@ -11,7 +11,6 @@ data class PatrolEntry(
     val sortorder: Int,
     @SerializedName("start_time_human") val startTimeHuman: String,
     @SerializedName("end_time_human") val endTimeHuman: String,
-    @SerializedName("patrol_size") val patrolSize: Int,
     val signups: List<PatrolSignupEntry>
 )
 

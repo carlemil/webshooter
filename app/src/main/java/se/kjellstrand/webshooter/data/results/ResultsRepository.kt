@@ -58,7 +58,7 @@ open class ResultsRepository @Inject constructor(
             }
 
             dao.deleteByCompetition(competitionId)
-            dao.insertAll(result.results.map { it.toEntity(gson) })
+            dao.insertAll(result.results.map { it.toEntity(competitionId, gson) })
 
             emit(Resource.Success(result))
         }
@@ -94,7 +94,7 @@ open class ResultsRepository @Inject constructor(
             }
 
             dao.deleteByCompetition(competitionId)
-            dao.insertAll(result.results.map { it.toEntity(gson) })
+            dao.insertAll(result.results.map { it.toEntity(competitionId, gson) })
             emit(Resource.Success(result))
         }
     }
@@ -134,7 +134,7 @@ open class ResultsRepository @Inject constructor(
             }
 
             dao.deleteByCompetition(competitionId)
-            dao.insertAll(result.results.map { it.toEntity(gson) })
+            dao.insertAll(result.results.map { it.toEntity(competitionId, gson) })
 
             val filtered = result.results.filter { it.signup.user.userID == shooterId }
             emit(Resource.Success(result.copy(results = filtered)))

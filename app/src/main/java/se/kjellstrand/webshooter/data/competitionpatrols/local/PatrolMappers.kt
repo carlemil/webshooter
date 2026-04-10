@@ -11,7 +11,6 @@ fun PatrolEntry.toEntity(competitionId: Long, gson: Gson): PatrolEntity = Patrol
     sortorder = sortorder,
     startTimeHuman = startTimeHuman,
     endTimeHuman = endTimeHuman,
-    patrolSize = patrolSize,
     signupsJson = gson.toJson(signups)
 )
 
@@ -20,6 +19,5 @@ fun PatrolEntity.toDomain(gson: Gson): PatrolEntry = PatrolEntry(
     sortorder = sortorder,
     startTimeHuman = startTimeHuman,
     endTimeHuman = endTimeHuman,
-    patrolSize = patrolSize,
     signups = gson.fromJson(signupsJson, object : TypeToken<List<PatrolSignupEntry>>() {}.type)
 )
