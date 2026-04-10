@@ -11,6 +11,9 @@ interface CompetitionsDao {
     @Query("SELECT * FROM competitions ORDER BY date DESC")
     suspend fun getAll(): List<CompetitionEntity>
 
+    @Query("SELECT * FROM competitions WHERE status = 'completed' ORDER BY date DESC")
+    suspend fun getCompletedCompetitions(): List<CompetitionEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(competitions: List<CompetitionEntity>)
 
