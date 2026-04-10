@@ -25,7 +25,6 @@ class SignupMappersTest {
         competitionJson = """{"id":10,"name":"Test","date":"2026-01-01","status":"active","status_human":"Active","contact_name":"John","contact_city":"Stockholm","results_type":"precision","results_type_human":"Precision"}""",
         weaponClassJson = """{"id":3,"classname":"A","classname_general":"Pistol"}""",
         patrolJson = null,
-        teamJson = "[]",
         resultsPlacementsJson = null
     )
 
@@ -44,8 +43,8 @@ class SignupMappersTest {
     }
 
     @Test
-    fun `toDomain returns null for corrupted teamJson`() {
-        val entity = validEntity().copy(teamJson = "corrupt")
+    fun `toDomain returns null for corrupted patrolJson`() {
+        val entity = validEntity().copy(patrolJson = "corrupt")
         assertNull(entity.toDomain(gson))
     }
 
@@ -69,9 +68,9 @@ class SignupMappersTest {
     }
 
     @Test
-    fun `toDomain handles empty team list`() {
-        val result = validEntity().copy(teamJson = "[]").toDomain(gson)
+    fun `toDomain handles null resultsPlacementsJson`() {
+        val result = validEntity().copy(resultsPlacementsJson = null).toDomain(gson)
         assertNotNull(result)
-        assertTrue(result!!.team.isEmpty())
+        assertNull(result!!.resultsPlacements)
     }
 }

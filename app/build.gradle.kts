@@ -14,6 +14,10 @@ val appVersionName = "1.17.0"
 
 val dbVersionDir = layout.buildDirectory.dir("generated/source/dbversion")
 
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
 val generateDbVersion = tasks.register("generateDbVersion") {
     outputs.dir(dbVersionDir)
     doLast {

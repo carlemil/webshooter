@@ -21,14 +21,12 @@ class ClubMappersTest {
         email = "test@test.se",
         phone = phone,
         addressStreet = addressStreet,
-        addressStreet2 = null,
         addressZipcode = addressZipcode,
         addressCity = addressCity,
         addressCountry = addressCountry,
         bankgiro = bankgiro,
         postgiro = postgiro,
-        swish = null,
-        logoUrl = null
+        swish = null
     )
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
