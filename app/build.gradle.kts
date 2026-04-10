@@ -39,6 +39,9 @@ tasks.configureEach {
     if (name.startsWith("ksp") || (name.startsWith("compile") && name.endsWith("Kotlin"))) {
         dependsOn(generateDbVersion)
     }
+    if (name == "assembleProdRelease" || name == "bundleProdRelease") {
+        dependsOn(generatePrebuiltDatabase)
+    }
 }
 
 val generatePrebuiltDatabase = tasks.register("generatePrebuiltDatabase") {
