@@ -3,7 +3,7 @@ package se.kjellstrand.webshooter.ui.screens.charts
 import se.kjellstrand.webshooter.data.charts.ChartDataPoint
 import se.kjellstrand.webshooter.data.charts.Participant
 import se.kjellstrand.webshooter.data.club.remote.ClubMember
-import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
+
 
 data class ShooterChartInfo(
     val name: String,

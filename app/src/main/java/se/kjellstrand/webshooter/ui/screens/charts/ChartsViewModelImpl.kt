@@ -59,7 +59,15 @@ class ChartsViewModelImpl @Inject constructor(
                     is Resource.Success -> {
                         allCompetitionMeta = resource.data.allCompetitionMeta
                         val grouped = resource.data.dataPoints.groupBy { it.resultsType }
-                        val availableTypes = grouped.keys.toList().sorted()
+                        // Derive available tabs from metadata so they appear as
+                        // soon as the repository emits its initial metadata-only
+                        // Success — before any datapoints have streamed in.
+                        val hiddenTypes = setOf("pointfield")
+                        val availableTypes = resource.data.allCompetitionMeta.values
+                            .map { it.resultsType }
+                            .distinct()
+                            .filter { it !in hiddenTypes }
+                            .sorted()
                         val availableClasses = resource.data.allWeaponClasses
                         val selectedType = _uiState.value.selectedResultsType.ifEmpty {
                             availableTypes.firstOrNull() ?: ""
@@ -71,7 +79,6 @@ class ChartsViewModelImpl @Inject constructor(
                             availableWeaponClasses = availableClasses,
                             allParticipants = resource.data.allParticipants,
                             selectedResultsType = selectedType,
-                            isLoading = false,
                             hasError = false
                         )
                     }
@@ -130,6 +137,15 @@ class ChartsViewModelImpl @Inject constructor(
             ?: _uiState.value.allParticipants
                 .find { it.userId == userId }?.fullname
             ?: return
+
+        // Add immediately with empty data so the dialog reflects the selection
+        // right away. Chart data is backfilled asynchronously below.
+        _uiState.value = _uiState.value.copy(
+            comparedShooters = _uiState.value.comparedShooters + (userId to ShooterChartInfo(
+                name = shooterName,
+                chartData = emptyList()
+            ))
+        )
 
         val competitionIds = allCompetitionMeta.keys.toList()
         val competitionMetadata = allCompetitionMeta

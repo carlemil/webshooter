@@ -208,18 +208,23 @@ data class Datum (
     val club: Club
 )
 
-enum class ResultsType {
+enum class ResultsType(val apiString: String, val displayName: String) {
     @SerializedName("precision")
-    PRECISION,
+    PRECISION("precision", "Precision"),
 
     @SerializedName("military")
-    MILITARY,
+    MILITARY("military", "Militär"),
 
     @SerializedName("field")
-    FIELD,
+    FIELD("field", "Fält"),
 
     @SerializedName("pointfield")
-    POINTS_FIELD,
+    POINTS_FIELD("pointfield", "Poängfält");
+
+    companion object {
+        private val byApiString = values().associateBy { it.apiString }
+        fun fromApiString(value: String): ResultsType? = byApiString[value]
+    }
 }
 
 data class Translations (
