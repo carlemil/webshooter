@@ -33,6 +33,26 @@ class DatabaseModuleTest {
         )
     }
 
+    // --- Fixed behavior: createFromAsset (should FAIL before fix, PASS after fix) ---
+
+    @Test
+    fun `database should be created from prebuilt asset`() {
+        val source = sourceFile.readText()
+        assertTrue(
+            "DatabaseModule must use createFromAsset to load the prebuilt database",
+            source.contains("createFromAsset")
+        )
+    }
+
+    @Test
+    fun `createFromAsset should reference the correct asset path`() {
+        val source = sourceFile.readText()
+        assertTrue(
+            "createFromAsset must reference databases/webshooter.db",
+            source.contains("""createFromAsset("databases/webshooter.db")""")
+        )
+    }
+
     // --- Guard tests (should PASS before and after fix) ---
 
     @Test
