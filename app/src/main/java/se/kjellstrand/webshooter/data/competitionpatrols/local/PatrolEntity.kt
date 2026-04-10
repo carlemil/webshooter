@@ -14,6 +14,5 @@ data class PatrolEntity(
     val sortorder: Int,
     val startTimeHuman: String,
     val endTimeHuman: String,
-    val patrolSize: Int,
     val signupsJson: String
 )

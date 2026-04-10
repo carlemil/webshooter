@@ -12,7 +12,6 @@ data class ResultEntity(
     val figureHits: Long,
     val hits: Long,
     val points: Long,
-    val weaponClassesId: Long,
     val stdMedal: String?,
     val signupJson: String,
     val weaponClassJson: String,

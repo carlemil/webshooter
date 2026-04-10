@@ -16,7 +16,6 @@ import se.kjellstrand.webshooter.data.competitions.local.toEntity
 import se.kjellstrand.webshooter.data.competitions.remote.Competitions
 import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsRemoteDataSource
 import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsResponse
-import se.kjellstrand.webshooter.data.competitions.remote.Link
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -49,15 +48,9 @@ open class CompetitionsRepository @Inject constructor(
                                 competitions = Competitions(
                                     currentPage = 1,
                                     data = domains,
-                                    from = 1,
                                     lastPage = 1,
-                                    links = emptyList<Link>(),
-                                    path = "",
-                                    perPage = domains.size.toLong(),
-                                    to = domains.size.toLong(),
                                     total = Long.MAX_VALUE,
                                     status = "",
-                                    type = 0,
                                     competitionTypes = emptyList()
                                 )
                             )))

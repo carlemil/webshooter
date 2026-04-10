@@ -50,26 +50,17 @@ data class UserProfile(
 
 data class Club(
     val id: Long,
-    @SerializedName("disable_personal_invoices") val disablePersonalInvoices: Int?,
-    @SerializedName("districts_id") val districtsId: Long?,
     @SerializedName("clubs_nr") val clubsNr: Int?,
     val name: String,
     val email: String?,
     val phone: String?,
     @SerializedName("address_street") val addressStreet: String?,
-    @SerializedName("address_street_2") val addressStreet2: String?,
     @SerializedName("address_zipcode") val addressZipcode: String?,
     @SerializedName("address_city") val addressCity: String?,
     @SerializedName("address_country") val addressCountry: String?,
     val bankgiro: String?,
     val postgiro: String?,
     val swish: String?,
-    val logo: String?,
-    @SerializedName("user_has_role") val userHasRole: String?,
-    @SerializedName("address_combined") val addressCombined: String?,
-    @SerializedName("address_incomplete") val addressIncomplete: Boolean?,
-    @SerializedName("logo_url") val logoUrl: String?,
-    @SerializedName("logo_path") val logoPath: String?,
 )
 
 data class UpdatePasswordRequest(

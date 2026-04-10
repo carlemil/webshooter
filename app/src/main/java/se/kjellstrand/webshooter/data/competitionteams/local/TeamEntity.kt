@@ -12,7 +12,5 @@ data class TeamEntity(
     val id: Long,
     val competitionId: Long,
     val name: String,
-    val clubsId: Long,
-    val weapongroupsId: Long,
     val signupsJson: String
 )

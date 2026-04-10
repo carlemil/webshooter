@@ -193,7 +193,7 @@ class ChartsRepository @Inject constructor(
                         val avg = computeAverageScore(r, resultsType)
                         result[shooterId]?.add(
                             ChartDataPoint(
-                                competitionId = r.competitionsID,
+                                competitionId = competitionId,
                                 competitionName = meta?.name ?: "",
                                 date = meta?.date ?: "",
                                 averageSerieScore = avg,

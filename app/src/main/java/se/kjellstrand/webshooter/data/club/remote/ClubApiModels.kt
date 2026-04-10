@@ -13,14 +13,12 @@ data class ClubData(
     val email: String?,
     val phone: String?,
     @SerializedName("address_street") val addressStreet: String?,
-    @SerializedName("address_street_2") val addressStreet2: String?,
     @SerializedName("address_zipcode") val addressZipcode: String?,
     @SerializedName("address_city") val addressCity: String?,
     @SerializedName("address_country") val addressCountry: String?,
     val bankgiro: String?,
     val postgiro: String?,
     val swish: String?,
-    @SerializedName("logo_url") val logoUrl: String?,
     val admins: List<ClubMember> = emptyList(),
     val users: List<ClubMember> = emptyList()
 )

@@ -859,22 +859,9 @@ fun CompetitionsScreenEmptyPreview() {
                 competitions = se.kjellstrand.webshooter.data.competitions.remote.Competitions(
                     currentPage = 1,
                     data = emptyList(),
-                    firstPageURL = "",
-                    from = 0,
                     lastPage = 1,
-                    lastPageURL = "",
-                    links = emptyList(),
-                    nextPageURL = null,
-                    path = "",
-                    perPage = 10,
-                    prevPageURL = null,
-                    to = 0,
                     total = 0,
-                    search = null,
                     status = "",
-                    clubsID = null,
-                    type = 0,
-                    userSignup = null,
                     competitionTypes = emptyList()
                 )
             )

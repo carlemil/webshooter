@@ -11,14 +11,12 @@ data class ClubEntity(
     val email: String?,
     val phone: String?,
     val addressStreet: String?,
-    val addressStreet2: String?,
     val addressZipcode: String?,
     val addressCity: String?,
     val addressCountry: String?,
     val bankgiro: String?,
     val postgiro: String?,
     val swish: String?,
-    val logoUrl: String?,
     val adminsJson: String,
     val usersJson: String
 )

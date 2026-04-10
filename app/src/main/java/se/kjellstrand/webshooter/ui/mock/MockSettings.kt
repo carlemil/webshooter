@@ -23,26 +23,17 @@ class MockSettings {
         clubs = listOf(
             se.kjellstrand.webshooter.data.settings.remote.Club(
                 id = 73,
-                disablePersonalInvoices = 0,
-                districtsId = 6,
                 clubsNr = 73,
                 name = "Kullens Pistolklubb",
                 email = "info@kullens-pk.se",
                 phone = "042-123456",
                 addressStreet = "Skyttevägen 12",
-                addressStreet2 = null,
                 addressZipcode = "263 52",
                 addressCity = "Mölle",
                 addressCountry = "Sverige",
                 bankgiro = "5432-1098",
                 postgiro = null,
-                swish = "1234567890",
-                logo = null,
-                userHasRole = "admin",
-                addressCombined = "Skyttevägen 12, 263 52 Mölle",
-                addressIncomplete = false,
-                logoUrl = null,
-                logoPath = null
+                swish = "1234567890"
             )
         )
     )
