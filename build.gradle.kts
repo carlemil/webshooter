@@ -14,4 +14,9 @@ buildscript {
         google()
         mavenCentral()
     }
+    dependencies {
+        classpath("org.xerial:sqlite-jdbc:3.47.1.0")
+        classpath("com.squareup.okhttp3:okhttp:4.12.0")
+        classpath("com.google.code.gson:gson:2.11.0")
+    }
 }
