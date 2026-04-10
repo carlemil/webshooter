@@ -55,6 +55,26 @@ class GeneratePrebuiltDatabaseTaskTest {
         )
     }
 
+    // --- Fixed behavior: release build wiring (should FAIL before fix, PASS after fix) ---
+
+    @Test
+    fun `assembleProdRelease should depend on generatePrebuiltDatabase`() {
+        val content = buildFile.readText()
+        assertTrue(
+            "assembleProdRelease must depend on generatePrebuiltDatabase",
+            content.contains("assembleProdRelease") && content.contains("dependsOn(generatePrebuiltDatabase)")
+        )
+    }
+
+    @Test
+    fun `bundleProdRelease should depend on generatePrebuiltDatabase`() {
+        val content = buildFile.readText()
+        assertTrue(
+            "bundleProdRelease must depend on generatePrebuiltDatabase",
+            content.contains("bundleProdRelease") && content.contains("dependsOn(generatePrebuiltDatabase)")
+        )
+    }
+
     // --- Guard tests (should PASS before and after fix) ---
 
     @Test
