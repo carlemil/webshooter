@@ -87,4 +87,58 @@ open class CompetitionsRepository @Inject constructor(
             emit(Resource.Success(result))
         }.flowOn(Dispatchers.Default)
     }
+
+    fun getLocalAll(): Flow<Resource<CompetitionsResponse, UserError>> {
+        return flow<Resource<CompetitionsResponse, UserError>> {
+            emit(Resource.Loading(true))
+            try {
+                val cached = dao.getAll()
+                val domains = cached.mapNotNull { it.toDomain(gson) }
+                emit(
+                    Resource.Success(
+                        CompetitionsResponse(
+                            competitions = Competitions(
+                                currentPage = 1,
+                                data = domains,
+                                lastPage = 1,
+                                total = domains.size.toLong(),
+                                status = "",
+                                competitionTypes = emptyList()
+                            )
+                        )
+                    )
+                )
+            } catch (e: Exception) {
+                Log.w(TAG, "Error reading local competitions", e)
+                emit(Resource.Error(UserError.UnknownError))
+            }
+        }.flowOn(Dispatchers.Default)
+    }
+
+    fun getLocalCompleted(): Flow<Resource<CompetitionsResponse, UserError>> {
+        return flow<Resource<CompetitionsResponse, UserError>> {
+            emit(Resource.Loading(true))
+            try {
+                val cached = dao.getCompletedCompetitions()
+                val domains = cached.mapNotNull { it.toDomain(gson) }
+                emit(
+                    Resource.Success(
+                        CompetitionsResponse(
+                            competitions = Competitions(
+                                currentPage = 1,
+                                data = domains,
+                                lastPage = 1,
+                                total = domains.size.toLong(),
+                                status = "",
+                                competitionTypes = emptyList()
+                            )
+                        )
+                    )
+                )
+            } catch (e: Exception) {
+                Log.w(TAG, "Error reading local completed competitions", e)
+                emit(Resource.Error(UserError.UnknownError))
+            }
+        }.flowOn(Dispatchers.Default)
+    }
 }
