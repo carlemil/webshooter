@@ -1,35 +1,39 @@
 package se.kjellstrand.webshooter
 
 import android.app.Application
-import android.os.StrictMode
+import android.util.Log
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
+import se.kjellstrand.webshooter.data.AuthTokenManager
+import se.kjellstrand.webshooter.data.competitions.CompetitionsRepository
+import javax.inject.Inject
 
 @HiltAndroidApp
 class ShooterApplication : Application() {
+
+    @Inject lateinit var competitionsRepository: CompetitionsRepository
+    @Inject lateinit var authTokenManager: AuthTokenManager
+
+    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
     override fun onCreate() {
         super.onCreate()
-        if (BuildConfig.DEBUG) {
-            StrictMode.setThreadPolicy(
-                StrictMode.ThreadPolicy.Builder()
-                    .detectAll()
-                    .penaltyLog()
-                    .build()
-            )
-            StrictMode.setVmPolicy(
-                StrictMode.VmPolicy.Builder()
-                    .detectLeakedSqlLiteObjects()
-                    .detectLeakedClosableObjects()
-                    .detectActivityLeaks()
-                    .detectLeakedRegistrationObjects()
-                    .detectFileUriExposure()
-                    .detectCleartextNetwork()
-                    .detectContentUriWithoutPermission()
-                    // Intentionally omitting detectUntaggedSockets() -
-                    // triggered by Google's datatransport library (Firebase/Crashlytics)
-                    // which we cannot control.
-                    .penaltyLog()
-                    .build()
-            )
+
+        if (authTokenManager.readToken() != null) {
+            applicationScope.launch {
+                try {
+                    competitionsRepository.syncCompleted()
+                } catch (e: Exception) {
+                    Log.w(TAG, "Failed to sync completed competitions on startup", e)
+                }
+            }
         }
+    }
+
+    companion object {
+        private const val TAG = "ShooterApplication"
     }
 }
