@@ -115,6 +115,33 @@ open class CompetitionsRepository @Inject constructor(
         }.flowOn(Dispatchers.Default)
     }
 
+    fun prefetchCompleted(pageSize: Int = 100): Flow<Resource<CompetitionsResponse, UserError>> {
+        return flow<Resource<CompetitionsResponse, UserError>> {
+            emit(Resource.Loading(true))
+
+            val result = try {
+                competitionsRemoteDataSource.getCompetitions(1, pageSize, "completed", 0, 0)
+            } catch (e: IOException) {
+                Log.w(TAG, "Error prefetching completed competitions", e)
+                emit(Resource.Error(UserError.IOError))
+                return@flow
+            } catch (e: HttpException) {
+                Log.w(TAG, "Error prefetching completed competitions", e)
+                emit(Resource.Error(UserError.HttpError(e.code())))
+                return@flow
+            } catch (e: Exception) {
+                Log.w(TAG, "Error prefetching completed competitions", e)
+                emit(Resource.Error(UserError.UnknownError))
+                return@flow
+            }
+
+            val entities = result.competitions.data.map { it.toEntity(gson) }
+            dao.insertAll(entities)
+
+            emit(Resource.Success(result))
+        }.flowOn(Dispatchers.Default)
+    }
+
     fun getLocalCompleted(): Flow<Resource<CompetitionsResponse, UserError>> {
         return flow<Resource<CompetitionsResponse, UserError>> {
             emit(Resource.Loading(true))
