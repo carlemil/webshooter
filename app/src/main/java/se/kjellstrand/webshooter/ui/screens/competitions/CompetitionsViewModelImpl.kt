@@ -21,6 +21,7 @@ class CompetitionsViewModelImpl @Inject constructor(
     override val uiState: StateFlow<CompetitionsUiState> = _uiState.asStateFlow()
 
     private var currentPage = 1
+    private var reachedCompleted = false
 
     init {
         loadInitialPages()
@@ -32,7 +33,7 @@ class CompetitionsViewModelImpl @Inject constructor(
     }
 
     override fun loadNextPage() {
-        if (_uiState.value.isLoading) return
+        if (_uiState.value.isLoading || reachedCompleted) return
         _uiState.value = _uiState.value.copy(isLoading = true)
         currentPage++
         loadCompetitions(currentPage, 10)
@@ -44,6 +45,7 @@ class CompetitionsViewModelImpl @Inject constructor(
             flow.collect { resource ->
                 when (resource) {
                     is Resource.Success -> {
+                        val hasCompleted = resource.data.competitions.data.any { it.status == "completed" }
                         if (page == 1) {
                             _uiState.value = _uiState.value.copy(
                                 competitions = resource.data.competitions,
@@ -56,6 +58,10 @@ class CompetitionsViewModelImpl @Inject constructor(
                                 competitions = resource.data.competitions.copy(data = currentCompetitions + newCompetitions),
                                 isLoading = false
                             )
+                        }
+                        if (hasCompleted) {
+                            reachedCompleted = true
+                            appendLocalCompleted()
                         }
                     }
 
@@ -76,7 +82,30 @@ class CompetitionsViewModelImpl @Inject constructor(
     override fun reload() {
         _uiState.value = _uiState.value.copy(competitions = null, isLoading = true, hasError = false)
         currentPage = 1
+        reachedCompleted = false
         loadInitialPages()
+    }
+
+    private fun appendLocalCompleted() {
+        viewModelScope.launch {
+            competitionsRepository.getLocalCompleted().collect { resource ->
+                when (resource) {
+                    is Resource.Success -> {
+                        val currentData = _uiState.value.competitions?.data ?: emptyList()
+                        val currentIds = currentData.map { it.id }.toSet()
+                        val newCompleted = resource.data.competitions.data.filter { it.id !in currentIds }
+                        if (newCompleted.isNotEmpty()) {
+                            _uiState.value = _uiState.value.copy(
+                                competitions = _uiState.value.competitions?.copy(
+                                    data = currentData + newCompleted
+                                )
+                            )
+                        }
+                    }
+                    else -> {}
+                }
+            }
+        }
     }
 
     override fun getCompetitionById(competitionId: Long): Datum? {
