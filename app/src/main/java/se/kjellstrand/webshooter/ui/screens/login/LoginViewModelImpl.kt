@@ -10,9 +10,11 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import android.util.Log
 import se.kjellstrand.webshooter.data.AuthTokenManager
 import se.kjellstrand.webshooter.data.MockModeManager
 import se.kjellstrand.webshooter.data.common.Resource
+import se.kjellstrand.webshooter.data.competitions.CompetitionsRepository
 import se.kjellstrand.webshooter.data.cookies.CookiesRepository
 import se.kjellstrand.webshooter.data.login.LoginRepository
 import se.kjellstrand.webshooter.data.secure.SecurePrefs
@@ -24,8 +26,13 @@ class LoginViewModelImpl @Inject constructor(
     private val loginRepository: LoginRepository,
     private val cookiesRepository: CookiesRepository,
     private val authTokenManager: AuthTokenManager,
-    internal val securePrefs: SecurePrefs
+    internal val securePrefs: SecurePrefs,
+    private val competitionsRepository: CompetitionsRepository
 ) : ViewModel(), LoginViewModel {
+
+    companion object {
+        private const val TAG = "LoginViewModelImpl"
+    }
 
     override val savedUsername = securePrefs.getUsername()
 
@@ -48,6 +55,7 @@ class LoginViewModelImpl @Inject constructor(
                     isSuccess = true
                 )
                 _eventFlow.emit(UiEvent.NavigateToLandingPage)
+                prefetchCompletedCompetitions()
                 return@launch
             }
 
@@ -68,6 +76,7 @@ class LoginViewModelImpl @Inject constructor(
                             )
                             _eventFlow.emit(UiEvent.NavigateToLandingPage)
                             securePrefs.saveUsername(username)
+                            prefetchCompletedCompetitions()
                         }
 
                         is Resource.Error -> {
@@ -83,6 +92,17 @@ class LoginViewModelImpl @Inject constructor(
                         }
                     }
                 }
+        }
+    }
+
+    private fun prefetchCompletedCompetitions() {
+        viewModelScope.launch {
+            competitionsRepository.prefetchCompleted(100).collect { resource ->
+                when (resource) {
+                    is Resource.Error -> Log.w(TAG, "Failed to prefetch completed competitions: ${resource.error}")
+                    else -> {}
+                }
+            }
         }
     }
 
