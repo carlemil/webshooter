@@ -45,7 +45,7 @@ class CompetitionsViewModelImpl @Inject constructor(
             flow.collect { resource ->
                 when (resource) {
                     is Resource.Success -> {
-                        val hasCompleted = resource.data.competitions.data.any { it.status == "completed" }
+                        val allCompleted = resource.data.competitions.data.all { it.status == "completed" }
                         if (page == 1) {
                             _uiState.value = _uiState.value.copy(
                                 competitions = resource.data.competitions,
@@ -59,9 +59,8 @@ class CompetitionsViewModelImpl @Inject constructor(
                                 isLoading = false
                             )
                         }
-                        if (hasCompleted) {
+                        if (allCompleted && page > 1) {
                             reachedCompleted = true
-                            appendLocalCompleted()
                         }
                     }
 
@@ -84,28 +83,6 @@ class CompetitionsViewModelImpl @Inject constructor(
         currentPage = 1
         reachedCompleted = false
         loadInitialPages()
-    }
-
-    private fun appendLocalCompleted() {
-        viewModelScope.launch {
-            competitionsRepository.getLocalCompleted().collect { resource ->
-                when (resource) {
-                    is Resource.Success -> {
-                        val currentData = _uiState.value.competitions?.data ?: emptyList()
-                        val currentIds = currentData.map { it.id }.toSet()
-                        val newCompleted = resource.data.competitions.data.filter { it.id !in currentIds }
-                        if (newCompleted.isNotEmpty()) {
-                            _uiState.value = _uiState.value.copy(
-                                competitions = _uiState.value.competitions?.copy(
-                                    data = currentData + newCompleted
-                                )
-                            )
-                        }
-                    }
-                    else -> {}
-                }
-            }
-        }
     }
 
     override fun getCompetitionById(competitionId: Long): Datum? {
