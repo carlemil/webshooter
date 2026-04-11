@@ -32,17 +32,6 @@ class CompetitionsViewModelStopPagingTest {
         )
     }
 
-    @Test
-    fun `CompetitionsViewModelImpl has appendLocalCompleted method`() {
-        val method = CompetitionsViewModelImpl::class.java.declaredMethods.find {
-            it.name == "appendLocalCompleted"
-        }
-        assertNotNull(
-            "CompetitionsViewModelImpl should have an appendLocalCompleted method",
-            method
-        )
-    }
-
     // --- Guard tests (should PASS before and after fix) ---
 
     @Test

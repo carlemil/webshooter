@@ -97,11 +97,10 @@ class LoginViewModelImpl @Inject constructor(
 
     private fun prefetchCompletedCompetitions() {
         viewModelScope.launch {
-            competitionsRepository.prefetchCompleted(100).collect { resource ->
-                when (resource) {
-                    is Resource.Error -> Log.w(TAG, "Failed to prefetch completed competitions: ${resource.error}")
-                    else -> {}
-                }
+            try {
+                competitionsRepository.syncCompleted()
+            } catch (e: Exception) {
+                Log.w(TAG, "Failed to sync completed competitions", e)
             }
         }
     }

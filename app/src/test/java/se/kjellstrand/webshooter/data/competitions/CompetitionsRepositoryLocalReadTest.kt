@@ -33,22 +33,6 @@ class CompetitionsRepositoryLocalReadTest {
         assertEquals("getLocalAll should take no parameters", 0, method!!.parameterTypes.size)
     }
 
-    @Test
-    fun `repository has getLocalCompleted method`() {
-        val method = CompetitionsRepository::class.java.methods.find { it.name == "getLocalCompleted" }
-        assertNotNull("CompetitionsRepository should have a getLocalCompleted method", method)
-    }
-
-    @Test
-    fun `getLocalCompleted returns Flow`() {
-        val method = CompetitionsRepository::class.java.methods.find { it.name == "getLocalCompleted" }
-        assertNotNull("getLocalCompleted should exist", method)
-        assertTrue(
-            "getLocalCompleted should return a Flow",
-            Flow::class.java.isAssignableFrom(method!!.returnType)
-        )
-    }
-
     // --- Guard tests (should PASS before and after fix) ---
 
     @Test

@@ -78,11 +78,7 @@ open class CompetitionsRepository @Inject constructor(
             }
 
             val entities = result.competitions.data.map { it.toEntity(gson) }
-            if (page == 1) {
-                dao.replaceAll(entities)
-            } else {
-                dao.insertAll(entities)
-            }
+            dao.insertAll(entities)
 
             emit(Resource.Success(result))
         }.flowOn(Dispatchers.Default)
@@ -115,57 +111,21 @@ open class CompetitionsRepository @Inject constructor(
         }.flowOn(Dispatchers.Default)
     }
 
-    fun prefetchCompleted(pageSize: Int = 100): Flow<Resource<CompetitionsResponse, UserError>> {
-        return flow<Resource<CompetitionsResponse, UserError>> {
-            emit(Resource.Loading(true))
+    suspend fun syncCompleted() {
+        val firstPage = competitionsRemoteDataSource.getCompetitions(1, 1, "completed", 0, 0)
+        val apiTotal = firstPage.competitions.total
+        val localCount = dao.getCompletedCount()
 
-            val result = try {
-                competitionsRemoteDataSource.getCompetitions(1, pageSize, "completed", 0, 0)
-            } catch (e: IOException) {
-                Log.w(TAG, "Error prefetching completed competitions", e)
-                emit(Resource.Error(UserError.IOError))
-                return@flow
-            } catch (e: HttpException) {
-                Log.w(TAG, "Error prefetching completed competitions", e)
-                emit(Resource.Error(UserError.HttpError(e.code())))
-                return@flow
-            } catch (e: Exception) {
-                Log.w(TAG, "Error prefetching completed competitions", e)
-                emit(Resource.Error(UserError.UnknownError))
-                return@flow
-            }
+        if (apiTotal <= localCount) return
 
+        var page = 1
+        val pageSize = 100
+        while (true) {
+            val result = competitionsRemoteDataSource.getCompetitions(page, pageSize, "completed", 0, 0)
             val entities = result.competitions.data.map { it.toEntity(gson) }
             dao.insertAll(entities)
-
-            emit(Resource.Success(result))
-        }.flowOn(Dispatchers.Default)
-    }
-
-    fun getLocalCompleted(): Flow<Resource<CompetitionsResponse, UserError>> {
-        return flow<Resource<CompetitionsResponse, UserError>> {
-            emit(Resource.Loading(true))
-            try {
-                val cached = dao.getCompletedCompetitions()
-                val domains = cached.mapNotNull { it.toDomain(gson) }
-                emit(
-                    Resource.Success(
-                        CompetitionsResponse(
-                            competitions = Competitions(
-                                currentPage = 1,
-                                data = domains,
-                                lastPage = 1,
-                                total = domains.size.toLong(),
-                                status = "",
-                                competitionTypes = emptyList()
-                            )
-                        )
-                    )
-                )
-            } catch (e: Exception) {
-                Log.w(TAG, "Error reading local completed competitions", e)
-                emit(Resource.Error(UserError.UnknownError))
-            }
-        }.flowOn(Dispatchers.Default)
+            if (page >= result.competitions.lastPage) break
+            page++
+        }
     }
 }
