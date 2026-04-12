@@ -358,7 +358,7 @@ fun ChartScatterChart(
             chart.tag = signature
 
             val dataSets = mutableListOf<ScatterDataSet>()
-            val scatterShapeSizeDp = 16.dp.value
+            val scatterShapeSizeDp = 24.dp.value
 
             // My data
             if (myData.isNotEmpty()) {

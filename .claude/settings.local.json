@@ -78,7 +78,8 @@
       "Bash(grep:*)",
       "Bash(head -1 /d/source/webshooter/app/src/main/java/se/kjellstrand/webshooter/di/*.kt)",
       "Bash(xargs wc:*)",
-      "Bash(xargs basename:*)"
+      "Bash(xargs basename:*)",
+      "Bash(FILTER_BRANCH_SQUELCH_WARNING=1 git:*)"
     ]
   }
 }
