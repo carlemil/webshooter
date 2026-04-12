@@ -89,12 +89,16 @@ class ChartsRepository @Inject constructor(
             )
             if (resultsResult !is Resource.Success) continue
 
-            resultsResult.data.results.forEach { result ->
+            @Suppress("UNNECESSARY_SAFE_CALL")
+            val validResults = resultsResult.data.results.filter {
+                it.signup?.user != null
+            }
+            validResults.forEach { result ->
                 allWeaponClasses.add(result.weaponClass.classname)
                 val user = result.signup.user
                 allParticipants.putIfAbsent(user.userID, user.fullname)
             }
-            resultsResult.data.results
+            validResults
                 .filter { it.signup.user.userID == userId }
                 .forEach { result ->
                     val avg = computeAverageScore(result, resultsType)
@@ -141,8 +145,12 @@ class ChartsRepository @Inject constructor(
             val resultsResult = lastNonLoading(resultsRepository.getPreferCached(competitionId))
 
             if (resultsResult is Resource.Success) {
+                @Suppress("UNNECESSARY_SAFE_CALL")
+                val validResults = resultsResult.data.results.filter {
+                    it.signup?.user != null
+                }
                 for (shooterId in shooterIds) {
-                    val shooterResults = resultsResult.data.results.filter {
+                    val shooterResults = validResults.filter {
                         it.signup.user.userID == shooterId
                     }
                     for (r in shooterResults) {
