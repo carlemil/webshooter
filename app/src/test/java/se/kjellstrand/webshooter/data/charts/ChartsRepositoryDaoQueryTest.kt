@@ -8,23 +8,24 @@ import org.junit.Test
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionEntity
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionsDao
-import se.kjellstrand.webshooter.data.results.ResultsRepository
 import se.kjellstrand.webshooter.data.results.local.ChartPointRow
 import se.kjellstrand.webshooter.data.results.local.ParticipantRow
 import se.kjellstrand.webshooter.data.results.local.ResultEntity
 import se.kjellstrand.webshooter.data.results.local.ResultsDao
-import se.kjellstrand.webshooter.data.results.remote.ResultsRemoteDataSource
-import se.kjellstrand.webshooter.data.results.remote.ResultsResponse
 
 class ChartsRepositoryDaoQueryTest {
 
     private class FakeResultsDao(
         var pointsForUser: List<ChartPointRow> = emptyList(),
+        var pointsForUsers: List<ChartPointRow> = emptyList(),
         var participants: List<ParticipantRow> = emptyList(),
         var weaponClasses: List<String> = emptyList()
     ) : ResultsDao {
         var getChartPointsForUserCalls = 0
         var lastUserId: Long? = null
+        var getChartPointsForUsersCalls = 0
+        var lastUserIds: List<Long>? = null
+        var lastCompetitionIds: List<Long>? = null
 
         override suspend fun getByCompetition(competitionId: Long): List<ResultEntity> = emptyList()
         override suspend fun insertAll(results: List<ResultEntity>) {}
@@ -37,7 +38,12 @@ class ChartsRepositoryDaoQueryTest {
         override suspend fun getChartPointsForUsers(
             userIds: List<Long>,
             competitionIds: List<Long>
-        ): List<ChartPointRow> = emptyList()
+        ): List<ChartPointRow> {
+            getChartPointsForUsersCalls++
+            lastUserIds = userIds
+            lastCompetitionIds = competitionIds
+            return pointsForUsers
+        }
         override suspend fun getAllParticipants(): List<ParticipantRow> = participants
         override suspend fun getAllWeaponClasses(): List<String> = weaponClasses
     }
@@ -51,17 +57,6 @@ class ChartsRepositoryDaoQueryTest {
         override suspend fun insertAll(competitions: List<CompetitionEntity>) {}
         override suspend fun deleteAll() {}
     }
-
-    private class FakeRemote : ResultsRemoteDataSource {
-        var callCount = 0
-        override suspend fun getResults(id: Long): ResultsResponse {
-            callCount++
-            return ResultsResponse(results = emptyList())
-        }
-    }
-
-    private fun stubResultsRepository(dao: ResultsDao, remote: FakeRemote): ResultsRepository =
-        ResultsRepository(remote, dao, Gson())
 
     private fun competition(id: Long, name: String, date: String, type: String) = CompetitionEntity(
         id = id, name = name, date = date, status = "completed", statusHuman = "completed",
@@ -94,22 +89,19 @@ class ChartsRepositoryDaoQueryTest {
     )
 
     private class TestRig(
-        val repo: ChartsRepository,
-        val remote: FakeRemote
+        val repo: ChartsRepository
     )
 
     private fun buildRepo(
         resultsDao: ResultsDao,
         competitionsDao: CompetitionsDao
     ): TestRig {
-        val remote = FakeRemote()
         val repo = ChartsRepository(
-            stubResultsRepository(resultsDao, remote),
             competitionsDao,
             resultsDao,
             Gson()
         )
-        return TestRig(repo, remote)
+        return TestRig(repo)
     }
 
     private suspend fun successOf(repo: ChartsRepository, userId: Long): ChartData {
@@ -220,23 +212,14 @@ class ChartsRepositoryDaoQueryTest {
     }
 
     @Test
-    fun `getChartData does not call ResultsRepository getPreferCached`(): Unit = runBlocking {
-        val dao = FakeResultsDao(
-            pointsForUser = listOf(chartRow(1, "2025-01-01"))
-        )
-        val competitionsDao = FakeCompetitionsDao(
-            completed = listOf(competition(1, "Comp 1", "2025-01-01", "PRECISION"))
-        )
-        val rig = buildRepo(dao, competitionsDao)
-
-        successOf(rig.repo, userId = 100L)
-
-        // The DAO has no rows for getByCompetition, so the old loop falls
-        // through to ResultsRemoteDataSource.getResults, which FakeRemote counts.
-        assertEquals(
-            "getChartData must not invoke ResultsRepository.getPreferCached",
-            0,
-            rig.remote.callCount
+    fun `ChartsRepository constructor does not accept ResultsRepository`() {
+        val constructors = ChartsRepository::class.java.declaredConstructors
+        val hasResultsRepository = constructors.any { c ->
+            c.parameterTypes.any { it.name.endsWith("ResultsRepository") }
+        }
+        assertFalse(
+            "ChartsRepository should no longer depend on ResultsRepository",
+            hasResultsRepository
         )
     }
 
@@ -279,5 +262,123 @@ class ChartsRepositoryDaoQueryTest {
         assertEquals(2, data.allCompetitionMeta.size)
         assertEquals("Alpha", data.allCompetitionMeta[1L]?.name)
         assertEquals("field", data.allCompetitionMeta[2L]?.resultsType)
+    }
+
+    // --- Fixed behavior for getShooterChartData (should FAIL before fix, PASS after fix) ---
+
+    private suspend fun shooterSuccess(
+        rig: TestRig,
+        shooterIds: List<Long>,
+        competitionIds: List<Long>,
+        meta: Map<Long, CompetitionMeta> = emptyMap()
+    ): Map<Long, ChartData> {
+        val emissions = rig.repo.getShooterChartData(shooterIds, competitionIds, meta).toList()
+        val success = emissions.firstOrNull { it is Resource.Success<*, *> }
+                as? Resource.Success<Map<Long, ChartData>, *>
+        assertNotNull("getShooterChartData should emit a Success", success)
+        return success!!.data
+    }
+
+    @Test
+    fun `getShooterChartData calls ResultsDao getChartPointsForUsers exactly once`(): Unit = runBlocking {
+        val dao = FakeResultsDao(pointsForUsers = emptyList())
+        val rig = buildRepo(dao, FakeCompetitionsDao())
+
+        shooterSuccess(rig, shooterIds = listOf(1L, 2L), competitionIds = listOf(10L, 20L))
+
+        assertEquals(1, dao.getChartPointsForUsersCalls)
+        assertEquals(listOf(1L, 2L), dao.lastUserIds)
+        assertEquals(listOf(10L, 20L), dao.lastCompetitionIds)
+    }
+
+    @Test
+    fun `getShooterChartData groups DAO rows by userId`(): Unit = runBlocking {
+        val dao = FakeResultsDao(
+            pointsForUsers = listOf(
+                chartRow(1, "2025-01-01", userId = 100, averageScore = 30.0),
+                chartRow(2, "2025-02-01", userId = 100, averageScore = 35.0),
+                chartRow(1, "2025-01-01", userId = 200, averageScore = 40.0)
+            )
+        )
+        val rig = buildRepo(dao, FakeCompetitionsDao())
+
+        val map = shooterSuccess(
+            rig,
+            shooterIds = listOf(100L, 200L),
+            competitionIds = listOf(1L, 2L)
+        )
+
+        assertEquals(2, map[100L]?.dataPoints?.size)
+        assertEquals(1, map[200L]?.dataPoints?.size)
+        assertEquals(40.0, map[200L]?.dataPoints?.first()?.averageSerieScore ?: 0.0, 0.0001)
+    }
+
+    @Test
+    fun `getShooterChartData includes empty list for shooters with no rows`(): Unit = runBlocking {
+        val dao = FakeResultsDao(
+            pointsForUsers = listOf(chartRow(1, "2025-01-01", userId = 100))
+        )
+        val rig = buildRepo(dao, FakeCompetitionsDao())
+
+        val map = shooterSuccess(
+            rig,
+            shooterIds = listOf(100L, 999L),
+            competitionIds = listOf(1L)
+        )
+
+        assertNotNull("Shooter 999 must appear with an empty entry", map[999L])
+        assertTrue(map[999L]!!.dataPoints.isEmpty())
+    }
+
+    @Test
+    fun `getShooterChartData sorts each shooter data points by date`(): Unit = runBlocking {
+        val dao = FakeResultsDao(
+            pointsForUsers = listOf(
+                chartRow(3, "2025-03-01", userId = 100),
+                chartRow(1, "2025-01-01", userId = 100),
+                chartRow(2, "2025-02-01", userId = 100)
+            )
+        )
+        val rig = buildRepo(dao, FakeCompetitionsDao())
+
+        val map = shooterSuccess(
+            rig,
+            shooterIds = listOf(100L),
+            competitionIds = listOf(1L, 2L, 3L)
+        )
+
+        assertEquals(
+            listOf("2025-01-01", "2025-02-01", "2025-03-01"),
+            map[100L]!!.dataPoints.map { it.date }
+        )
+    }
+
+    @Test
+    fun `getShooterChartData uses only ResultsDao for data`(): Unit = runBlocking {
+        val dao = FakeResultsDao(
+            pointsForUsers = listOf(chartRow(1, "2025-01-01", userId = 100))
+        )
+        val rig = buildRepo(dao, FakeCompetitionsDao())
+
+        shooterSuccess(rig, shooterIds = listOf(100L), competitionIds = listOf(1L))
+
+        // Single SQL call replaces the old per-competition fetch loop.
+        assertEquals(1, dao.getChartPointsForUsersCalls)
+    }
+
+    // --- Guard tests for getShooterChartData (should PASS before and after fix) ---
+
+    @Test
+    fun `getShooterChartData still emits Loading true and Loading false`(): Unit = runBlocking {
+        val dao = FakeResultsDao(pointsForUsers = emptyList())
+        val rig = buildRepo(dao, FakeCompetitionsDao())
+
+        val emissions = rig.repo
+            .getShooterChartData(listOf(1L), listOf(1L), emptyMap())
+            .toList()
+        assertTrue(emissions.first() is Resource.Loading)
+        assertTrue(emissions.last() is Resource.Loading)
+        assertTrue((emissions.first() as Resource.Loading).isLoading)
+        assertFalse((emissions.last() as Resource.Loading).isLoading)
     }
 }
