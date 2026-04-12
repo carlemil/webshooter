@@ -202,32 +202,44 @@ val generatePrebuiltDatabase = tasks.register("generatePrebuiltDatabase") {
                                             insertResult.setString(10, gson.toJson(r.get("weaponclass")))
                                             insertResult.setString(11, gson.toJson(r.get("results")))
 
-                                            val signupObj = r.get("signup").asJsonObject
-                                            val userObj = signupObj.get("user").asJsonObject
-                                            insertResult.setLong(12, userObj.get("user_id").asLong)
-                                            val fullnameEl = userObj.get("fullname")
+                                            val signupEl = r.get("signup")
+                                            val signupObj = if (signupEl != null && signupEl.isJsonObject) signupEl.asJsonObject else null
+                                            val userEl = signupObj?.get("user")
+                                            val userObj = if (userEl != null && userEl.isJsonObject) userEl.asJsonObject else null
+                                            val userIdEl = userObj?.get("user_id")
+                                            insertResult.setLong(
+                                                12,
+                                                if (userIdEl == null || userIdEl.isJsonNull) 0L else userIdEl.asLong
+                                            )
+                                            val fullnameEl = userObj?.get("fullname")
                                             insertResult.setString(
                                                 13,
                                                 if (fullnameEl == null || fullnameEl.isJsonNull) ""
                                                 else fullnameEl.asString
                                             )
-                                            val weaponClassObj = r.get("weaponclass").asJsonObject
-                                            val classnameEl = weaponClassObj.get("classname")
+                                            val weaponClassEl = r.get("weaponclass")
+                                            val weaponClassObj = if (weaponClassEl != null && weaponClassEl.isJsonObject) weaponClassEl.asJsonObject else null
+                                            val classnameEl = weaponClassObj?.get("classname")
                                             insertResult.setString(
                                                 14,
                                                 if (classnameEl == null || classnameEl.isJsonNull) ""
                                                 else classnameEl.asString
                                             )
 
-                                            val stationResultsArr = r.get("results").asJsonArray
+                                            val stationResultsEl = r.get("results")
                                             var sumPoints = 0.0
                                             var sumHits = 0.0
                                             var stationCount = 0
-                                            for (station in stationResultsArr) {
-                                                val s = station.asJsonObject
-                                                sumPoints += s.get("points").asLong
-                                                sumHits += s.get("hits").asLong
-                                                stationCount++
+                                            if (stationResultsEl != null && stationResultsEl.isJsonArray) {
+                                                for (station in stationResultsEl.asJsonArray) {
+                                                    if (!station.isJsonObject) continue
+                                                    val s = station.asJsonObject
+                                                    val ptsEl = s.get("points")
+                                                    val hitsEl = s.get("hits")
+                                                    if (ptsEl != null && !ptsEl.isJsonNull) sumPoints += ptsEl.asLong
+                                                    if (hitsEl != null && !hitsEl.isJsonNull) sumHits += hitsEl.asLong
+                                                    stationCount++
+                                                }
                                             }
                                             val avgPoints = if (stationCount == 0) 0.0 else sumPoints / stationCount
                                             val avgHits = if (stationCount == 0) 0.0 else sumHits / stationCount
