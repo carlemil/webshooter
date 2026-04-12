@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 29,
-    "identityHash": "b8f777afe36ea5794b30089106271827",
+    "identityHash": "2e8383526e8d218e7c09d02e5912caa1",
     "entities": [
       {
         "tableName": "competitions",
@@ -200,7 +200,7 @@
       },
       {
         "tableName": "results",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `competitionsId` INTEGER NOT NULL, `signupsId` INTEGER NOT NULL, `placement` INTEGER NOT NULL, `figureHits` INTEGER NOT NULL, `hits` INTEGER NOT NULL, `points` INTEGER NOT NULL, `stdMedal` TEXT, `signupJson` TEXT NOT NULL, `weaponClassJson` TEXT NOT NULL, `stationResultsJson` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `competitionsId` INTEGER NOT NULL, `signupsId` INTEGER NOT NULL, `placement` INTEGER NOT NULL, `figureHits` INTEGER NOT NULL, `hits` INTEGER NOT NULL, `points` INTEGER NOT NULL, `stdMedal` TEXT, `signupJson` TEXT NOT NULL, `weaponClassJson` TEXT NOT NULL, `stationResultsJson` TEXT NOT NULL, `userId` INTEGER NOT NULL, `userFullname` TEXT NOT NULL, `weaponClassName` TEXT NOT NULL, `averagePoints` REAL NOT NULL, `averageHits` REAL NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -267,6 +267,36 @@
             "columnName": "stationResultsJson",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "userId",
+            "columnName": "userId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userFullname",
+            "columnName": "userFullname",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weaponClassName",
+            "columnName": "weaponClassName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "averagePoints",
+            "columnName": "averagePoints",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "averageHits",
+            "columnName": "averageHits",
+            "affinity": "REAL",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -275,7 +305,18 @@
             "id"
           ]
         },
-        "indices": [],
+        "indices": [
+          {
+            "name": "index_results_userId_competitionsId",
+            "unique": false,
+            "columnNames": [
+              "userId",
+              "competitionsId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_results_userId_competitionsId` ON `${TABLE_NAME}` (`userId`, `competitionsId`)"
+          }
+        ],
         "foreignKeys": []
       },
       {
@@ -777,7 +818,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'b8f777afe36ea5794b30089106271827')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2e8383526e8d218e7c09d02e5912caa1')"
     ]
   }
 }
