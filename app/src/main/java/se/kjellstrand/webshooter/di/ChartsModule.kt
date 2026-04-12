@@ -8,6 +8,7 @@ import dagger.hilt.components.SingletonComponent
 import se.kjellstrand.webshooter.data.charts.ChartsRepository
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionsDao
 import se.kjellstrand.webshooter.data.results.ResultsRepository
+import se.kjellstrand.webshooter.data.results.local.ResultsDao
 import javax.inject.Singleton
 
 @Module
@@ -19,8 +20,9 @@ class ChartsModule {
     fun providesChartsRepository(
         resultsRepository: ResultsRepository,
         competitionsDao: CompetitionsDao,
+        resultsDao: ResultsDao,
         gson: Gson
     ): ChartsRepository {
-        return ChartsRepository(resultsRepository, competitionsDao, gson)
+        return ChartsRepository(resultsRepository, competitionsDao, resultsDao, gson)
     }
 }

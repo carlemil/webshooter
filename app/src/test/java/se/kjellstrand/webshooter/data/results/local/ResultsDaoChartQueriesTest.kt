@@ -66,13 +66,24 @@ class ResultsDaoChartQueriesTest {
     @Test
     fun `getChartPointsForUser query selects averageHits for field types and averagePoints otherwise`() {
         val pattern = Regex(
-            """CASE\s+WHEN\s+c\.resultsType\s+IN\s*\(\s*'field'\s*,\s*'pointfield'\s*\)\s+THEN\s+r\.averageHits\s+ELSE\s+r\.averagePoints\s+END\s+AS\s+averageScore""",
+            """CASE\s+WHEN\s+c\.resultsType\s+IN\s*\(\s*'FIELD'\s*,\s*'POINTS_FIELD'\s*\)\s+THEN\s+r\.averageHits\s+ELSE\s+r\.averagePoints\s+END\s+AS\s+averageScore""",
             RegexOption.IGNORE_CASE
         )
         assertTrue(
-            "averageScore projection must use CASE on resultsType",
+            "averageScore projection must use CASE on resultsType enum names",
             pattern.containsMatchIn(daoSource)
         )
+    }
+
+    @Test
+    fun `getChartPointsForUser query maps stored enum names to apiString values`() {
+        // CompetitionEntity.resultsType stores the enum name; UI expects the apiString.
+        listOf("PRECISION", "MILITARY", "FIELD", "POINTS_FIELD").forEach { enumName ->
+            assertTrue(
+                "Query must translate $enumName to its apiString form",
+                daoSource.contains("WHEN '$enumName'")
+            )
+        }
     }
 
     @Test
