@@ -20,10 +20,16 @@ interface ResultsDao {
         """SELECT r.competitionsId AS competitionId,
                   c.name AS competitionName,
                   c.date AS date,
-                  c.resultsType AS resultsType,
+                  CASE c.resultsType
+                       WHEN 'PRECISION' THEN 'precision'
+                       WHEN 'MILITARY' THEN 'military'
+                       WHEN 'FIELD' THEN 'field'
+                       WHEN 'POINTS_FIELD' THEN 'pointfield'
+                       ELSE c.resultsType
+                  END AS resultsType,
                   r.weaponClassName AS weaponClassName,
                   r.userId AS userId,
-                  CASE WHEN c.resultsType IN ('field','pointfield') THEN r.averageHits ELSE r.averagePoints END AS averageScore
+                  CASE WHEN c.resultsType IN ('FIELD','POINTS_FIELD') THEN r.averageHits ELSE r.averagePoints END AS averageScore
            FROM results r INNER JOIN competitions c ON c.id = r.competitionsId
            WHERE r.userId = :userId AND c.status = 'completed'"""
     )
@@ -33,10 +39,16 @@ interface ResultsDao {
         """SELECT r.competitionsId AS competitionId,
                   c.name AS competitionName,
                   c.date AS date,
-                  c.resultsType AS resultsType,
+                  CASE c.resultsType
+                       WHEN 'PRECISION' THEN 'precision'
+                       WHEN 'MILITARY' THEN 'military'
+                       WHEN 'FIELD' THEN 'field'
+                       WHEN 'POINTS_FIELD' THEN 'pointfield'
+                       ELSE c.resultsType
+                  END AS resultsType,
                   r.weaponClassName AS weaponClassName,
                   r.userId AS userId,
-                  CASE WHEN c.resultsType IN ('field','pointfield') THEN r.averageHits ELSE r.averagePoints END AS averageScore
+                  CASE WHEN c.resultsType IN ('FIELD','POINTS_FIELD') THEN r.averageHits ELSE r.averagePoints END AS averageScore
            FROM results r INNER JOIN competitions c ON c.id = r.competitionsId
            WHERE r.userId IN (:userIds) AND r.competitionsId IN (:competitionIds)"""
     )

@@ -10,6 +10,7 @@ import se.kjellstrand.webshooter.data.competitions.local.CompetitionsDao
 import se.kjellstrand.webshooter.data.competitions.local.toDomain
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.results.ResultsRepository
+import se.kjellstrand.webshooter.data.results.local.ResultsDao
 import se.kjellstrand.webshooter.data.results.remote.Result
 import se.kjellstrand.webshooter.data.results.remote.ResultsResponse
 import javax.inject.Inject
@@ -46,6 +47,7 @@ data class CompetitionMeta(
 class ChartsRepository @Inject constructor(
     private val resultsRepository: ResultsRepository,
     private val competitionsDao: CompetitionsDao,
+    private val resultsDao: ResultsDao,
     private val gson: Gson
 ) {
     companion object {
@@ -55,74 +57,46 @@ class ChartsRepository @Inject constructor(
     fun getChartData(userId: Long): Flow<Resource<ChartData, UserError>> = flow {
         emit(Resource.Loading(true))
 
-        val competitions = competitionsDao.getCompletedCompetitions()
-            .mapNotNull { it.toDomain(gson) }
+        val rows = resultsDao.getChartPointsForUser(userId)
+        val dataPoints = rows
+            .map { row ->
+                ChartDataPoint(
+                    competitionId = row.competitionId,
+                    competitionName = row.competitionName,
+                    date = row.date,
+                    averageSerieScore = row.averageScore,
+                    weaponClass = row.weaponClassName,
+                    resultsType = row.resultsType
+                )
+            }
+            .sortedBy { it.date }
 
-        if (competitions.isEmpty()) {
-            emit(Resource.Error(UserError.UnknownError))
-            return@flow
+        val allWeaponClasses = resultsDao.getAllWeaponClasses()
+        val allParticipants = resultsDao.getAllParticipants().map {
+            Participant(userId = it.userId, fullname = it.fullname)
         }
 
         val allCompetitionMeta = mutableMapOf<Long, CompetitionMeta>()
-        val competitionsWithType = competitions.mapNotNull { competition ->
-            val resultsType = try {
+        for (competition in competitionsDao.getCompletedCompetitions().mapNotNull { it.toDomain(gson) }) {
+            val apiString = try {
                 competition.resultsType.toApiString()
             } catch (e: Exception) {
                 Log.w(TAG, "Unknown resultsType for competition ${competition.id}, skipping")
-                return@mapNotNull null
+                continue
             }
             allCompetitionMeta[competition.id] = CompetitionMeta(
                 name = competition.name,
                 date = competition.date,
-                resultsType = resultsType
+                resultsType = apiString
             )
-            competition to resultsType
-        }
-
-        val dataPoints = mutableListOf<ChartDataPoint>()
-        val allWeaponClasses = sortedSetOf<String>()
-        val allParticipants = mutableMapOf<Long, String>()
-
-        for ((competition, resultsType) in competitionsWithType) {
-            val resultsResult = lastNonLoading(
-                resultsRepository.getPreferCached(competition.id)
-            )
-            if (resultsResult !is Resource.Success) continue
-
-            @Suppress("UNNECESSARY_SAFE_CALL")
-            val validResults = resultsResult.data.results.filter {
-                it.signup?.user != null
-            }
-            validResults.forEach { result ->
-                allWeaponClasses.add(result.weaponClass.classname)
-                val user = result.signup.user
-                allParticipants.putIfAbsent(user.userID, user.fullname)
-            }
-            validResults
-                .filter { it.signup.user.userID == userId }
-                .forEach { result ->
-                    val avg = computeAverageScore(result, resultsType)
-                    dataPoints.add(
-                        ChartDataPoint(
-                            competitionId = competition.id,
-                            competitionName = competition.name,
-                            date = competition.date,
-                            averageSerieScore = avg,
-                            weaponClass = result.weaponClass.classname,
-                            resultsType = resultsType
-                        )
-                    )
-                }
         }
 
         emit(
             Resource.Success(
                 ChartData(
-                    dataPoints = dataPoints.sortedBy { it.date },
-                    allWeaponClasses = allWeaponClasses.toList(),
-                    allParticipants = allParticipants.map { (id, name) ->
-                        Participant(userId = id, fullname = name)
-                    }.sortedBy { it.fullname },
+                    dataPoints = dataPoints,
+                    allWeaponClasses = allWeaponClasses,
+                    allParticipants = allParticipants,
                     allCompetitionMeta = allCompetitionMeta.toMap()
                 )
             )
