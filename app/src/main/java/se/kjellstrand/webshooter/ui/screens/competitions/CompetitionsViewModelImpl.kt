@@ -21,7 +21,6 @@ class CompetitionsViewModelImpl @Inject constructor(
     override val uiState: StateFlow<CompetitionsUiState> = _uiState.asStateFlow()
 
     private var currentPage = 1
-    private var reachedCompleted = false
 
     init {
         loadInitialPages()
@@ -29,14 +28,14 @@ class CompetitionsViewModelImpl @Inject constructor(
 
     private fun loadInitialPages() {
         loadCompetitions(1, 20)
-        currentPage = 2
+        currentPage = 1
     }
 
     override fun loadNextPage() {
-        if (_uiState.value.isLoading || reachedCompleted) return
+        if (_uiState.value.isLoading) return
         _uiState.value = _uiState.value.copy(isLoading = true)
         currentPage++
-        loadCompetitions(currentPage, 10)
+        loadCompetitions(currentPage, 20)
     }
 
     private fun loadCompetitions(page: Int, pageSize: Int) {
@@ -45,7 +44,6 @@ class CompetitionsViewModelImpl @Inject constructor(
             flow.collect { resource ->
                 when (resource) {
                     is Resource.Success -> {
-                        val allCompleted = resource.data.competitions.data.all { it.status == "completed" }
                         if (page == 1) {
                             _uiState.value = _uiState.value.copy(
                                 competitions = resource.data.competitions,
@@ -58,9 +56,6 @@ class CompetitionsViewModelImpl @Inject constructor(
                                 competitions = resource.data.competitions.copy(data = currentCompetitions + newCompetitions),
                                 isLoading = false
                             )
-                        }
-                        if (allCompleted && page > 1) {
-                            reachedCompleted = true
                         }
                     }
 
@@ -81,7 +76,6 @@ class CompetitionsViewModelImpl @Inject constructor(
     override fun reload() {
         _uiState.value = _uiState.value.copy(competitions = null, isLoading = true, hasError = false)
         currentPage = 1
-        reachedCompleted = false
         loadInitialPages()
     }
 
