@@ -148,8 +148,9 @@ val generatePrebuiltDatabase = tasks.register("generatePrebuiltDatabase") {
             val insertResult = conn.prepareStatement(
                 """INSERT OR REPLACE INTO results
                     (id, competitionsId, signupsId, placement, figureHits, hits, points, stdMedal,
-                     signupJson, weaponClassJson, stationResultsJson)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
+                     signupJson, weaponClassJson, stationResultsJson,
+                     userId, userFullname, weaponClassName, averagePoints, averageHits)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"""
             )
 
             val upsertStatus = conn.prepareStatement(
@@ -200,6 +201,39 @@ val generatePrebuiltDatabase = tasks.register("generatePrebuiltDatabase") {
                                             insertResult.setString(9, gson.toJson(r.get("signup")))
                                             insertResult.setString(10, gson.toJson(r.get("weaponclass")))
                                             insertResult.setString(11, gson.toJson(r.get("results")))
+
+                                            val signupObj = r.get("signup").asJsonObject
+                                            val userObj = signupObj.get("user").asJsonObject
+                                            insertResult.setLong(12, userObj.get("user_id").asLong)
+                                            val fullnameEl = userObj.get("fullname")
+                                            insertResult.setString(
+                                                13,
+                                                if (fullnameEl == null || fullnameEl.isJsonNull) ""
+                                                else fullnameEl.asString
+                                            )
+                                            val weaponClassObj = r.get("weaponclass").asJsonObject
+                                            val classnameEl = weaponClassObj.get("classname")
+                                            insertResult.setString(
+                                                14,
+                                                if (classnameEl == null || classnameEl.isJsonNull) ""
+                                                else classnameEl.asString
+                                            )
+
+                                            val stationResultsArr = r.get("results").asJsonArray
+                                            var sumPoints = 0.0
+                                            var sumHits = 0.0
+                                            var stationCount = 0
+                                            for (station in stationResultsArr) {
+                                                val s = station.asJsonObject
+                                                sumPoints += s.get("points").asLong
+                                                sumHits += s.get("hits").asLong
+                                                stationCount++
+                                            }
+                                            val avgPoints = if (stationCount == 0) 0.0 else sumPoints / stationCount
+                                            val avgHits = if (stationCount == 0) 0.0 else sumHits / stationCount
+                                            insertResult.setDouble(15, avgPoints)
+                                            insertResult.setDouble(16, avgHits)
+
                                             insertResult.execute()
                                         }
                                         upsertStatus.setLong(1, competitionId)
