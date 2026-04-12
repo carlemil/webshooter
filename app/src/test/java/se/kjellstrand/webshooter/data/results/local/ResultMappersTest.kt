@@ -3,10 +3,50 @@ package se.kjellstrand.webshooter.data.results.local
 import com.google.gson.Gson
 import org.junit.Assert.*
 import org.junit.Test
+import se.kjellstrand.webshooter.data.common.ClassnameGeneral
+import se.kjellstrand.webshooter.data.common.WeaponClass
+import se.kjellstrand.webshooter.data.results.remote.Result
+import se.kjellstrand.webshooter.data.results.remote.Signup
+import se.kjellstrand.webshooter.data.results.remote.StationResult
+import se.kjellstrand.webshooter.data.results.remote.User
 
 class ResultMappersTest {
 
     private val gson = Gson()
+
+    private fun sampleResult(
+        stations: List<StationResult> = listOf(
+            StationResult(id = 1, figureHits = 1, hits = 4, points = 30),
+            StationResult(id = 2, figureHits = 2, hits = 6, points = 50),
+            StationResult(id = 3, figureHits = 3, hits = 5, points = 40)
+        ),
+        userId: Long = 42L,
+        fullname: String = "Jane Doe",
+        weaponClassName: String = "C"
+    ) = Result(
+        id = 1L,
+        signupsID = 20L,
+        placement = 2L,
+        figureHits = 6L,
+        hits = 15L,
+        points = 120L,
+        stdMedal = null,
+        signup = Signup(
+            user = User(
+                name = "Jane",
+                lastname = "Doe",
+                userID = userId,
+                fullname = fullname
+            ),
+            club = null
+        ),
+        weaponClass = WeaponClass(
+            id = 3,
+            classname = weaponClassName,
+            classnameGeneral = ClassnameGeneral.C
+        ),
+        results = stations
+    )
 
     private fun validEntity() = ResultEntity(
         id = 1L,
@@ -58,5 +98,66 @@ class ResultMappersTest {
         val result = validEntity().copy(stationResultsJson = "[]").toDomain(gson)
         assertNotNull(result)
         assertTrue(result!!.results.isEmpty())
+    }
+
+    // --- Fixed behavior for toEntity denormalization (should FAIL before fix, PASS after fix) ---
+
+    @Test
+    fun `toEntity copies userId from signup user`() {
+        val entity = sampleResult(userId = 99L).toEntity(competitionId = 7L, gson = gson)
+        assertEquals(99L, entity.userId)
+    }
+
+    @Test
+    fun `toEntity copies userFullname from signup user`() {
+        val entity = sampleResult(fullname = "Alice Tester").toEntity(7L, gson)
+        assertEquals("Alice Tester", entity.userFullname)
+    }
+
+    @Test
+    fun `toEntity copies weaponClassName from weaponClass`() {
+        val entity = sampleResult(weaponClassName = "B").toEntity(7L, gson)
+        assertEquals("B", entity.weaponClassName)
+    }
+
+    @Test
+    fun `toEntity computes averagePoints from station results`() {
+        // points: 30, 50, 40 -> average 40.0
+        val entity = sampleResult().toEntity(7L, gson)
+        assertEquals(40.0, entity.averagePoints, 0.0001)
+    }
+
+    @Test
+    fun `toEntity computes averageHits from station results`() {
+        // hits: 4, 6, 5 -> average 5.0
+        val entity = sampleResult().toEntity(7L, gson)
+        assertEquals(5.0, entity.averageHits, 0.0001)
+    }
+
+    @Test
+    fun `toEntity returns zero averages when station results empty`() {
+        val entity = sampleResult(stations = emptyList()).toEntity(7L, gson)
+        assertEquals(0.0, entity.averagePoints, 0.0001)
+        assertEquals(0.0, entity.averageHits, 0.0001)
+    }
+
+    // --- Guard tests for toEntity (should PASS before and after fix) ---
+
+    @Test
+    fun `toEntity preserves competitionId and core scalar fields`() {
+        val entity = sampleResult().toEntity(competitionId = 77L, gson = gson)
+        assertEquals(77L, entity.competitionsId)
+        assertEquals(1L, entity.id)
+        assertEquals(20L, entity.signupsId)
+        assertEquals(2L, entity.placement)
+        assertEquals(120L, entity.points)
+    }
+
+    @Test
+    fun `toEntity still serializes signup weaponClass and stationResults to JSON`() {
+        val entity = sampleResult().toEntity(7L, gson)
+        assertTrue(entity.signupJson.contains("Jane Doe"))
+        assertTrue(entity.weaponClassJson.contains("classname"))
+        assertTrue(entity.stationResultsJson.startsWith("["))
     }
 }

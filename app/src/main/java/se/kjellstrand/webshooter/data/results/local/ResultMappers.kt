@@ -23,7 +23,12 @@ fun Result.toEntity(competitionId: Long, gson: Gson): ResultEntity = ResultEntit
     stdMedal = stdMedal?.name,
     signupJson = gson.toJson(signup),
     weaponClassJson = gson.toJson(weaponClass),
-    stationResultsJson = gson.toJson(results)
+    stationResultsJson = gson.toJson(results),
+    userId = signup.user.userID,
+    userFullname = signup.user.fullname,
+    weaponClassName = weaponClass.classname,
+    averagePoints = if (results.isEmpty()) 0.0 else results.map { it.points }.average(),
+    averageHits = if (results.isEmpty()) 0.0 else results.map { it.hits }.average()
 )
 
 fun ResultEntity.toDomain(gson: Gson): Result? = try {
