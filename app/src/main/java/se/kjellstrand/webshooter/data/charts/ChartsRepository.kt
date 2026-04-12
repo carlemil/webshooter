@@ -8,8 +8,6 @@ import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionsDao
 import se.kjellstrand.webshooter.data.competitions.local.toDomain
-import se.kjellstrand.webshooter.data.competitions.local.toEntity
-import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsRemoteDataSource
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.results.ResultsRepository
 import se.kjellstrand.webshooter.data.results.remote.Result
@@ -46,7 +44,6 @@ data class CompetitionMeta(
 
 @Singleton
 class ChartsRepository @Inject constructor(
-    private val competitionsRemoteDataSource: CompetitionsRemoteDataSource,
     private val resultsRepository: ResultsRepository,
     private val competitionsDao: CompetitionsDao,
     private val gson: Gson
@@ -58,14 +55,13 @@ class ChartsRepository @Inject constructor(
     fun getChartData(userId: Long): Flow<Resource<ChartData, UserError>> = flow {
         emit(Resource.Loading(true))
 
-        try {
-            syncNewCompletedCompetitions()
-        } catch (e: Exception) {
-            Log.w(TAG, "Network sync failed, using local data only", e)
-        }
-
         val competitions = competitionsDao.getCompletedCompetitions()
             .mapNotNull { it.toDomain(gson) }
+
+        if (competitions.isEmpty()) {
+            emit(Resource.Error(UserError.UnknownError))
+            return@flow
+        }
 
         val allCompetitionMeta = mutableMapOf<Long, CompetitionMeta>()
         val competitionsWithType = competitions.mapNotNull { competition ->
@@ -128,45 +124,6 @@ class ChartsRepository @Inject constructor(
             )
         )
         emit(Resource.Loading(false))
-    }
-
-    private suspend fun syncNewCompletedCompetitions() {
-        val existingIds = competitionsDao.getCompletedCompetitions()
-            .map { it.id }
-            .toSet()
-
-        var page = 1
-        var keepFetching = true
-
-        while (keepFetching) {
-            val response = competitionsRemoteDataSource.getCompetitions(
-                page = page,
-                perPage = 10,
-                status = "completed",
-                type = 0,
-                userSignup = 0
-            )
-            val pageData = response.competitions.data
-            if (pageData.isEmpty()) break
-
-            val newCompetitions = mutableListOf<se.kjellstrand.webshooter.data.competitions.local.CompetitionEntity>()
-            for (competition in pageData) {
-                if (competition.id in existingIds) {
-                    keepFetching = false
-                    break
-                }
-                newCompetitions.add(competition.toEntity(gson))
-            }
-
-            if (newCompetitions.isNotEmpty()) {
-                competitionsDao.insertAll(newCompetitions)
-            }
-
-            if (!keepFetching || pageData.size < 10 || page >= response.competitions.lastPage) {
-                break
-            }
-            page++
-        }
     }
 
     fun getShooterChartData(
