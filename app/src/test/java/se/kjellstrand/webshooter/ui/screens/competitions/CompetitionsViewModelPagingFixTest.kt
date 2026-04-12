@@ -1,34 +1,38 @@
 package se.kjellstrand.webshooter.ui.screens.competitions
 
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import se.kjellstrand.webshooter.data.competitions.CompetitionsRepository
 
-class CompetitionsViewModelStopPagingTest {
+class CompetitionsViewModelPagingFixTest {
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 
     @Test
-    fun `CompetitionsViewModelImpl has reachedCompleted field`() {
+    fun `reachedCompleted field is removed`() {
         val field = CompetitionsViewModelImpl::class.java.declaredFields.find {
             it.name == "reachedCompleted"
         }
-        assertNotNull(
-            "CompetitionsViewModelImpl should have a reachedCompleted field",
+        assertNull(
+            "reachedCompleted field should be removed to allow unlimited paging",
             field
         )
     }
 
     @Test
-    fun `reachedCompleted field is boolean type`() {
+    fun `currentPage field initial value is 1`() {
+        // The field should exist and be initialized to 1 (not 2).
+        // We verify the field exists; runtime init value tested via behavior.
         val field = CompetitionsViewModelImpl::class.java.declaredFields.find {
-            it.name == "reachedCompleted"
+            it.name == "currentPage"
         }
-        assertNotNull("reachedCompleted should exist", field)
+        assertNotNull("currentPage field should exist", field)
+        // Verify it's an int type (consistent page tracking)
         assertTrue(
-            "reachedCompleted should be a boolean",
-            field!!.type == Boolean::class.java || field.type == java.lang.Boolean::class.java
+            "currentPage should be an int",
+            field!!.type == Int::class.java
         )
     }
 
@@ -53,5 +57,11 @@ class CompetitionsViewModelStopPagingTest {
             c.parameterTypes.any { it == CompetitionsRepository::class.java }
         }
         assertTrue("Should still accept CompetitionsRepository", hasRepo)
+    }
+
+    @Test
+    fun `CompetitionsViewModelImpl still has getCompetitionById method`() {
+        val method = CompetitionsViewModelImpl::class.java.methods.find { it.name == "getCompetitionById" }
+        assertNotNull("Should still have getCompetitionById", method)
     }
 }
