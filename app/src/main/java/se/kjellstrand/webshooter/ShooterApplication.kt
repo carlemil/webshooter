@@ -4,11 +4,10 @@ import android.app.Application
 import android.util.Log
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.data.AuthTokenManager
 import se.kjellstrand.webshooter.data.competitions.CompetitionsRepository
+import se.kjellstrand.webshooter.di.ApplicationScope
 import javax.inject.Inject
 
 @HiltAndroidApp
@@ -16,8 +15,7 @@ class ShooterApplication : Application() {
 
     @Inject lateinit var competitionsRepository: CompetitionsRepository
     @Inject lateinit var authTokenManager: AuthTokenManager
-
-    private val applicationScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    @Inject @ApplicationScope lateinit var applicationScope: CoroutineScope
 
     override fun onCreate() {
         super.onCreate()
