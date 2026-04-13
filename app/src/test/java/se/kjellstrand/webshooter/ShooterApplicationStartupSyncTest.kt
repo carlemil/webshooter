@@ -1,5 +1,6 @@
 package se.kjellstrand.webshooter
 
+import kotlinx.coroutines.CoroutineScope
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
@@ -75,6 +76,39 @@ class ShooterApplicationStartupSyncTest {
         assertFalse(
             "ShooterApplication should not call syncCompleted() — that's now an internal step of syncAll()",
             applicationSource.contains("competitionsRepository.syncCompleted()")
+        )
+    }
+
+    @Test
+    fun `ShooterApplication has applicationScope field of CoroutineScope type`() {
+        val field = ShooterApplication::class.java.declaredFields.find {
+            it.name == "applicationScope"
+        }
+        assertNotNull(
+            "ShooterApplication should still have an applicationScope field",
+            field
+        )
+        assertTrue(
+            "applicationScope should be of type CoroutineScope, was: ${field!!.type.name}",
+            CoroutineScope::class.java.isAssignableFrom(field.type)
+        )
+    }
+
+    @Test
+    fun `ShooterApplication no longer constructs its own CoroutineScope`() {
+        // Before this fix, the source contained `CoroutineScope(SupervisorJob() + Dispatchers.IO)`.
+        // After, it uses the Hilt-injected @ApplicationScope and that literal disappears.
+        assertFalse(
+            "ShooterApplication should not construct CoroutineScope(SupervisorJob() + ...) — it should inject @ApplicationScope instead",
+            applicationSource.contains("CoroutineScope(SupervisorJob()")
+        )
+    }
+
+    @Test
+    fun `ShooterApplication source imports ApplicationScope qualifier`() {
+        assertTrue(
+            "ShooterApplication source should import se.kjellstrand.webshooter.di.ApplicationScope",
+            applicationSource.contains("import se.kjellstrand.webshooter.di.ApplicationScope")
         )
     }
 
