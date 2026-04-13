@@ -11,6 +11,7 @@ import retrofit2.HttpException
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionsDao
+import se.kjellstrand.webshooter.data.competitions.local.SyncPreferences
 import se.kjellstrand.webshooter.data.competitions.local.toDomain
 import se.kjellstrand.webshooter.data.competitions.local.toEntity
 import se.kjellstrand.webshooter.data.competitions.remote.Competitions
@@ -23,8 +24,21 @@ import javax.inject.Singleton
 open class CompetitionsRepository @Inject constructor(
     private val competitionsRemoteDataSource: CompetitionsRemoteDataSource,
     private val dao: CompetitionsDao,
-    private val gson: Gson
+    private val gson: Gson,
+    private val syncPreferences: SyncPreferences
 ) {
+
+    suspend fun syncAll() {
+        val now = System.currentTimeMillis()
+        val lastFullSync = syncPreferences.getLastCompletedFullSyncMs()
+        val needsFullCompleted = dao.getCompletedCount() == 0 || (now - lastFullSync) > WEEK_MS
+        if (needsFullCompleted) {
+            syncCompleted()
+            syncPreferences.setLastCompletedFullSyncMs(now)
+        }
+        syncNonCompleted()
+    }
+
     companion object {
         private const val TAG = "CompetitionsRepository"
     }
@@ -151,12 +165,6 @@ open class CompetitionsRepository @Inject constructor(
     }
 
     suspend fun syncCompleted() {
-        val firstPage = competitionsRemoteDataSource.getCompetitions(1, 1, "completed", 0, 0)
-        val apiTotal = firstPage.competitions.total
-        val localCount = dao.getCompletedCount()
-
-        if (apiTotal <= localCount) return
-
         var page = 1
         val pageSize = 100
         while (true) {
@@ -168,3 +176,5 @@ open class CompetitionsRepository @Inject constructor(
         }
     }
 }
+
+private const val WEEK_MS = 7L * 24 * 60 * 60 * 1000

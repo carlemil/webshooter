@@ -8,10 +8,18 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class SyncPreferences @Inject constructor(@ApplicationContext context: Context) {
+class SyncPreferences {
 
-    private val prefs: SharedPreferences =
-        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    private val prefs: SharedPreferences
+
+    @Inject
+    constructor(@ApplicationContext context: Context) {
+        prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    }
+
+    constructor(prefs: SharedPreferences) {
+        this.prefs = prefs
+    }
 
     fun getLastCompletedFullSyncMs(): Long =
         prefs.getLong(KEY_LAST_COMPLETED_FULL_SYNC, 0L)
