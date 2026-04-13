@@ -1,11 +1,18 @@
 package se.kjellstrand.webshooter.ui.screens.login
 
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import se.kjellstrand.webshooter.data.competitions.CompetitionsRepository
+import java.io.File
 
 class LoginPrefetchTest {
+
+    private val loginSource: String by lazy {
+        File("src/main/java/se/kjellstrand/webshooter/ui/screens/login/LoginViewModelImpl.kt").readText()
+    }
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 
@@ -29,6 +36,44 @@ class LoginPrefetchTest {
         assertNotNull(
             "LoginViewModelImpl should have a CompetitionsRepository field",
             field
+        )
+    }
+
+    @Test
+    fun `LoginViewModelImpl declares prefetchCompetitions method`() {
+        val method = LoginViewModelImpl::class.java.declaredMethods.find {
+            it.name == "prefetchCompetitions"
+        }
+        assertNotNull(
+            "LoginViewModelImpl should have a prefetchCompetitions method (renamed from prefetchCompletedCompetitions)",
+            method
+        )
+    }
+
+    @Test
+    fun `LoginViewModelImpl no longer has prefetchCompletedCompetitions`() {
+        val method = LoginViewModelImpl::class.java.declaredMethods.find {
+            it.name == "prefetchCompletedCompetitions"
+        }
+        assertNull(
+            "prefetchCompletedCompetitions should be renamed to prefetchCompetitions",
+            method
+        )
+    }
+
+    @Test
+    fun `LoginViewModelImpl source calls syncAll on the repository`() {
+        assertTrue(
+            "LoginViewModelImpl source should call competitionsRepository.syncAll()",
+            loginSource.contains("competitionsRepository.syncAll()")
+        )
+    }
+
+    @Test
+    fun `LoginViewModelImpl source no longer calls syncCompleted directly`() {
+        assertFalse(
+            "LoginViewModelImpl should not call syncCompleted() — that's now an internal step of syncAll()",
+            loginSource.contains("competitionsRepository.syncCompleted()")
         )
     }
 
