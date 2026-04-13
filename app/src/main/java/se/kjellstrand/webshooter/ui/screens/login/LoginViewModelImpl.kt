@@ -3,6 +3,7 @@ package se.kjellstrand.webshooter.ui.screens.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -18,6 +19,7 @@ import se.kjellstrand.webshooter.data.competitions.CompetitionsRepository
 import se.kjellstrand.webshooter.data.cookies.CookiesRepository
 import se.kjellstrand.webshooter.data.login.LoginRepository
 import se.kjellstrand.webshooter.data.secure.SecurePrefs
+import se.kjellstrand.webshooter.di.ApplicationScope
 import se.kjellstrand.webshooter.ui.common.UiEvent
 import javax.inject.Inject
 
@@ -27,7 +29,8 @@ class LoginViewModelImpl @Inject constructor(
     private val cookiesRepository: CookiesRepository,
     private val authTokenManager: AuthTokenManager,
     internal val securePrefs: SecurePrefs,
-    private val competitionsRepository: CompetitionsRepository
+    private val competitionsRepository: CompetitionsRepository,
+    @ApplicationScope private val applicationScope: CoroutineScope
 ) : ViewModel(), LoginViewModel {
 
     companion object {
@@ -96,7 +99,7 @@ class LoginViewModelImpl @Inject constructor(
     }
 
     private fun prefetchCompetitions() {
-        viewModelScope.launch {
+        applicationScope.launch {
             try {
                 competitionsRepository.syncAll()
             } catch (e: Exception) {
