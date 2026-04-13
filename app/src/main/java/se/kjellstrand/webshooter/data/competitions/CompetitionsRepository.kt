@@ -29,14 +29,8 @@ open class CompetitionsRepository @Inject constructor(
             .map { entities -> entities.mapNotNull { it.toDomain(gson) } }
             .flowOn(Dispatchers.Default)
 
-    suspend fun syncAll() {
-        val now = System.currentTimeMillis()
-        val lastFullSync = syncPreferences.getLastCompletedFullSyncMs()
-        val needsFullCompleted = dao.getCompletedCount() == 0 || (now - lastFullSync) > WEEK_MS
-        if (needsFullCompleted) {
-            syncCompleted()
-            syncPreferences.setLastCompletedFullSyncMs(now)
-        }
+    suspend fun syncAll(force: Boolean = false) {
+        syncCompleted(force = force)
         syncNonCompleted()
     }
 
@@ -99,5 +93,3 @@ open class CompetitionsRepository @Inject constructor(
         private const val TAG = "CompetitionsRepository"
     }
 }
-
-private const val WEEK_MS = 7L * 24 * 60 * 60 * 1000
