@@ -8,7 +8,6 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import retrofit2.HttpException
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionsDao
-import se.kjellstrand.webshooter.data.competitions.local.SyncPreferences
 import se.kjellstrand.webshooter.data.competitions.local.toDomain
 import se.kjellstrand.webshooter.data.competitions.local.toEntity
 import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsRemoteDataSource
@@ -20,8 +19,7 @@ import javax.inject.Singleton
 open class CompetitionsRepository @Inject constructor(
     private val competitionsRemoteDataSource: CompetitionsRemoteDataSource,
     private val dao: CompetitionsDao,
-    private val gson: Gson,
-    private val syncPreferences: SyncPreferences
+    private val gson: Gson
 ) {
 
     fun observeAll(): Flow<List<Datum>> =

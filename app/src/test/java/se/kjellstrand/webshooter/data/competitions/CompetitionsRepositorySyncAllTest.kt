@@ -1,11 +1,9 @@
 package se.kjellstrand.webshooter.data.competitions
 
-import android.content.SharedPreferences
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -13,7 +11,6 @@ import se.kjellstrand.webshooter.data.common.Club
 import se.kjellstrand.webshooter.data.common.CompetitionType
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionEntity
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionsDao
-import se.kjellstrand.webshooter.data.competitions.local.SyncPreferences
 import se.kjellstrand.webshooter.data.competitions.remote.CompetitionByIdResponse
 import se.kjellstrand.webshooter.data.competitions.remote.Competitions
 import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsRemoteDataSource
@@ -106,37 +103,6 @@ class CompetitionsRepositorySyncAllTest {
         override suspend fun deleteById(id: Long) { deletedIds.add(id) }
     }
 
-    private class FakeSharedPreferences : SharedPreferences {
-        private val store = mutableMapOf<String, Any?>()
-
-        override fun getAll(): MutableMap<String, *> = store.toMutableMap()
-        override fun getString(key: String?, defValue: String?): String? = (store[key] as? String) ?: defValue
-        override fun getStringSet(key: String?, defValues: MutableSet<String>?): MutableSet<String>? =
-            @Suppress("UNCHECKED_CAST") (store[key] as? MutableSet<String>) ?: defValues
-        override fun getInt(key: String?, defValue: Int): Int = (store[key] as? Int) ?: defValue
-        override fun getLong(key: String?, defValue: Long): Long = (store[key] as? Long) ?: defValue
-        override fun getFloat(key: String?, defValue: Float): Float = (store[key] as? Float) ?: defValue
-        override fun getBoolean(key: String?, defValue: Boolean): Boolean = (store[key] as? Boolean) ?: defValue
-        override fun contains(key: String?): Boolean = store.containsKey(key)
-        override fun registerOnSharedPreferenceChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener?) {}
-        override fun unregisterOnSharedPreferenceChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener?) {}
-
-        override fun edit(): SharedPreferences.Editor = FakeEditor()
-
-        private inner class FakeEditor : SharedPreferences.Editor {
-            override fun putString(key: String?, value: String?): SharedPreferences.Editor { store[key!!] = value; return this }
-            override fun putStringSet(key: String?, values: MutableSet<String>?): SharedPreferences.Editor { store[key!!] = values; return this }
-            override fun putInt(key: String?, value: Int): SharedPreferences.Editor { store[key!!] = value; return this }
-            override fun putLong(key: String?, value: Long): SharedPreferences.Editor { store[key!!] = value; return this }
-            override fun putFloat(key: String?, value: Float): SharedPreferences.Editor { store[key!!] = value; return this }
-            override fun putBoolean(key: String?, value: Boolean): SharedPreferences.Editor { store[key!!] = value; return this }
-            override fun remove(key: String?): SharedPreferences.Editor { store.remove(key); return this }
-            override fun clear(): SharedPreferences.Editor { store.clear(); return this }
-            override fun apply() {}
-            override fun commit(): Boolean = true
-        }
-    }
-
     private fun emptyAllPage() = response(1, 1, 0, emptyList())
     private fun emptyCompletedPage() = response(1, 1, 0, emptyList())
 
@@ -145,26 +111,13 @@ class CompetitionsRepositorySyncAllTest {
             pageResponses[1 to "all"] = emptyAllPage()
             pageResponses[1 to "completed"] = emptyCompletedPage()
         },
-        dao: FakeDao = FakeDao(),
-        prefs: SharedPreferences = FakeSharedPreferences()
+        dao: FakeDao = FakeDao()
     ): Triple<CompetitionsRepository, FakeDao, FakeRemoteDataSource> {
-        val syncPrefs = SyncPreferences(prefs)
-        val repo = CompetitionsRepository(remote, dao, Gson(), syncPrefs)
+        val repo = CompetitionsRepository(remote, dao, Gson())
         return Triple(repo, dao, remote)
     }
 
-    private val weekMs = 7L * 24 * 60 * 60 * 1000
-
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
-
-    @Test
-    fun `repository constructor accepts SyncPreferences as 4th parameter`() {
-        val constructors = CompetitionsRepository::class.java.constructors
-        val matching = constructors.firstOrNull { c ->
-            c.parameterTypes.any { it == SyncPreferences::class.java }
-        }
-        assertNotNull("CompetitionsRepository should accept SyncPreferences in its constructor", matching)
-    }
 
     @Test
     fun `syncAll method exists on repository`() {
@@ -214,30 +167,6 @@ class CompetitionsRepositorySyncAllTest {
         assertTrue(
             "syncAll should always call getCompetitions with status=all (syncNonCompleted)",
             statusesCalled.contains("all")
-        )
-    }
-
-    @Test
-    fun `syncAll runs syncCompleted when last sync was more than a week ago`(): Unit = runBlocking {
-        val prefs = FakeSharedPreferences()
-        // 10 days ago
-        prefs.edit().putLong(
-            "last_completed_full_sync_ms",
-            System.currentTimeMillis() - 10L * 24 * 60 * 60 * 1000
-        ).commit()
-        val remote = FakeRemoteDataSource().apply {
-            pageResponses[1 to "all"] = emptyAllPage()
-            pageResponses[1 to "completed"] = emptyCompletedPage()
-        }
-        val dao = FakeDao().apply { completedCount = 50 }
-
-        val (repo, _, _) = buildRepo(remote = remote, dao = dao, prefs = prefs)
-        repo.syncAll()
-
-        val statusesCalled = remote.getCompetitionsCalls.map { it.third }
-        assertTrue(
-            "syncAll should call status=completed when last sync is older than a week",
-            statusesCalled.contains("completed")
         )
     }
 
