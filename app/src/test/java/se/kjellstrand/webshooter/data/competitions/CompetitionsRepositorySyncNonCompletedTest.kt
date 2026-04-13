@@ -109,6 +109,7 @@ class CompetitionsRepositorySyncNonCompletedTest {
         override fun observeAll(): Flow<List<CompetitionEntity>> = flowOf(emptyList())
         override suspend fun getCompletedCompetitions(): List<CompetitionEntity> = emptyList()
         override suspend fun getCompletedCount(): Int = completedCount
+        override suspend fun getMaxCompletedDate(): String? = null
         override suspend fun getNonCompletedIds(): List<Long> = nonCompletedIdsResult
         override suspend fun insertAll(competitions: List<CompetitionEntity>) {
             insertedBatches.add(competitions)

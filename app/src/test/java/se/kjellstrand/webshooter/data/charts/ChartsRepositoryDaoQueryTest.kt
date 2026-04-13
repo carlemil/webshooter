@@ -57,6 +57,7 @@ class ChartsRepositoryDaoQueryTest {
         override fun observeAll(): Flow<List<CompetitionEntity>> = flowOf(completed)
         override suspend fun getCompletedCompetitions(): List<CompetitionEntity> = completed
         override suspend fun getCompletedCount(): Int = completed.size
+        override suspend fun getMaxCompletedDate(): String? = completed.maxOfOrNull { it.date }
         override suspend fun getNonCompletedIds(): List<Long> = emptyList()
         override suspend fun insertAll(competitions: List<CompetitionEntity>) {}
         override suspend fun deleteAll() {}
