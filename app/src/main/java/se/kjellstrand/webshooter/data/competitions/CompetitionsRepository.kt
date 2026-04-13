@@ -79,13 +79,17 @@ open class CompetitionsRepository @Inject constructor(
         }
     }
 
-    suspend fun syncCompleted() {
+    suspend fun syncCompleted(force: Boolean = false) {
+        val cursor = if (force) null else dao.getMaxCompletedDate()
         var page = 1
         val pageSize = 100
         while (true) {
             val result = competitionsRemoteDataSource.getCompetitions(page, pageSize, "completed", 0, 0)
-            val entities = result.competitions.data.map { it.toEntity(gson) }
+            val items = result.competitions.data
+            val entities = items.map { it.toEntity(gson) }
             dao.insertAll(entities)
+            val minDateOnPage = items.minOfOrNull { it.date }
+            if (cursor != null && minDateOnPage != null && minDateOnPage <= cursor) break
             if (page >= result.competitions.lastPage) break
             page++
         }
