@@ -21,6 +21,9 @@ interface CompetitionsDao {
     @Query("SELECT COUNT(*) FROM competitions WHERE status = 'completed'")
     suspend fun getCompletedCount(): Int
 
+    @Query("SELECT MAX(date) FROM competitions WHERE status = 'completed'")
+    suspend fun getMaxCompletedDate(): String?
+
     @Query("SELECT id FROM competitions WHERE status != 'completed'")
     suspend fun getNonCompletedIds(): List<Long>
 

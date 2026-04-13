@@ -68,6 +68,7 @@ class CompetitionsRepositoryObserveAllTest {
         override fun observeAll(): Flow<List<CompetitionEntity>> = flowOf(observed)
         override suspend fun getCompletedCompetitions(): List<CompetitionEntity> = emptyList()
         override suspend fun getCompletedCount(): Int = 0
+        override suspend fun getMaxCompletedDate(): String? = null
         override suspend fun getNonCompletedIds(): List<Long> = emptyList()
         override suspend fun insertAll(competitions: List<CompetitionEntity>) {}
         override suspend fun deleteAll() {}
