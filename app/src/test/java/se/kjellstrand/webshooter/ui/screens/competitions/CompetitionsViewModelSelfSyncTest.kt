@@ -35,9 +35,11 @@ class CompetitionsViewModelSelfSyncTest {
     fun `CompetitionsViewModelImpl source calls syncAll for self-healing`() {
         // Not just in reload() — also from the init/observe path.
         // The syncAll call should appear at least twice (once from reload, once from self-sync).
-        val count = Regex("syncAll\\(\\)").findAll(viewModelSource).count()
+        // Match any syncAll( call (with or without arguments) so reload's syncAll(force = true)
+        // and init's syncAll() both count.
+        val count = Regex("syncAll\\(").findAll(viewModelSource).count()
         assertTrue(
-            "Impl should call syncAll() from at least two places (reload AND the self-sync path), found $count",
+            "Impl should call syncAll(...) from at least two places (reload AND the self-sync path), found $count",
             count >= 2
         )
     }
