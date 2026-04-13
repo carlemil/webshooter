@@ -4,20 +4,14 @@ import android.util.Log
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import okio.IOException
 import retrofit2.HttpException
-import se.kjellstrand.webshooter.data.common.Resource
-import se.kjellstrand.webshooter.data.common.UserError
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionsDao
 import se.kjellstrand.webshooter.data.competitions.local.SyncPreferences
 import se.kjellstrand.webshooter.data.competitions.local.toDomain
 import se.kjellstrand.webshooter.data.competitions.local.toEntity
-import se.kjellstrand.webshooter.data.competitions.remote.Competitions
 import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsRemoteDataSource
-import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsResponse
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -44,92 +38,6 @@ open class CompetitionsRepository @Inject constructor(
             syncPreferences.setLastCompletedFullSyncMs(now)
         }
         syncNonCompleted()
-    }
-
-    companion object {
-        private const val TAG = "CompetitionsRepository"
-    }
-
-    fun get(
-        page: Int,
-        pageSize: Int
-    ): Flow<Resource<CompetitionsResponse, UserError>> {
-        return flow<Resource<CompetitionsResponse, UserError>> {
-            emit(Resource.Loading(true))
-
-            if (page == 1) {
-                try {
-                    val cached = dao.getAll()
-                    if (cached.isNotEmpty()) {
-                        val domains = cached.mapNotNull { entity ->
-                            entity.toDomain(gson)
-                        }
-                        if (domains.isNotEmpty()) {
-                            emit(Resource.Success(CompetitionsResponse(
-                                competitions = Competitions(
-                                    currentPage = 1,
-                                    data = domains,
-                                    lastPage = 1,
-                                    total = Long.MAX_VALUE,
-                                    status = "",
-                                    competitionTypes = emptyList()
-                                )
-                            )))
-                        }
-                    }
-                } catch (e: Exception) {
-                    Log.w(TAG, "Error", e)
-                }
-            }
-
-            val result = try {
-                competitionsRemoteDataSource.getCompetitions(page, pageSize, "all", 0, 0)
-            } catch (e: IOException) {
-                Log.w(TAG, "Error", e)
-                emit(Resource.Error(UserError.IOError))
-                return@flow
-            } catch (e: HttpException) {
-                Log.w(TAG, "Error", e)
-                emit(Resource.Error(UserError.HttpError(e.code())))
-                return@flow
-            } catch (e: Exception) {
-                Log.w(TAG, "Error", e)
-                emit(Resource.Error(UserError.UnknownError))
-                return@flow
-            }
-
-            val entities = result.competitions.data.map { it.toEntity(gson) }
-            dao.insertAll(entities)
-
-            emit(Resource.Success(result))
-        }.flowOn(Dispatchers.Default)
-    }
-
-    fun getLocalAll(): Flow<Resource<CompetitionsResponse, UserError>> {
-        return flow<Resource<CompetitionsResponse, UserError>> {
-            emit(Resource.Loading(true))
-            try {
-                val cached = dao.getAll()
-                val domains = cached.mapNotNull { it.toDomain(gson) }
-                emit(
-                    Resource.Success(
-                        CompetitionsResponse(
-                            competitions = Competitions(
-                                currentPage = 1,
-                                data = domains,
-                                lastPage = 1,
-                                total = domains.size.toLong(),
-                                status = "",
-                                competitionTypes = emptyList()
-                            )
-                        )
-                    )
-                )
-            } catch (e: Exception) {
-                Log.w(TAG, "Error reading local competitions", e)
-                emit(Resource.Error(UserError.UnknownError))
-            }
-        }.flowOn(Dispatchers.Default)
     }
 
     suspend fun syncNonCompleted() {
@@ -181,6 +89,10 @@ open class CompetitionsRepository @Inject constructor(
             if (page >= result.competitions.lastPage) break
             page++
         }
+    }
+
+    companion object {
+        private const val TAG = "CompetitionsRepository"
     }
 }
 

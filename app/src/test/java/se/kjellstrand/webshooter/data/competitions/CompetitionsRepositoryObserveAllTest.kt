@@ -155,20 +155,14 @@ class CompetitionsRepositoryObserveAllTest {
     // --- Guard tests (should PASS before and after fix) ---
 
     @Test
-    fun `repository still has getLocalAll`() {
-        val method = CompetitionsRepository::class.java.methods.find { it.name == "getLocalAll" }
-        assertNotNull("getLocalAll should still exist", method)
-    }
-
-    @Test
     fun `repository still has syncAll`() {
         val method = CompetitionsRepository::class.java.methods.find { it.name == "syncAll" }
         assertNotNull("syncAll should still exist", method)
     }
 
     @Test
-    fun `repository still has get`() {
-        val method = CompetitionsRepository::class.java.methods.find { it.name == "get" }
-        assertNotNull("get should still exist", method)
+    fun `repository still has syncNonCompleted`() {
+        val method = CompetitionsRepository::class.java.methods.find { it.name == "syncNonCompleted" }
+        assertNotNull("syncNonCompleted should still exist", method)
     }
 }

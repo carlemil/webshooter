@@ -42,14 +42,14 @@ class CompetitionsRepositorySyncCompletedTest {
     // --- Guard tests (should PASS before and after fix) ---
 
     @Test
-    fun `repository still has get method`() {
-        val method = CompetitionsRepository::class.java.methods.find { it.name == "get" }
-        assertNotNull("CompetitionsRepository should still have the get method", method)
+    fun `repository still has syncNonCompleted method`() {
+        val method = CompetitionsRepository::class.java.methods.find { it.name == "syncNonCompleted" }
+        assertNotNull("syncNonCompleted should still exist", method)
     }
 
     @Test
-    fun `repository still has getLocalAll method`() {
-        val method = CompetitionsRepository::class.java.methods.find { it.name == "getLocalAll" }
-        assertNotNull("CompetitionsRepository should still have getLocalAll", method)
+    fun `repository still has syncAll method`() {
+        val method = CompetitionsRepository::class.java.methods.find { it.name == "syncAll" }
+        assertNotNull("syncAll should still exist", method)
     }
 }
