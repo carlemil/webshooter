@@ -55,7 +55,7 @@ class LoginViewModelImpl @Inject constructor(
                     isSuccess = true
                 )
                 _eventFlow.emit(UiEvent.NavigateToLandingPage)
-                prefetchCompletedCompetitions()
+                prefetchCompetitions()
                 return@launch
             }
 
@@ -76,7 +76,7 @@ class LoginViewModelImpl @Inject constructor(
                             )
                             _eventFlow.emit(UiEvent.NavigateToLandingPage)
                             securePrefs.saveUsername(username)
-                            prefetchCompletedCompetitions()
+                            prefetchCompetitions()
                         }
 
                         is Resource.Error -> {
@@ -95,12 +95,12 @@ class LoginViewModelImpl @Inject constructor(
         }
     }
 
-    private fun prefetchCompletedCompetitions() {
+    private fun prefetchCompetitions() {
         viewModelScope.launch {
             try {
-                competitionsRepository.syncCompleted()
+                competitionsRepository.syncAll()
             } catch (e: Exception) {
-                Log.w(TAG, "Failed to sync completed competitions", e)
+                Log.w(TAG, "Failed to sync competitions", e)
             }
         }
     }

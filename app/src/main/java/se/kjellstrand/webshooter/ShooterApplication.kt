@@ -25,9 +25,9 @@ class ShooterApplication : Application() {
         if (authTokenManager.readToken() != null) {
             applicationScope.launch {
                 try {
-                    competitionsRepository.syncCompleted()
+                    competitionsRepository.syncAll()
                 } catch (e: Exception) {
-                    Log.w(TAG, "Failed to sync completed competitions on startup", e)
+                    Log.w(TAG, "Failed to sync competitions on startup", e)
                 }
             }
         }

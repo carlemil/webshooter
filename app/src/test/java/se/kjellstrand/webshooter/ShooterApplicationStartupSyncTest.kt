@@ -1,12 +1,18 @@
 package se.kjellstrand.webshooter
 
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import se.kjellstrand.webshooter.data.AuthTokenManager
 import se.kjellstrand.webshooter.data.competitions.CompetitionsRepository
+import java.io.File
 
 class ShooterApplicationStartupSyncTest {
+
+    private val applicationSource: String by lazy {
+        File("src/main/java/se/kjellstrand/webshooter/ShooterApplication.kt").readText()
+    }
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 
@@ -53,6 +59,22 @@ class ShooterApplicationStartupSyncTest {
         assertTrue(
             "authTokenManager should be of type AuthTokenManager",
             AuthTokenManager::class.java.isAssignableFrom(field!!.type)
+        )
+    }
+
+    @Test
+    fun `ShooterApplication onCreate calls syncAll on the repository`() {
+        assertTrue(
+            "ShooterApplication source should call competitionsRepository.syncAll()",
+            applicationSource.contains("competitionsRepository.syncAll()")
+        )
+    }
+
+    @Test
+    fun `ShooterApplication onCreate no longer calls syncCompleted directly`() {
+        assertFalse(
+            "ShooterApplication should not call syncCompleted() — that's now an internal step of syncAll()",
+            applicationSource.contains("competitionsRepository.syncCompleted()")
         )
     }
 
