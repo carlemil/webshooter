@@ -100,36 +100,6 @@ fun CompetitionsScreen(
         }
     }
 
-    // Scroll-based trigger: compare against filtered list size, not raw size
-    LaunchedEffect(listState) {
-        snapshotFlow {
-            listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
-        }.collect { lastVisibleItemIndex ->
-            val comps = competitionsState.competitions ?: return@collect
-            if (lastVisibleItemIndex != null &&
-                lastVisibleItemIndex >= competitionsState.filteredData.size - 5 &&
-                comps.data.size.toLong() < comps.total
-            ) {
-                competitionsViewModel.loadNextPage()
-            }
-        }
-    }
-
-    // State-based trigger: auto-load more pages when filtered results are sparse,
-    // so filters don't stall pagination even when the user can't scroll
-    LaunchedEffect(
-        competitionsState.filteredData.size,
-        competitionsState.competitions?.data?.size
-    ) {
-        val comps = competitionsState.competitions ?: return@LaunchedEffect
-        if (!competitionsState.isLoading &&
-            competitionsState.filteredData.size < 5 &&
-            comps.data.size.toLong() < comps.total
-        ) {
-            competitionsViewModel.loadNextPage()
-        }
-    }
-
     Scaffold(
         floatingActionButton = {
             Column(

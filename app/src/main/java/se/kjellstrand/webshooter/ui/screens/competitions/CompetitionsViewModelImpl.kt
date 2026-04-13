@@ -7,8 +7,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.competitions.CompetitionsRepository
+import se.kjellstrand.webshooter.data.competitions.remote.Competitions
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import javax.inject.Inject
 
@@ -20,63 +20,38 @@ class CompetitionsViewModelImpl @Inject constructor(
     private val _uiState = MutableStateFlow(CompetitionsUiState(isLoading = true))
     override val uiState: StateFlow<CompetitionsUiState> = _uiState.asStateFlow()
 
-    private var currentPage = 1
-
     init {
-        loadInitialPages()
-    }
-
-    private fun loadInitialPages() {
-        loadCompetitions(1, 20)
-        currentPage = 1
-    }
-
-    override fun loadNextPage() {
-        if (_uiState.value.isLoading) return
-        _uiState.value = _uiState.value.copy(isLoading = true)
-        currentPage++
-        loadCompetitions(currentPage, 20)
-    }
-
-    private fun loadCompetitions(page: Int, pageSize: Int) {
-        val flow = competitionsRepository.get(page, pageSize)
         viewModelScope.launch {
-            flow.collect { resource ->
-                when (resource) {
-                    is Resource.Success -> {
-                        if (page == 1) {
-                            _uiState.value = _uiState.value.copy(
-                                competitions = resource.data.competitions,
-                                isLoading = false
-                            )
-                        } else {
-                            val currentCompetitions = _uiState.value.competitions?.data ?: emptyList()
-                            val newCompetitions = resource.data.competitions.data
-                            _uiState.value = _uiState.value.copy(
-                                competitions = resource.data.competitions.copy(data = currentCompetitions + newCompetitions),
-                                isLoading = false
-                            )
-                        }
-                    }
-
-                    is Resource.Error -> {
-                        if (page > 1) currentPage--
-                        _uiState.value = _uiState.value.copy(
-                            isLoading = false,
-                            hasError = _uiState.value.competitions == null
-                        )
-                    }
-
-                    else -> {}
-                }
+            competitionsRepository.observeAll().collect { data ->
+                _uiState.value = _uiState.value.copy(
+                    competitions = Competitions(
+                        currentPage = 1,
+                        data = data,
+                        lastPage = 1,
+                        total = data.size.toLong(),
+                        status = "",
+                        competitionTypes = emptyList()
+                    ),
+                    isLoading = false,
+                    hasError = false
+                )
             }
         }
     }
 
     override fun reload() {
-        _uiState.value = _uiState.value.copy(competitions = null, isLoading = true, hasError = false)
-        currentPage = 1
-        loadInitialPages()
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true, hasError = false)
+            try {
+                competitionsRepository.syncAll()
+                _uiState.value = _uiState.value.copy(isLoading = false)
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    hasError = _uiState.value.competitions == null
+                )
+            }
+        }
     }
 
     override fun getCompetitionById(competitionId: Long): Datum? {

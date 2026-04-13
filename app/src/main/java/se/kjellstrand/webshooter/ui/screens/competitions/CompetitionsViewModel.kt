@@ -6,7 +6,6 @@ import se.kjellstrand.webshooter.data.competitions.remote.Datum
 interface CompetitionsViewModel {
     val uiState: StateFlow<CompetitionsUiState>
     fun getCompetitionById(competitionId: Long): Datum?
-    fun loadNextPage()
     fun reload()
     fun setSelectedCompetitionTypeIds(ids: Set<Int>)
     fun setSelectedStatuses(statuses: Set<String>)
