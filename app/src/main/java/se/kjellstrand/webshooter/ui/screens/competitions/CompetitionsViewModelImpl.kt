@@ -1,5 +1,6 @@
 package se.kjellstrand.webshooter.ui.screens.competitions
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,21 +21,55 @@ class CompetitionsViewModelImpl @Inject constructor(
     private val _uiState = MutableStateFlow(CompetitionsUiState(isLoading = true))
     override val uiState: StateFlow<CompetitionsUiState> = _uiState.asStateFlow()
 
+    @Volatile private var syncTriggered = false
+
     init {
         viewModelScope.launch {
             competitionsRepository.observeAll().collect { data ->
-                _uiState.value = _uiState.value.copy(
-                    competitions = Competitions(
-                        currentPage = 1,
-                        data = data,
-                        lastPage = 1,
-                        total = data.size.toLong(),
-                        status = "",
-                        competitionTypes = emptyList()
-                    ),
-                    isLoading = false,
-                    hasError = false
-                )
+                if (data.isNotEmpty()) {
+                    _uiState.value = _uiState.value.copy(
+                        competitions = Competitions(
+                            currentPage = 1,
+                            data = data,
+                            lastPage = 1,
+                            total = data.size.toLong(),
+                            status = "",
+                            competitionTypes = emptyList()
+                        ),
+                        isLoading = false,
+                        hasError = false
+                    )
+                } else if (!syncTriggered) {
+                    syncTriggered = true
+                    _uiState.value = _uiState.value.copy(
+                        competitions = Competitions(
+                            currentPage = 1,
+                            data = data,
+                            lastPage = 1,
+                            total = 0L,
+                            status = "",
+                            competitionTypes = emptyList()
+                        ),
+                        isLoading = true,
+                        hasError = false
+                    )
+                    launch {
+                        try {
+                            competitionsRepository.syncAll()
+                            if (_uiState.value.competitions?.data?.isEmpty() == true) {
+                                _uiState.value = _uiState.value.copy(isLoading = false)
+                            }
+                        } catch (e: Exception) {
+                            Log.w(TAG, "Self-sync failed", e)
+                            if (_uiState.value.competitions?.data?.isEmpty() == true) {
+                                _uiState.value = _uiState.value.copy(
+                                    isLoading = false,
+                                    hasError = true
+                                )
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -48,7 +83,7 @@ class CompetitionsViewModelImpl @Inject constructor(
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    hasError = _uiState.value.competitions == null
+                    hasError = _uiState.value.competitions?.data.isNullOrEmpty()
                 )
             }
         }
@@ -64,5 +99,9 @@ class CompetitionsViewModelImpl @Inject constructor(
 
     override fun setSelectedStatuses(statuses: Set<String>) {
         _uiState.value = _uiState.value.copy(selectedStatuses = statuses)
+    }
+
+    companion object {
+        private const val TAG = "CompetitionsViewModelImpl"
     }
 }
