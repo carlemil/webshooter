@@ -17,7 +17,6 @@ class CompetitionsViewModelMock(
         return uiState.value.competitions?.data?.find { it.id == competitionId }
     }
 
-    override fun loadNextPage() {}
     override fun reload() {}
     override fun setSelectedCompetitionTypeIds(ids: Set<Int>) {}
     override fun setSelectedStatuses(statuses: Set<String>) {}
