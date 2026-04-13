@@ -1,5 +1,6 @@
 package se.kjellstrand.webshooter.ui.screens.login
 
+import kotlinx.coroutines.CoroutineScope
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
@@ -74,6 +75,53 @@ class LoginPrefetchTest {
         assertFalse(
             "LoginViewModelImpl should not call syncCompleted() — that's now an internal step of syncAll()",
             loginSource.contains("competitionsRepository.syncCompleted()")
+        )
+    }
+
+    @Test
+    fun `LoginViewModelImpl constructor accepts a CoroutineScope`() {
+        val constructors = LoginViewModelImpl::class.java.declaredConstructors
+        val hasScope = constructors.any { constructor ->
+            constructor.parameterTypes.any { CoroutineScope::class.java.isAssignableFrom(it) }
+        }
+        assertTrue(
+            "LoginViewModelImpl should accept a CoroutineScope in its constructor (@ApplicationScope-injected)",
+            hasScope
+        )
+    }
+
+    @Test
+    fun `LoginViewModelImpl has a CoroutineScope field`() {
+        val field = LoginViewModelImpl::class.java.declaredFields.find {
+            CoroutineScope::class.java.isAssignableFrom(it.type)
+        }
+        assertNotNull(
+            "LoginViewModelImpl should store its injected CoroutineScope as a field",
+            field
+        )
+    }
+
+    @Test
+    fun `prefetchCompetitions source launches on applicationScope not viewModelScope`() {
+        // Extract the body of prefetchCompetitions() only — bounded by the next
+        // fun/override declaration so we don't leak into getCookies() which still
+        // uses viewModelScope by design.
+        val start = loginSource.indexOf("private fun prefetchCompetitions()")
+        assertTrue("prefetchCompetitions() should exist in source", start >= 0)
+        val afterStart = start + "private fun prefetchCompetitions()".length
+        val nextFun = listOf(
+            loginSource.indexOf("private fun ", afterStart),
+            loginSource.indexOf("override fun ", afterStart),
+            loginSource.indexOf("companion object", afterStart)
+        ).filter { it >= 0 }.minOrNull() ?: loginSource.length
+        val body = loginSource.substring(start, nextFun)
+        assertTrue(
+            "prefetchCompetitions() body should launch on applicationScope, was:\n$body",
+            body.contains("applicationScope.launch")
+        )
+        assertFalse(
+            "prefetchCompetitions() body should NOT launch on viewModelScope (it gets cancelled when login screen pops), was:\n$body",
+            body.contains("viewModelScope.launch")
         )
     }
 
