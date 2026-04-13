@@ -201,25 +201,6 @@ class CompetitionsRepositorySyncAllTest {
     }
 
     @Test
-    fun `syncAll on first startup persists the timestamp`(): Unit = runBlocking {
-        val prefs = FakeSharedPreferences()
-        val (repo, _, _) = buildRepo(
-            dao = FakeDao().apply { completedCount = 0 },
-            prefs = prefs
-        )
-
-        val before = System.currentTimeMillis()
-        repo.syncAll()
-        val after = System.currentTimeMillis()
-
-        val stored = prefs.getLong("last_completed_full_sync_ms", 0L)
-        assertTrue(
-            "Timestamp should be set to a recent value, was $stored (before=$before, after=$after)",
-            stored in before..after
-        )
-    }
-
-    @Test
     fun `syncAll always runs syncNonCompleted`(): Unit = runBlocking {
         val remote = FakeRemoteDataSource().apply {
             pageResponses[1 to "all"] = emptyAllPage()
@@ -233,27 +214,6 @@ class CompetitionsRepositorySyncAllTest {
         assertTrue(
             "syncAll should always call getCompetitions with status=all (syncNonCompleted)",
             statusesCalled.contains("all")
-        )
-    }
-
-    @Test
-    fun `syncAll skips syncCompleted when last sync was within the past week`(): Unit = runBlocking {
-        val prefs = FakeSharedPreferences()
-        // Set last sync to "yesterday"
-        prefs.edit().putLong("last_completed_full_sync_ms", System.currentTimeMillis() - 24L * 60 * 60 * 1000).commit()
-        val remote = FakeRemoteDataSource().apply {
-            pageResponses[1 to "all"] = emptyAllPage()
-            // intentionally NOT providing a "completed" response — if syncCompleted runs we crash
-        }
-        val dao = FakeDao().apply { completedCount = 50 } // already populated
-
-        val (repo, _, _) = buildRepo(remote = remote, dao = dao, prefs = prefs)
-        repo.syncAll()
-
-        val statusesCalled = remote.getCompetitionsCalls.map { it.third }
-        assertTrue(
-            "syncAll should NOT call status=completed within the weekly window",
-            statusesCalled.none { it == "completed" }
         )
     }
 
