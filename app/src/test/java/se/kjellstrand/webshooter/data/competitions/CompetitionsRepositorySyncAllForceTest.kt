@@ -1,11 +1,9 @@
 package se.kjellstrand.webshooter.data.competitions
 
-import android.content.SharedPreferences
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -13,7 +11,6 @@ import se.kjellstrand.webshooter.data.common.Club
 import se.kjellstrand.webshooter.data.common.CompetitionType
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionEntity
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionsDao
-import se.kjellstrand.webshooter.data.competitions.local.SyncPreferences
 import se.kjellstrand.webshooter.data.competitions.remote.CompetitionByIdResponse
 import se.kjellstrand.webshooter.data.competitions.remote.Competitions
 import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsRemoteDataSource
@@ -95,43 +92,11 @@ class CompetitionsRepositorySyncAllForceTest {
         override suspend fun deleteById(id: Long) {}
     }
 
-    private class FakeSharedPreferences : SharedPreferences {
-        private val store = mutableMapOf<String, Any?>()
-
-        override fun getAll(): MutableMap<String, *> = store.toMutableMap()
-        override fun getString(key: String?, defValue: String?): String? = (store[key] as? String) ?: defValue
-        override fun getStringSet(key: String?, defValues: MutableSet<String>?): MutableSet<String>? =
-            @Suppress("UNCHECKED_CAST") (store[key] as? MutableSet<String>) ?: defValues
-        override fun getInt(key: String?, defValue: Int): Int = (store[key] as? Int) ?: defValue
-        override fun getLong(key: String?, defValue: Long): Long = (store[key] as? Long) ?: defValue
-        override fun getFloat(key: String?, defValue: Float): Float = (store[key] as? Float) ?: defValue
-        override fun getBoolean(key: String?, defValue: Boolean): Boolean = (store[key] as? Boolean) ?: defValue
-        override fun contains(key: String?): Boolean = store.containsKey(key)
-        override fun registerOnSharedPreferenceChangeListener(l: SharedPreferences.OnSharedPreferenceChangeListener?) {}
-        override fun unregisterOnSharedPreferenceChangeListener(l: SharedPreferences.OnSharedPreferenceChangeListener?) {}
-
-        override fun edit(): SharedPreferences.Editor = FakeEditor()
-
-        private inner class FakeEditor : SharedPreferences.Editor {
-            override fun putString(key: String?, value: String?): SharedPreferences.Editor { store[key!!] = value; return this }
-            override fun putStringSet(key: String?, values: MutableSet<String>?): SharedPreferences.Editor { store[key!!] = values; return this }
-            override fun putInt(key: String?, value: Int): SharedPreferences.Editor { store[key!!] = value; return this }
-            override fun putLong(key: String?, value: Long): SharedPreferences.Editor { store[key!!] = value; return this }
-            override fun putFloat(key: String?, value: Float): SharedPreferences.Editor { store[key!!] = value; return this }
-            override fun putBoolean(key: String?, value: Boolean): SharedPreferences.Editor { store[key!!] = value; return this }
-            override fun remove(key: String?): SharedPreferences.Editor { store.remove(key); return this }
-            override fun clear(): SharedPreferences.Editor { store.clear(); return this }
-            override fun apply() {}
-            override fun commit(): Boolean = true
-        }
-    }
-
     private fun buildRepo(
         remote: FakeRemote = FakeRemote(),
-        dao: FakeDao = FakeDao(),
-        prefs: SharedPreferences = FakeSharedPreferences()
+        dao: FakeDao = FakeDao()
     ): CompetitionsRepository =
-        CompetitionsRepository(remote, dao, Gson(), SyncPreferences(prefs))
+        CompetitionsRepository(remote, dao, Gson())
 
     private fun emptyAllPage() = response(1, 1, emptyList(), "all")
     private fun emptyCompletedPage() = response(1, 1, emptyList(), "completed")
@@ -152,46 +117,22 @@ class CompetitionsRepositorySyncAllForceTest {
     }
 
     @Test
-    fun `syncAll always runs syncCompleted even with recent timestamp and non-empty db`(): Unit = runBlocking {
-        // Pre-fix: weekly gate skips syncCompleted when DB has completed rows AND last sync was recent.
-        // Post-fix: weekly gate is removed; syncCompleted runs every time (incremental is cheap).
-        val prefs = FakeSharedPreferences()
-        prefs.edit().putLong("last_completed_full_sync_ms", System.currentTimeMillis()).commit() // just now
+    fun `syncAll runs syncCompleted even when db already has completed rows`(): Unit = runBlocking {
+        // Pre-WEEK_MS-removal: weekly gate skipped syncCompleted when DB had completed rows
+        // and last sync was recent. Post-removal: syncCompleted runs every time (incremental is cheap).
         val remote = FakeRemote().apply {
             pageResponses[1 to "all"] = emptyAllPage()
             pageResponses[1 to "completed"] = emptyCompletedPage()
         }
-        val dao = FakeDao(completedCountValue = 50) // already populated, gate would skip pre-fix
+        val dao = FakeDao(completedCountValue = 50) // already populated
 
-        val repo = buildRepo(remote = remote, dao = dao, prefs = prefs)
+        val repo = buildRepo(remote = remote, dao = dao)
         repo.syncAll()
 
         val statusesCalled = remote.getCompetitionsCalls.map { it.third }
         assertTrue(
             "syncAll should ALWAYS call status=completed (no weekly gate). Statuses called = $statusesCalled",
             statusesCalled.contains("completed")
-        )
-    }
-
-    @Test
-    fun `syncAll no longer writes last_completed_full_sync_ms`(): Unit = runBlocking {
-        // Pre-fix: first-boot path writes the timestamp via syncPreferences.setLastCompletedFullSyncMs.
-        // Post-fix: that write is removed entirely.
-        val prefs = FakeSharedPreferences()
-        val remote = FakeRemote().apply {
-            pageResponses[1 to "all"] = emptyAllPage()
-            pageResponses[1 to "completed"] = emptyCompletedPage()
-        }
-        val dao = FakeDao(completedCountValue = 0) // first-boot path
-
-        val repo = buildRepo(remote = remote, dao = dao, prefs = prefs)
-        repo.syncAll()
-
-        val stored = prefs.getLong("last_completed_full_sync_ms", 0L)
-        assertEquals(
-            "syncAll should not write last_completed_full_sync_ms anymore",
-            0L,
-            stored
         )
     }
 

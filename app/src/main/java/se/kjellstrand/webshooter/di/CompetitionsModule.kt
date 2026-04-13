@@ -8,7 +8,6 @@ import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import se.kjellstrand.webshooter.data.competitions.CompetitionsRepository
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionsDao
-import se.kjellstrand.webshooter.data.competitions.local.SyncPreferences
 import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsRemoteDataSource
 import javax.inject.Singleton
 
@@ -27,9 +26,8 @@ class CompetitionsModule {
     fun providesCompetitionsRepository(
         competitionsRemoteDataSource: CompetitionsRemoteDataSource,
         dao: CompetitionsDao,
-        gson: Gson,
-        syncPreferences: SyncPreferences
+        gson: Gson
     ) : CompetitionsRepository {
-        return CompetitionsRepository(competitionsRemoteDataSource, dao, gson, syncPreferences)
+        return CompetitionsRepository(competitionsRemoteDataSource, dao, gson)
     }
 }
