@@ -316,10 +316,4 @@ class CompetitionsRepositorySyncAllTest {
         val method = CompetitionsRepository::class.java.methods.find { it.name == "syncNonCompleted" }
         assertNotNull("syncNonCompleted should still exist", method)
     }
-
-    @Test
-    fun `get method still exists`() {
-        val method = CompetitionsRepository::class.java.methods.find { it.name == "get" }
-        assertNotNull("get should still exist", method)
-    }
 }

@@ -285,13 +285,13 @@ class CompetitionsRepositorySyncNonCompletedTest {
     }
 
     @Test
-    fun `get method still exists`() {
-        val method = CompetitionsRepository::class.java.methods.find { it.name == "get" }
-        assertNotNull("get should still exist on the repository", method)
+    fun `syncAll method still exists`() {
+        val method = CompetitionsRepository::class.java.methods.find { it.name == "syncAll" }
+        assertNotNull("syncAll should still exist on the repository", method)
     }
 
     @Test
-    fun `repository can still be constructed with the standard three-arg constructor`() {
+    fun `repository can still be constructed with its standard constructor`() {
         val repo = buildRepo()
         assertNotNull(repo)
     }
