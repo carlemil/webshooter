@@ -1,6 +1,8 @@
 package se.kjellstrand.webshooter.data.charts
 
 import com.google.gson.Gson
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
@@ -52,10 +54,13 @@ class ChartsRepositoryDaoQueryTest {
         var completed: List<CompetitionEntity> = emptyList()
     ) : CompetitionsDao {
         override suspend fun getAll(): List<CompetitionEntity> = completed
+        override fun observeAll(): Flow<List<CompetitionEntity>> = flowOf(completed)
         override suspend fun getCompletedCompetitions(): List<CompetitionEntity> = completed
         override suspend fun getCompletedCount(): Int = completed.size
+        override suspend fun getNonCompletedIds(): List<Long> = emptyList()
         override suspend fun insertAll(competitions: List<CompetitionEntity>) {}
         override suspend fun deleteAll() {}
+        override suspend fun deleteById(id: Long) {}
     }
 
     private fun competition(id: Long, name: String, date: String, type: String) = CompetitionEntity(
