@@ -39,12 +39,4 @@ data class ChartsUiState(
             })
         }
 
-    val filteredClubMembers: List<ClubMember>
-        get() {
-            if (searchQuery.isBlank()) return clubMembers
-            val query = searchQuery.lowercase()
-            return allParticipants
-                .filter { it.fullname.lowercase().contains(query) }
-                .map { ClubMember(userId = it.userId, name = it.fullname, fullname = it.fullname) }
-        }
 }

@@ -14,3 +14,11 @@ data class ParticipantRow(
     val userId: Long,
     val fullname: String
 )
+
+data class SeriesRow(
+    val competitionId: Long,
+    val competitionName: String,
+    val date: String,
+    val weaponClassName: String,
+    val stationResultsJson: String
+)
