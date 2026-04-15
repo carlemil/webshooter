@@ -2,11 +2,18 @@ package se.kjellstrand.webshooter.ui.screens.seriespoints
 
 import android.annotation.SuppressLint
 import android.view.MotionEvent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material3.CircularProgressIndicator
@@ -20,13 +27,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.components.Legend
-import com.github.mikephil.charting.components.LegendEntry
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
@@ -141,6 +148,15 @@ private fun SeriesPointsContent(
                     .fillMaxWidth()
                     .padding(8.dp)
             )
+
+            val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+            CompetitionsLegend(
+                competitions = competitions,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = screenHeight / 3)
+                    .padding(horizontal = 16.dp)
+            )
         }
 
         OutlinedButton(
@@ -155,6 +171,39 @@ private fun SeriesPointsContent(
                 modifier = Modifier.padding(end = 8.dp)
             )
             Text(stringResource(R.string.series_points_change_shooter))
+        }
+    }
+}
+
+@Composable
+private fun CompetitionsLegend(
+    competitions: List<CompetitionSeries>,
+    modifier: Modifier = Modifier
+) {
+    // Competitions are sorted oldest→newest; the legend shows newest first.
+    val ordered = competitions.asReversed()
+    val total = ordered.size
+    LazyColumn(modifier = modifier) {
+        items(ordered) { comp ->
+            val indexFromNewest = ordered.indexOf(comp)
+            val swatchColor = Color(colorForAge(indexFromNewest, total))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(14.dp)
+                        .background(swatchColor, RoundedCornerShape(2.dp))
+                )
+                Text(
+                    text = "${comp.date} ${comp.competitionName}",
+                    style = MaterialTheme.typography.bodySmall,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
         }
     }
 }
@@ -199,13 +248,19 @@ private fun SeriesPointsChart(
                 axisLeft.textColor = onSurfaceColor
                 axisRight.isEnabled = false
 
-                legend.textColor = onSurfaceColor
-                legend.isWordWrapEnabled = true
+                legend.isEnabled = false
 
                 setExtraBottomOffset(16f)
             }
         },
         update = { chart ->
+            // Defensive: ensure the built-in legend stays off across
+            // recompositions and any stale custom-entry state is cleared,
+            // otherwise LegendRenderer can crash with IOOB when entries and
+            // calculated label sizes get out of sync.
+            chart.legend.resetCustom()
+            chart.legend.isEnabled = false
+
             val signature = buildString {
                 competitions.forEach { comp ->
                     append(comp.competitionId).append(':')
@@ -252,21 +307,8 @@ private fun SeriesPointsChart(
                 chart.data = LineData(dataSets.toList())
                 val maxSeries = competitions.maxOf { it.seriesPoints.size }
                 chart.xAxis.labelCount = minOf(maxSeries, 10)
-
-                // Custom legend in newest→oldest order, independent of the
-                // dataset draw order (which keeps newest on top).
-                val legendEntries = ordered.mapIndexed { indexFromNewest, comp ->
-                    LegendEntry(
-                        "${comp.date} ${comp.competitionName}",
-                        Legend.LegendForm.LINE,
-                        Float.NaN, Float.NaN, null,
-                        colorForAge(indexFromNewest, total)
-                    )
-                }
-                chart.legend.setCustom(legendEntries)
             } else {
                 chart.data = null
-                chart.legend.resetCustom()
             }
 
             chart.invalidate()
