@@ -155,8 +155,14 @@
     <string name="charts_my_results">Mina resultat</string>
     <string name="charts_average_score">Medelpoäng per serie</string>
 
+    <!-- ### SERIES_POINTS ### -->
+    <string name="series_points_title">Seriepoäng</string>
+    <string name="series_points_select_shooter">Välj skytt</string>
+    <string name="series_points_change_shooter">Byt skytt</string>
+
     <!-- ### WEB_SHOOTER ### -->
     <string name="web_shooter_charts">Diagram</string>
+    <string name="web_shooter_series_points">Seriepoäng</string>
     <string name="web_shooter_club">Förening</string>
     <string name="web_shooter_competitions">Tävlingar</string>
     <string name="web_shooter_menu">Meny</string>

@@ -39,6 +39,8 @@ import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.ui.screens.charts.ChartsScreen
 import se.kjellstrand.webshooter.ui.screens.charts.ChartsViewModelImpl
+import se.kjellstrand.webshooter.ui.screens.seriespoints.SeriesPointsScreen
+import se.kjellstrand.webshooter.ui.screens.seriespoints.SeriesPointsViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.club.ClubScreen
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsScreen
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsViewModelImpl
@@ -57,6 +59,7 @@ fun WebShooterScreen(navController: NavController) {
         NavigationItem(stringResource(R.string.web_shooter_competitions), Screen.CompetitionsList.route),
         NavigationItem(stringResource(R.string.my_results), Screen.MyEntries.route),
         NavigationItem(stringResource(R.string.web_shooter_charts), Screen.Charts.route),
+        NavigationItem(stringResource(R.string.web_shooter_series_points), Screen.SeriesPoints.route),
         NavigationItem(stringResource(R.string.web_shooter_club), Screen.Club.route),
         NavigationItem(stringResource(R.string.web_shooter_settings), Screen.Settings.route),
         NavigationItem(stringResource(R.string.web_shooter_licenses), Screen.Licenses.route)
@@ -133,6 +136,9 @@ fun WebShooterScreen(navController: NavController) {
                 }
                 composable(Screen.Charts.route) {
                     ChartsScreen(hiltViewModel<ChartsViewModelImpl>())
+                }
+                composable(Screen.SeriesPoints.route) {
+                    SeriesPointsScreen(hiltViewModel<SeriesPointsViewModelImpl>())
                 }
                 composable(Screen.Club.route) {
                     ClubScreen()

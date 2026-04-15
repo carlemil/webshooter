@@ -14,27 +14,20 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.PersonAdd
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -59,6 +52,7 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.charts.ChartDataPoint
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
+import se.kjellstrand.webshooter.ui.common.ShooterPickerDialog
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
 import android.graphics.Color as AndroidColor
@@ -153,10 +147,14 @@ fun ChartsScreen(viewModel: ChartsViewModel) {
     }
 
     if (uiState.showSearchDialog) {
-        AddShooterDialog(
-            uiState = uiState,
+        ShooterPickerDialog(
+            title = stringResource(R.string.charts_add_shooter),
+            searchQuery = uiState.searchQuery,
+            clubMembers = uiState.clubMembers,
+            allParticipants = uiState.allParticipants,
+            selectedShooters = uiState.comparedShooters.mapValues { it.value.name },
             onSearchQueryChanged = viewModel::setSearchQuery,
-            onAddShooter = viewModel::addShooter,
+            onPickShooter = viewModel::addShooter,
             onRemoveShooter = viewModel::removeShooter,
             onDismiss = { viewModel.setShowSearchDialog(false) }
         )
@@ -407,86 +405,6 @@ fun ChartScatterChart(
         }
     )
 }
-
-@Composable
-fun AddShooterDialog(
-    uiState: ChartsUiState,
-    onSearchQueryChanged: (String) -> Unit,
-    onAddShooter: (Long) -> Unit,
-    onRemoveShooter: (Long) -> Unit,
-    onDismiss: () -> Unit
-) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.charts_add_shooter)) },
-        text = {
-            Column {
-                OutlinedTextField(
-                    value = uiState.searchQuery,
-                    onValueChange = onSearchQueryChanged,
-                    label = { Text(stringResource(R.string.charts_search_shooter)) },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                // Show added shooters with remove button
-                if (uiState.comparedShooters.isNotEmpty()) {
-                    Text(
-                        text = "${uiState.comparedShooters.size} valda",
-                        style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier.padding(vertical = 4.dp)
-                    )
-                    uiState.comparedShooters.forEach { (userId, info) ->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 2.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = info.name,
-                                modifier = Modifier.weight(1f),
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                            IconButton(onClick = { onRemoveShooter(userId) }) {
-                                Icon(
-                                    imageVector = Icons.Default.Close,
-                                    contentDescription = stringResource(R.string.charts_remove)
-                                )
-                            }
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(4.dp))
-                }
-
-                // Search results
-                LazyColumn(modifier = Modifier.height(300.dp)) {
-                    val filtered = uiState.filteredClubMembers.filter {
-                        !uiState.comparedShooters.containsKey(it.userId)
-                    }
-                    items(filtered) { member ->
-                        Text(
-                            text = member.fullname ?: "${member.name} ${member.lastname ?: ""}",
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable { onAddShooter(member.userId) }
-                                .padding(vertical = 10.dp, horizontal = 4.dp),
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                }
-            }
-        },
-        confirmButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.charts_close))
-            }
-        }
-    )
-}
-
 
 @Preview(showBackground = true, name = "Charts - Default with data")
 @Composable

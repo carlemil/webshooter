@@ -54,6 +54,17 @@ interface ResultsDao {
     )
     suspend fun getChartPointsForUsers(userIds: List<Long>, competitionIds: List<Long>): List<ChartPointRow>
 
+    @Query(
+        """SELECT r.competitionsId AS competitionId,
+                  c.name AS competitionName,
+                  c.date AS date,
+                  r.weaponClassName AS weaponClassName,
+                  r.stationResultsJson AS stationResultsJson
+           FROM results r INNER JOIN competitions c ON c.id = r.competitionsId
+           WHERE r.userId = :userId AND c.status = 'completed' AND c.resultsType = 'PRECISION'"""
+    )
+    suspend fun getPrecisionSeriesForUser(userId: Long): List<SeriesRow>
+
     @Query("SELECT DISTINCT userId, userFullname AS fullname FROM results ORDER BY userFullname")
     suspend fun getAllParticipants(): List<ParticipantRow>
 
