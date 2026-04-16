@@ -19,6 +19,7 @@ sealed class Screen(val route: String) {
     object MyEntries : Screen("my_entries")
     object Charts : Screen("charts")
     object SeriesPoints : Screen("series_points")
+    object ClubStats : Screen("club_stats")
     object Settings : Screen("settings")
     object Licenses : Screen("licenses")
     object ShooterResult : Screen("shooter_result/{competitionId}/{shooterId}/{resultsType}") {

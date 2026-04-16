@@ -42,6 +42,8 @@ import se.kjellstrand.webshooter.ui.screens.charts.ChartsViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.seriespoints.SeriesPointsScreen
 import se.kjellstrand.webshooter.ui.screens.seriespoints.SeriesPointsViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.club.ClubScreen
+import se.kjellstrand.webshooter.ui.screens.clubstats.ClubStatsScreen
+import se.kjellstrand.webshooter.ui.screens.clubstats.ClubStatsViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsScreen
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.myresults.MyEntriesScreen
@@ -60,6 +62,7 @@ fun WebShooterScreen(navController: NavController) {
         NavigationItem(stringResource(R.string.my_results), Screen.MyEntries.route),
         NavigationItem(stringResource(R.string.web_shooter_charts), Screen.Charts.route),
         NavigationItem(stringResource(R.string.web_shooter_series_points), Screen.SeriesPoints.route),
+        NavigationItem(stringResource(R.string.web_shooter_club_stats), Screen.ClubStats.route),
         NavigationItem(stringResource(R.string.web_shooter_club), Screen.Club.route),
         NavigationItem(stringResource(R.string.web_shooter_settings), Screen.Settings.route),
         NavigationItem(stringResource(R.string.web_shooter_licenses), Screen.Licenses.route)
@@ -139,6 +142,9 @@ fun WebShooterScreen(navController: NavController) {
                 }
                 composable(Screen.SeriesPoints.route) {
                     SeriesPointsScreen(hiltViewModel<SeriesPointsViewModelImpl>())
+                }
+                composable(Screen.ClubStats.route) {
+                    ClubStatsScreen(hiltViewModel<ClubStatsViewModelImpl>())
                 }
                 composable(Screen.Club.route) {
                     ClubScreen()
