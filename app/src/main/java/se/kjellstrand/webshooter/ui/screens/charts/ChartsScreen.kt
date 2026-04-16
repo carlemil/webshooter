@@ -55,36 +55,8 @@ import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.ui.common.ShooterPickerDialog
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
-import android.graphics.Color as AndroidColor
-
-private val CHART_COLORS = listOf(
-    AndroidColor.rgb(76, 175, 80),   // Green (user)
-    AndroidColor.rgb(233, 30, 99),   // Pink
-    AndroidColor.rgb(33, 150, 243),  // Blue
-    AndroidColor.rgb(255, 152, 0),   // Orange
-    AndroidColor.rgb(156, 39, 176),  // Purple
-    AndroidColor.rgb(121, 85, 72),   // Brown
-    AndroidColor.rgb(0, 188, 212),   // Cyan
-    AndroidColor.rgb(255, 235, 59),  // Yellow
-    AndroidColor.rgb(244, 67, 54),   // Red
-    AndroidColor.rgb(0, 77, 64),     // Teal dark
-    AndroidColor.rgb(170, 102, 204), // Lavender
-    AndroidColor.rgb(255, 111, 0),   // Amber dark
-    AndroidColor.rgb(21, 101, 192),  // Blue dark
-    AndroidColor.rgb(130, 119, 23),  // Olive
-    AndroidColor.rgb(198, 40, 40),   // Crimson
-    AndroidColor.rgb(0, 137, 123),   // Teal
-)
-
-private val CHART_SHAPES = listOf(
-    ScatterChart.ScatterShape.CIRCLE,
-    ScatterChart.ScatterShape.SQUARE,
-    ScatterChart.ScatterShape.TRIANGLE,
-    ScatterChart.ScatterShape.CROSS,
-    ScatterChart.ScatterShape.X,
-    ScatterChart.ScatterShape.CHEVRON_DOWN,
-    ScatterChart.ScatterShape.CHEVRON_UP
-)
+import se.kjellstrand.webshooter.ui.common.CHART_COLORS
+import se.kjellstrand.webshooter.ui.common.CHART_SHAPES
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
