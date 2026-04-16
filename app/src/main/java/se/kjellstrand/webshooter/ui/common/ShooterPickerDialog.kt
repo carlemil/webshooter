@@ -51,6 +51,7 @@ fun ShooterPickerDialog(
                 .map { ClubMember(userId = it.userId, name = it.fullname, fullname = it.fullname) }
         }
         base.filter { !selectedShooters.containsKey(it.userId) }
+            .sortedBy { (it.fullname ?: it.name).lowercase() }
     }
 
     AlertDialog(
