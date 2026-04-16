@@ -78,4 +78,18 @@ interface ResultsDao {
 
     @Query("SELECT DISTINCT weaponClassName FROM results ORDER BY weaponClassName")
     suspend fun getAllWeaponClasses(): List<String>
+
+    @Query(
+        """SELECT r.userId AS userId,
+                  r.userFullname AS fullname,
+                  AVG(r.averagePoints) AS averagePoints,
+                  COUNT(DISTINCT r.competitionsId) AS competitionCount
+           FROM results r INNER JOIN competitions c ON c.id = r.competitionsId
+           WHERE r.userId IN (:userIds)
+             AND c.resultsType = 'PRECISION'
+             AND c.status = 'completed'
+             AND c.date LIKE :year || '-%'
+           GROUP BY r.userId, r.userFullname"""
+    )
+    suspend fun getClubStats(userIds: List<Long>, year: Int): List<ClubStatsRow>
 }
