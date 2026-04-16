@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.data.clubstats.ClubStatsRepository
 import se.kjellstrand.webshooter.data.common.Resource
+import java.time.Year
 import javax.inject.Inject
 
 @HiltViewModel
@@ -16,7 +17,7 @@ class ClubStatsViewModelImpl @Inject constructor(
     private val clubStatsRepository: ClubStatsRepository
 ) : ViewModel(), ClubStatsViewModel {
 
-    private val _uiState = MutableStateFlow(ClubStatsUiState(isLoading = true))
+    private val _uiState = MutableStateFlow(ClubStatsUiState(isLoading = true, year = Year.now().value - 1))
     override val uiState: StateFlow<ClubStatsUiState> = _uiState.asStateFlow()
 
     init {
