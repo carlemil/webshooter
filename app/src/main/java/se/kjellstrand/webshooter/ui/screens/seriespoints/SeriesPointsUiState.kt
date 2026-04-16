@@ -29,4 +29,10 @@ data class SeriesPointsUiState(
         get() = selectedGroup?.let { group ->
             competitions.filter { group.matches(it.weaponClass) }
         } ?: competitions
+
+    val precisionClubMembers: List<ClubMember>
+        get() {
+            val participantIds = allParticipants.map { it.userId }.toSet()
+            return clubMembers.filter { it.userId in participantIds }
+        }
 }

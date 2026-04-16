@@ -68,6 +68,14 @@ interface ResultsDao {
     @Query("SELECT DISTINCT userId, userFullname AS fullname FROM results ORDER BY userFullname")
     suspend fun getAllParticipants(): List<ParticipantRow>
 
+    @Query(
+        """SELECT DISTINCT r.userId, r.userFullname AS fullname
+           FROM results r INNER JOIN competitions c ON c.id = r.competitionsId
+           WHERE c.status = 'completed' AND c.resultsType = 'PRECISION'
+           ORDER BY r.userFullname"""
+    )
+    suspend fun getPrecisionParticipants(): List<ParticipantRow>
+
     @Query("SELECT DISTINCT weaponClassName FROM results ORDER BY weaponClassName")
     suspend fun getAllWeaponClasses(): List<String>
 }

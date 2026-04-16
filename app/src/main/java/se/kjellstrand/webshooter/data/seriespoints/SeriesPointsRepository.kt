@@ -60,7 +60,7 @@ class SeriesPointsRepository @Inject constructor(
         }.sortedBy { it.date }
 
         val allWeaponClasses = resultsDao.getAllWeaponClasses()
-        val allParticipants = resultsDao.getAllParticipants().map {
+        val allParticipants = resultsDao.getPrecisionParticipants().map {
             Participant(userId = it.userId, fullname = it.fullname)
         }
 
