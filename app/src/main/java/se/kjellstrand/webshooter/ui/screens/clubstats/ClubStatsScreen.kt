@@ -45,7 +45,7 @@ import com.github.mikephil.charting.utils.MPPointF
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.clubstats.ShooterStats
 import se.kjellstrand.webshooter.ui.common.CHART_COLORS
-import se.kjellstrand.webshooter.ui.common.CHART_SHAPES
+import se.kjellstrand.webshooter.ui.common.CHART_SHAPE_RENDERERS
 
 @Composable
 fun ClubStatsScreen(viewModel: ClubStatsViewModel) {
@@ -131,7 +131,7 @@ private fun ShooterLegend(
     ) {
         shooterStats.forEachIndexed { index, stats ->
             val color = Color(CHART_COLORS[index % CHART_COLORS.size])
-            val shapeIndex = index % CHART_SHAPES.size
+            val shapeIndex = index % CHART_SHAPE_RENDERERS.size
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -288,7 +288,7 @@ fun ClubStatsScatterChart(
                 }
                 ScatterDataSet(listOf(entry), stats.fullname).apply {
                     color = CHART_COLORS[index % CHART_COLORS.size]
-                    setScatterShape(CHART_SHAPES[index % CHART_SHAPES.size])
+                    shapeRenderer = CHART_SHAPE_RENDERERS[index % CHART_SHAPE_RENDERERS.size]
                     scatterShapeSize = scatterShapeSizeDp
                     setDrawValues(false)
                 }
