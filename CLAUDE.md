@@ -53,5 +53,3 @@ Navigation is Jetpack Compose Navigation. Routes are defined as a sealed class i
 - **Column weights in patrol/signup lists:** header and data rows must share identical weight values to align columns.
 - **App is offline first:** all network calls are wrapped in `Resource.Loading`:** This prevents UI from flashing between loading and error states.
 - **Error handling:** Network errors are handled gracefully by displaying a toast message and logging the error. UI remains responsive and does not crash.
-
-cd combined with git commands is always pre-approved - no need to ask for confirmation when chaining them together.
