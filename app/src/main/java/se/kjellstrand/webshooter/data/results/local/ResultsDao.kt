@@ -89,7 +89,8 @@ interface ResultsDao {
              AND c.resultsType = 'PRECISION'
              AND c.status = 'completed'
              AND c.date LIKE :year || '-%'
+             AND r.weaponClassName LIKE :classPrefix
            GROUP BY r.userId, r.userFullname"""
     )
-    suspend fun getClubStats(userIds: List<Long>, year: Int): List<ClubStatsRow>
+    suspend fun getClubStats(userIds: List<Long>, year: Int, classPrefix: String): List<ClubStatsRow>
 }

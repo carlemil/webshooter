@@ -78,8 +78,8 @@ class ClubStatsViewModelTest {
     fun `ClubStatsViewModelImpl calls getClubStats in init`() {
         val source = implFile.readText()
         assertTrue(
-            "ClubStatsViewModelImpl must call getClubStats()",
-            source.contains("getClubStats()")
+            "ClubStatsViewModelImpl must call getClubStats(...)",
+            source.contains("clubStatsRepository.getClubStats(")
         )
     }
 
