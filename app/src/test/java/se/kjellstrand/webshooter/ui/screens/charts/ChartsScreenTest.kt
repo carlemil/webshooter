@@ -57,6 +57,43 @@ class ChartsScreenTest {
     }
 
     @Test
+    fun `ChartsScreen defines ChartsMarkerView subclass`() {
+        val source = sourceFile.readText()
+        assertTrue(
+            "ChartsScreen must define a ChartsMarkerView class extending MarkerView",
+            source.contains("class ChartsMarkerView") &&
+                source.contains("MarkerView(context, R.layout.marker_view)")
+        )
+        assertTrue(
+            "ChartsScreen must import MarkerView",
+            source.contains("com.github.mikephil.charting.components.MarkerView")
+        )
+    }
+
+    @Test
+    fun `ChartsScreen attaches ChartsMarkerView to the chart`() {
+        val source = sourceFile.readText()
+        assertTrue(
+            "chart.marker must be assigned to a ChartsMarkerView",
+            source.contains("chart.marker = ChartsMarkerView(")
+        )
+    }
+
+    @Test
+    fun `ChartsScreen builds label map keyed by Entry data tag`() {
+        val source = sourceFile.readText()
+        assertTrue(
+            "Entries must carry a tag via Entry.data for lookup in the marker",
+            source.contains(".data =") || source.contains("data = ")
+        )
+        assertTrue(
+            "Marker label should include the date and averageSerieScore unit",
+            source.contains("averageSerieScore") &&
+                Regex("""\"[^\"]* p\"""").containsMatchIn(source)
+        )
+    }
+
+    @Test
     fun `ChartsScreen composable function exists`() {
         val clazz = try {
             Class.forName("se.kjellstrand.webshooter.ui.screens.charts.ChartsScreenKt")

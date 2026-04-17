@@ -1,6 +1,8 @@
 package se.kjellstrand.webshooter.ui.screens.charts
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.widget.TextView
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,10 +44,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.github.mikephil.charting.charts.ScatterChart
+import com.github.mikephil.charting.components.MarkerView
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.ScatterData
 import com.github.mikephil.charting.data.ScatterDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.utils.MPPointF
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.charts.ChartDataPoint
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
@@ -263,6 +268,23 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ChartsViewModel) {
     }
 }
 
+private class ChartsMarkerView(
+    context: Context,
+    private val labels: Map<Int, String>
+) : MarkerView(context, R.layout.marker_view) {
+
+    private val textView: TextView = findViewById(R.id.marker_text)
+
+    override fun refreshContent(e: Entry?, highlight: Highlight?) {
+        textView.text = labels[e?.data as? Int] ?: ""
+        super.refreshContent(e, highlight)
+    }
+
+    override fun getOffset(): MPPointF {
+        return MPPointF(-(width / 2f), -height.toFloat())
+    }
+}
+
 @SuppressLint("ClickableViewAccessibility")
 @Composable
 fun ChartScatterChart(
@@ -271,6 +293,7 @@ fun ChartScatterChart(
     modifier: Modifier = Modifier
 ) {
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface.toArgb()
+    val myResultsLabel = stringResource(R.string.charts_my_results)
 
     AndroidView(
         modifier = modifier,
@@ -310,16 +333,19 @@ fun ChartScatterChart(
 
             val dataSets = mutableListOf<ScatterDataSet>()
             val scatterShapeSizeDp = 24.dp.value
+            val labelMap = mutableMapOf<Int, String>()
+            var tagCounter = 0
 
             // My data
             if (myData.isNotEmpty()) {
                 val entries = myData.sortedBy { it.date }.map { dp ->
-                    Entry(dateIndexMap[dp.date] ?: 0f, dp.averageSerieScore.toFloat())
+                    val tag = tagCounter++
+                    labelMap[tag] = "$myResultsLabel\n${dp.date}: ${dp.averageSerieScore} p"
+                    Entry(dateIndexMap[dp.date] ?: 0f, dp.averageSerieScore.toFloat()).apply {
+                        data = tag
+                    }
                 }
-                val myDataSet = ScatterDataSet(
-                    entries,
-                    chart.context.getString(R.string.charts_my_results)
-                ).apply {
+                val myDataSet = ScatterDataSet(entries, myResultsLabel).apply {
                     color = CHART_COLORS[0]
                     shapeRenderer = CHART_SHAPE_RENDERERS[0]
                     scatterShapeSize = scatterShapeSizeDp
@@ -334,7 +360,11 @@ fun ChartScatterChart(
                     val colorIndex = (index + 1) % CHART_COLORS.size
                     val shapeIndex = (index + 1) % CHART_SHAPE_RENDERERS.size
                     val entries = info.chartData.sortedBy { it.date }.map { dp ->
-                        Entry(dateIndexMap[dp.date] ?: 0f, dp.averageSerieScore.toFloat())
+                        val tag = tagCounter++
+                        labelMap[tag] = "${info.name}\n${dp.date}: ${dp.averageSerieScore} p"
+                        Entry(dateIndexMap[dp.date] ?: 0f, dp.averageSerieScore.toFloat()).apply {
+                            data = tag
+                        }
                     }
                     val dataSet = ScatterDataSet(entries, info.name).apply {
                         color = CHART_COLORS[colorIndex]
@@ -353,6 +383,8 @@ fun ChartScatterChart(
             } else {
                 chart.data = null
             }
+
+            chart.marker = ChartsMarkerView(chart.context, labelMap)
 
             chart.invalidate()
         }
