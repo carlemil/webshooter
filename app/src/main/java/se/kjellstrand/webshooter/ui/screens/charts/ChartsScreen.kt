@@ -1,7 +1,6 @@
 package se.kjellstrand.webshooter.ui.screens.charts
 
 import android.annotation.SuppressLint
-import android.view.MotionEvent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -44,7 +42,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.github.mikephil.charting.charts.ScatterChart
-import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.ScatterData
 import com.github.mikephil.charting.data.ScatterDataSet
@@ -52,11 +49,13 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.charts.ChartDataPoint
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
+import se.kjellstrand.webshooter.ui.common.CHART_COLORS
+import se.kjellstrand.webshooter.ui.common.CHART_SHAPES
+import se.kjellstrand.webshooter.ui.common.ChartStateWrapper
 import se.kjellstrand.webshooter.ui.common.ShooterPickerDialog
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
-import se.kjellstrand.webshooter.ui.common.CHART_COLORS
-import se.kjellstrand.webshooter.ui.common.CHART_SHAPES
+import se.kjellstrand.webshooter.ui.common.applyBaseChartStyle
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,31 +79,11 @@ fun ChartsScreen(viewModel: ChartsViewModel) {
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            when {
-                uiState.isLoading && uiState.chartData.isEmpty() -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
-
-                uiState.hasError -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = stringResource(R.string.competitions_load_error),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
-                }
-
-                else -> {
-                    ChartsContent(uiState, viewModel)
-                }
+            ChartStateWrapper(
+                isLoading = uiState.isLoading && uiState.chartData.isEmpty(),
+                hasError = uiState.hasError
+            ) {
+                ChartsContent(uiState, viewModel)
             }
         }
     }
@@ -262,42 +241,10 @@ fun ChartScatterChart(
         modifier = modifier,
         factory = { context ->
             ScatterChart(context).apply {
-                description.isEnabled = false
-                setNoDataText("")
-                setPinchZoom(true)
-                isDragEnabled = true
-                setScaleEnabled(true)
-                isDoubleTapToZoomEnabled = true
-
-                // Prevent the Compose host from intercepting multi-touch / drag
-                // gestures before MPAndroidChart sees them.
-                setOnTouchListener { v, event ->
-                    when (event.actionMasked) {
-                        MotionEvent.ACTION_DOWN,
-                        MotionEvent.ACTION_POINTER_DOWN,
-                        MotionEvent.ACTION_MOVE ->
-                            v.parent?.requestDisallowInterceptTouchEvent(true)
-
-                        MotionEvent.ACTION_UP,
-                        MotionEvent.ACTION_CANCEL ->
-                            v.parent?.requestDisallowInterceptTouchEvent(false)
-                    }
-                    // Return false so the chart's own gesture handling still runs.
-                    false
-                }
-
-                xAxis.position = XAxis.XAxisPosition.BOTTOM
-                xAxis.granularity = 1f
-                xAxis.textColor = onSurfaceColor
+                applyBaseChartStyle(onSurfaceColor)
                 xAxis.labelRotationAngle = -45f
-
-                axisLeft.textColor = onSurfaceColor
-                axisRight.isEnabled = false
-
                 legend.textColor = onSurfaceColor
                 legend.isWordWrapEnabled = true
-
-                setExtraBottomOffset(16f)
             }
         },
         update = { chart ->

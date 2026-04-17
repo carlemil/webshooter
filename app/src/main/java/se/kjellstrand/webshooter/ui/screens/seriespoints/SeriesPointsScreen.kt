@@ -1,7 +1,6 @@
 package se.kjellstrand.webshooter.ui.screens.seriespoints
 
 import android.annotation.SuppressLint
-import android.view.MotionEvent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +15,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PersonAdd
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
@@ -34,13 +32,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.github.mikephil.charting.charts.LineChart
-import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.seriespoints.CompetitionSeries
+import se.kjellstrand.webshooter.ui.common.ChartStateWrapper
 import se.kjellstrand.webshooter.ui.common.ShooterPickerDialog
+import se.kjellstrand.webshooter.ui.common.applyBaseChartStyle
 import android.graphics.Color as AndroidColor
 
 private val LATEST_COLOR = AndroidColor.rgb(76, 255, 120) // bright accent
@@ -60,31 +59,11 @@ fun SeriesPointsScreen(viewModel: SeriesPointsViewModel) {
 
     Scaffold { _ ->
         Column(modifier = Modifier.fillMaxSize()) {
-            when {
-                uiState.isLoading && uiState.competitions.isEmpty() -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator()
-                    }
-                }
-
-                uiState.hasError -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = stringResource(R.string.competitions_load_error),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                    }
-                }
-
-                else -> {
-                    SeriesPointsContent(uiState, viewModel)
-                }
+            ChartStateWrapper(
+                isLoading = uiState.isLoading && uiState.competitions.isEmpty(),
+                hasError = uiState.hasError
+            ) {
+                SeriesPointsContent(uiState, viewModel)
             }
         }
     }
@@ -220,37 +199,8 @@ private fun SeriesPointsChart(
         modifier = modifier,
         factory = { context ->
             LineChart(context).apply {
-                description.isEnabled = false
-                setNoDataText("")
-                setPinchZoom(true)
-                isDragEnabled = true
-                setScaleEnabled(true)
-                isDoubleTapToZoomEnabled = true
-
-                setOnTouchListener { v, event ->
-                    when (event.actionMasked) {
-                        MotionEvent.ACTION_DOWN,
-                        MotionEvent.ACTION_POINTER_DOWN,
-                        MotionEvent.ACTION_MOVE ->
-                            v.parent?.requestDisallowInterceptTouchEvent(true)
-
-                        MotionEvent.ACTION_UP,
-                        MotionEvent.ACTION_CANCEL ->
-                            v.parent?.requestDisallowInterceptTouchEvent(false)
-                    }
-                    false
-                }
-
-                xAxis.position = XAxis.XAxisPosition.BOTTOM
-                xAxis.granularity = 1f
-                xAxis.textColor = onSurfaceColor
-
-                axisLeft.textColor = onSurfaceColor
-                axisRight.isEnabled = false
-
+                applyBaseChartStyle(onSurfaceColor)
                 legend.isEnabled = false
-
-                setExtraBottomOffset(16f)
             }
         },
         update = { chart ->
