@@ -77,14 +77,15 @@ fun SeriesPointsScreen(viewModel: SeriesPointsViewModel) {
         ShooterPickerDialog(
             title = stringResource(R.string.series_points_select_shooter),
             searchQuery = uiState.searchQuery,
-            clubMembers = uiState.precisionClubMembers,
+            clubMembers = uiState.clubMembers,
             allParticipants = uiState.allParticipants,
             selectedShooters = emptyMap(),
             onSearchQueryChanged = viewModel::setSearchQuery,
             onPickShooter = viewModel::selectShooter,
             onRemoveShooter = {},
             onDismiss = { viewModel.setShowSearchDialog(false) },
-            showSelectedSection = false
+            showSelectedSection = false,
+            relevantUserIds = uiState.precisionClubMembers.map { it.userId }.toSet()
         )
     }
 }

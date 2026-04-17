@@ -51,6 +51,23 @@ class ShooterPickerDialogTest {
     }
 
     @Test
+    fun `dialog accepts optional relevantUserIds filter parameter`() {
+        val source = sourceFile.readText()
+        assertTrue(
+            "ShooterPickerDialog must accept optional relevantUserIds: Set<Long>? = null",
+            source.contains("relevantUserIds: Set<Long>? = null") ||
+                source.contains("relevantUserIds: Set<Long>?")
+        )
+        assertTrue(
+            "Filter logic must apply relevantUserIds when non-null",
+            source.contains("relevantUserIds") &&
+                (source.contains("it.userId in relevantUserIds") ||
+                    source.contains("userId in relevantUserIds") ||
+                    source.contains("relevantUserIds.contains"))
+        )
+    }
+
+    @Test
     fun `selected rows are compacted not wrapped in IconButton`() {
         val source = sourceFile.readText()
         assertFalse(

@@ -115,7 +115,8 @@ fun ChartsScreen(viewModel: ChartsViewModel) {
             onSearchQueryChanged = viewModel::setSearchQuery,
             onPickShooter = viewModel::addShooter,
             onRemoveShooter = viewModel::removeShooter,
-            onDismiss = { viewModel.setShowSearchDialog(false) }
+            onDismiss = { viewModel.setShowSearchDialog(false) },
+            relevantUserIds = uiState.relevantUserIds
         )
     }
 }

@@ -39,4 +39,6 @@ data class ChartsUiState(
             })
         }
 
+    val relevantUserIds: Set<Long>
+        get() = allParticipants.map { it.userId }.toSet()
 }
