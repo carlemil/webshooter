@@ -237,6 +237,24 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ChartsViewModel) {
                         )
                     }
                 }
+                if (uiState.myAverage != null) {
+                    add(
+                        UserLegendItem(
+                            label = stringResource(R.string.charts_legend_average),
+                            color = Color.Magenta,
+                            shapeIndex = 7
+                        )
+                    )
+                }
+                if (uiState.myTrend != null) {
+                    add(
+                        UserLegendItem(
+                            label = stringResource(R.string.charts_legend_trend),
+                            color = Color.Cyan,
+                            shapeIndex = 8
+                        )
+                    )
+                }
             }
             if (legendItems.isNotEmpty()) {
                 UserLegend(

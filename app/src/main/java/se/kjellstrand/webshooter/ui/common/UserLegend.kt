@@ -105,5 +105,11 @@ private fun DrawScope.drawScatterShape(shapeIndex: Int, color: Color) {
             }
             drawPath(path, color, style = Stroke(strokeWidth))
         }
+        7 -> { // HORIZONTAL LINE (for average)
+            drawLine(color, Offset(cx - r, cy), Offset(cx + r, cy), strokeWidth)
+        }
+        8 -> { // SLOPED LINE (for trend)
+            drawLine(color, Offset(cx - r, cy + r * 0.6f), Offset(cx + r, cy - r * 0.6f), strokeWidth)
+        }
     }
 }
