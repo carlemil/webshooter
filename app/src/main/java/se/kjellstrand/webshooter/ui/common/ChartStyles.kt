@@ -3,6 +3,7 @@ package se.kjellstrand.webshooter.ui.common
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
+import androidx.compose.ui.unit.dp
 import com.github.mikephil.charting.interfaces.datasets.IScatterDataSet
 import com.github.mikephil.charting.renderer.scatter.IShapeRenderer
 import com.github.mikephil.charting.utils.ViewPortHandler
@@ -19,7 +20,7 @@ val CHART_COLORS = listOf(
     AndroidColor.rgb(255, 27, 24)    // Red
 )
 
-private const val STROKE_WIDTH = 6f
+private var STROKE_WIDTH = 4.dp.value
 
 private class CircleRenderer : IShapeRenderer {
     override fun renderShape(
