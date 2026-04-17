@@ -2,11 +2,9 @@ package se.kjellstrand.webshooter.ui.screens.clubstats
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.view.MotionEvent
 import android.widget.TextView
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -17,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,7 +33,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.github.mikephil.charting.charts.ScatterChart
 import com.github.mikephil.charting.components.MarkerView
-import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.ScatterData
 import com.github.mikephil.charting.data.ScatterDataSet
@@ -46,6 +42,8 @@ import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.clubstats.ShooterStats
 import se.kjellstrand.webshooter.ui.common.CHART_COLORS
 import se.kjellstrand.webshooter.ui.common.CHART_SHAPE_RENDERERS
+import se.kjellstrand.webshooter.ui.common.ChartStateWrapper
+import se.kjellstrand.webshooter.ui.common.applyBaseChartStyle
 
 @Composable
 fun ClubStatsScreen(viewModel: ClubStatsViewModel) {
@@ -65,55 +63,24 @@ fun ClubStatsScreen(viewModel: ClubStatsViewModel) {
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 4.dp)
             )
         }
-        when {
-            uiState.isLoading && uiState.shooterStats.isEmpty() -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    CircularProgressIndicator()
-                }
-            }
-
-            uiState.hasError -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = stringResource(R.string.competitions_load_error),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
-            }
-
-            uiState.shooterStats.isEmpty() -> {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = stringResource(R.string.charts_no_data),
-                        style = MaterialTheme.typography.bodyLarge
-                    )
-                }
-            }
-
-            else -> {
-                ClubStatsScatterChart(
-                    shooterStats = uiState.shooterStats,
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                )
-                ShooterLegend(
-                    shooterStats = uiState.shooterStats,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
-                )
-            }
+        ChartStateWrapper(
+            isLoading = uiState.isLoading && uiState.shooterStats.isEmpty(),
+            hasError = uiState.hasError,
+            isEmpty = uiState.shooterStats.isEmpty()
+        ) {
+            ClubStatsScatterChart(
+                shooterStats = uiState.shooterStats,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            )
+            ShooterLegend(
+                shooterStats = uiState.shooterStats,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+            )
         }
     }
 }
@@ -235,38 +202,9 @@ fun ClubStatsScatterChart(
         modifier = modifier,
         factory = { context ->
             ScatterChart(context).apply {
-                description.isEnabled = false
-                setNoDataText("")
-                setPinchZoom(true)
-                isDragEnabled = true
-                setScaleEnabled(true)
-                isDoubleTapToZoomEnabled = true
-
-                setOnTouchListener { v, event ->
-                    when (event.actionMasked) {
-                        MotionEvent.ACTION_DOWN,
-                        MotionEvent.ACTION_POINTER_DOWN,
-                        MotionEvent.ACTION_MOVE ->
-                            v.parent?.requestDisallowInterceptTouchEvent(true)
-
-                        MotionEvent.ACTION_UP,
-                        MotionEvent.ACTION_CANCEL ->
-                            v.parent?.requestDisallowInterceptTouchEvent(false)
-                    }
-                    false
-                }
-
-                xAxis.position = XAxis.XAxisPosition.BOTTOM
-                xAxis.granularity = 1f
-                xAxis.textColor = onSurfaceColor
-
-                axisLeft.textColor = onSurfaceColor
+                applyBaseChartStyle(onSurfaceColor)
                 axisLeft.granularity = 1f
-                axisRight.isEnabled = false
-
                 legend.isEnabled = false
-
-                setExtraBottomOffset(16f)
             }
         },
         update = { chart ->
