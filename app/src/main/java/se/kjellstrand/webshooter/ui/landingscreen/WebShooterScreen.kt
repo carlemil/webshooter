@@ -37,13 +37,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.R
-import se.kjellstrand.webshooter.ui.screens.charts.ChartsScreen
-import se.kjellstrand.webshooter.ui.screens.charts.ChartsViewModelImpl
-import se.kjellstrand.webshooter.ui.screens.seriespoints.SeriesPointsScreen
-import se.kjellstrand.webshooter.ui.screens.seriespoints.SeriesPointsViewModelImpl
+import se.kjellstrand.webshooter.ui.screens.charts.resulttrends.ChartsScreen
+import se.kjellstrand.webshooter.ui.screens.charts.resulttrends.ResultsTrendsViewModelImpl
+import se.kjellstrand.webshooter.ui.screens.charts.seriespoints.SeriesPointsScreen
+import se.kjellstrand.webshooter.ui.screens.charts.seriespoints.SeriesPointsViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.club.ClubScreen
-import se.kjellstrand.webshooter.ui.screens.clubstats.ClubStatsScreen
-import se.kjellstrand.webshooter.ui.screens.clubstats.ClubStatsViewModelImpl
+import se.kjellstrand.webshooter.ui.screens.charts.clubstats.ClubStatsScreen
+import se.kjellstrand.webshooter.ui.screens.charts.clubstats.ClubStatsViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsScreen
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.myresults.MyEntriesScreen
@@ -172,7 +172,7 @@ fun WebShooterScreen(navController: NavController) {
                     MyEntriesScreen()
                 }
                 composable(Screen.Charts.route) {
-                    ChartsScreen(hiltViewModel<ChartsViewModelImpl>())
+                    ChartsScreen(hiltViewModel<ResultsTrendsViewModelImpl>())
                 }
                 composable(Screen.SeriesPoints.route) {
                     SeriesPointsScreen(hiltViewModel<SeriesPointsViewModelImpl>())

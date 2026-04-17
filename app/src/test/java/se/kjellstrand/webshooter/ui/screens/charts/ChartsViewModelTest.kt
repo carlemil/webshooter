@@ -10,7 +10,7 @@ class ChartsViewModelTest {
     @Test
     fun `ChartsUiState class exists`() {
         val clazz = try {
-            Class.forName("se.kjellstrand.webshooter.ui.screens.charts.ChartsUiState")
+            Class.forName("se.kjellstrand.webshooter.ui.screens.charts.resulttrends.ChartsUiState")
         } catch (e: ClassNotFoundException) {
             null
         }
@@ -19,10 +19,11 @@ class ChartsViewModelTest {
 
     @Test
     fun `ChartsUiState has required fields`() {
-        val clazz = Class.forName("se.kjellstrand.webshooter.ui.screens.charts.ChartsUiState")
+        val clazz = Class.forName("se.kjellstrand.webshooter.ui.screens.charts.resulttrends.ChartsUiState")
         val fieldNames = clazz.declaredFields.map { it.name }
         assertTrue("Should have chartData", fieldNames.contains("chartData"))
-        assertTrue("Should have selectedWeaponClasses", fieldNames.contains("selectedWeaponClasses"))
+        assertTrue("Should have selectedGroup", fieldNames.contains("selectedGroup"))
+        assertTrue("Should have availableGroups", fieldNames.contains("availableGroups"))
         assertTrue("Should have isLoading", fieldNames.contains("isLoading"))
         assertTrue("Should have hasError", fieldNames.contains("hasError"))
         assertTrue("Should have showSearchDialog", fieldNames.contains("showSearchDialog"))
@@ -30,22 +31,22 @@ class ChartsViewModelTest {
     }
 
     @Test
-    fun `ChartsViewModel interface exists`() {
+    fun `ResultsTrendsViewModel interface exists`() {
         val clazz = try {
-            Class.forName("se.kjellstrand.webshooter.ui.screens.charts.ChartsViewModel")
+            Class.forName("se.kjellstrand.webshooter.ui.screens.charts.resulttrends.ResultsTrendsViewModel")
         } catch (e: ClassNotFoundException) {
             null
         }
-        assertNotNull("ChartsViewModel interface should exist", clazz)
-        assertTrue("ChartsViewModel should be an interface", clazz!!.isInterface)
+        assertNotNull("ResultsTrendsViewModel interface should exist", clazz)
+        assertTrue("ResultsTrendsViewModel should be an interface", clazz!!.isInterface)
     }
 
     @Test
-    fun `ChartsViewModel has required methods`() {
-        val clazz = Class.forName("se.kjellstrand.webshooter.ui.screens.charts.ChartsViewModel")
+    fun `ResultsTrendsViewModel has required methods`() {
+        val clazz = Class.forName("se.kjellstrand.webshooter.ui.screens.charts.resulttrends.ResultsTrendsViewModel")
         val methodNames = clazz.declaredMethods.map { it.name }
         assertTrue("Should have selectTab", methodNames.contains("selectTab"))
-        assertTrue("Should have toggleWeaponClass", methodNames.contains("toggleWeaponClass"))
+        assertTrue("Should have selectWeaponGroup", methodNames.contains("selectWeaponGroup"))
         assertTrue("Should have addShooter", methodNames.contains("addShooter"))
         assertTrue("Should have removeShooter", methodNames.contains("removeShooter"))
         assertTrue("Should have setSearchQuery", methodNames.contains("setSearchQuery"))
@@ -53,17 +54,17 @@ class ChartsViewModelTest {
     }
 
     @Test
-    fun `ChartsViewModelImpl class exists and implements ChartsViewModel`() {
+    fun `ResultsTrendsViewModelImpl class exists and implements ResultsTrendsViewModel`() {
         val implClass = try {
-            Class.forName("se.kjellstrand.webshooter.ui.screens.charts.ChartsViewModelImpl")
+            Class.forName("se.kjellstrand.webshooter.ui.screens.charts.resulttrends.ResultsTrendsViewModelImpl")
         } catch (e: ClassNotFoundException) {
             null
         }
-        assertNotNull("ChartsViewModelImpl should exist", implClass)
+        assertNotNull("ResultsTrendsViewModelImpl should exist", implClass)
 
-        val vmInterface = Class.forName("se.kjellstrand.webshooter.ui.screens.charts.ChartsViewModel")
+        val vmInterface = Class.forName("se.kjellstrand.webshooter.ui.screens.charts.resulttrends.ResultsTrendsViewModel")
         assertTrue(
-            "ChartsViewModelImpl should implement ChartsViewModel",
+            "ResultsTrendsViewModelImpl should implement ResultsTrendsViewModel",
             vmInterface.isAssignableFrom(implClass!!)
         )
     }
@@ -71,7 +72,7 @@ class ChartsViewModelTest {
     @Test
     fun `ShooterChartInfo class exists`() {
         val clazz = try {
-            Class.forName("se.kjellstrand.webshooter.ui.screens.charts.ShooterChartInfo")
+            Class.forName("se.kjellstrand.webshooter.ui.screens.charts.resulttrends.ShooterChartInfo")
         } catch (e: ClassNotFoundException) {
             null
         }

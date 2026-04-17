@@ -1,49 +1,35 @@
-package se.kjellstrand.webshooter.ui.screens.charts
+package se.kjellstrand.webshooter.ui.screens.charts.resulttrends
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.widget.TextView
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ExperimentalLayoutApi
-import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import com.github.mikephil.charting.charts.ScatterChart
+import com.github.mikephil.charting.charts.CombinedChart
 import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.MarkerView
+import com.github.mikephil.charting.data.CombinedData
 import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.LineData
+import com.github.mikephil.charting.data.LineDataSet
 import com.github.mikephil.charting.data.ScatterData
 import com.github.mikephil.charting.data.ScatterDataSet
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
@@ -60,28 +46,17 @@ import se.kjellstrand.webshooter.ui.common.ChartStateWrapper
 import se.kjellstrand.webshooter.ui.common.ShooterPickerDialog
 import se.kjellstrand.webshooter.ui.common.UserLegend
 import se.kjellstrand.webshooter.ui.common.UserLegendItem
-import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
-import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
+import se.kjellstrand.webshooter.ui.common.WeaponClassGroupFilter
 import se.kjellstrand.webshooter.ui.common.applyBaseChartStyle
+import se.kjellstrand.webshooter.ui.mock.ChartsViewModelMock
+import se.kjellstrand.webshooter.ui.mock.MockCharts
+import kotlin.collections.get
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChartsScreen(viewModel: ChartsViewModel) {
+fun ChartsScreen(viewModel: ResultsTrendsViewModel) {
     val uiState by viewModel.uiState.collectAsState()
-    var isFilterBottomSheetOpen by remember { mutableStateOf(false) }
 
-    Scaffold(
-        floatingActionButton = {
-            if (uiState.availableWeaponClasses.isNotEmpty()) {
-                FloatingActionButton(onClick = { isFilterBottomSheetOpen = true }) {
-                    Icon(
-                        painter = painterResource(R.drawable.filter_list),
-                        contentDescription = "Open Filters"
-                    )
-                }
-            }
-        }
-    ) { _ ->
+    Scaffold { _ ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -101,15 +76,6 @@ fun ChartsScreen(viewModel: ChartsViewModel) {
         }
     }
 
-    if (isFilterBottomSheetOpen) {
-        ChartsFilterBottomSheet(
-            availableWeaponClasses = uiState.availableWeaponClasses,
-            selectedWeaponClasses = uiState.selectedWeaponClasses,
-            onToggleWeaponClass = viewModel::toggleWeaponClass,
-            onDismissRequest = { isFilterBottomSheetOpen = false }
-        )
-    }
-
     if (uiState.showSearchDialog) {
         ShooterPickerDialog(
             title = stringResource(R.string.charts_add_shooter),
@@ -126,54 +92,8 @@ fun ChartsScreen(viewModel: ChartsViewModel) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
-fun ChartsFilterBottomSheet(
-    availableWeaponClasses: List<String>,
-    selectedWeaponClasses: Set<String>,
-    onToggleWeaponClass: (String) -> Unit,
-    onDismissRequest: () -> Unit
-) {
-    val bottomSheetState = rememberModalBottomSheetState()
-    ModalBottomSheet(
-        onDismissRequest = onDismissRequest,
-        sheetState = bottomSheetState
-    ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                stringResource(R.string.competitions_filter_competition_type),
-                style = MaterialTheme.typography.titleMedium
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            FlowRow(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                availableWeaponClasses.forEach { weaponClass ->
-                    WeaponClassBadge(
-                        modifier = Modifier.clickable { onToggleWeaponClass(weaponClass) },
-                        weaponGroupName = weaponClass,
-                        isHighlighted = weaponClass in selectedWeaponClasses,
-                        size = WeaponClassBadgeSize.Medium
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                horizontalArrangement = Arrangement.End,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Button(onClick = onDismissRequest) {
-                    Text(stringResource(R.string.results_done_button))
-                }
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-    }
-}
-
-@Composable
-private fun ChartsContent(uiState: ChartsUiState, viewModel: ChartsViewModel) {
+private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewModel) {
     Column(modifier = Modifier.fillMaxSize()) {
         if (uiState.availableResultsTypes.isNotEmpty()) {
             val selectedIndex = uiState.availableResultsTypes.indexOf(uiState.selectedResultsType)
@@ -195,6 +115,13 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ChartsViewModel) {
                 }
             }
         }
+
+        WeaponClassGroupFilter(
+            availableGroups = uiState.availableGroups,
+            selectedGroup = uiState.selectedGroup,
+            onSelectGroup = viewModel::selectWeaponGroup,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
 
         val chartData = uiState.filteredChartData
         val comparedShooters = uiState.filteredComparedShooters
@@ -241,7 +168,7 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ChartsViewModel) {
                     add(
                         UserLegendItem(
                             label = stringResource(R.string.charts_legend_average),
-                            color = Color.Magenta,
+                            color = Color(CHART_COLORS[1]),
                             shapeIndex = 7
                         )
                     )
@@ -250,7 +177,7 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ChartsViewModel) {
                     add(
                         UserLegendItem(
                             label = stringResource(R.string.charts_legend_trend),
-                            color = Color.Cyan,
+                            color = Color(CHART_COLORS[7]),
                             shapeIndex = 8
                         )
                     )
@@ -305,9 +232,8 @@ private class ChartsMarkerView(
     }
 }
 
-private const val TREND_COLOR_ARGB: Int = 0xFF00FFFF.toInt()
-private const val AVERAGE_COLOR_ARGB: Int = 0xFFFF00FF.toInt()
-private const val TREND_SAMPLES: Int = 30
+private val TREND_COLOR_ARGB: Int = CHART_COLORS[7]
+private val AVERAGE_COLOR_ARGB: Int = CHART_COLORS[1]
 
 @SuppressLint("ClickableViewAccessibility")
 @Composable
@@ -324,10 +250,16 @@ fun ChartScatterChart(
     AndroidView(
         modifier = modifier,
         factory = { context ->
-            ScatterChart(context).apply {
+            CombinedChart(context).apply {
                 applyBaseChartStyle(onSurfaceColor)
                 xAxis.labelRotationAngle = -45f
                 legend.isEnabled = false
+                setDrawOrder(
+                    arrayOf(
+                        CombinedChart.DrawOrder.LINE,
+                        CombinedChart.DrawOrder.SCATTER
+                    )
+                )
             }
         },
         update = { chart ->
@@ -408,30 +340,36 @@ fun ChartScatterChart(
                 }
             }
 
-            // Trend line: sample points along the regression line, using the chart's
-            // date-indexed X space.
+            // Trend line: two endpoints of the regression line, rendered as a
+            // real LineDataSet inside a CombinedChart.
             val sortedMy = myData.sortedBy { it.date }
-            if (myTrend != null && sortedMy.size >= 2) {
-                val firstChartX = dateIndexMap[sortedMy.first().date] ?: 0f
-                val lastChartX = dateIndexMap[sortedMy.last().date] ?: 0f
-                val trendEntries = (0..TREND_SAMPLES).map { i ->
-                    val t = i.toFloat() / TREND_SAMPLES.toFloat()
-                    val x = firstChartX + (lastChartX - firstChartX) * t
-                    val y = myTrend.fromY + (myTrend.toY - myTrend.fromY) * t
-                    Entry(x, y)
-                }
-                val trendDataSet = ScatterDataSet(trendEntries, "Trend").apply {
-                    color = TREND_COLOR_ARGB
-                    shapeRenderer = CHART_SHAPE_RENDERERS[0]
-                    scatterShapeSize = 6.dp.value
-                    setDrawValues(false)
-                    isHighlightEnabled = false
-                }
-                dataSets.add(trendDataSet)
-            }
+            val trendLineDataSet: LineDataSet? =
+                if (myTrend != null && sortedMy.size >= 2) {
+                    val firstChartX = dateIndexMap[sortedMy.first().date] ?: 0f
+                    val lastChartX = dateIndexMap[sortedMy.last().date] ?: 0f
+                    val trendEntries = listOf(
+                        Entry(firstChartX, myTrend.fromY),
+                        Entry(lastChartX, myTrend.toY)
+                    )
+                    LineDataSet(trendEntries, "Trend").apply {
+                        color = TREND_COLOR_ARGB
+                        lineWidth = 2f
+                        setDrawCircles(false)
+                        setDrawValues(false)
+                        isHighlightEnabled = false
+                    }
+                } else null
 
-            if (dataSets.isNotEmpty()) {
-                chart.data = ScatterData(dataSets.toList())
+            if (dataSets.isNotEmpty() || trendLineDataSet != null) {
+                val combined = CombinedData().apply {
+                    if (dataSets.isNotEmpty()) {
+                        setData(ScatterData(dataSets.toList()))
+                    }
+                    if (trendLineDataSet != null) {
+                        setData(LineData(trendLineDataSet))
+                    }
+                }
+                chart.data = combined
                 chart.xAxis.valueFormatter = IndexAxisValueFormatter(sortedDates)
                 chart.xAxis.labelCount = minOf(sortedDates.size, 6)
             } else {
@@ -444,7 +382,6 @@ fun ChartScatterChart(
                 val avgLine = LimitLine(myAverage).apply {
                     lineColor = AVERAGE_COLOR_ARGB
                     lineWidth = 2f
-                    enableDashedLine(8f, 4f, 0f)
                 }
                 chart.axisLeft.addLimitLine(avgLine)
             }
@@ -459,13 +396,12 @@ fun ChartScatterChart(
 @Preview(showBackground = true, name = "Charts - Default with data")
 @Composable
 fun ChartsScreenDefaultPreview() {
-    val mock = se.kjellstrand.webshooter.ui.mock.MockCharts()
+    val mock = MockCharts()
     ChartsScreen(
-        viewModel = se.kjellstrand.webshooter.ui.mock.ChartsViewModelMock(
+        viewModel = ChartsViewModelMock(
             ChartsUiState(
                 chartData = mock.allChartData,
                 availableResultsTypes = mock.availableResultsTypes,
-                availableWeaponClasses = mock.availableWeaponClasses,
                 selectedResultsType = "precision",
                 clubMembers = mock.clubMembers
             )
@@ -477,7 +413,7 @@ fun ChartsScreenDefaultPreview() {
 @Composable
 fun ChartsScreenLoadingPreview() {
     ChartsScreen(
-        viewModel = se.kjellstrand.webshooter.ui.mock.ChartsViewModelMock(
+        viewModel = ChartsViewModelMock(
             ChartsUiState(isLoading = true)
         )
     )
@@ -487,7 +423,7 @@ fun ChartsScreenLoadingPreview() {
 @Composable
 fun ChartsScreenErrorPreview() {
     ChartsScreen(
-        viewModel = se.kjellstrand.webshooter.ui.mock.ChartsViewModelMock(
+        viewModel = ChartsViewModelMock(
             ChartsUiState(hasError = true)
         )
     )
@@ -496,9 +432,9 @@ fun ChartsScreenErrorPreview() {
 @Preview(showBackground = true, name = "Charts - Empty")
 @Composable
 fun ChartsScreenEmptyPreview() {
-    val mock = se.kjellstrand.webshooter.ui.mock.MockCharts()
+    val mock = MockCharts()
     ChartsScreen(
-        viewModel = se.kjellstrand.webshooter.ui.mock.ChartsViewModelMock(
+        viewModel = ChartsViewModelMock(
             ChartsUiState(
                 chartData = emptyMap(),
                 availableResultsTypes = mock.availableResultsTypes,
@@ -511,14 +447,13 @@ fun ChartsScreenEmptyPreview() {
 @Preview(showBackground = true, name = "Charts - With compared shooters")
 @Composable
 fun ChartsScreenComparedPreview() {
-    val mock = se.kjellstrand.webshooter.ui.mock.MockCharts()
+    val mock = MockCharts()
     ChartsScreen(
-        viewModel = se.kjellstrand.webshooter.ui.mock.ChartsViewModelMock(
+        viewModel = ChartsViewModelMock(
             ChartsUiState(
                 chartData = mock.allChartData,
                 comparedShooters = mock.comparedShooters,
                 availableResultsTypes = mock.availableResultsTypes,
-                availableWeaponClasses = mock.availableWeaponClasses,
                 selectedResultsType = "precision",
                 clubMembers = mock.clubMembers
             )

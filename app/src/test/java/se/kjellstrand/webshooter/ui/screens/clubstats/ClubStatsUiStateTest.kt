@@ -59,7 +59,7 @@ class ClubStatsUiStateTest {
     @Test
     fun `ChartsUiState still exists`() {
         assertTrue(
-            File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/ChartsUiState.kt").exists()
+            File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/ResultsTrendsUiState.kt").exists()
         )
     }
 

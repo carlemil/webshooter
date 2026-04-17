@@ -1,11 +1,12 @@
-package se.kjellstrand.webshooter.ui.screens.charts
+package se.kjellstrand.webshooter.ui.screens.charts.resulttrends
 
 import kotlinx.coroutines.flow.StateFlow
+import se.kjellstrand.webshooter.ui.screens.charts.seriespoints.WeaponClassGroup
 
-interface ChartsViewModel {
+interface ResultsTrendsViewModel {
     val uiState: StateFlow<ChartsUiState>
     fun selectTab(resultsType: String)
-    fun toggleWeaponClass(weaponClass: String)
+    fun selectWeaponGroup(group: WeaponClassGroup?)
     fun addShooter(userId: Long)
     fun removeShooter(userId: Long)
     fun setSearchQuery(query: String)

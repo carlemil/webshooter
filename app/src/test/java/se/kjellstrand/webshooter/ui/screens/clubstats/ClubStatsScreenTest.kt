@@ -173,7 +173,7 @@ class ClubStatsScreenTest {
     @Test
     fun `ChartsScreen still exists`() {
         assertTrue(
-            File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/ChartsScreen.kt").exists()
+            File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/ResultsTrendsScreen.kt").exists()
         )
     }
 

@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.screens.clubstats
+package se.kjellstrand.webshooter.ui.screens.charts.clubstats
 
 import android.annotation.SuppressLint
 import android.content.Context

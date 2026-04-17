@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.screens.seriespoints
+package se.kjellstrand.webshooter.ui.screens.charts.seriespoints
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -68,6 +68,7 @@ class SeriesPointsViewModelImpl @Inject constructor(
                         val currentSelected = _uiState.value.selectedGroup
                         val newSelected = when {
                             currentSelected != null && currentSelected in groups -> currentSelected
+                            WeaponClassGroup.C in groups -> WeaponClassGroup.C
                             else -> groups.firstOrNull()
                         }
                         _uiState.value = _uiState.value.copy(
@@ -118,7 +119,7 @@ class SeriesPointsViewModelImpl @Inject constructor(
             searchQuery = "",
             competitions = emptyList(),
             availableGroups = emptySet(),
-            selectedGroup = null,
+            selectedGroup = WeaponClassGroup.C,
             isLoading = true
         )
         loadSeriesData(userId)

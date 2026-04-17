@@ -7,9 +7,9 @@ import java.io.File
 class ChartsRelevantUserIdsTest {
 
     private val uiStateFile =
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/ChartsUiState.kt")
+        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/ResultsTrendsUiState.kt")
     private val screenFile =
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/ChartsScreen.kt")
+        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/ResultsTrendsScreen.kt")
     private val seriesPointsScreen =
         File("src/main/java/se/kjellstrand/webshooter/ui/screens/seriespoints/SeriesPointsScreen.kt")
 
