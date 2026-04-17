@@ -41,4 +41,43 @@ data class ChartsUiState(
 
     val relevantUserIds: Set<Long>
         get() = allParticipants.map { it.userId }.toSet()
+
+    val myAverage: Float?
+        get() = filteredChartData.takeIf { it.isNotEmpty() }
+            ?.map { it.averageSerieScore.toFloat() }
+            ?.average()?.toFloat()
+
+    data class TrendLine(
+        val fromX: Float,
+        val fromY: Float,
+        val toX: Float,
+        val toY: Float,
+    )
+
+    val myTrend: TrendLine?
+        get() {
+            val points = filteredChartData.sortedBy { it.date }
+            if (points.size < 2) return null
+            val xs = points.indices.map { it.toFloat() }
+            val ys = points.map { it.averageSerieScore.toFloat() }
+            val meanX = xs.average().toFloat()
+            val meanY = ys.average().toFloat()
+            val num = xs.zip(ys)
+                .sumOf { (x, y) -> ((x - meanX) * (y - meanY)).toDouble() }
+                .toFloat()
+            val den = xs
+                .sumOf { ((it - meanX) * (it - meanX)).toDouble() }
+                .toFloat()
+            if (den == 0f) return null
+            val slope = num / den
+            val intercept = meanY - slope * meanX
+            val firstX = xs.first()
+            val lastX = xs.last()
+            return TrendLine(
+                fromX = firstX,
+                fromY = slope * firstX + intercept,
+                toX = lastX,
+                toY = slope * lastX + intercept
+            )
+        }
 }
