@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.screens.seriespoints
+package se.kjellstrand.webshooter.ui.screens.charts.seriespoints
 
 import se.kjellstrand.webshooter.data.charts.Participant
 import se.kjellstrand.webshooter.data.club.remote.ClubMember
@@ -16,7 +16,7 @@ data class SeriesPointsUiState(
     val selectedUserId: Long = 0L,
     val selectedUserName: String = "",
     val competitions: List<CompetitionSeries> = emptyList(),
-    val selectedGroup: WeaponClassGroup? = null,
+    val selectedGroup: WeaponClassGroup? = WeaponClassGroup.C,
     val availableGroups: Set<WeaponClassGroup> = emptySet(),
     val isLoading: Boolean = false,
     val hasError: Boolean = false,

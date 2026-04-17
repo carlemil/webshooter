@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.screens.seriespoints
+package se.kjellstrand.webshooter.ui.screens.charts.seriespoints
 
 import android.annotation.SuppressLint
 import android.content.Context

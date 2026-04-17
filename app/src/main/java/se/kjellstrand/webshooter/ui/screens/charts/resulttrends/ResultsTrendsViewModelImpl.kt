@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.screens.charts
+package se.kjellstrand.webshooter.ui.screens.charts.resulttrends
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,14 +12,15 @@ import se.kjellstrand.webshooter.data.charts.CompetitionMeta
 import se.kjellstrand.webshooter.data.club.ClubRepository
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.settings.SettingsRepository
+import se.kjellstrand.webshooter.ui.screens.charts.seriespoints.WeaponClassGroup
 import javax.inject.Inject
 
 @HiltViewModel
-class ChartsViewModelImpl @Inject constructor(
+class ResultsTrendsViewModelImpl @Inject constructor(
     private val chartsRepository: ChartsRepository,
     private val settingsRepository: SettingsRepository,
     private val clubRepository: ClubRepository
-) : ViewModel(), ChartsViewModel {
+) : ViewModel(), ResultsTrendsViewModel {
 
     private val _uiState = MutableStateFlow(ChartsUiState(isLoading = true))
     override val uiState: StateFlow<ChartsUiState> = _uiState.asStateFlow()
@@ -68,7 +69,6 @@ class ChartsViewModelImpl @Inject constructor(
                             .distinct()
                             .filter { it !in hiddenTypes }
                             .sorted()
-                        val availableClasses = resource.data.allWeaponClasses
                         val selectedType = _uiState.value.selectedResultsType.ifEmpty {
                             availableTypes.firstOrNull() ?: ""
                         }
@@ -76,7 +76,6 @@ class ChartsViewModelImpl @Inject constructor(
                         _uiState.value = _uiState.value.copy(
                             chartData = grouped,
                             availableResultsTypes = availableTypes,
-                            availableWeaponClasses = availableClasses,
                             allParticipants = resource.data.allParticipants,
                             selectedResultsType = selectedType,
                             hasError = false
@@ -117,14 +116,9 @@ class ChartsViewModelImpl @Inject constructor(
         _uiState.value = _uiState.value.copy(selectedResultsType = resultsType)
     }
 
-    override fun toggleWeaponClass(weaponClass: String) {
-        val current = _uiState.value.selectedWeaponClasses
-        val updated = if (weaponClass in current) {
-            current - weaponClass
-        } else {
-            current + weaponClass
-        }
-        _uiState.value = _uiState.value.copy(selectedWeaponClasses = updated)
+    override fun selectWeaponGroup(group: WeaponClassGroup?) {
+        if (_uiState.value.selectedGroup == group) return
+        _uiState.value = _uiState.value.copy(selectedGroup = group)
     }
 
     override fun addShooter(userId: Long) {

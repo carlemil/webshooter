@@ -2,15 +2,16 @@ package se.kjellstrand.webshooter.ui.mock
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import se.kjellstrand.webshooter.ui.screens.charts.ChartsUiState
-import se.kjellstrand.webshooter.ui.screens.charts.ChartsViewModel
+import se.kjellstrand.webshooter.ui.screens.charts.resulttrends.ChartsUiState
+import se.kjellstrand.webshooter.ui.screens.charts.resulttrends.ResultsTrendsViewModel
+import se.kjellstrand.webshooter.ui.screens.charts.seriespoints.WeaponClassGroup
 
 class ChartsViewModelMock(
     initialState: ChartsUiState = ChartsUiState()
-) : ChartsViewModel {
+) : ResultsTrendsViewModel {
     override val uiState: StateFlow<ChartsUiState> = MutableStateFlow(initialState)
     override fun selectTab(resultsType: String) {}
-    override fun toggleWeaponClass(weaponClass: String) {}
+    override fun selectWeaponGroup(group: WeaponClassGroup?) {}
     override fun addShooter(userId: Long) {}
     override fun removeShooter(userId: Long) {}
     override fun setSearchQuery(query: String) {}

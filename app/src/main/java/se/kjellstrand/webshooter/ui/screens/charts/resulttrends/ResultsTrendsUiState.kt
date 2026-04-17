@@ -1,8 +1,9 @@
-package se.kjellstrand.webshooter.ui.screens.charts
+package se.kjellstrand.webshooter.ui.screens.charts.resulttrends
 
 import se.kjellstrand.webshooter.data.charts.ChartDataPoint
 import se.kjellstrand.webshooter.data.charts.Participant
 import se.kjellstrand.webshooter.data.club.remote.ClubMember
+import se.kjellstrand.webshooter.ui.screens.charts.seriespoints.WeaponClassGroup
 
 
 data class ShooterChartInfo(
@@ -14,8 +15,12 @@ data class ChartsUiState(
     val chartData: Map<String, List<ChartDataPoint>> = emptyMap(),
     val comparedShooters: Map<Long, ShooterChartInfo> = emptyMap(),
     val selectedResultsType: String = "",
-    val selectedWeaponClasses: Set<String> = emptySet(),
-    val availableWeaponClasses: List<String> = emptyList(),
+    val selectedGroup: WeaponClassGroup? = WeaponClassGroup.C,
+    val availableGroups: Set<WeaponClassGroup> = setOf(
+        WeaponClassGroup.A,
+        WeaponClassGroup.B,
+        WeaponClassGroup.C
+    ),
     val availableResultsTypes: List<String> = emptyList(),
     val isLoading: Boolean = false,
     val hasError: Boolean = false,
@@ -27,15 +32,15 @@ data class ChartsUiState(
     val filteredChartData: List<ChartDataPoint>
         get() {
             val data = chartData[selectedResultsType] ?: return emptyList()
-            if (selectedWeaponClasses.isEmpty()) return data
-            return data.filter { it.weaponClass in selectedWeaponClasses }
+            val group = selectedGroup ?: return data
+            return data.filter { group.matches(it.weaponClass) }
         }
 
     val filteredComparedShooters: Map<Long, ShooterChartInfo>
         get() = comparedShooters.mapValues { (_, info) ->
             info.copy(chartData = info.chartData.filter {
                 it.resultsType == selectedResultsType &&
-                    (selectedWeaponClasses.isEmpty() || it.weaponClass in selectedWeaponClasses)
+                    (selectedGroup?.matches(it.weaponClass) ?: true)
             })
         }
 

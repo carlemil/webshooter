@@ -8,7 +8,7 @@ import java.lang.reflect.Modifier
 class ChartsScreenTest {
 
     private val sourceFile =
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/ChartsScreen.kt")
+        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/ResultsTrendsScreen.kt")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 

@@ -6,7 +6,7 @@ import se.kjellstrand.webshooter.data.club.ClubRepository
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
 import se.kjellstrand.webshooter.data.results.local.ResultsDao
-import se.kjellstrand.webshooter.ui.screens.seriespoints.WeaponClassGroup
+import se.kjellstrand.webshooter.ui.screens.charts.seriespoints.WeaponClassGroup
 import java.time.Year
 import javax.inject.Inject
 import javax.inject.Singleton

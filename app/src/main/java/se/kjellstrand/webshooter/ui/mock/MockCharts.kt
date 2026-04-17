@@ -2,7 +2,7 @@ package se.kjellstrand.webshooter.ui.mock
 
 import se.kjellstrand.webshooter.data.charts.ChartDataPoint
 import se.kjellstrand.webshooter.data.club.remote.ClubMember
-import se.kjellstrand.webshooter.ui.screens.charts.ShooterChartInfo
+import se.kjellstrand.webshooter.ui.screens.charts.resulttrends.ShooterChartInfo
 
 class MockCharts {
     val precisionDataPoints = listOf(
@@ -30,8 +30,6 @@ class MockCharts {
     )
 
     val availableResultsTypes = listOf("precision", "field", "military")
-
-    val availableWeaponClasses = listOf("A", "B", "C")
 
     val comparedShooter1 = ShooterChartInfo(
         name = "Anna Svensson",

@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.screens.clubstats
+package se.kjellstrand.webshooter.ui.screens.charts.clubstats
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.data.clubstats.ClubStatsRepository
 import se.kjellstrand.webshooter.data.common.Resource
-import se.kjellstrand.webshooter.ui.screens.seriespoints.WeaponClassGroup
+import se.kjellstrand.webshooter.ui.screens.charts.seriespoints.WeaponClassGroup
 import java.time.Year
 import javax.inject.Inject
 
