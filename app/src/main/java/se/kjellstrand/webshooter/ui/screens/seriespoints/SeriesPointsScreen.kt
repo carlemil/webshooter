@@ -1,6 +1,8 @@
 package se.kjellstrand.webshooter.ui.screens.seriespoints
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.widget.TextView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -32,9 +34,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.MarkerView
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
+import com.github.mikephil.charting.highlight.Highlight
+import com.github.mikephil.charting.utils.MPPointF
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.seriespoints.CompetitionSeries
 import se.kjellstrand.webshooter.ui.common.ChartStateWrapper
@@ -187,6 +192,25 @@ private fun CompetitionsLegend(
     }
 }
 
+private class SeriesPointsMarkerView(
+    context: Context,
+    private val labels: Map<Pair<Int, Int>, String>
+) : MarkerView(context, R.layout.marker_view) {
+
+    private val textView: TextView = findViewById(R.id.marker_text)
+
+    override fun refreshContent(e: Entry?, highlight: Highlight?) {
+        val dsIndex = highlight?.dataSetIndex ?: -1
+        val xIndex = (e?.x?.toInt() ?: 0) - 1
+        textView.text = labels[dsIndex to xIndex] ?: ""
+        super.refreshContent(e, highlight)
+    }
+
+    override fun getOffset(): MPPointF {
+        return MPPointF(-(width / 2f), -height.toFloat())
+    }
+}
+
 @SuppressLint("ClickableViewAccessibility")
 @Composable
 private fun SeriesPointsChart(
@@ -225,12 +249,15 @@ private fun SeriesPointsChart(
             // the newest. Iterate from newest→oldest so the newest renders on top.
             val ordered = competitions.reversed()
             val total = ordered.size
-            val dataSets = mutableListOf<LineDataSet>()
+            val builtDataSets = mutableListOf<Pair<LineDataSet, List<String>>>()
 
             ordered.forEachIndexed { indexFromNewest, comp ->
                 if (comp.seriesPoints.isEmpty()) return@forEachIndexed
                 val entries = comp.seriesPoints.mapIndexed { i, points ->
                     Entry((i + 1).toFloat(), points.toFloat())
+                }
+                val perEntryLabels = comp.seriesPoints.mapIndexed { i, points ->
+                    "${comp.date} ${comp.competitionName}\nSerie ${i + 1}: $points p"
                 }
                 val isLatest = indexFromNewest == 0
                 val lineColor = colorForAge(indexFromNewest, total)
@@ -247,11 +274,19 @@ private fun SeriesPointsChart(
                     setDrawValues(false)
                     mode = LineDataSet.Mode.LINEAR
                 }
-                dataSets.add(dataSet)
+                builtDataSets.add(dataSet to perEntryLabels)
             }
 
             // Reverse so the newest dataset is drawn LAST (on top).
-            dataSets.reverse()
+            builtDataSets.reverse()
+
+            val labelMap = mutableMapOf<Pair<Int, Int>, String>()
+            builtDataSets.forEachIndexed { dsIndex, (_, perEntryLabels) ->
+                perEntryLabels.forEachIndexed { xIndex, text ->
+                    labelMap[dsIndex to xIndex] = text
+                }
+            }
+            val dataSets = builtDataSets.map { it.first }
 
             if (dataSets.isNotEmpty()) {
                 chart.data = LineData(dataSets.toList())
@@ -260,6 +295,8 @@ private fun SeriesPointsChart(
             } else {
                 chart.data = null
             }
+
+            chart.marker = SeriesPointsMarkerView(chart.context, labelMap)
 
             chart.invalidate()
         }
