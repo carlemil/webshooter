@@ -41,6 +41,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.github.mikephil.charting.charts.ScatterChart
+import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.MarkerView
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.ScatterData
@@ -206,6 +207,8 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ChartsViewModel) {
             ChartScatterChart(
                 myData = chartData,
                 comparedShooters = comparedShooters,
+                myAverage = uiState.myAverage,
+                myTrend = uiState.myTrend,
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
@@ -284,11 +287,17 @@ private class ChartsMarkerView(
     }
 }
 
+private const val TREND_COLOR_ARGB: Int = 0xFF00FFFF.toInt()
+private const val AVERAGE_COLOR_ARGB: Int = 0xFFFF00FF.toInt()
+private const val TREND_SAMPLES: Int = 30
+
 @SuppressLint("ClickableViewAccessibility")
 @Composable
 fun ChartScatterChart(
     myData: List<ChartDataPoint>,
     comparedShooters: Map<Long, ShooterChartInfo>,
+    myAverage: Float?,
+    myTrend: ChartsUiState.TrendLine?,
     modifier: Modifier = Modifier
 ) {
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface.toArgb()
@@ -323,6 +332,12 @@ fun ChartScatterChart(
                         append(it.date).append(':').append(it.averageSerieScore).append(',')
                     }
                     append(';')
+                }
+                append('@').append(myAverage ?: "")
+                append('~')
+                if (myTrend != null) {
+                    append(myTrend.fromX).append(',').append(myTrend.fromY).append(';')
+                        .append(myTrend.toX).append(',').append(myTrend.toY)
                 }
             }
             if (chart.tag == signature) {
@@ -375,12 +390,45 @@ fun ChartScatterChart(
                 }
             }
 
+            // Trend line: sample points along the regression line, using the chart's
+            // date-indexed X space.
+            val sortedMy = myData.sortedBy { it.date }
+            if (myTrend != null && sortedMy.size >= 2) {
+                val firstChartX = dateIndexMap[sortedMy.first().date] ?: 0f
+                val lastChartX = dateIndexMap[sortedMy.last().date] ?: 0f
+                val trendEntries = (0..TREND_SAMPLES).map { i ->
+                    val t = i.toFloat() / TREND_SAMPLES.toFloat()
+                    val x = firstChartX + (lastChartX - firstChartX) * t
+                    val y = myTrend.fromY + (myTrend.toY - myTrend.fromY) * t
+                    Entry(x, y)
+                }
+                val trendDataSet = ScatterDataSet(trendEntries, "Trend").apply {
+                    color = TREND_COLOR_ARGB
+                    shapeRenderer = CHART_SHAPE_RENDERERS[0]
+                    scatterShapeSize = 6.dp.value
+                    setDrawValues(false)
+                    isHighlightEnabled = false
+                }
+                dataSets.add(trendDataSet)
+            }
+
             if (dataSets.isNotEmpty()) {
                 chart.data = ScatterData(dataSets.toList())
                 chart.xAxis.valueFormatter = IndexAxisValueFormatter(sortedDates)
                 chart.xAxis.labelCount = minOf(sortedDates.size, 6)
             } else {
                 chart.data = null
+            }
+
+            // Average line: horizontal LimitLine on the left axis.
+            chart.axisLeft.removeAllLimitLines()
+            if (myAverage != null) {
+                val avgLine = LimitLine(myAverage).apply {
+                    lineColor = AVERAGE_COLOR_ARGB
+                    lineWidth = 2f
+                    enableDashedLine(8f, 4f, 0f)
+                }
+                chart.axisLeft.addLimitLine(avgLine)
             }
 
             chart.marker = ChartsMarkerView(chart.context, labelMap)
