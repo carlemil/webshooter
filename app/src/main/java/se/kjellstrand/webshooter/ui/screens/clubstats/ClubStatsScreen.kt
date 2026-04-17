@@ -91,7 +91,9 @@ private class ShooterMarkerView(
     override fun refreshContent(e: Entry?, highlight: Highlight?) {
         val index = e?.data as? Int
         if (index != null && index in shooterStats.indices) {
-            textView.text = shooterStats[index].fullname
+            val stats = shooterStats[index]
+            val avg = "%.1f".format(stats.averagePoints)
+            textView.text = "${stats.fullname}\n$avg p · ${stats.competitionCount} tävlingar"
         } else {
             textView.text = ""
         }
