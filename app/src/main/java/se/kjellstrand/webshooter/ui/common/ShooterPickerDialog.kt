@@ -42,9 +42,12 @@ fun ShooterPickerDialog(
     onPickShooter: (Long) -> Unit,
     onRemoveShooter: (Long) -> Unit,
     onDismiss: () -> Unit,
-    showSelectedSection: Boolean = true
+    showSelectedSection: Boolean = true,
+    relevantUserIds: Set<Long>? = null
 ) {
-    val filtered = remember(searchQuery, clubMembers, allParticipants, selectedShooters) {
+    val filtered = remember(
+        searchQuery, clubMembers, allParticipants, selectedShooters, relevantUserIds
+    ) {
         val base = if (searchQuery.isBlank()) {
             clubMembers
         } else {
@@ -53,8 +56,10 @@ fun ShooterPickerDialog(
                 .filter { it.fullname.lowercase().contains(q) }
                 .map { ClubMember(userId = it.userId, name = it.fullname, fullname = it.fullname) }
         }
-        base.filter { !selectedShooters.containsKey(it.userId) }
-            .sortedBy { (it.fullname ?: it.name).lowercase() }
+        base.filter {
+            !selectedShooters.containsKey(it.userId) &&
+                (relevantUserIds == null || it.userId in relevantUserIds)
+        }.sortedBy { (it.fullname ?: it.name).lowercase() }
     }
 
     val halfDialog = LocalConfiguration.current.screenHeightDp.dp / 2
