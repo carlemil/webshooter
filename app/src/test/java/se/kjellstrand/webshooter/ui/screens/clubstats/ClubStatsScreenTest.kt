@@ -81,6 +81,45 @@ class ClubStatsScreenTest {
         )
     }
 
+    @Test
+    fun `ClubStatsScreen uses shared UserLegend from ui common`() {
+        val source = sourceFile.readText()
+        assertTrue(
+            "ClubStatsScreen must import UserLegend from ui.common",
+            source.contains("se.kjellstrand.webshooter.ui.common.UserLegend")
+        )
+        assertTrue(
+            "ClubStatsScreen must import UserLegendItem from ui.common",
+            source.contains("se.kjellstrand.webshooter.ui.common.UserLegendItem")
+        )
+        assertTrue(
+            "ClubStatsScreen must call UserLegend(",
+            source.contains("UserLegend(")
+        )
+        assertTrue(
+            "ClubStatsScreen must construct UserLegendItem entries",
+            source.contains("UserLegendItem(")
+        )
+    }
+
+    @Test
+    fun `ClubStatsScreen no longer defines local ShooterLegend composable`() {
+        val source = sourceFile.readText()
+        assertFalse(
+            "Local fun ShooterLegend(...) must be removed",
+            source.contains("fun ShooterLegend(")
+        )
+    }
+
+    @Test
+    fun `ClubStatsScreen no longer defines local drawScatterShape helper`() {
+        val source = sourceFile.readText()
+        assertFalse(
+            "Local DrawScope.drawScatterShape must be removed",
+            source.contains("DrawScope.drawScatterShape")
+        )
+    }
+
     // --- Guard tests (should PASS before and after fix) ---
 
     @Test
