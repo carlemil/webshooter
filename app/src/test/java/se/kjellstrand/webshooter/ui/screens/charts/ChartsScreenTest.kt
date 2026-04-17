@@ -105,6 +105,60 @@ class ChartsScreenTest {
     }
 
     @Test
+    fun `ChartScatterChart signature accepts myAverage and myTrend`() {
+        val source = sourceFile.readText()
+        assertTrue(
+            "ChartScatterChart must accept myAverage: Float? parameter",
+            Regex("""myAverage\s*:\s*Float\?""").containsMatchIn(source)
+        )
+        assertTrue(
+            "ChartScatterChart must accept myTrend: ChartsUiState.TrendLine? parameter",
+            Regex("""myTrend\s*:\s*ChartsUiState\.TrendLine\?""").containsMatchIn(source)
+        )
+    }
+
+    @Test
+    fun `ChartsScreen draws average as a LimitLine on axisLeft`() {
+        val source = sourceFile.readText()
+        assertTrue(
+            "ChartsScreen must use LimitLine for the average",
+            source.contains("LimitLine") &&
+                (source.contains("axisLeft.removeAllLimitLines") ||
+                    source.contains("axisLeft.addLimitLine"))
+        )
+        assertTrue(
+            "ChartsScreen must import LimitLine",
+            source.contains("com.github.mikephil.charting.components.LimitLine")
+        )
+    }
+
+    @Test
+    fun `ChartsScreen renders trend as a sampled scatter dataset`() {
+        val source = sourceFile.readText()
+        assertTrue(
+            "Trend rendering must sample points along the regression line",
+            source.contains("myTrend") &&
+                (Regex("""TREND_SAMPLES""").containsMatchIn(source) ||
+                    Regex("""0\.\.\s*\d{2,}""").containsMatchIn(source) ||
+                    source.contains("trendSamples") ||
+                    source.contains("nSamples"))
+        )
+    }
+
+    @Test
+    fun `ChartsContent passes myAverage and myTrend to the chart`() {
+        val source = sourceFile.readText()
+        assertTrue(
+            "ChartsContent must pass uiState.myAverage to ChartScatterChart",
+            source.contains("myAverage = uiState.myAverage")
+        )
+        assertTrue(
+            "ChartsContent must pass uiState.myTrend to ChartScatterChart",
+            source.contains("myTrend = uiState.myTrend")
+        )
+    }
+
+    @Test
     fun `ChartsScreen builds label map keyed by Entry data tag`() {
         val source = sourceFile.readText()
         assertTrue(
