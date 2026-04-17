@@ -121,6 +121,31 @@ class ClubStatsScreenTest {
     }
 
     @Test
+    fun `ClubStatsScreen renders WeaponClassGroupFilter wired to ViewModel`() {
+        val source = sourceFile.readText()
+        assertTrue(
+            "ClubStatsScreen must import WeaponClassGroupFilter from ui.common",
+            source.contains("se.kjellstrand.webshooter.ui.common.WeaponClassGroupFilter")
+        )
+        assertTrue(
+            "ClubStatsScreen must call WeaponClassGroupFilter(",
+            source.contains("WeaponClassGroupFilter(")
+        )
+        assertTrue(
+            "WeaponClassGroupFilter must be wired to uiState.availableGroups",
+            source.contains("availableGroups = uiState.availableGroups")
+        )
+        assertTrue(
+            "WeaponClassGroupFilter must be wired to uiState.selectedGroup",
+            source.contains("selectedGroup = uiState.selectedGroup")
+        )
+        assertTrue(
+            "WeaponClassGroupFilter onSelectGroup must call viewModel::selectWeaponGroup",
+            source.contains("viewModel::selectWeaponGroup")
+        )
+    }
+
+    @Test
     fun `ShooterMarkerView shows averagePoints and competitionCount`() {
         val source = sourceFile.readText()
         assertTrue(

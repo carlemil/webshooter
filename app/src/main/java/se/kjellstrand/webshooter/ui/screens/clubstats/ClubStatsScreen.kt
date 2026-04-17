@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
@@ -32,6 +33,7 @@ import se.kjellstrand.webshooter.ui.common.CHART_SHAPE_RENDERERS
 import se.kjellstrand.webshooter.ui.common.ChartStateWrapper
 import se.kjellstrand.webshooter.ui.common.UserLegend
 import se.kjellstrand.webshooter.ui.common.UserLegendItem
+import se.kjellstrand.webshooter.ui.common.WeaponClassGroupFilter
 import se.kjellstrand.webshooter.ui.common.applyBaseChartStyle
 
 @Composable
@@ -52,6 +54,12 @@ fun ClubStatsScreen(viewModel: ClubStatsViewModel) {
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 4.dp)
             )
         }
+        WeaponClassGroupFilter(
+            availableGroups = uiState.availableGroups,
+            selectedGroup = uiState.selectedGroup,
+            onSelectGroup = viewModel::selectWeaponGroup,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
+        )
         ChartStateWrapper(
             isLoading = uiState.isLoading && uiState.shooterStats.isEmpty(),
             hasError = uiState.hasError,
