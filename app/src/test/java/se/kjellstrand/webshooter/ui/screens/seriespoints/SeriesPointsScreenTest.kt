@@ -1,0 +1,90 @@
+package se.kjellstrand.webshooter.ui.screens.seriespoints
+
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
+import org.junit.Test
+import java.io.File
+
+class SeriesPointsScreenTest {
+
+    private val sourceFile =
+        File("src/main/java/se/kjellstrand/webshooter/ui/screens/seriespoints/SeriesPointsScreen.kt")
+
+    // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
+
+    @Test
+    fun `SeriesPointsScreen defines SeriesPointsMarkerView subclass`() {
+        val source = sourceFile.readText()
+        assertTrue(
+            "SeriesPointsScreen must define a SeriesPointsMarkerView class extending MarkerView",
+            source.contains("class SeriesPointsMarkerView") &&
+                source.contains("MarkerView(context, R.layout.marker_view)")
+        )
+        assertTrue(
+            "SeriesPointsScreen must import MarkerView",
+            source.contains("com.github.mikephil.charting.components.MarkerView")
+        )
+    }
+
+    @Test
+    fun `SeriesPointsScreen attaches SeriesPointsMarkerView to the chart`() {
+        val source = sourceFile.readText()
+        assertTrue(
+            "chart.marker must be assigned to a SeriesPointsMarkerView",
+            source.contains("chart.marker = SeriesPointsMarkerView(")
+        )
+    }
+
+    @Test
+    fun `SeriesPointsMarkerView labels include Serie number and points`() {
+        val source = sourceFile.readText()
+        assertTrue(
+            "Label template must include the Swedish 'Serie' word used for per-series tooltips",
+            source.contains("Serie ")
+        )
+        assertTrue(
+            "Label template must include a 'p' unit for points in the tooltip",
+            Regex("""\"[^\"]*Serie[^\"]*\bp\"""").containsMatchIn(source) ||
+                source.contains("Serie ") && source.contains(" p\"")
+        )
+    }
+
+    @Test
+    fun `SeriesPointsMarkerView uses a keyed map for dataSetIndex and xIndex`() {
+        val source = sourceFile.readText()
+        assertTrue(
+            "Marker labels must be stored in a Map<Pair<Int, Int>, String> or equivalent",
+            source.contains("Map<Pair<Int, Int>, String>") ||
+                source.contains("mutableMapOf<Pair<Int, Int>, String>()") ||
+                source.contains("mapOf<Pair<Int, Int>, String>")
+        )
+        assertTrue(
+            "Marker refreshContent must read highlight.dataSetIndex",
+            source.contains("dataSetIndex")
+        )
+    }
+
+    // --- Guard tests (should PASS before and after fix) ---
+
+    @Test
+    fun `SeriesPointsScreen source file exists`() {
+        assertTrue(sourceFile.exists())
+    }
+
+    @Test
+    fun `SeriesPointsScreen still uses LineChart via AndroidView`() {
+        val source = sourceFile.readText()
+        assertTrue(source.contains("LineChart"))
+        assertTrue(source.contains("AndroidView"))
+    }
+
+    @Test
+    fun `SeriesPointsScreen preserves reversed ordering for newest on top`() {
+        val source = sourceFile.readText()
+        assertTrue(
+            "SeriesPointsScreen must still reverse dataSets so newest renders on top",
+            source.contains("dataSets.reverse()") ||
+                source.contains("reversed()")
+        )
+    }
+}
