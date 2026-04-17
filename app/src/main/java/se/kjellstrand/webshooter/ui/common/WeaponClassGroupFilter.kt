@@ -1,4 +1,4 @@
-package se.kjellstrand.webshooter.ui.screens.seriespoints
+package se.kjellstrand.webshooter.ui.common
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -12,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
+import se.kjellstrand.webshooter.ui.screens.seriespoints.WeaponClassGroup
 
 @Composable
 fun WeaponClassGroupFilter(

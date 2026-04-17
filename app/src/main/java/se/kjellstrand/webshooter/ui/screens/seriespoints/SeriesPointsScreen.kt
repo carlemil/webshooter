@@ -41,6 +41,7 @@ import se.kjellstrand.webshooter.data.seriespoints.CompetitionSeries
 import se.kjellstrand.webshooter.ui.common.AddShooterButton
 import se.kjellstrand.webshooter.ui.common.ChartStateWrapper
 import se.kjellstrand.webshooter.ui.common.ShooterPickerDialog
+import se.kjellstrand.webshooter.ui.common.WeaponClassGroupFilter
 import se.kjellstrand.webshooter.ui.common.applyBaseChartStyle
 import android.graphics.Color as AndroidColor
 
