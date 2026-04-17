@@ -80,6 +80,31 @@ class ChartsScreenTest {
     }
 
     @Test
+    fun `ChartsScreen renders charts_subtitle above the state wrapper`() {
+        val source = sourceFile.readText()
+        assertTrue(
+            "ChartsScreen must reference R.string.charts_subtitle",
+            source.contains("R.string.charts_subtitle")
+        )
+        val subtitleIndex = source.indexOf("charts_subtitle")
+        val wrapperIndex = source.indexOf("ChartStateWrapper(")
+        assertTrue("subtitle must appear before ChartStateWrapper", subtitleIndex in 0 until wrapperIndex)
+    }
+
+    @Test
+    fun `charts_subtitle string exists with Swedish explanation`() {
+        val strings = File("src/main/res/values/strings.xml").readText()
+        assertTrue(
+            "strings.xml must define charts_subtitle",
+            Regex("""<string\s+name="charts_subtitle">[^<]*</string>""").containsMatchIn(strings)
+        )
+        assertTrue(
+            "charts_subtitle should be 'Snittpoäng per tävling över tid'",
+            strings.contains(">Snittpoäng per tävling över tid<")
+        )
+    }
+
+    @Test
     fun `ChartsScreen builds label map keyed by Entry data tag`() {
         val source = sourceFile.readText()
         assertTrue(
