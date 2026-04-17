@@ -49,10 +49,13 @@ import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.charts.ChartDataPoint
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
+import androidx.compose.ui.graphics.Color
 import se.kjellstrand.webshooter.ui.common.CHART_COLORS
-import se.kjellstrand.webshooter.ui.common.CHART_SHAPES
+import se.kjellstrand.webshooter.ui.common.CHART_SHAPE_RENDERERS
 import se.kjellstrand.webshooter.ui.common.ChartStateWrapper
 import se.kjellstrand.webshooter.ui.common.ShooterPickerDialog
+import se.kjellstrand.webshooter.ui.common.UserLegend
+import se.kjellstrand.webshooter.ui.common.UserLegendItem
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
 import se.kjellstrand.webshooter.ui.common.applyBaseChartStyle
@@ -198,6 +201,38 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ChartsViewModel) {
                     .fillMaxWidth()
                     .padding(8.dp)
             )
+            val legendItems = buildList {
+                if (chartData.isNotEmpty()) {
+                    add(
+                        UserLegendItem(
+                            label = stringResource(R.string.charts_my_results),
+                            color = Color(CHART_COLORS[0]),
+                            shapeIndex = 0
+                        )
+                    )
+                }
+                comparedShooters.entries.forEachIndexed { index, (_, info) ->
+                    if (info.chartData.isNotEmpty()) {
+                        val colorIndex = (index + 1) % CHART_COLORS.size
+                        val shapeIndex = (index + 1) % CHART_SHAPE_RENDERERS.size
+                        add(
+                            UserLegendItem(
+                                label = info.name,
+                                color = Color(CHART_COLORS[colorIndex]),
+                                shapeIndex = shapeIndex
+                            )
+                        )
+                    }
+                }
+            }
+            if (legendItems.isNotEmpty()) {
+                UserLegend(
+                    items = legendItems,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+            }
         } else if (!uiState.isLoading && !hasAnyData) {
             Box(
                 modifier = Modifier
@@ -243,8 +278,7 @@ fun ChartScatterChart(
             ScatterChart(context).apply {
                 applyBaseChartStyle(onSurfaceColor)
                 xAxis.labelRotationAngle = -45f
-                legend.textColor = onSurfaceColor
-                legend.isWordWrapEnabled = true
+                legend.isEnabled = false
             }
         },
         update = { chart ->
@@ -287,7 +321,7 @@ fun ChartScatterChart(
                     chart.context.getString(R.string.charts_my_results)
                 ).apply {
                     color = CHART_COLORS[0]
-                    setScatterShape(CHART_SHAPES[0])
+                    shapeRenderer = CHART_SHAPE_RENDERERS[0]
                     scatterShapeSize = scatterShapeSizeDp
                     setDrawValues(false)
                 }
@@ -298,13 +332,13 @@ fun ChartScatterChart(
             comparedShooters.entries.forEachIndexed { index, (_, info) ->
                 if (info.chartData.isNotEmpty()) {
                     val colorIndex = (index + 1) % CHART_COLORS.size
-                    val shapeIndex = (index + 1) % CHART_SHAPES.size
+                    val shapeIndex = (index + 1) % CHART_SHAPE_RENDERERS.size
                     val entries = info.chartData.sortedBy { it.date }.map { dp ->
                         Entry(dateIndexMap[dp.date] ?: 0f, dp.averageSerieScore.toFloat())
                     }
                     val dataSet = ScatterDataSet(entries, info.name).apply {
                         color = CHART_COLORS[colorIndex]
-                        setScatterShape(CHART_SHAPES[shapeIndex])
+                        shapeRenderer = CHART_SHAPE_RENDERERS[shapeIndex]
                         scatterShapeSize = scatterShapeSizeDp
                         setDrawValues(false)
                     }
