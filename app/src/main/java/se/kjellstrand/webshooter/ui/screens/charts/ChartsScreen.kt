@@ -85,6 +85,12 @@ fun ChartsScreen(viewModel: ChartsViewModel) {
             modifier = Modifier
                 .fillMaxSize()
         ) {
+            Text(
+                text = stringResource(R.string.charts_subtitle),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp)
+            )
             ChartStateWrapper(
                 isLoading = uiState.isLoading && uiState.chartData.isEmpty(),
                 hasError = uiState.hasError
