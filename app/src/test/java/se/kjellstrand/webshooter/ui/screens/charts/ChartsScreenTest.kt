@@ -2,11 +2,59 @@ package se.kjellstrand.webshooter.ui.screens.charts
 
 import org.junit.Test
 import org.junit.Assert.*
+import java.io.File
 import java.lang.reflect.Modifier
 
 class ChartsScreenTest {
 
+    private val sourceFile =
+        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/ChartsScreen.kt")
+
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
+
+    @Test
+    fun `ChartsScreen uses shared UserLegend from ui common`() {
+        val source = sourceFile.readText()
+        assertTrue(
+            "ChartsScreen must import UserLegend from ui.common",
+            source.contains("se.kjellstrand.webshooter.ui.common.UserLegend")
+        )
+        assertTrue(
+            "ChartsScreen must import UserLegendItem from ui.common",
+            source.contains("se.kjellstrand.webshooter.ui.common.UserLegendItem")
+        )
+        assertTrue("ChartsScreen must call UserLegend(", source.contains("UserLegend("))
+        assertTrue(
+            "ChartsScreen must construct UserLegendItem entries",
+            source.contains("UserLegendItem(")
+        )
+    }
+
+    @Test
+    fun `ChartsScreen disables MPAndroidChart built-in legend`() {
+        val source = sourceFile.readText()
+        assertTrue(
+            "ChartsScreen must set legend.isEnabled = false so the composable UserLegend is the sole legend",
+            source.contains("legend.isEnabled = false")
+        )
+        assertFalse(
+            "Old built-in legend styling must be removed (legend.isWordWrapEnabled)",
+            source.contains("legend.isWordWrapEnabled")
+        )
+    }
+
+    @Test
+    fun `ChartsScreen uses shapeRenderer from CHART_SHAPE_RENDERERS`() {
+        val source = sourceFile.readText()
+        assertTrue(
+            "Scatter datasets must use shapeRenderer = CHART_SHAPE_RENDERERS[...] so shapes match the composable legend",
+            source.contains("shapeRenderer = CHART_SHAPE_RENDERERS")
+        )
+        assertFalse(
+            "Old setScatterShape(CHART_SHAPES[...]) calls must be replaced with shapeRenderer",
+            source.contains("setScatterShape(CHART_SHAPES")
+        )
+    }
 
     @Test
     fun `ChartsScreen composable function exists`() {
