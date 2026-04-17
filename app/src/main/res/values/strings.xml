@@ -160,6 +160,7 @@
     <string name="series_points_title">Seriepoäng</string>
     <string name="series_points_select_shooter">Välj skytt</string>
     <string name="series_points_change_shooter">Byt skytt</string>
+    <string name="series_points_subtitle">Poäng per serie i valda tävlingar</string>
 
     <!-- ### WEB_SHOOTER ### -->
     <string name="web_shooter_charts">Diagram</string>

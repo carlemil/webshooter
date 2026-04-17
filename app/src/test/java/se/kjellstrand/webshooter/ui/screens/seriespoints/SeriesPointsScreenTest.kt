@@ -64,6 +64,37 @@ class SeriesPointsScreenTest {
         )
     }
 
+    @Test
+    fun `SeriesPointsScreen renders series_points_subtitle above the state wrapper`() {
+        val source = sourceFile.readText()
+        assertTrue(
+            "SeriesPointsScreen must reference R.string.series_points_subtitle",
+            source.contains("R.string.series_points_subtitle")
+        )
+        val subtitleIdx = source.indexOf("series_points_subtitle")
+        val wrapperIdx = source.indexOf("ChartStateWrapper(")
+        assertTrue(
+            "subtitle must appear before ChartStateWrapper",
+            subtitleIdx in 0 until wrapperIdx
+        )
+    }
+
+    @Test
+    fun `series_points_subtitle string exists with Swedish explanation`() {
+        val strings =
+            File("src/main/res/values/strings.xml").readText()
+        assertTrue(
+            "strings.xml must define series_points_subtitle",
+            Regex("""<string\s+name="series_points_subtitle">[^<]*</string>""").containsMatchIn(
+                strings
+            )
+        )
+        assertTrue(
+            "series_points_subtitle should be 'Poäng per serie i valda tävlingar'",
+            strings.contains(">Poäng per serie i valda tävlingar<")
+        )
+    }
+
     // --- Guard tests (should PASS before and after fix) ---
 
     @Test
