@@ -120,6 +120,29 @@ class ClubStatsScreenTest {
         )
     }
 
+    @Test
+    fun `ShooterMarkerView shows averagePoints and competitionCount`() {
+        val source = sourceFile.readText()
+        assertTrue(
+            "Marker must reference stats.averagePoints",
+            source.contains("averagePoints")
+        )
+        assertTrue(
+            "Marker must reference stats.competitionCount",
+            source.contains("competitionCount")
+        )
+        assertTrue(
+            "Marker text must include the Swedish 'tävlingar' label",
+            source.contains("tävlingar")
+        )
+        assertTrue(
+            "Marker text must include the 'p' (points) unit next to averagePoints",
+            Regex("""averagePoints[^\n]*\bp\b""").containsMatchIn(source) ||
+                Regex("""\bp\b[^\n]*averagePoints""").containsMatchIn(source) ||
+                source.contains("p · ")
+        )
+    }
+
     // --- Guard tests (should PASS before and after fix) ---
 
     @Test
