@@ -6,6 +6,7 @@ import se.kjellstrand.webshooter.data.club.ClubRepository
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
 import se.kjellstrand.webshooter.data.results.local.ResultsDao
+import se.kjellstrand.webshooter.ui.screens.seriespoints.WeaponClassGroup
 import java.time.Year
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -15,8 +16,13 @@ class ClubStatsRepository @Inject constructor(
     private val clubRepository: ClubRepository,
     private val resultsDao: ResultsDao
 ) {
-    fun getClubStats(): Flow<Resource<ClubStatsData, UserError>> = flow {
+    fun getClubStats(group: WeaponClassGroup? = null): Flow<Resource<ClubStatsData, UserError>> = flow {
         emit(Resource.Loading(true))
+
+        val classPrefix = when (group) {
+            null -> "%"
+            else -> "${group.prefix}%"
+        }
 
         var emittedError = false
         clubRepository.getUserClub().collect { clubResource ->
@@ -25,7 +31,7 @@ class ClubStatsRepository @Inject constructor(
                     try {
                         val userIds = clubResource.data.club.users.map { it.userId }
                         val previousYear = Year.now().value - 1
-                        val rows = resultsDao.getClubStats(userIds, previousYear)
+                        val rows = resultsDao.getClubStats(userIds, previousYear, classPrefix)
                         val shooterStats = rows.map { row ->
                             ShooterStats(
                                 userId = row.userId,

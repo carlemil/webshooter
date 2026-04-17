@@ -9,6 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.data.clubstats.ClubStatsRepository
 import se.kjellstrand.webshooter.data.common.Resource
+import se.kjellstrand.webshooter.ui.screens.seriespoints.WeaponClassGroup
 import java.time.Year
 import javax.inject.Inject
 
@@ -21,12 +22,22 @@ class ClubStatsViewModelImpl @Inject constructor(
     override val uiState: StateFlow<ClubStatsUiState> = _uiState.asStateFlow()
 
     init {
-        loadClubStats()
+        loadClubStats(_uiState.value.selectedGroup)
     }
 
-    private fun loadClubStats() {
+    override fun selectWeaponGroup(group: WeaponClassGroup?) {
+        if (_uiState.value.selectedGroup == group) return
+        _uiState.value = _uiState.value.copy(
+            selectedGroup = group,
+            isLoading = true,
+            shooterStats = emptyList()
+        )
+        loadClubStats(group)
+    }
+
+    private fun loadClubStats(selectedGroup: WeaponClassGroup?) {
         viewModelScope.launch {
-            clubStatsRepository.getClubStats().collect { resource ->
+            clubStatsRepository.getClubStats(selectedGroup).collect { resource ->
                 when (resource) {
                     is Resource.Success -> {
                         _uiState.value = _uiState.value.copy(

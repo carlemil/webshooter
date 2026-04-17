@@ -42,7 +42,7 @@ class ResultsDaoClubStatsQueryTest {
     @Test
     fun `getClubStats accepts userIds and year parameters`() {
         val pattern = Regex(
-            """fun\s+getClubStats\s*\(\s*userIds\s*:\s*List<Long>\s*,\s*year\s*:\s*Int\s*\)""",
+            """fun\s+getClubStats\s*\(\s*userIds\s*:\s*List<Long>\s*,\s*year\s*:\s*Int\s*,\s*classPrefix\s*:\s*String\s*\)""",
             RegexOption.IGNORE_CASE
         )
         assertTrue(

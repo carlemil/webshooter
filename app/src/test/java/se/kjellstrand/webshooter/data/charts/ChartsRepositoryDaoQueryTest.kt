@@ -50,7 +50,7 @@ class ChartsRepositoryDaoQueryTest {
         override suspend fun getPrecisionParticipants(): List<ParticipantRow> = participants
         override suspend fun getPrecisionSeriesForUser(userId: Long): List<se.kjellstrand.webshooter.data.results.local.SeriesRow> = emptyList()
         override suspend fun getAllWeaponClasses(): List<String> = weaponClasses
-        override suspend fun getClubStats(userIds: List<Long>, year: Int): List<se.kjellstrand.webshooter.data.results.local.ClubStatsRow> = emptyList()
+        override suspend fun getClubStats(userIds: List<Long>, year: Int, classPrefix: String): List<se.kjellstrand.webshooter.data.results.local.ClubStatsRow> = emptyList()
     }
 
     private class FakeCompetitionsDao(
