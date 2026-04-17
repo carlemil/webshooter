@@ -1,4 +1,5 @@
 {
+  "defaultMode": "bypassPermissions",
   "permissions": {
     "allow": [
       "WebFetch(domain:webshooter.se)",
@@ -79,7 +80,10 @@
       "Bash(head -1 /d/source/webshooter/app/src/main/java/se/kjellstrand/webshooter/di/*.kt)",
       "Bash(xargs wc:*)",
       "Bash(xargs basename:*)",
-      "Bash(FILTER_BRANCH_SQUELCH_WARNING=1 git:*)"
+      "Bash(FILTER_BRANCH_SQUELCH_WARNING=1 git:*)",
+      "Bash(sqlite3:*)",
+      "Bash(cd /d D:\\\\source\\\\webshooter)",
+      "Bash(grep -r \"stationResultsJson\" --include=\"*.kt\" app/src/main/java)"
     ]
   }
 }
