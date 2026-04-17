@@ -64,6 +64,24 @@ class UserLegendTest {
         )
     }
 
+    @Test
+    fun `UserLegend supports horizontal line shape at index 7`() {
+        val source = userLegendFile.readText()
+        assertTrue(
+            "drawScatterShape must handle shapeIndex 7 as a horizontal line",
+            Regex("""7\s*->\s*\{[\s\S]{0,400}drawLine""").containsMatchIn(source)
+        )
+    }
+
+    @Test
+    fun `UserLegend supports sloped line shape at index 8`() {
+        val source = userLegendFile.readText()
+        assertTrue(
+            "drawScatterShape must handle shapeIndex 8 as a sloped line",
+            Regex("""8\s*->\s*\{[\s\S]{0,400}drawLine""").containsMatchIn(source)
+        )
+    }
+
     // --- Guard tests (should PASS before and after fix) ---
 
     @Test

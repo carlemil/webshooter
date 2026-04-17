@@ -155,6 +155,8 @@
     <string name="charts_my_results">Mina resultat</string>
     <string name="charts_average_score">Medelpoäng per serie</string>
     <string name="charts_subtitle">Snittpoäng per tävling över tid</string>
+    <string name="charts_legend_average">Snitt</string>
+    <string name="charts_legend_trend">Trend</string>
 
     <!-- ### SERIES_POINTS ### -->
     <string name="series_points_title">Seriepoäng</string>
