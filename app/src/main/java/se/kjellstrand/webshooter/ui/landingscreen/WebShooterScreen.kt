@@ -57,16 +57,23 @@ fun WebShooterScreen(navController: NavController) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
-    val navigationItems = listOf(
+    val competitionsItems = listOf(
         NavigationItem(stringResource(R.string.web_shooter_competitions), Screen.CompetitionsList.route),
-        NavigationItem(stringResource(R.string.my_results), Screen.MyEntries.route),
+        NavigationItem(stringResource(R.string.my_results), Screen.MyEntries.route)
+    )
+    val statsItems = listOf(
         NavigationItem(stringResource(R.string.web_shooter_charts), Screen.Charts.route),
         NavigationItem(stringResource(R.string.web_shooter_series_points), Screen.SeriesPoints.route),
-        NavigationItem(stringResource(R.string.web_shooter_club_stats), Screen.ClubStats.route),
-        NavigationItem(stringResource(R.string.web_shooter_club), Screen.Club.route),
+        NavigationItem(stringResource(R.string.web_shooter_club_stats), Screen.ClubStats.route)
+    )
+    val clubItems = listOf(
+        NavigationItem(stringResource(R.string.web_shooter_club), Screen.Club.route)
+    )
+    val settingsItems = listOf(
         NavigationItem(stringResource(R.string.web_shooter_settings), Screen.Settings.route),
         NavigationItem(stringResource(R.string.web_shooter_licenses), Screen.Licenses.route)
     )
+    val navigationItems = competitionsItems + statsItems + clubItems + settingsItems
 
     val drawerNavController = rememberNavController()
     val navBackStackEntry by drawerNavController.currentBackStackEntryAsState()
@@ -88,26 +95,53 @@ fun WebShooterScreen(navController: NavController) {
                     modifier = Modifier.padding(16.dp)
                 )
                 HorizontalDivider()
-                navigationItems.forEach { item ->
+
+                val onItemClick: (String) -> Unit = { route ->
+                    drawerNavController.navigate(route) {
+                        popUpTo(Screen.CompetitionsList.route) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                    scope.launch { drawerState.close() }
+                }
+
+                @Composable
+                fun SectionHeader(text: String) {
+                    Text(
+                        text = text,
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(start = 16.dp, top = 12.dp, bottom = 4.dp)
+                    )
+                }
+
+                @Composable
+                fun MenuItem(item: NavigationItem) {
                     NavigationDrawerItem(
                         label = { Text(item.label) },
                         selected = item.route == selectedRoute,
-                        onClick = {
-                            drawerNavController.navigate(item.route) {
-                                popUpTo(Screen.CompetitionsList.route) { saveState = true }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
-                            scope.launch {
-                                drawerState.close()
-                            }
-                        },
+                        onClick = { onItemClick(item.route) },
                         shape = RectangleShape,
                         colors = NavigationDrawerItemDefaults.colors(
                             selectedContainerColor = MaterialTheme.colorScheme.surfaceVariant
                         )
                     )
                 }
+
+                SectionHeader(stringResource(R.string.menu_group_competitions))
+                competitionsItems.forEach { MenuItem(it) }
+
+                HorizontalDivider()
+                SectionHeader(stringResource(R.string.menu_group_stats))
+                statsItems.forEach { MenuItem(it) }
+
+                HorizontalDivider()
+                SectionHeader(stringResource(R.string.menu_group_club))
+                clubItems.forEach { MenuItem(it) }
+
+                HorizontalDivider()
+                SectionHeader(stringResource(R.string.menu_group_settings))
+                settingsItems.forEach { MenuItem(it) }
             }
         },
         drawerState = drawerState
