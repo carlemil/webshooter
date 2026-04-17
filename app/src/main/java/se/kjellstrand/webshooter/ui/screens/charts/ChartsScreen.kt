@@ -15,15 +15,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PersonAdd
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -55,6 +52,7 @@ import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.charts.ChartDataPoint
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import androidx.compose.ui.graphics.Color
+import se.kjellstrand.webshooter.ui.common.AddShooterButton
 import se.kjellstrand.webshooter.ui.common.CHART_COLORS
 import se.kjellstrand.webshooter.ui.common.CHART_SHAPE_RENDERERS
 import se.kjellstrand.webshooter.ui.common.ChartStateWrapper
@@ -253,19 +251,13 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ChartsViewModel) {
             }
         }
 
-        OutlinedButton(
+        AddShooterButton(
+            text = stringResource(R.string.charts_add_shooter),
             onClick = { viewModel.setShowSearchDialog(true) },
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.PersonAdd,
-                contentDescription = null,
-                modifier = Modifier.padding(end = 8.dp)
-            )
-            Text(stringResource(R.string.charts_add_shooter))
-        }
+        )
     }
 }
 

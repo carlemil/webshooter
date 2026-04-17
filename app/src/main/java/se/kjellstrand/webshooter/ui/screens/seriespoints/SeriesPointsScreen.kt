@@ -15,11 +15,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PersonAdd
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -42,6 +38,7 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.utils.MPPointF
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.seriespoints.CompetitionSeries
+import se.kjellstrand.webshooter.ui.common.AddShooterButton
 import se.kjellstrand.webshooter.ui.common.ChartStateWrapper
 import se.kjellstrand.webshooter.ui.common.ShooterPickerDialog
 import se.kjellstrand.webshooter.ui.common.applyBaseChartStyle
@@ -144,19 +141,13 @@ private fun SeriesPointsContent(
             )
         }
 
-        OutlinedButton(
+        AddShooterButton(
+            text = stringResource(R.string.series_points_change_shooter),
             onClick = { viewModel.setShowSearchDialog(true) },
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.PersonAdd,
-                contentDescription = null,
-                modifier = Modifier.padding(end = 8.dp)
-            )
-            Text(stringResource(R.string.series_points_change_shooter))
-        }
+        )
     }
 }
 
