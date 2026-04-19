@@ -44,7 +44,7 @@ class ClubStatsRepository @Inject constructor(
                                 averagePoints = row.averagePoints,
                                 competitionCount = row.competitionCount
                             )
-                        }
+                        }.sortedBy { it.fullname.lowercase() }
                         val availableYears = resultsDao.getClubStatsYears(userIds)
                             .mapNotNull { it.toIntOrNull() }
                         emit(Resource.Success(ClubStatsData(shooterStats, availableYears)))
