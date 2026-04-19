@@ -6,6 +6,7 @@ import se.kjellstrand.webshooter.ui.screens.charts.seriespoints.WeaponClassGroup
 data class ClubStatsUiState(
     val shooterStats: List<ShooterStats> = emptyList(),
     val year: Int = 0,
+    val availableYears: List<Int> = emptyList(),
     val selectedGroup: WeaponClassGroup? = WeaponClassGroup.C,
     val availableGroups: Set<WeaponClassGroup> = setOf(
         WeaponClassGroup.A,

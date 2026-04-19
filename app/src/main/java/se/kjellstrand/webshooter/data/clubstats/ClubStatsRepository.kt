@@ -7,7 +7,6 @@ import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
 import se.kjellstrand.webshooter.data.results.local.ResultsDao
 import se.kjellstrand.webshooter.ui.screens.charts.seriespoints.WeaponClassGroup
-import java.time.Year
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -16,7 +15,10 @@ class ClubStatsRepository @Inject constructor(
     private val clubRepository: ClubRepository,
     private val resultsDao: ResultsDao
 ) {
-    fun getClubStats(group: WeaponClassGroup? = null): Flow<Resource<ClubStatsData, UserError>> = flow {
+    fun getClubStats(
+        group: WeaponClassGroup? = null,
+        year: Int? = null
+    ): Flow<Resource<ClubStatsData, UserError>> = flow {
         emit(Resource.Loading(true))
 
         val classPrefix = when (group) {
@@ -30,8 +32,11 @@ class ClubStatsRepository @Inject constructor(
                 is Resource.Success -> {
                     try {
                         val userIds = clubResource.data.club.users.map { it.userId }
-                        val previousYear = Year.now().value - 1
-                        val rows = resultsDao.getClubStats(userIds, previousYear, classPrefix)
+                        val rows = if (year == null) {
+                            resultsDao.getClubStatsAllYears(userIds, classPrefix)
+                        } else {
+                            resultsDao.getClubStats(userIds, year, classPrefix)
+                        }
                         val shooterStats = rows.map { row ->
                             ShooterStats(
                                 userId = row.userId,
@@ -40,7 +45,9 @@ class ClubStatsRepository @Inject constructor(
                                 competitionCount = row.competitionCount
                             )
                         }
-                        emit(Resource.Success(ClubStatsData(shooterStats)))
+                        val availableYears = resultsDao.getClubStatsYears(userIds)
+                            .mapNotNull { it.toIntOrNull() }
+                        emit(Resource.Success(ClubStatsData(shooterStats, availableYears)))
                     } catch (e: Exception) {
                         emit(Resource.Error(UserError.UnknownError))
                         emittedError = true

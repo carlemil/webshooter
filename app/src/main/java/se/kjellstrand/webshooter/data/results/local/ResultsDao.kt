@@ -93,4 +93,28 @@ interface ResultsDao {
            GROUP BY r.userId, r.userFullname"""
     )
     suspend fun getClubStats(userIds: List<Long>, year: Int, classPrefix: String): List<ClubStatsRow>
+
+    @Query(
+        """SELECT r.userId AS userId,
+                  r.userFullname AS fullname,
+                  AVG(r.averagePoints) AS averagePoints,
+                  COUNT(DISTINCT r.competitionsId) AS competitionCount
+           FROM results r INNER JOIN competitions c ON c.id = r.competitionsId
+           WHERE r.userId IN (:userIds)
+             AND c.resultsType = 'PRECISION'
+             AND c.status = 'completed'
+             AND r.weaponClassName LIKE :classPrefix
+           GROUP BY r.userId, r.userFullname"""
+    )
+    suspend fun getClubStatsAllYears(userIds: List<Long>, classPrefix: String): List<ClubStatsRow>
+
+    @Query(
+        """SELECT DISTINCT substr(c.date, 1, 4) AS year
+           FROM results r INNER JOIN competitions c ON c.id = r.competitionsId
+           WHERE r.userId IN (:userIds)
+             AND c.resultsType = 'PRECISION'
+             AND c.status = 'completed'
+           ORDER BY year DESC"""
+    )
+    suspend fun getClubStatsYears(userIds: List<Long>): List<String>
 }

@@ -18,11 +18,13 @@ class ClubStatsViewModelImpl @Inject constructor(
     private val clubStatsRepository: ClubStatsRepository
 ) : ViewModel(), ClubStatsViewModel {
 
-    private val _uiState = MutableStateFlow(ClubStatsUiState(isLoading = true, year = Year.now().value - 1))
+    private val _uiState = MutableStateFlow(
+        ClubStatsUiState(isLoading = true, year = Year.now().value - 1)
+    )
     override val uiState: StateFlow<ClubStatsUiState> = _uiState.asStateFlow()
 
     init {
-        loadClubStats(_uiState.value.selectedGroup)
+        loadClubStats(_uiState.value.selectedGroup, _uiState.value.year)
     }
 
     override fun selectWeaponGroup(group: WeaponClassGroup?) {
@@ -32,16 +34,28 @@ class ClubStatsViewModelImpl @Inject constructor(
             isLoading = true,
             shooterStats = emptyList()
         )
-        loadClubStats(group)
+        loadClubStats(group, _uiState.value.year)
     }
 
-    private fun loadClubStats(selectedGroup: WeaponClassGroup?) {
+    override fun selectYear(year: Int) {
+        if (_uiState.value.year == year) return
+        _uiState.value = _uiState.value.copy(
+            year = year,
+            isLoading = true,
+            shooterStats = emptyList()
+        )
+        loadClubStats(_uiState.value.selectedGroup, year)
+    }
+
+    private fun loadClubStats(selectedGroup: WeaponClassGroup?, year: Int) {
+        val yearParam = if (year == 0) null else year
         viewModelScope.launch {
-            clubStatsRepository.getClubStats(selectedGroup).collect { resource ->
+            clubStatsRepository.getClubStats(selectedGroup, yearParam).collect { resource ->
                 when (resource) {
                     is Resource.Success -> {
                         _uiState.value = _uiState.value.copy(
                             shooterStats = resource.data.shooterStats,
+                            availableYears = resource.data.availableYears,
                             hasError = false
                         )
                     }

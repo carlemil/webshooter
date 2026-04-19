@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -41,19 +43,40 @@ fun ClubStatsScreen(viewModel: ClubStatsViewModel) {
     val uiState by viewModel.uiState.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {
-        if (uiState.year != 0) {
-            Text(
-                text = stringResource(R.string.web_shooter_club_stats) + " ${uiState.year}",
-                style = MaterialTheme.typography.titleMedium,
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
-            )
-            Text(
-                text = stringResource(R.string.club_stats_subtitle),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 4.dp)
-            )
+        Text(
+            text = stringResource(R.string.web_shooter_club_stats),
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
+        )
+        Text(
+            text = stringResource(R.string.club_stats_subtitle),
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 4.dp)
+        )
+
+        if (uiState.availableYears.isNotEmpty()) {
+            val tabYears: List<Int> = listOf(0) + uiState.availableYears
+            val selectedIndex = tabYears.indexOf(uiState.year).coerceAtLeast(0)
+            ScrollableTabRow(
+                selectedTabIndex = selectedIndex,
+                edgePadding = 0.dp
+            ) {
+                tabYears.forEach { year ->
+                    Tab(
+                        selected = year == uiState.year,
+                        onClick = { viewModel.selectYear(year) },
+                        text = {
+                            Text(
+                                if (year == 0) stringResource(R.string.club_stats_all_years)
+                                else year.toString()
+                            )
+                        }
+                    )
+                }
+            }
         }
+
         WeaponClassGroupFilter(
             availableGroups = uiState.availableGroups,
             selectedGroup = uiState.selectedGroup,
