@@ -37,12 +37,16 @@ data class ChartsUiState(
         }
 
     val filteredComparedShooters: Map<Long, ShooterChartInfo>
-        get() = comparedShooters.mapValues { (_, info) ->
-            info.copy(chartData = info.chartData.filter {
-                it.resultsType == selectedResultsType &&
-                    (selectedGroup?.matches(it.weaponClass) ?: true)
-            })
-        }
+        get() = comparedShooters
+            .mapValues { (_, info) ->
+                info.copy(chartData = info.chartData.filter {
+                    it.resultsType == selectedResultsType &&
+                        (selectedGroup?.matches(it.weaponClass) ?: true)
+                })
+            }
+            .toList()
+            .sortedBy { (_, info) -> info.name.lowercase() }
+            .toMap()
 
     val relevantUserIds: Set<Long>
         get() = allParticipants.map { it.userId }.toSet()
