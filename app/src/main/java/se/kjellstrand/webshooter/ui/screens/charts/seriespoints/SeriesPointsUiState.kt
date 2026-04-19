@@ -34,8 +34,11 @@ data class SeriesPointsUiState(
 
     val filteredCompetitions: List<CompetitionSeries>
         get() {
-            val byYear = if (selectedYear == 0) competitions
-            else competitions.filter { it.date.startsWith("$selectedYear-") }
+            val nonZero = competitions.filter { comp ->
+                comp.seriesPoints.any { it > 0 }
+            }
+            val byYear = if (selectedYear == 0) nonZero
+            else nonZero.filter { it.date.startsWith("$selectedYear-") }
             return selectedGroup?.let { group ->
                 byYear.filter { group.matches(it.weaponClass) }
             } ?: byYear

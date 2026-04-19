@@ -32,8 +32,10 @@ data class ChartsUiState(
     val filteredChartData: List<ChartDataPoint>
         get() {
             val data = chartData[selectedResultsType] ?: return emptyList()
-            val group = selectedGroup ?: return data
-            return data.filter { group.matches(it.weaponClass) }
+            val group = selectedGroup
+            return data.filter {
+                it.averageSerieScore > 0.0 && (group?.matches(it.weaponClass) ?: true)
+            }
         }
 
     val filteredComparedShooters: Map<Long, ShooterChartInfo>
@@ -41,6 +43,7 @@ data class ChartsUiState(
             .mapValues { (_, info) ->
                 info.copy(chartData = info.chartData.filter {
                     it.resultsType == selectedResultsType &&
+                        it.averageSerieScore > 0.0 &&
                         (selectedGroup?.matches(it.weaponClass) ?: true)
                 })
             }
