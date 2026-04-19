@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
@@ -41,6 +43,7 @@ import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import androidx.compose.ui.graphics.Color
 import se.kjellstrand.webshooter.ui.common.AddShooterButton
 import se.kjellstrand.webshooter.ui.common.CHART_COLORS
+import se.kjellstrand.webshooter.ui.common.CHART_MIN_HEIGHT_FRACTION
 import se.kjellstrand.webshooter.ui.common.CHART_SHAPE_RENDERERS
 import se.kjellstrand.webshooter.ui.common.ChartStateWrapper
 import se.kjellstrand.webshooter.ui.common.ShooterPickerDialog
@@ -128,6 +131,7 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
         val hasAnyData = chartData.isNotEmpty() ||
                 comparedShooters.values.any { it.chartData.isNotEmpty() }
 
+        val screenHeight = LocalConfiguration.current.screenHeightDp.dp
         // Render the chart frame as soon as metadata (tabs) exists, even if no
         // datapoints have streamed in yet — they pop in progressively.
         if (uiState.availableResultsTypes.isNotEmpty()) {
@@ -138,6 +142,7 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
                 myTrend = uiState.myTrend,
                 modifier = Modifier
                     .weight(1f)
+                    .heightIn(min = screenHeight * CHART_MIN_HEIGHT_FRACTION)
                     .fillMaxWidth()
                     .padding(8.dp)
             )
@@ -188,6 +193,7 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
                     items = legendItems,
                     modifier = Modifier
                         .fillMaxWidth()
+                        .heightIn(max = screenHeight * (1f - CHART_MIN_HEIGHT_FRACTION))
                         .padding(horizontal = 16.dp, vertical = 8.dp)
                 )
             }
@@ -246,6 +252,7 @@ fun ChartScatterChart(
 ) {
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface.toArgb()
     val myResultsLabel = stringResource(R.string.charts_my_results)
+    val scatterShapeSizePx = with(androidx.compose.ui.platform.LocalDensity.current) { 24.dp.toPx() }
 
     AndroidView(
         modifier = modifier,
@@ -296,7 +303,7 @@ fun ChartScatterChart(
             chart.tag = signature
 
             val dataSets = mutableListOf<ScatterDataSet>()
-            val scatterShapeSizeDp = 24.dp.value
+            val scatterShapeSizeDp = scatterShapeSizePx
             val labelMap = mutableMapOf<Int, String>()
             var tagCounter = 0
 
@@ -304,7 +311,7 @@ fun ChartScatterChart(
             if (myData.isNotEmpty()) {
                 val entries = myData.sortedBy { it.date }.map { dp ->
                     val tag = tagCounter++
-                    labelMap[tag] = "$myResultsLabel\n${dp.date}: ${dp.averageSerieScore} p"
+                    labelMap[tag] = "$myResultsLabel\n${dp.date}: ${"%.1f".format(dp.averageSerieScore).removeSuffix(".0").removeSuffix(",0")} p"
                     Entry(dateIndexMap[dp.date] ?: 0f, dp.averageSerieScore.toFloat()).apply {
                         data = tag
                     }
@@ -325,7 +332,7 @@ fun ChartScatterChart(
                     val shapeIndex = (index + 1) % CHART_SHAPE_RENDERERS.size
                     val entries = info.chartData.sortedBy { it.date }.map { dp ->
                         val tag = tagCounter++
-                        labelMap[tag] = "${info.name}\n${dp.date}: ${dp.averageSerieScore} p"
+                        labelMap[tag] = "${info.name}\n${dp.date}: ${"%.1f".format(dp.averageSerieScore).removeSuffix(".0").removeSuffix(",0")} p"
                         Entry(dateIndexMap[dp.date] ?: 0f, dp.averageSerieScore.toFloat()).apply {
                             data = tag
                         }

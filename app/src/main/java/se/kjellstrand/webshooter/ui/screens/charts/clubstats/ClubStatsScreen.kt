@@ -6,7 +6,9 @@ import android.widget.TextView
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
@@ -31,6 +33,7 @@ import com.github.mikephil.charting.utils.MPPointF
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.clubstats.ShooterStats
 import se.kjellstrand.webshooter.ui.common.CHART_COLORS
+import se.kjellstrand.webshooter.ui.common.CHART_MIN_HEIGHT_FRACTION
 import se.kjellstrand.webshooter.ui.common.CHART_SHAPE_RENDERERS
 import se.kjellstrand.webshooter.ui.common.ChartStateWrapper
 import se.kjellstrand.webshooter.ui.common.UserLegend
@@ -83,6 +86,7 @@ fun ClubStatsScreen(viewModel: ClubStatsViewModel) {
             onSelectGroup = viewModel::selectWeaponGroup,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
+        val screenHeight = LocalConfiguration.current.screenHeightDp.dp
         ChartStateWrapper(
             isLoading = uiState.isLoading && uiState.shooterStats.isEmpty(),
             hasError = uiState.hasError,
@@ -92,6 +96,7 @@ fun ClubStatsScreen(viewModel: ClubStatsViewModel) {
                 shooterStats = uiState.shooterStats,
                 modifier = Modifier
                     .weight(1f)
+                    .heightIn(min = screenHeight * CHART_MIN_HEIGHT_FRACTION)
                     .fillMaxWidth()
                     .padding(8.dp)
             )
@@ -106,6 +111,7 @@ fun ClubStatsScreen(viewModel: ClubStatsViewModel) {
                 items = legendItems,
                 modifier = Modifier
                     .fillMaxWidth()
+                    .heightIn(max = screenHeight * (1f - CHART_MIN_HEIGHT_FRACTION))
                     .padding(horizontal = 16.dp, vertical = 8.dp)
             )
         }
@@ -143,6 +149,7 @@ fun ClubStatsScatterChart(
     modifier: Modifier = Modifier
 ) {
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface.toArgb()
+    val scatterShapeSizePx = with(androidx.compose.ui.platform.LocalDensity.current) { 24.dp.toPx() }
 
     AndroidView(
         modifier = modifier,
@@ -162,7 +169,7 @@ fun ClubStatsScatterChart(
             }
             chart.tag = signature
 
-            val scatterShapeSizeDp = 24.dp.value
+            val scatterShapeSizeDp = scatterShapeSizePx
             val dataSets = shooterStats.mapIndexed { index, stats ->
                 val entry = Entry(
                     stats.competitionCount.toFloat(),
