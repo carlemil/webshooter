@@ -43,7 +43,7 @@ fun UserLegend(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(4.dp)
             ) {
-                Canvas(modifier = Modifier.size(16.dp)) {
+                Canvas(modifier = Modifier.size(24.dp)) {
                     drawScatterShape(item.shapeIndex, item.color)
                 }
                 Text(
@@ -58,7 +58,7 @@ fun UserLegend(
 private fun DrawScope.drawScatterShape(shapeIndex: Int, color: Color) {
     val cx = size.width / 2f
     val cy = size.height / 2f
-    val r = size.minDimension / 2f * 0.8f
+    val r = size.minDimension / 2f
     val strokeWidth = 2.dp.toPx()
 
     when (shapeIndex) {
@@ -86,8 +86,9 @@ private fun DrawScope.drawScatterShape(shapeIndex: Int, color: Color) {
             drawLine(color, Offset(cx - r, cy), Offset(cx + r, cy), strokeWidth)
         }
         4 -> { // X
-            drawLine(color, Offset(cx - r, cy - r), Offset(cx + r, cy + r), strokeWidth)
-            drawLine(color, Offset(cx + r, cy - r), Offset(cx - r, cy + r), strokeWidth)
+            val xr = r * 0.7f
+            drawLine(color, Offset(cx - xr, cy - xr), Offset(cx + xr, cy + xr), strokeWidth)
+            drawLine(color, Offset(cx + xr, cy - xr), Offset(cx - xr, cy + xr), strokeWidth)
         }
         5 -> { // CHEVRON_DOWN
             val path = Path().apply {
