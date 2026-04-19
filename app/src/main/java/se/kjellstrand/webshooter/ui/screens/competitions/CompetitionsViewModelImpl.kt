@@ -78,7 +78,7 @@ class CompetitionsViewModelImpl @Inject constructor(
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy(isLoading = true, hasError = false)
             try {
-                competitionsRepository.syncAll(force = true)
+                competitionsRepository.syncAll()
                 _uiState.value = _uiState.value.copy(isLoading = false)
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(

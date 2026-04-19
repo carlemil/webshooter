@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
+import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
@@ -11,7 +12,6 @@ import se.kjellstrand.webshooter.data.common.Club
 import se.kjellstrand.webshooter.data.common.CompetitionType
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionEntity
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionsDao
-import se.kjellstrand.webshooter.data.competitions.remote.CompetitionByIdResponse
 import se.kjellstrand.webshooter.data.competitions.remote.Competitions
 import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsRemoteDataSource
 import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsResponse
@@ -46,23 +46,21 @@ class CompetitionsRepositorySyncAllTest {
         club = Club(id = 1, name = "Club")
     )
 
-    private fun response(page: Int, lastPage: Int, total: Long, items: List<Datum>): CompetitionsResponse =
+    private fun response(page: Int, lastPage: Int, items: List<Datum>): CompetitionsResponse =
         CompetitionsResponse(
             competitions = Competitions(
                 currentPage = page.toLong(),
                 data = items,
                 lastPage = lastPage.toLong(),
-                total = total,
+                total = items.size.toLong(),
                 status = "all",
                 competitionTypes = emptyList()
             )
         )
 
     private class FakeRemoteDataSource : CompetitionsRemoteDataSource {
-        val pageResponses = mutableMapOf<Pair<Int, String>, CompetitionsResponse>()
-        val byIdResponses = mutableMapOf<Long, Any>()
+        val pageResponses = mutableMapOf<Int, CompetitionsResponse>()
         val getCompetitionsCalls = mutableListOf<Triple<Int, Int, String>>()
-        val getCompetitionByIdCalls = mutableListOf<Long>()
 
         override suspend fun getCompetitions(
             page: Int,
@@ -72,44 +70,24 @@ class CompetitionsRepositorySyncAllTest {
             userSignup: Int
         ): CompetitionsResponse {
             getCompetitionsCalls.add(Triple(page, perPage, status))
-            return pageResponses[page to status]
-                ?: error("FakeRemoteDataSource has no response for page=$page status=$status")
-        }
-
-        override suspend fun getCompetitionById(id: Long): CompetitionByIdResponse {
-            getCompetitionByIdCalls.add(id)
-            val r = byIdResponses[id] ?: error("no byId response for $id")
-            if (r is Throwable) throw r
-            return r as CompetitionByIdResponse
+            return pageResponses[page]
+                ?: error("FakeRemoteDataSource has no response for page=$page")
         }
     }
 
     private class FakeDao : CompetitionsDao {
-        var nonCompletedIdsResult: List<Long> = emptyList()
-        var completedCount: Int = 0
         val insertedBatches = mutableListOf<List<CompetitionEntity>>()
-        val deletedIds = mutableListOf<Long>()
 
-        override suspend fun getAll(): List<CompetitionEntity> = emptyList()
         override fun observeAll(): Flow<List<CompetitionEntity>> = flowOf(emptyList())
         override suspend fun getCompletedCompetitions(): List<CompetitionEntity> = emptyList()
-        override suspend fun getCompletedCount(): Int = completedCount
-        override suspend fun getMaxCompletedDate(): String? = null
-        override suspend fun getNonCompletedIds(): List<Long> = nonCompletedIdsResult
         override suspend fun insertAll(competitions: List<CompetitionEntity>) {
             insertedBatches.add(competitions)
         }
-        override suspend fun deleteAll() {}
-        override suspend fun deleteById(id: Long) { deletedIds.add(id) }
     }
-
-    private fun emptyAllPage() = response(1, 1, 0, emptyList())
-    private fun emptyCompletedPage() = response(1, 1, 0, emptyList())
 
     private fun buildRepo(
         remote: FakeRemoteDataSource = FakeRemoteDataSource().apply {
-            pageResponses[1 to "all"] = emptyAllPage()
-            pageResponses[1 to "completed"] = emptyCompletedPage()
+            pageResponses[1] = response(1, 1, emptyList())
         },
         dao: FakeDao = FakeDao()
     ): Triple<CompetitionsRepository, FakeDao, FakeRemoteDataSource> {
@@ -117,10 +95,13 @@ class CompetitionsRepositorySyncAllTest {
         return Triple(repo, dao, remote)
     }
 
-    // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
+    private fun insertedIds(dao: FakeDao): Set<Long> =
+        dao.insertedBatches.flatten().map { it.id }.toSet()
+
+    // --- Fixed behavior ---
 
     @Test
-    fun `syncAll method exists on repository`() {
+    fun `syncAll exists on repository`() {
         val method = CompetitionsRepository::class.java.methods.find { it.name == "syncAll" }
         assertNotNull("CompetitionsRepository should have syncAll", method)
     }
@@ -136,74 +117,56 @@ class CompetitionsRepositorySyncAllTest {
     }
 
     @Test
-    fun `syncAll on first startup runs syncCompleted`(): Unit = runBlocking {
+    fun `syncAll calls getCompetitions with status=all`(): Unit = runBlocking {
         val remote = FakeRemoteDataSource().apply {
-            pageResponses[1 to "all"] = emptyAllPage()
-            pageResponses[1 to "completed"] = response(1, 1, 0, listOf(datum(1, "completed")))
-        }
-        val dao = FakeDao().apply { completedCount = 0 } // first startup: no completed locally
-        val (repo, _, _) = buildRepo(remote = remote, dao = dao)
-
-        repo.syncAll()
-
-        val statusesCalled = remote.getCompetitionsCalls.map { it.third }
-        assertTrue(
-            "syncAll should call getCompetitions with status=completed when DB is empty",
-            statusesCalled.contains("completed")
-        )
-    }
-
-    @Test
-    fun `syncAll always runs syncNonCompleted`(): Unit = runBlocking {
-        val remote = FakeRemoteDataSource().apply {
-            pageResponses[1 to "all"] = emptyAllPage()
-            pageResponses[1 to "completed"] = emptyCompletedPage()
+            pageResponses[1] = response(1, 1, emptyList())
         }
         val (repo, _, _) = buildRepo(remote = remote)
 
         repo.syncAll()
 
-        val statusesCalled = remote.getCompetitionsCalls.map { it.third }
-        assertTrue(
-            "syncAll should always call getCompetitions with status=all (syncNonCompleted)",
-            statusesCalled.contains("all")
+        assertTrue("Should call getCompetitions at least once", remote.getCompetitionsCalls.isNotEmpty())
+        assertEquals(
+            "All getCompetitions calls should use status=all",
+            listOf("all"),
+            remote.getCompetitionsCalls.map { it.third }.distinct()
         )
     }
 
     @Test
-    fun `syncCompleted no longer short-circuits when apiTotal equals localCount`(): Unit = runBlocking {
-        // Old behavior: if apiTotal <= localCount, return early without re-fetching.
-        // New behavior: weekly cadence is the only skip condition; the count check is removed.
+    fun `syncAll pages through all responses until lastPage`(): Unit = runBlocking {
         val remote = FakeRemoteDataSource().apply {
-            // Page 1 reports total = 5, matching localCount.
-            // Old code would call getCompetitions(1, 1, "completed", ...) once and return.
-            // New code should still call it again with pageSize=100 to fetch the actual page.
-            pageResponses[1 to "completed"] = response(1, 1, 5, listOf(datum(1, "completed")))
+            pageResponses[1] = response(1, 3, listOf(datum(1, "open")))
+            pageResponses[2] = response(2, 3, listOf(datum(2, "completed")))
+            pageResponses[3] = response(3, 3, listOf(datum(3, "upcoming")))
         }
-        val dao = FakeDao().apply { completedCount = 5 }
+        val dao = FakeDao()
         val (repo, _, _) = buildRepo(remote = remote, dao = dao)
 
-        repo.syncCompleted()
+        repo.syncAll()
 
-        // The new implementation should fetch the actual page (pageSize=100), not just probe with size=1.
-        val completedCalls = remote.getCompetitionsCalls.filter { it.third == "completed" }
-        assertTrue(
-            "syncCompleted should fetch the full page, not just probe — calls were $completedCalls",
-            completedCalls.any { it.second == 100 }
+        val pages = remote.getCompetitionsCalls.map { it.first }.toSet()
+        assertEquals("Should fetch pages 1..3", setOf(1, 2, 3), pages)
+        assertEquals(
+            "All three competitions should be upserted",
+            setOf(1L, 2L, 3L),
+            insertedIds(dao)
         )
     }
 
-    // --- Guard tests (should PASS before and after fix) ---
-
     @Test
-    fun `syncCompleted method still exists`() {
-        val method = CompetitionsRepository::class.java.methods.find { it.name == "syncCompleted" }
-        assertNotNull("syncCompleted should still exist", method)
-    }
+    fun `syncAll returns cleanly when the remote call throws`(): Unit = runBlocking {
+        val remote = object : CompetitionsRemoteDataSource {
+            override suspend fun getCompetitions(
+                page: Int, perPage: Int, status: String, type: Int, userSignup: Int
+            ): CompetitionsResponse = error("boom")
+        }
+        val dao = FakeDao()
+        val repo = CompetitionsRepository(remote, dao, Gson())
 
-    @Test
-    fun `syncNonCompleted method still exists`() {
-        val method = CompetitionsRepository::class.java.methods.find { it.name == "syncNonCompleted" }
-        assertNotNull("syncNonCompleted should still exist", method)
+        // Should not throw — syncAll swallows and logs.
+        repo.syncAll()
+
+        assertTrue("No rows should be inserted when the network fails", dao.insertedBatches.isEmpty())
     }
 }
