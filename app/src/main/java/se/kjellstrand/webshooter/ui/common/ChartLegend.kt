@@ -14,12 +14,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
+import com.github.mikephil.charting.data.Entry
+import com.github.mikephil.charting.data.ScatterDataSet
+import com.github.mikephil.charting.utils.ViewPortHandler
+import android.graphics.Paint as AndroidPaint
 
 data class UserLegendItem(
     val label: String,
@@ -29,7 +32,7 @@ data class UserLegendItem(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun UserLegend(
+fun ChartLegend(
     items: List<UserLegendItem>,
     modifier: Modifier = Modifier,
 ) {
@@ -55,57 +58,34 @@ fun UserLegend(
     }
 }
 
+private val legendViewPortHandler = ViewPortHandler()
+
 private fun DrawScope.drawScatterShape(shapeIndex: Int, color: Color) {
     val cx = size.width / 2f
     val cy = size.height / 2f
     val r = size.minDimension / 2f
     val strokeWidth = 2.dp.toPx()
 
+    if (shapeIndex in CHART_SHAPE_RENDERERS.indices) {
+        val argb = color.toArgb()
+        val paint = AndroidPaint().apply {
+            this.color = argb
+            isAntiAlias = true
+        }
+        val dataSet = ScatterDataSet(mutableListOf<Entry>(), "").apply {
+            scatterShapeSize = r * 2f
+        }
+        CHART_SHAPE_RENDERERS[shapeIndex].renderShape(
+            drawContext.canvas.nativeCanvas,
+            dataSet,
+            legendViewPortHandler,
+            cx, cy,
+            paint
+        )
+        return
+    }
+
     when (shapeIndex) {
-        0 -> { // CIRCLE
-            drawCircle(color = color, radius = r, center = Offset(cx, cy))
-        }
-        1 -> { // SQUARE
-            drawRect(
-                color = color,
-                topLeft = Offset(cx - r, cy - r),
-                size = Size(r * 2, r * 2)
-            )
-        }
-        2 -> { // TRIANGLE
-            val path = Path().apply {
-                moveTo(cx, cy - r)
-                lineTo(cx + r, cy + r)
-                lineTo(cx - r, cy + r)
-                close()
-            }
-            drawPath(path, color)
-        }
-        3 -> { // CROSS (+)
-            drawLine(color, Offset(cx, cy - r), Offset(cx, cy + r), strokeWidth)
-            drawLine(color, Offset(cx - r, cy), Offset(cx + r, cy), strokeWidth)
-        }
-        4 -> { // X
-            val xr = r * 0.7f
-            drawLine(color, Offset(cx - xr, cy - xr), Offset(cx + xr, cy + xr), strokeWidth)
-            drawLine(color, Offset(cx + xr, cy - xr), Offset(cx - xr, cy + xr), strokeWidth)
-        }
-        5 -> { // CHEVRON_DOWN
-            val path = Path().apply {
-                moveTo(cx - r, cy - r * 0.5f)
-                lineTo(cx, cy + r * 0.5f)
-                lineTo(cx + r, cy - r * 0.5f)
-            }
-            drawPath(path, color, style = Stroke(strokeWidth))
-        }
-        6 -> { // CHEVRON_UP
-            val path = Path().apply {
-                moveTo(cx - r, cy + r * 0.5f)
-                lineTo(cx, cy - r * 0.5f)
-                lineTo(cx + r, cy + r * 0.5f)
-            }
-            drawPath(path, color, style = Stroke(strokeWidth))
-        }
         7 -> { // HORIZONTAL LINE (for average)
             drawLine(color, Offset(cx - r, cy), Offset(cx + r, cy), strokeWidth)
         }

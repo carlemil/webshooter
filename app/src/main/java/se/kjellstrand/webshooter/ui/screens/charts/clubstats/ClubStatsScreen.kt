@@ -36,7 +36,7 @@ import se.kjellstrand.webshooter.ui.common.CHART_COLORS
 import se.kjellstrand.webshooter.ui.common.CHART_MIN_HEIGHT_FRACTION
 import se.kjellstrand.webshooter.ui.common.CHART_SHAPE_RENDERERS
 import se.kjellstrand.webshooter.ui.common.ChartStateWrapper
-import se.kjellstrand.webshooter.ui.common.UserLegend
+import se.kjellstrand.webshooter.ui.common.ChartLegend
 import se.kjellstrand.webshooter.ui.common.UserLegendItem
 import se.kjellstrand.webshooter.ui.common.WeaponClassGroupFilter
 import se.kjellstrand.webshooter.ui.common.applyBaseChartStyle
@@ -107,7 +107,7 @@ fun ClubStatsScreen(viewModel: ClubStatsViewModel) {
                     shapeIndex = index % CHART_SHAPE_RENDERERS.size
                 )
             }
-            UserLegend(
+            ChartLegend(
                 items = legendItems,
                 modifier = Modifier
                     .fillMaxWidth()
