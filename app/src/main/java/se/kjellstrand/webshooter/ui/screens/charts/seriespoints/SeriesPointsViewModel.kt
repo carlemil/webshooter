@@ -6,6 +6,7 @@ interface SeriesPointsViewModel {
     val uiState: StateFlow<SeriesPointsUiState>
     fun selectShooter(userId: Long)
     fun selectWeaponGroup(group: WeaponClassGroup)
+    fun selectYear(year: Int)
     fun setSearchQuery(query: String)
     fun setShowSearchDialog(show: Boolean)
 }

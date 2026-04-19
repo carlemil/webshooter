@@ -3,20 +3,18 @@ package se.kjellstrand.webshooter.ui.screens.charts.seriespoints
 import android.annotation.SuppressLint
 import android.content.Context
 import android.widget.TextView
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -25,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -41,6 +38,7 @@ import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.seriespoints.CompetitionSeries
 import se.kjellstrand.webshooter.ui.common.AddShooterButton
 import se.kjellstrand.webshooter.ui.common.CHART_COLORS
+import se.kjellstrand.webshooter.ui.common.CHART_MIN_HEIGHT_FRACTION
 import se.kjellstrand.webshooter.ui.common.ChartStateWrapper
 import se.kjellstrand.webshooter.ui.common.ShooterPickerDialog
 import se.kjellstrand.webshooter.ui.common.UserLegend
@@ -93,7 +91,7 @@ fun SeriesPointsScreen(viewModel: SeriesPointsViewModel) {
             onRemoveShooter = {},
             onDismiss = { viewModel.setShowSearchDialog(false) },
             showSelectedSection = false,
-            relevantUserIds = uiState.precisionClubMembers.map { it.userId }.toSet()
+            relevantUserIds = null
         )
     }
 }
@@ -112,6 +110,28 @@ private fun SeriesPointsContent(
                 .padding(top = 12.dp)
         )
 
+        if (uiState.availableYears.isNotEmpty()) {
+            val tabYears: List<Int> = listOf(0) + uiState.availableYears
+            val selectedIndex = tabYears.indexOf(uiState.selectedYear).coerceAtLeast(0)
+            ScrollableTabRow(
+                selectedTabIndex = selectedIndex,
+                edgePadding = 0.dp
+            ) {
+                tabYears.forEach { year ->
+                    Tab(
+                        selected = year == uiState.selectedYear,
+                        onClick = { viewModel.selectYear(year) },
+                        text = {
+                            Text(
+                                if (year == 0) stringResource(R.string.club_stats_all_years)
+                                else year.toString()
+                            )
+                        }
+                    )
+                }
+            }
+        }
+
         WeaponClassGroupFilter(
             availableGroups = uiState.availableGroups,
             selectedGroup = uiState.selectedGroup,
@@ -120,6 +140,7 @@ private fun SeriesPointsContent(
         )
 
         val competitions = uiState.filteredCompetitions
+        val screenHeight = LocalConfiguration.current.screenHeightDp.dp
 
         if (competitions.isEmpty()) {
             Box(
@@ -139,12 +160,12 @@ private fun SeriesPointsContent(
                 seriesAverage = uiState.seriesAverage,
                 seriesTrend = uiState.seriesTrend,
                 modifier = Modifier
-                    .weight(1f)
+                    .height(screenHeight * CHART_MIN_HEIGHT_FRACTION)
                     .fillMaxWidth()
                     .padding(8.dp)
             )
 
-            val overlayLegendItems = buildList {
+            val legendItems = buildList {
                 if (uiState.seriesAverage != null) {
                     add(
                         UserLegendItem(
@@ -163,24 +184,27 @@ private fun SeriesPointsContent(
                         )
                     )
                 }
+                val ordered = competitions.asReversed()
+                val total = ordered.size
+                ordered.forEachIndexed { indexFromNewest, comp ->
+                    add(
+                        UserLegendItem(
+                            label = "${comp.date} ${comp.competitionName}",
+                            color = Color(colorForAge(indexFromNewest, total)),
+                            shapeIndex = 7
+                        )
+                    )
+                }
             }
-            if (overlayLegendItems.isNotEmpty()) {
+            if (legendItems.isNotEmpty()) {
                 UserLegend(
-                    items = overlayLegendItems,
+                    items = legendItems,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp)
+                        .weight(1f)
+                        .padding(horizontal = 16.dp, vertical = 8.dp)
                 )
             }
-
-            val screenHeight = LocalConfiguration.current.screenHeightDp.dp
-            CompetitionsLegend(
-                competitions = competitions,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(max = screenHeight / 3)
-                    .padding(horizontal = 16.dp)
-            )
         }
 
         AddShooterButton(
@@ -190,39 +214,6 @@ private fun SeriesPointsContent(
                 .align(Alignment.CenterHorizontally)
                 .padding(horizontal = 16.dp, vertical = 8.dp)
         )
-    }
-}
-
-@Composable
-private fun CompetitionsLegend(
-    competitions: List<CompetitionSeries>,
-    modifier: Modifier = Modifier
-) {
-    // Competitions are sorted oldest→newest; the legend shows newest first.
-    val ordered = competitions.asReversed()
-    val total = ordered.size
-    LazyColumn(modifier = modifier) {
-        items(ordered) { comp ->
-            val indexFromNewest = ordered.indexOf(comp)
-            val swatchColor = Color(colorForAge(indexFromNewest, total))
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(14.dp)
-                        .background(swatchColor, RoundedCornerShape(2.dp))
-                )
-                Text(
-                    text = "${comp.date} ${comp.competitionName}",
-                    style = MaterialTheme.typography.bodySmall,
-                    modifier = Modifier.padding(start = 8.dp)
-                )
-            }
-        }
     }
 }
 
@@ -301,9 +292,7 @@ private fun SeriesPointsChart(
                 val entries = comp.seriesPoints.mapIndexed { i, points ->
                     Entry((i + 1).toFloat(), points.toFloat())
                 }
-                val perEntryLabels = comp.seriesPoints.mapIndexed { i, points ->
-                    "${comp.date} ${comp.competitionName}\nSerie ${i + 1}: $points p"
-                }
+                val perEntryLabels = comp.seriesPoints.map { points -> "$points p" }
                 val isLatest = indexFromNewest == 0
                 val lineColor = colorForAge(indexFromNewest, total)
                 val label = "${comp.date} ${comp.competitionName}"
