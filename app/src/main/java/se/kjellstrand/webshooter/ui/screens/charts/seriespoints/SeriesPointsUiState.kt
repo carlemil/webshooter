@@ -18,6 +18,7 @@ data class SeriesPointsUiState(
     val competitions: List<CompetitionSeries> = emptyList(),
     val selectedGroup: WeaponClassGroup? = WeaponClassGroup.C,
     val availableGroups: Set<WeaponClassGroup> = emptySet(),
+    val selectedYear: Int = 0,
     val isLoading: Boolean = false,
     val hasError: Boolean = false,
     val clubMembers: List<ClubMember> = emptyList(),
@@ -25,10 +26,20 @@ data class SeriesPointsUiState(
     val searchQuery: String = "",
     val showSearchDialog: Boolean = false
 ) {
+    val availableYears: List<Int>
+        get() = competitions
+            .mapNotNull { it.date.take(4).toIntOrNull() }
+            .distinct()
+            .sortedDescending()
+
     val filteredCompetitions: List<CompetitionSeries>
-        get() = selectedGroup?.let { group ->
-            competitions.filter { group.matches(it.weaponClass) }
-        } ?: competitions
+        get() {
+            val byYear = if (selectedYear == 0) competitions
+            else competitions.filter { it.date.startsWith("$selectedYear-") }
+            return selectedGroup?.let { group ->
+                byYear.filter { group.matches(it.weaponClass) }
+            } ?: byYear
+        }
 
     val precisionClubMembers: List<ClubMember>
         get() {

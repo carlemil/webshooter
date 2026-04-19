@@ -120,6 +120,7 @@ class SeriesPointsViewModelImpl @Inject constructor(
             competitions = emptyList(),
             availableGroups = emptySet(),
             selectedGroup = WeaponClassGroup.C,
+            selectedYear = 0,
             isLoading = true
         )
         loadSeriesData(userId)
@@ -127,6 +128,11 @@ class SeriesPointsViewModelImpl @Inject constructor(
 
     override fun selectWeaponGroup(group: WeaponClassGroup) {
         _uiState.value = _uiState.value.copy(selectedGroup = group)
+    }
+
+    override fun selectYear(year: Int) {
+        if (_uiState.value.selectedYear == year) return
+        _uiState.value = _uiState.value.copy(selectedYear = year)
     }
 
     override fun setSearchQuery(query: String) {
