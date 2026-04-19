@@ -22,8 +22,8 @@ val CHART_COLORS = listOf(
     AndroidColor.rgb(255, 235, 59)   // Yellow
 )
 
-private val STROKE_WIDTH = 6.dp.value
-private val SHAPE_SIZE_MOD = 2.6.dp.value
+private val STROKE_WIDTH = 8.dp.value
+private val SHAPE_SIZE_MOD = 3.dp.value
 
 private class CircleRenderer : IShapeRenderer {
     override fun renderShape(
@@ -85,7 +85,7 @@ private class XRenderer : IShapeRenderer {
         c: Canvas, dataSet: IScatterDataSet, viewPortHandler: ViewPortHandler,
         posX: Float, posY: Float, renderPaint: Paint
     ) {
-        val shapeSize = dataSet.scatterShapeSize / SHAPE_SIZE_MOD * 0.7f
+        val shapeSize = dataSet.scatterShapeSize / SHAPE_SIZE_MOD * 0.8f
         renderPaint.style = Paint.Style.STROKE
         renderPaint.strokeWidth = STROKE_WIDTH
         c.drawLine(
