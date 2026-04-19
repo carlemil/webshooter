@@ -1,26 +1,28 @@
 package se.kjellstrand.webshooter.ui.common
 
+import android.content.res.Resources
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
-import androidx.compose.ui.unit.dp
 import com.github.mikephil.charting.interfaces.datasets.IScatterDataSet
 import com.github.mikephil.charting.renderer.scatter.IShapeRenderer
 import com.github.mikephil.charting.utils.ViewPortHandler
 import android.graphics.Color as AndroidColor
+
+const val CHART_MIN_HEIGHT_FRACTION = 0.5f
 
 val CHART_COLORS = listOf(
     AndroidColor.rgb(76, 175, 80),   // Green
     AndroidColor.rgb(33, 150, 243),  // Blue
     AndroidColor.rgb(255, 152, 0),   // Orange
     AndroidColor.rgb(156, 39, 176),  // Purple
-    AndroidColor.rgb(121, 85, 72),   // Brown
+    AndroidColor.rgb(244, 67, 54),   // Red (Material Red 500)
+    AndroidColor.rgb(233, 30, 199),  // Magenta/Fuchsia (replacing Brown)
     AndroidColor.rgb(0, 188, 212),   // Cyan
-    AndroidColor.rgb(255, 235, 59),  // Yellow
-    AndroidColor.rgb(255, 27, 24)    // Red
+    AndroidColor.rgb(255, 235, 59)   // Yellow
 )
 
-private var STROKE_WIDTH = 4.dp.value
+private val STROKE_WIDTH = 8f * Resources.getSystem().displayMetrics.density
 
 private class CircleRenderer : IShapeRenderer {
     override fun renderShape(
@@ -82,7 +84,7 @@ private class XRenderer : IShapeRenderer {
         c: Canvas, dataSet: IScatterDataSet, viewPortHandler: ViewPortHandler,
         posX: Float, posY: Float, renderPaint: Paint
     ) {
-        val shapeHalf = dataSet.scatterShapeSize / 2f
+        val shapeHalf = dataSet.scatterShapeSize / 2f * 0.7f
         renderPaint.style = Paint.Style.STROKE
         renderPaint.strokeWidth = STROKE_WIDTH
         c.drawLine(
