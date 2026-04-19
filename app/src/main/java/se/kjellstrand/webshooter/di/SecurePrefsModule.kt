@@ -16,6 +16,7 @@ class SecurePrefs @Inject constructor(@ApplicationContext context: Context) {
     companion object {
         private const val FILE_NAME = "secure_prefs"
         private const val KEY_USERNAME = "username"
+        private const val KEY_COMPETITIONS_LAST_SYNC = "competitions_last_sync"
         private const val TAG = "SecurePrefs"
     }
 
@@ -58,6 +59,15 @@ class SecurePrefs @Inject constructor(@ApplicationContext context: Context) {
     fun clearUsername() {
         sharedPrefs.edit {
             remove(KEY_USERNAME)
+        }
+    }
+
+    fun getCompetitionsLastSync(): Long =
+        sharedPrefs.getLong(KEY_COMPETITIONS_LAST_SYNC, 0L)
+
+    fun setCompetitionsLastSync(timestampMs: Long) {
+        sharedPrefs.edit {
+            putLong(KEY_COMPETITIONS_LAST_SYNC, timestampMs)
         }
     }
 }
