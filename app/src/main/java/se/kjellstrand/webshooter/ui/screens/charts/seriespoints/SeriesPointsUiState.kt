@@ -35,4 +35,47 @@ data class SeriesPointsUiState(
             val participantIds = allParticipants.map { it.userId }.toSet()
             return clubMembers.filter { it.userId in participantIds }
         }
+
+    data class TrendLine(
+        val fromX: Float,
+        val fromY: Float,
+        val toX: Float,
+        val toY: Float,
+    )
+
+    val seriesAverage: Float?
+        get() {
+            val all = filteredCompetitions.flatMap { it.seriesPoints }
+            if (all.isEmpty()) return null
+            return all.average().toFloat()
+        }
+
+    val seriesTrend: TrendLine?
+        get() {
+            val pairs = filteredCompetitions.flatMap { comp ->
+                comp.seriesPoints.mapIndexed { i, p -> (i + 1).toFloat() to p.toFloat() }
+            }
+            if (pairs.size < 2) return null
+            val xs = pairs.map { it.first }
+            val ys = pairs.map { it.second }
+            val meanX = xs.average().toFloat()
+            val meanY = ys.average().toFloat()
+            val num = xs.zip(ys)
+                .sumOf { (x, y) -> ((x - meanX) * (y - meanY)).toDouble() }
+                .toFloat()
+            val den = xs
+                .sumOf { ((it - meanX) * (it - meanX)).toDouble() }
+                .toFloat()
+            if (den == 0f) return null
+            val slope = num / den
+            val intercept = meanY - slope * meanX
+            val firstX = xs.min()
+            val lastX = xs.max()
+            return TrendLine(
+                fromX = firstX,
+                fromY = slope * firstX + intercept,
+                toX = lastX,
+                toY = slope * lastX + intercept
+            )
+        }
 }

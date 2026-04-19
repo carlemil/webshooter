@@ -30,6 +30,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.github.mikephil.charting.charts.LineChart
+import com.github.mikephil.charting.components.LimitLine
 import com.github.mikephil.charting.components.MarkerView
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
@@ -39,8 +40,11 @@ import com.github.mikephil.charting.utils.MPPointF
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.seriespoints.CompetitionSeries
 import se.kjellstrand.webshooter.ui.common.AddShooterButton
+import se.kjellstrand.webshooter.ui.common.CHART_COLORS
 import se.kjellstrand.webshooter.ui.common.ChartStateWrapper
 import se.kjellstrand.webshooter.ui.common.ShooterPickerDialog
+import se.kjellstrand.webshooter.ui.common.UserLegend
+import se.kjellstrand.webshooter.ui.common.UserLegendItem
 import se.kjellstrand.webshooter.ui.common.WeaponClassGroupFilter
 import se.kjellstrand.webshooter.ui.common.applyBaseChartStyle
 import android.graphics.Color as AndroidColor
@@ -132,11 +136,42 @@ private fun SeriesPointsContent(
         } else {
             SeriesPointsChart(
                 competitions = competitions,
+                seriesAverage = uiState.seriesAverage,
+                seriesTrend = uiState.seriesTrend,
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
                     .padding(8.dp)
             )
+
+            val overlayLegendItems = buildList {
+                if (uiState.seriesAverage != null) {
+                    add(
+                        UserLegendItem(
+                            label = stringResource(R.string.charts_legend_average),
+                            color = Color(CHART_COLORS[1]),
+                            shapeIndex = 7
+                        )
+                    )
+                }
+                if (uiState.seriesTrend != null) {
+                    add(
+                        UserLegendItem(
+                            label = stringResource(R.string.charts_legend_trend),
+                            color = Color(CHART_COLORS[7]),
+                            shapeIndex = 8
+                        )
+                    )
+                }
+            }
+            if (overlayLegendItems.isNotEmpty()) {
+                UserLegend(
+                    items = overlayLegendItems,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp)
+                )
+            }
 
             val screenHeight = LocalConfiguration.current.screenHeightDp.dp
             CompetitionsLegend(
@@ -210,10 +245,15 @@ private class SeriesPointsMarkerView(
     }
 }
 
+private val TREND_COLOR_ARGB: Int = CHART_COLORS[7]
+private val AVERAGE_COLOR_ARGB: Int = CHART_COLORS[1]
+
 @SuppressLint("ClickableViewAccessibility")
 @Composable
 private fun SeriesPointsChart(
     competitions: List<CompetitionSeries>,
+    seriesAverage: Float?,
+    seriesTrend: SeriesPointsUiState.TrendLine?,
     modifier: Modifier = Modifier
 ) {
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface.toArgb()
@@ -239,6 +279,12 @@ private fun SeriesPointsChart(
                     append(comp.competitionId).append(':')
                     comp.seriesPoints.forEach { append(it).append(',') }
                     append(';')
+                }
+                append('@').append(seriesAverage ?: "")
+                append('~')
+                if (seriesTrend != null) {
+                    append(seriesTrend.fromX).append(',').append(seriesTrend.fromY).append(';')
+                        .append(seriesTrend.toX).append(',').append(seriesTrend.toY)
                 }
             }
             if (chart.tag == signature) return@AndroidView
@@ -285,7 +331,23 @@ private fun SeriesPointsChart(
                     labelMap[dsIndex to xIndex] = text
                 }
             }
-            val dataSets = builtDataSets.map { it.first }
+            val dataSets = builtDataSets.map { it.first }.toMutableList()
+
+            if (seriesTrend != null) {
+                val trendEntries = listOf(
+                    Entry(seriesTrend.fromX, seriesTrend.fromY),
+                    Entry(seriesTrend.toX, seriesTrend.toY)
+                )
+                val trendDataSet = LineDataSet(trendEntries, "Trend").apply {
+                    color = TREND_COLOR_ARGB
+                    lineWidth = 2f
+                    setDrawCircles(false)
+                    setDrawValues(false)
+                    isHighlightEnabled = false
+                    mode = LineDataSet.Mode.LINEAR
+                }
+                dataSets.add(trendDataSet)
+            }
 
             if (dataSets.isNotEmpty()) {
                 chart.data = LineData(dataSets.toList())
@@ -293,6 +355,15 @@ private fun SeriesPointsChart(
                 chart.xAxis.labelCount = minOf(maxSeries, 10)
             } else {
                 chart.data = null
+            }
+
+            chart.axisLeft.removeAllLimitLines()
+            if (seriesAverage != null) {
+                val avgLine = LimitLine(seriesAverage).apply {
+                    lineColor = AVERAGE_COLOR_ARGB
+                    lineWidth = 2f
+                }
+                chart.axisLeft.addLimitLine(avgLine)
             }
 
             chart.marker = SeriesPointsMarkerView(chart.context, labelMap)
