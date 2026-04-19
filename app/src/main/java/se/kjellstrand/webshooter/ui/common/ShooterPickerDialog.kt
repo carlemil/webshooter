@@ -116,7 +116,7 @@ fun ShooterPickerDialog(
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(max = halfDialog)
+                        .weight(1f)
                 ) {
                     items(filtered) { member ->
                         Text(
