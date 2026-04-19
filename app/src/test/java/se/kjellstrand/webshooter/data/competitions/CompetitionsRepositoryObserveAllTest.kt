@@ -14,7 +14,6 @@ import se.kjellstrand.webshooter.data.common.CompetitionType
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionEntity
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionsDao
 import se.kjellstrand.webshooter.data.competitions.local.toEntity
-import se.kjellstrand.webshooter.data.competitions.remote.CompetitionByIdResponse
 import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsRemoteDataSource
 import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsResponse
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
@@ -54,23 +53,14 @@ class CompetitionsRepositoryObserveAllTest {
         override suspend fun getCompetitions(
             page: Int, perPage: Int, status: String, type: Int, userSignup: Int
         ): CompetitionsResponse = error("not used in this test")
-
-        override suspend fun getCompetitionById(id: Long): CompetitionByIdResponse =
-            error("not used in this test")
     }
 
     private class FakeDao(
         var observed: List<CompetitionEntity> = emptyList()
     ) : CompetitionsDao {
-        override suspend fun getAll(): List<CompetitionEntity> = observed
         override fun observeAll(): Flow<List<CompetitionEntity>> = flowOf(observed)
         override suspend fun getCompletedCompetitions(): List<CompetitionEntity> = emptyList()
-        override suspend fun getCompletedCount(): Int = 0
-        override suspend fun getMaxCompletedDate(): String? = null
-        override suspend fun getNonCompletedIds(): List<Long> = emptyList()
         override suspend fun insertAll(competitions: List<CompetitionEntity>) {}
-        override suspend fun deleteAll() {}
-        override suspend fun deleteById(id: Long) {}
     }
 
     private fun buildRepo(dao: FakeDao = FakeDao()) =
@@ -130,11 +120,5 @@ class CompetitionsRepositoryObserveAllTest {
     fun `repository still has syncAll`() {
         val method = CompetitionsRepository::class.java.methods.find { it.name == "syncAll" }
         assertNotNull("syncAll should still exist", method)
-    }
-
-    @Test
-    fun `repository still has syncNonCompleted`() {
-        val method = CompetitionsRepository::class.java.methods.find { it.name == "syncNonCompleted" }
-        assertNotNull("syncNonCompleted should still exist", method)
     }
 }
