@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.material3.MaterialTheme
@@ -41,7 +40,7 @@ import se.kjellstrand.webshooter.ui.common.CHART_COLORS
 import se.kjellstrand.webshooter.ui.common.CHART_MIN_HEIGHT_FRACTION
 import se.kjellstrand.webshooter.ui.common.ChartStateWrapper
 import se.kjellstrand.webshooter.ui.common.ShooterPickerDialog
-import se.kjellstrand.webshooter.ui.common.UserLegend
+import se.kjellstrand.webshooter.ui.common.ChartLegend
 import se.kjellstrand.webshooter.ui.common.UserLegendItem
 import se.kjellstrand.webshooter.ui.common.WeaponClassGroupFilter
 import se.kjellstrand.webshooter.ui.common.applyBaseChartStyle
@@ -197,7 +196,7 @@ private fun SeriesPointsContent(
                 }
             }
             if (legendItems.isNotEmpty()) {
-                UserLegend(
+                ChartLegend(
                     items = legendItems,
                     modifier = Modifier
                         .fillMaxWidth()

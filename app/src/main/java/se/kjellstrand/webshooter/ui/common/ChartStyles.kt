@@ -1,9 +1,9 @@
 package se.kjellstrand.webshooter.ui.common
 
-import android.content.res.Resources
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
+import androidx.compose.ui.unit.dp
 import com.github.mikephil.charting.interfaces.datasets.IScatterDataSet
 import com.github.mikephil.charting.renderer.scatter.IShapeRenderer
 import com.github.mikephil.charting.utils.ViewPortHandler
@@ -22,14 +22,15 @@ val CHART_COLORS = listOf(
     AndroidColor.rgb(255, 235, 59)   // Yellow
 )
 
-private val STROKE_WIDTH = 8f * Resources.getSystem().displayMetrics.density
+private val STROKE_WIDTH = 6.dp.value
+private val SHAPE_SIZE_MOD = 2.6.dp.value
 
 private class CircleRenderer : IShapeRenderer {
     override fun renderShape(
         c: Canvas, dataSet: IScatterDataSet, viewPortHandler: ViewPortHandler,
         posX: Float, posY: Float, renderPaint: Paint
     ) {
-        val shapeHalf = dataSet.scatterShapeSize / 2f
+        val shapeHalf = dataSet.scatterShapeSize / SHAPE_SIZE_MOD
         renderPaint.style = Paint.Style.FILL
         c.drawCircle(posX, posY, shapeHalf, renderPaint)
     }
@@ -40,7 +41,7 @@ private class SquareRenderer : IShapeRenderer {
         c: Canvas, dataSet: IScatterDataSet, viewPortHandler: ViewPortHandler,
         posX: Float, posY: Float, renderPaint: Paint
     ) {
-        val shapeHalf = dataSet.scatterShapeSize / 2f
+        val shapeHalf = dataSet.scatterShapeSize / SHAPE_SIZE_MOD
         renderPaint.style = Paint.Style.FILL
         c.drawRect(
             posX - shapeHalf, posY - shapeHalf,
@@ -55,7 +56,7 @@ private class TriangleRenderer : IShapeRenderer {
         c: Canvas, dataSet: IScatterDataSet, viewPortHandler: ViewPortHandler,
         posX: Float, posY: Float, renderPaint: Paint
     ) {
-        val shapeHalf = dataSet.scatterShapeSize / 2f
+        val shapeHalf = dataSet.scatterShapeSize / SHAPE_SIZE_MOD
         renderPaint.style = Paint.Style.FILL
         path.reset()
         path.moveTo(posX, posY - shapeHalf)
@@ -71,7 +72,7 @@ private class CrossRenderer : IShapeRenderer {
         c: Canvas, dataSet: IScatterDataSet, viewPortHandler: ViewPortHandler,
         posX: Float, posY: Float, renderPaint: Paint
     ) {
-        val shapeHalf = dataSet.scatterShapeSize / 2f
+        val shapeHalf = dataSet.scatterShapeSize / SHAPE_SIZE_MOD
         renderPaint.style = Paint.Style.STROKE
         renderPaint.strokeWidth = STROKE_WIDTH
         c.drawLine(posX - shapeHalf, posY, posX + shapeHalf, posY, renderPaint)
@@ -84,16 +85,16 @@ private class XRenderer : IShapeRenderer {
         c: Canvas, dataSet: IScatterDataSet, viewPortHandler: ViewPortHandler,
         posX: Float, posY: Float, renderPaint: Paint
     ) {
-        val shapeHalf = dataSet.scatterShapeSize / 2f * 0.7f
+        val shapeSize = dataSet.scatterShapeSize / SHAPE_SIZE_MOD * 0.7f
         renderPaint.style = Paint.Style.STROKE
         renderPaint.strokeWidth = STROKE_WIDTH
         c.drawLine(
-            posX - shapeHalf, posY - shapeHalf,
-            posX + shapeHalf, posY + shapeHalf, renderPaint
+            posX - shapeSize, posY - shapeSize,
+            posX + shapeSize, posY + shapeSize, renderPaint
         )
         c.drawLine(
-            posX + shapeHalf, posY - shapeHalf,
-            posX - shapeHalf, posY + shapeHalf, renderPaint
+            posX + shapeSize, posY - shapeSize,
+            posX - shapeSize, posY + shapeSize, renderPaint
         )
     }
 }
@@ -104,7 +105,7 @@ private class ChevronDownRenderer : IShapeRenderer {
         c: Canvas, dataSet: IScatterDataSet, viewPortHandler: ViewPortHandler,
         posX: Float, posY: Float, renderPaint: Paint
     ) {
-        val shapeHalf = dataSet.scatterShapeSize / 2f
+        val shapeHalf = dataSet.scatterShapeSize / SHAPE_SIZE_MOD
         renderPaint.style = Paint.Style.STROKE
         renderPaint.strokeWidth = STROKE_WIDTH
         renderPaint.strokeCap = Paint.Cap.ROUND
@@ -123,7 +124,7 @@ private class ChevronUpRenderer : IShapeRenderer {
         c: Canvas, dataSet: IScatterDataSet, viewPortHandler: ViewPortHandler,
         posX: Float, posY: Float, renderPaint: Paint
     ) {
-        val shapeHalf = dataSet.scatterShapeSize / 2f
+        val shapeHalf = dataSet.scatterShapeSize / SHAPE_SIZE_MOD
         renderPaint.style = Paint.Style.STROKE
         renderPaint.strokeWidth = STROKE_WIDTH
         renderPaint.strokeCap = Paint.Cap.ROUND
@@ -135,16 +136,6 @@ private class ChevronUpRenderer : IShapeRenderer {
         c.drawPath(path, renderPaint)
     }
 }
-
-val CHART_SHAPES = listOf(
-    com.github.mikephil.charting.charts.ScatterChart.ScatterShape.CIRCLE,
-    com.github.mikephil.charting.charts.ScatterChart.ScatterShape.SQUARE,
-    com.github.mikephil.charting.charts.ScatterChart.ScatterShape.TRIANGLE,
-    com.github.mikephil.charting.charts.ScatterChart.ScatterShape.CROSS,
-    com.github.mikephil.charting.charts.ScatterChart.ScatterShape.X,
-    com.github.mikephil.charting.charts.ScatterChart.ScatterShape.CHEVRON_DOWN,
-    com.github.mikephil.charting.charts.ScatterChart.ScatterShape.CHEVRON_UP
-)
 
 val CHART_SHAPE_RENDERERS: List<IShapeRenderer> = listOf(
     CircleRenderer(),

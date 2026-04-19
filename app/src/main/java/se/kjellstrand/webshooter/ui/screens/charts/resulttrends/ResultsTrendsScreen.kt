@@ -47,7 +47,7 @@ import se.kjellstrand.webshooter.ui.common.CHART_MIN_HEIGHT_FRACTION
 import se.kjellstrand.webshooter.ui.common.CHART_SHAPE_RENDERERS
 import se.kjellstrand.webshooter.ui.common.ChartStateWrapper
 import se.kjellstrand.webshooter.ui.common.ShooterPickerDialog
-import se.kjellstrand.webshooter.ui.common.UserLegend
+import se.kjellstrand.webshooter.ui.common.ChartLegend
 import se.kjellstrand.webshooter.ui.common.UserLegendItem
 import se.kjellstrand.webshooter.ui.common.WeaponClassGroupFilter
 import se.kjellstrand.webshooter.ui.common.applyBaseChartStyle
@@ -189,7 +189,7 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
                 }
             }
             if (legendItems.isNotEmpty()) {
-                UserLegend(
+                ChartLegend(
                     items = legendItems,
                     modifier = Modifier
                         .fillMaxWidth()
