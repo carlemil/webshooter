@@ -58,7 +58,6 @@ class LoginViewModelImpl @Inject constructor(
                     isSuccess = true
                 )
                 _eventFlow.emit(UiEvent.NavigateToLandingPage)
-                prefetchCompetitions()
                 return@launch
             }
 
@@ -79,7 +78,6 @@ class LoginViewModelImpl @Inject constructor(
                             )
                             _eventFlow.emit(UiEvent.NavigateToLandingPage)
                             securePrefs.saveUsername(username)
-                            prefetchCompetitions()
                         }
 
                         is Resource.Error -> {
