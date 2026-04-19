@@ -37,14 +37,17 @@ class ClubStatsRepository @Inject constructor(
                         } else {
                             resultsDao.getClubStats(userIds, year, classPrefix)
                         }
-                        val shooterStats = rows.map { row ->
-                            ShooterStats(
-                                userId = row.userId,
-                                fullname = row.fullname,
-                                averagePoints = row.averagePoints,
-                                competitionCount = row.competitionCount
-                            )
-                        }.sortedBy { it.fullname.lowercase() }
+                        val shooterStats = rows
+                            .filter { it.averagePoints > 0.0 }
+                            .map { row ->
+                                ShooterStats(
+                                    userId = row.userId,
+                                    fullname = row.fullname,
+                                    averagePoints = row.averagePoints,
+                                    competitionCount = row.competitionCount
+                                )
+                            }
+                            .sortedBy { it.fullname.lowercase() }
                         val availableYears = resultsDao.getClubStatsYears(userIds)
                             .mapNotNull { it.toIntOrNull() }
                         emit(Resource.Success(ClubStatsData(shooterStats, availableYears)))
