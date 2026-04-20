@@ -23,7 +23,7 @@ val CHART_COLORS = listOf(
 )
 
 private val STROKE_WIDTH = 8.dp.value
-private val SHAPE_SIZE_MOD = 3.dp.value
+private val SHAPE_SIZE_MOD = 4.dp.value
 
 private class CircleRenderer : IShapeRenderer {
     override fun renderShape(
