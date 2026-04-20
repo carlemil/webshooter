@@ -1,2 +1,8 @@
-- Du kan nu nypa för att zooma och dra för att panorera i diagrammen.
-- Tydligare symboler i punktdiagrammen.
+- Nya vyer: Serie-poäng och Klubbstatistik (spridningsdiagram)
+- Årsfilter och skytteval i graf-vyer
+- Medelvärdes- och trendlinjer på alla grafer
+- Datapunkt-markörer i grafer
+- Vapengrupp-filter i klubbstatistik
+- Omorganiserad meny med gruppindelning
+- Snabbare start — hoppar över synk om den nyligen körts
+- Diverse buggfixar och visuella förbättringar
