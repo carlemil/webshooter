@@ -311,4 +311,7 @@ tasks.configureEach {
     if (name == "assembleProdRelease" || name == "bundleProdRelease") {
         dependsOn(generatePrebuiltDatabase)
     }
+    if (name.startsWith("merge") && name.endsWith("Assets")) {
+        mustRunAfter(generatePrebuiltDatabase)
+    }
 }
