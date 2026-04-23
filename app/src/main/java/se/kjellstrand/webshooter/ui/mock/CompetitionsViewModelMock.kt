@@ -18,6 +18,7 @@ class CompetitionsViewModelMock(
     }
 
     override fun reload() {}
+    override fun onScreenOpened() {}
     override fun setSelectedCompetitionTypeIds(ids: Set<Int>) {}
     override fun setSelectedStatuses(statuses: Set<String>) {}
 }
