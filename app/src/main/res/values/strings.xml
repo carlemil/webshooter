@@ -223,7 +223,8 @@
     <!-- ### MY RESULTS ### -->
     <string name="my_results_all_time">Alla år</string>
     <string name="my_results_summary">Sammanfattning</string>
-    <string name="my_results_summary_class">Klass/starter</string>
+    <string name="my_results_summary_class">Klass</string>
+    <string name="my_results_summary_starter">Starter</string>
     <string name="my_results_summary_avg_score">x̄ Poäng</string>
     <string name="my_results_summary_avg_hits_falt">x̄ Träff</string>
     <string name="my_results_summary_avg_hits_pres">x̄ X</string>
