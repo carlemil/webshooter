@@ -22,6 +22,7 @@ class CompetitionsViewModelImpl @Inject constructor(
     override val uiState: StateFlow<CompetitionsUiState> = _uiState.asStateFlow()
 
     @Volatile private var syncTriggered = false
+    @Volatile private var hasBeenOpenedOnce = false
 
     init {
         viewModelScope.launch {
@@ -72,6 +73,15 @@ class CompetitionsViewModelImpl @Inject constructor(
                 }
             }
         }
+    }
+
+    override fun onScreenOpened() {
+        if (!hasBeenOpenedOnce) {
+            hasBeenOpenedOnce = true
+            return
+        }
+        if (_uiState.value.isLoading) return
+        reload()
     }
 
     override fun reload() {

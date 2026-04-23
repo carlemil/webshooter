@@ -87,6 +87,10 @@ fun CompetitionsScreen(
     val coroutineScope = rememberCoroutineScope()
     var isFilterBottomSheetOpen by remember { mutableStateOf(false) }
 
+    LaunchedEffect(Unit) {
+        competitionsViewModel.onScreenOpened()
+    }
+
     val upcomingIndex = remember(competitionsState.filteredData) {
         val today = LocalDate.now()
         competitionsState.filteredData.indexOfLast { competition ->
