@@ -372,6 +372,16 @@ fun ChartScatterChart(
                     }
                 } else null
 
+            // Configure axis-max flag BEFORE assigning chart.data: calcMinMax()
+            // fires inside that assignment and locks in the axis range using the
+            // current mCustomAxisMax flag. Setting it afterwards leaves the fält
+            // cap sticky on the next precision render.
+            if (isHitsBased) {
+                chart.axisLeft.axisMaximum = 6f
+            } else {
+                chart.axisLeft.resetAxisMaximum()
+            }
+
             if (dataSets.isNotEmpty() || trendLineDataSet != null) {
                 val combined = CombinedData().apply {
                     if (dataSets.isNotEmpty()) {
@@ -396,12 +406,6 @@ fun ChartScatterChart(
                     lineWidth = 2f
                 }
                 chart.axisLeft.addLimitLine(avgLine)
-            }
-
-            if (isHitsBased) {
-                chart.axisLeft.axisMaximum = 6f
-            } else {
-                chart.axisLeft.resetAxisMaximum()
             }
 
             chart.marker = ChartsMarkerView(chart.context, labelMap)

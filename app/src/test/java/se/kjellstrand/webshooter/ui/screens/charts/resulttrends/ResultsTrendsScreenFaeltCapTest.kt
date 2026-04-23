@@ -49,6 +49,28 @@ class ResultsTrendsScreenFaeltCapTest {
     }
 
     @Test
+    fun `axis-max configuration must be applied before chart_data assignment`() {
+        // calcMinMax() runs inside `chart.data = combined` and locks in the
+        // axis range using the current mCustomAxisMax flag. If we set the
+        // flag afterwards, the stale 6f cap from a previous fält render
+        // persists on the next precision render → data clusters at the bottom.
+        val axisMaxIdx = screenSource.indexOf("chart.axisLeft.axisMaximum = 6f")
+        val resetIdx = screenSource.indexOf("chart.axisLeft.resetAxisMaximum()")
+        val chartDataIdx = screenSource.indexOf("chart.data = combined")
+        assertTrue("axisMaximum=6f must still be set", axisMaxIdx >= 0)
+        assertTrue("resetAxisMaximum() must still be called", resetIdx >= 0)
+        assertTrue("chart.data = combined must still exist", chartDataIdx >= 0)
+        assertTrue(
+            "axisMaximum=6f must appear BEFORE chart.data = combined (so calcMinMax sees the right mCustomAxisMax)",
+            axisMaxIdx < chartDataIdx
+        )
+        assertTrue(
+            "resetAxisMaximum() must appear BEFORE chart.data = combined",
+            resetIdx < chartDataIdx
+        )
+    }
+
+    @Test
     fun `ChartScatterChart suppresses trendline when isHitsBased`() {
         // The trendLineDataSet construction must be gated on !isHitsBased.
         val trendIdx = screenSource.indexOf("trendLineDataSet")
