@@ -100,14 +100,6 @@ class CompetitionsViewModelObserveDbTest {
     }
 
     @Test
-    fun `CompetitionsViewModelImpl still has setSelectedCompetitionTypeIds method`() {
-        val method = CompetitionsViewModelImpl::class.java.methods.find {
-            it.name == "setSelectedCompetitionTypeIds"
-        }
-        assertNotNull("setSelectedCompetitionTypeIds should still exist", method)
-    }
-
-    @Test
     fun `CompetitionsViewModelImpl still has setSelectedStatuses method`() {
         val method = CompetitionsViewModelImpl::class.java.methods.find {
             it.name == "setSelectedStatuses"

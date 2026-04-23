@@ -232,11 +232,8 @@ fun CompetitionsScreen(
 
     if (isFilterBottomSheetOpen) {
         CompetitionsFilterBottomSheet(
-            allCompetitionTypes = competitionsState.allCompetitionTypes,
             allStatuses = competitionsState.allStatuses,
-            selectedCompetitionTypeIds = competitionsState.selectedCompetitionTypeIds,
             selectedStatuses = competitionsState.selectedStatuses,
-            onCompetitionTypesChange = { competitionsViewModel.setSelectedCompetitionTypeIds(it) },
             onStatusesChange = { competitionsViewModel.setSelectedStatuses(it) },
             onDismissRequest = { isFilterBottomSheetOpen = false }
         )
@@ -246,11 +243,8 @@ fun CompetitionsScreen(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun CompetitionsFilterBottomSheet(
-    allCompetitionTypes: List<CompetitionType>,
     allStatuses: Map<String, String>,
-    selectedCompetitionTypeIds: Set<Int>,
     selectedStatuses: Set<String>,
-    onCompetitionTypesChange: (Set<Int>) -> Unit,
     onStatusesChange: (Set<String>) -> Unit,
     onDismissRequest: () -> Unit
 ) {
@@ -276,29 +270,6 @@ fun CompetitionsFilterBottomSheet(
                             onStatusesChange(updated)
                         },
                         label = { Text(status.value) }
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(8.dp))
-            HorizontalDivider()
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                stringResource(R.string.competitions_filter_competition_type),
-                style = MaterialTheme.typography.titleMedium
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                allCompetitionTypes.forEach { competitionType ->
-                    val isSelected = selectedCompetitionTypeIds.contains(competitionType.id)
-                    FilterChip(
-                        selected = isSelected,
-                        onClick = {
-                            val updated =
-                                if (isSelected) selectedCompetitionTypeIds - competitionType.id
-                                else selectedCompetitionTypeIds + competitionType.id
-                            onCompetitionTypesChange(updated)
-                        },
-                        label = { Text(competitionType.name) }
                     )
                 }
             }
