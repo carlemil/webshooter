@@ -83,7 +83,6 @@
     <string name="competition_name">Namn</string>
     <string name="competitions_yes">Ja</string>
     <string name="competitions_filter_status">Status</string>
-    <string name="competitions_filter_competition_type">Tävlingstyp</string>
     <string name="competitions_open_map">Öppna karta</string>
     <string name="competitions_add_to_calendar">Lägg till i kalender</string>
 

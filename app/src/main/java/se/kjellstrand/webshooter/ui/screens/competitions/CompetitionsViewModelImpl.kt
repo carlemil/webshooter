@@ -103,10 +103,6 @@ class CompetitionsViewModelImpl @Inject constructor(
         return uiState.value.competitions?.data?.find { it.id == competitionId }
     }
 
-    override fun setSelectedCompetitionTypeIds(ids: Set<Int>) {
-        _uiState.value = _uiState.value.copy(selectedCompetitionTypeIds = ids)
-    }
-
     override fun setSelectedStatuses(statuses: Set<String>) {
         _uiState.value = _uiState.value.copy(selectedStatuses = statuses)
     }
