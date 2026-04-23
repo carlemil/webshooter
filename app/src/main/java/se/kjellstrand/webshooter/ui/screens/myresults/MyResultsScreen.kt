@@ -216,39 +216,42 @@ private fun YearlySummaryCard(rowsByType: List<Triple<String, List<SummaryRow>, 
                 )
                 val isFalt = type == "Fält"
                 GridRow {
-                    GridCell(stringResource(R.string.my_results_summary_class), 1.5f, fontWeight = FontWeight.Bold)
+                    GridCell(stringResource(R.string.my_results_summary_class), 0.7f, fontWeight = FontWeight.Bold)
+                    GridCell(stringResource(R.string.my_results_summary_starter), 0.9f, fontWeight = FontWeight.Bold)
                     if (isFalt) {
-                        GridCell(stringResource(R.string.my_results_summary_avg_hits_falt), 1.5f, fontWeight = FontWeight.Bold)
-                        GridCell(stringResource(R.string.my_results_summary_figures), 1.5f, fontWeight = FontWeight.Bold)
+                        GridCell(stringResource(R.string.my_results_summary_avg_hits_falt), 1.4f, fontWeight = FontWeight.Bold)
+                        GridCell(stringResource(R.string.my_results_summary_figures), 1.4f, fontWeight = FontWeight.Bold)
                     } else {
-                        GridCell(stringResource(R.string.my_results_summary_avg_score), 1.5f, fontWeight = FontWeight.Bold)
-                        GridCell(stringResource(R.string.my_results_summary_avg_hits_pres), 1.5f, fontWeight = FontWeight.Bold)
+                        GridCell(stringResource(R.string.my_results_summary_avg_score), 1.4f, fontWeight = FontWeight.Bold)
+                        GridCell(stringResource(R.string.my_results_summary_avg_hits_pres), 1.4f, fontWeight = FontWeight.Bold)
                     }
                     GridCell(stringResource(R.string.my_results_symbol_medal_pts), 0.8f, fontWeight = FontWeight.Bold)
                 }
                 HorizontalDivider(modifier = Modifier.padding(vertical = 2.dp))
                 rows.forEach { row ->
                     GridRow {
-                        GridCell("${row.weaponClass}/${row.count}", 1.5f)
+                        GridCell(row.weaponClass, 0.7f)
+                        GridCell(row.count.toString(), 0.9f)
                         if (isFalt) {
-                            GridCell(FMT_1F.format(row.avgHits), 1.5f)
-                            GridCell(FMT_1F.format(row.figureHits), 1.5f)
+                            GridCell(FMT_1F.format(row.avgHits), 1.4f)
+                            GridCell(FMT_1F.format(row.figureHits), 1.4f)
                         } else {
-                            GridCell(FMT_1F.format(row.avgScore), 1.5f)
-                            GridCell(FMT_1F.format(row.avgHits), 1.5f)
+                            GridCell(FMT_1F.format(row.avgScore), 1.4f)
+                            GridCell(FMT_1F.format(row.avgHits), 1.4f)
                         }
                         GridCell(row.medalScore.toString(), 0.8f)
                     }
                 }
                 HorizontalDivider(modifier = Modifier.padding(vertical = 2.dp))
                 GridRow {
-                    GridCell("Alla", 1.5f, fontWeight = FontWeight.Bold)
+                    GridCell("Alla", 0.7f, fontWeight = FontWeight.Bold)
+                    GridCell(totalRow.count.toString(), 0.9f, fontWeight = FontWeight.Bold)
                     if (isFalt) {
-                        GridCell(FMT_1F.format(totalRow.avgHits), 1.5f, fontWeight = FontWeight.Bold)
-                        GridCell(FMT_1F.format(totalRow.figureHits), 1.5f, fontWeight = FontWeight.Bold)
+                        GridCell(FMT_1F.format(totalRow.avgHits), 1.4f, fontWeight = FontWeight.Bold)
+                        GridCell(FMT_1F.format(totalRow.figureHits), 1.4f, fontWeight = FontWeight.Bold)
                     } else {
-                        GridCell(FMT_1F.format(totalRow.avgScore), 1.5f, fontWeight = FontWeight.Bold)
-                        GridCell(FMT_1F.format(totalRow.avgHits), 1.5f, fontWeight = FontWeight.Bold)
+                        GridCell(FMT_1F.format(totalRow.avgScore), 1.4f, fontWeight = FontWeight.Bold)
+                        GridCell(FMT_1F.format(totalRow.avgHits), 1.4f, fontWeight = FontWeight.Bold)
                     }
                     GridCell(totalRow.medalScore.toString(), 0.8f, fontWeight = FontWeight.Bold)
                 }
