@@ -26,7 +26,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import android.content.Intent
+import androidx.core.net.toUri
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -85,6 +88,17 @@ fun WebShooterScreen(navController: NavController) {
 
     val competitionsViewModel: CompetitionsViewModelImpl = hiltViewModel()
 
+    val context = LocalContext.current
+    val suggestionLabel = stringResource(R.string.web_shooter_send_suggestion)
+    val suggestionSubject = stringResource(R.string.send_suggestion_email_subject)
+    val suggestionRecipient = stringResource(R.string.send_suggestion_email_recipient)
+    val sendSuggestionEmail: () -> Unit = {
+        val intent = Intent(Intent.ACTION_SENDTO, "mailto:$suggestionRecipient".toUri()).apply {
+            putExtra(Intent.EXTRA_SUBJECT, suggestionSubject)
+        }
+        context.startActivity(intent)
+    }
+
     ModalNavigationDrawer(
         drawerContent = {
             ModalDrawerSheet {
@@ -142,6 +156,18 @@ fun WebShooterScreen(navController: NavController) {
                 HorizontalDivider()
                 SectionHeader(stringResource(R.string.menu_group_settings))
                 settingsItems.forEach { MenuItem(it) }
+                NavigationDrawerItem(
+                    label = { Text(suggestionLabel) },
+                    selected = false,
+                    onClick = {
+                        scope.launch { drawerState.close() }
+                        sendSuggestionEmail()
+                    },
+                    shape = RectangleShape,
+                    colors = NavigationDrawerItemDefaults.colors(
+                        selectedContainerColor = MaterialTheme.colorScheme.surfaceVariant
+                    )
+                )
             }
         },
         drawerState = drawerState
