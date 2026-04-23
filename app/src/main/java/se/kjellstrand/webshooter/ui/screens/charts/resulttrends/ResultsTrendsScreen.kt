@@ -130,6 +130,8 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
         val comparedShooters = uiState.filteredComparedShooters
         val hasAnyData = chartData.isNotEmpty() ||
                 comparedShooters.values.any { it.chartData.isNotEmpty() }
+        val isHitsBased = uiState.selectedResultsType == "field" ||
+                uiState.selectedResultsType == "pointfield"
 
         val screenHeight = LocalConfiguration.current.screenHeightDp.dp
         // Render the chart frame as soon as metadata (tabs) exists, even if no
@@ -140,6 +142,7 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
                 comparedShooters = comparedShooters,
                 myAverage = uiState.myAverage,
                 myTrend = uiState.myTrend,
+                isHitsBased = isHitsBased,
                 modifier = Modifier
                     .weight(1f)
                     .heightIn(min = screenHeight * CHART_MIN_HEIGHT_FRACTION)
@@ -178,7 +181,7 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
                         )
                     )
                 }
-                if (uiState.myTrend != null) {
+                if (uiState.myTrend != null && !isHitsBased) {
                     add(
                         UserLegendItem(
                             label = stringResource(R.string.charts_legend_trend),
@@ -248,6 +251,7 @@ fun ChartScatterChart(
     comparedShooters: Map<Long, ShooterChartInfo>,
     myAverage: Float?,
     myTrend: ChartsUiState.TrendLine?,
+    isHitsBased: Boolean,
     modifier: Modifier = Modifier
 ) {
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface.toArgb()
@@ -296,6 +300,7 @@ fun ChartScatterChart(
                     append(myTrend.fromX).append(',').append(myTrend.fromY).append(';')
                         .append(myTrend.toX).append(',').append(myTrend.toY)
                 }
+                append('|').append(isHitsBased)
             }
             if (chart.tag == signature) {
                 return@AndroidView
@@ -351,7 +356,7 @@ fun ChartScatterChart(
             // real LineDataSet inside a CombinedChart.
             val sortedMy = myData.sortedBy { it.date }
             val trendLineDataSet: LineDataSet? =
-                if (myTrend != null && sortedMy.size >= 2) {
+                if (!isHitsBased && myTrend != null && sortedMy.size >= 2) {
                     val firstChartX = dateIndexMap[sortedMy.first().date] ?: 0f
                     val lastChartX = dateIndexMap[sortedMy.last().date] ?: 0f
                     val trendEntries = listOf(
@@ -391,6 +396,12 @@ fun ChartScatterChart(
                     lineWidth = 2f
                 }
                 chart.axisLeft.addLimitLine(avgLine)
+            }
+
+            if (isHitsBased) {
+                chart.axisLeft.axisMaximum = 6f
+            } else {
+                chart.axisLeft.resetAxisMaximum()
             }
 
             chart.marker = ChartsMarkerView(chart.context, labelMap)
