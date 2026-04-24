@@ -25,12 +25,16 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -70,6 +74,24 @@ fun CompetitionPatrolsScreen(
         )
     }
 
+    var filterQuery by rememberSaveable { mutableStateOf("") }
+
+    val filteredPatrols = remember(sortedPatrols, filterQuery) {
+        val q = filterQuery.trim()
+        if (q.isEmpty()) {
+            sortedPatrols
+        } else {
+            sortedPatrols.mapNotNull { patrol ->
+                val matching = patrol.signups.filter { signup ->
+                    signup.user.name.contains(q, ignoreCase = true) ||
+                        signup.user.lastname.contains(q, ignoreCase = true) ||
+                        signup.club.name.contains(q, ignoreCase = true)
+                }
+                if (matching.isEmpty()) null else patrol.copy(signups = matching)
+            }
+        }
+    }
+
     Scaffold(
         topBar = {
             ScreenTopBar(
@@ -99,16 +121,37 @@ fun CompetitionPatrolsScreen(
                     )
                 }
 
-                else -> {
+                else -> Column(modifier = Modifier.fillMaxSize()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Filter",
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(end = 8.dp)
+                        )
+                        OutlinedTextField(
+                            value = filterQuery,
+                            onValueChange = { filterQuery = it },
+                            singleLine = true,
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+
                     LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
                         contentPadding = PaddingValues(
                             start = 16.dp, end = 16.dp,
                             top = 8.dp,
                             bottom = paddingValues.calculateBottomPadding() + 8.dp
                         )
                     ) {
-                        sortedPatrols.forEach { patrol ->
+                        filteredPatrols.forEach { patrol ->
                             // Header item: top-rounded card + patrol info + column header
                             item(key = "header_${patrol.id}") {
                                 PatrolHeaderItem(patrol = patrol, isFalt = isFalt)
