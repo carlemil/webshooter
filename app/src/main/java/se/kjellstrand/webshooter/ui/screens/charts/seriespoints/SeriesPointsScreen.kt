@@ -280,6 +280,11 @@ private fun SeriesPointsChart(
             if (chart.tag == signature) return@AndroidView
             chart.tag = signature
 
+            // A stale highlight from a previous tap can reference a dataset
+            // that no longer exists after we swap chart.data on tab/year
+            // switch, which makes drawMarkers NPE on the next frame.
+            chart.highlightValues(null)
+
             // Competitions are sorted by date ascending, so the last entry is
             // the newest. Iterate from newest→oldest so the newest renders on top.
             val ordered = competitions.reversed()
