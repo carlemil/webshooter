@@ -9,8 +9,8 @@ plugins {
     alias(libs.plugins.firebase.crashlytics)
 }
 
-val appVersionCode = 30
-val appVersionName = "1.18.0"
+val appVersionCode = 31
+val appVersionName = "1.19.0"
 
 extra["appVersionCode"] = appVersionCode
 apply(from = "prebuilt-database.gradle.kts")
