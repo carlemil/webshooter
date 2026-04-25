@@ -47,6 +47,10 @@ class ClubStatsViewModelImpl @Inject constructor(
         loadClubStats(_uiState.value.selectedGroup, year)
     }
 
+    override fun refresh() {
+        loadClubStats(_uiState.value.selectedGroup, _uiState.value.year)
+    }
+
     private fun loadClubStats(selectedGroup: WeaponClassGroup?, year: Int) {
         val yearParam = if (year == 0) null else year
         viewModelScope.launch {

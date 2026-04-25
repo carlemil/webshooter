@@ -4,6 +4,7 @@ import android.util.Log
 import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import java.time.LocalDate
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionsDao
@@ -53,7 +54,8 @@ class ChartsRepository @Inject constructor(
     fun getChartData(userId: Long): Flow<Resource<ChartData, UserError>> = flow {
         emit(Resource.Loading(true))
 
-        val rows = resultsDao.getChartPointsForUser(userId)
+        val today = LocalDate.now().toString()
+        val rows = resultsDao.getChartPointsForUser(userId, today)
         val dataPoints = rows
             .map { row ->
                 ChartDataPoint(
@@ -73,7 +75,7 @@ class ChartsRepository @Inject constructor(
         }
 
         val allCompetitionMeta = mutableMapOf<Long, CompetitionMeta>()
-        for (competition in competitionsDao.getCompletedCompetitions().mapNotNull { it.toDomain(gson) }) {
+        for (competition in competitionsDao.getCompletedCompetitions(today).mapNotNull { it.toDomain(gson) }) {
             val apiString = try {
                 competition.resultsType.toApiString()
             } catch (e: Exception) {

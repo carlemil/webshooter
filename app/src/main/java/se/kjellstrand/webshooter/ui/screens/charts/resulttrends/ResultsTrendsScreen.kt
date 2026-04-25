@@ -16,8 +16,12 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.toArgb
@@ -58,6 +62,13 @@ import kotlin.collections.get
 @Composable
 fun ChartsScreen(viewModel: ResultsTrendsViewModel) {
     val uiState by viewModel.uiState.collectAsState()
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    LaunchedEffect(lifecycleOwner) {
+        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            viewModel.refresh()
+        }
+    }
 
     Scaffold { _ ->
         Column(
@@ -176,7 +187,7 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
                     add(
                         UserLegendItem(
                             label = stringResource(R.string.charts_legend_average),
-                            color = Color(CHART_COLORS[1]),
+                            color = Color(AVERAGE_COLOR_ARGB),
                             shapeIndex = 7
                         )
                     )
@@ -185,7 +196,7 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
                     add(
                         UserLegendItem(
                             label = stringResource(R.string.charts_legend_trend),
-                            color = Color(CHART_COLORS[7]),
+                            color = Color(TREND_COLOR_ARGB),
                             shapeIndex = 8
                         )
                     )
@@ -241,8 +252,8 @@ private class ChartsMarkerView(
     }
 }
 
-private val TREND_COLOR_ARGB: Int = CHART_COLORS[7]
-private val AVERAGE_COLOR_ARGB: Int = CHART_COLORS[1]
+private val AVERAGE_COLOR_ARGB: Int = android.graphics.Color.rgb(127, 255, 0)
+private val TREND_COLOR_ARGB: Int = android.graphics.Color.rgb(0, 255, 64)
 
 @SuppressLint("ClickableViewAccessibility")
 @Composable

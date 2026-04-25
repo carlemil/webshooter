@@ -6,6 +6,7 @@ import com.google.gson.JsonSyntaxException
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import java.time.LocalDate
 import se.kjellstrand.webshooter.data.charts.Participant
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
@@ -40,7 +41,8 @@ class SeriesPointsRepository @Inject constructor(
     fun getSeriesPoints(userId: Long): Flow<Resource<SeriesPointsData, UserError>> = flow {
         emit(Resource.Loading(true))
 
-        val rows = resultsDao.getPrecisionSeriesForUser(userId)
+        val today = LocalDate.now().toString()
+        val rows = resultsDao.getPrecisionSeriesForUser(userId, today)
         val type = object : TypeToken<List<StationResult>>() {}.type
         val competitions = rows.mapNotNull { row ->
             val stations: List<StationResult>? = try {
@@ -60,7 +62,7 @@ class SeriesPointsRepository @Inject constructor(
         }.sortedBy { it.date }
 
         val allWeaponClasses = resultsDao.getAllWeaponClasses()
-        val allParticipants = resultsDao.getPrecisionParticipants().map {
+        val allParticipants = resultsDao.getPrecisionParticipants(today).map {
             Participant(userId = it.userId, fullname = it.fullname)
         }
 

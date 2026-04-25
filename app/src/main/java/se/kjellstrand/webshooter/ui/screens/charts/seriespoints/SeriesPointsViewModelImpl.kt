@@ -145,4 +145,10 @@ class SeriesPointsViewModelImpl @Inject constructor(
             searchQuery = if (!show) "" else _uiState.value.searchQuery
         )
     }
+
+    override fun refresh() {
+        val userId = _uiState.value.selectedUserId
+        if (userId == 0L) return
+        loadSeriesData(userId)
+    }
 }

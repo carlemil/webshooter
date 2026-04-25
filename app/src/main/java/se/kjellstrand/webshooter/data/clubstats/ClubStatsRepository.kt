@@ -2,6 +2,7 @@ package se.kjellstrand.webshooter.data.clubstats
 
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import java.time.LocalDate
 import se.kjellstrand.webshooter.data.club.ClubRepository
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
@@ -26,6 +27,7 @@ class ClubStatsRepository @Inject constructor(
             else -> "${group.prefix}%"
         }
 
+        val today = LocalDate.now().toString()
         var emittedError = false
         clubRepository.getUserClub().collect { clubResource ->
             when (clubResource) {
@@ -33,9 +35,9 @@ class ClubStatsRepository @Inject constructor(
                     try {
                         val userIds = clubResource.data.club.users.map { it.userId }
                         val rows = if (year == null) {
-                            resultsDao.getClubStatsAllYears(userIds, classPrefix)
+                            resultsDao.getClubStatsAllYears(userIds, classPrefix, today)
                         } else {
-                            resultsDao.getClubStats(userIds, year, classPrefix)
+                            resultsDao.getClubStats(userIds, year, classPrefix, today)
                         }
                         val shooterStats = rows
                             .filter { it.averagePoints > 0.0 }
@@ -48,7 +50,7 @@ class ClubStatsRepository @Inject constructor(
                                 )
                             }
                             .sortedBy { it.fullname.lowercase() }
-                        val availableYears = resultsDao.getClubStatsYears(userIds)
+                        val availableYears = resultsDao.getClubStatsYears(userIds, today)
                             .mapNotNull { it.toIntOrNull() }
                         emit(Resource.Success(ClubStatsData(shooterStats, availableYears)))
                     } catch (e: Exception) {

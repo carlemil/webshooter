@@ -79,7 +79,7 @@ class CompetitionsRepositorySyncAllTest {
         val insertedBatches = mutableListOf<List<CompetitionEntity>>()
 
         override fun observeAll(): Flow<List<CompetitionEntity>> = flowOf(emptyList())
-        override suspend fun getCompletedCompetitions(): List<CompetitionEntity> = emptyList()
+        override suspend fun getCompletedCompetitions(today: String): List<CompetitionEntity> = emptyList()
         override suspend fun insertAll(competitions: List<CompetitionEntity>) {
             insertedBatches.add(competitions)
         }

@@ -11,8 +11,8 @@ interface CompetitionsDao {
     @Query("SELECT * FROM competitions ORDER BY date DESC")
     fun observeAll(): Flow<List<CompetitionEntity>>
 
-    @Query("SELECT * FROM competitions WHERE status = 'completed' ORDER BY date DESC")
-    suspend fun getCompletedCompetitions(): List<CompetitionEntity>
+    @Query("SELECT * FROM competitions WHERE status = 'completed' OR date = :today ORDER BY date DESC")
+    suspend fun getCompletedCompetitions(today: String): List<CompetitionEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(competitions: List<CompetitionEntity>)
