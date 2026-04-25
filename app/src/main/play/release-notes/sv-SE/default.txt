@@ -1,8 +1,6 @@
-- Nya vyer: Serie-poäng och Klubbstatistik (spridningsdiagram)
-- Årsfilter och skytteval i graf-vyer
-- Medelvärdes- och trendlinjer på alla grafer
-- Datapunkt-markörer i grafer
-- Vapengrupp-filter i klubbstatistik
-- Omorganiserad meny med gruppindelning
-- Snabbare start — hoppar över synk om den nyligen körts
-- Diverse buggfixar och visuella förbättringar
+- Sök/filter på namn och klubb i skjutlagslistan
+- Snabbspola till din egen rad i skjutlag
+- Nytt menyval: Skicka förslag
+- Skjutlagsvyn har en tydligare rubrik
+- Resultatvyns nedräkning fortsätter när du varit borta från appen
+- Diverse buggfixar i diagrammen och listorna
