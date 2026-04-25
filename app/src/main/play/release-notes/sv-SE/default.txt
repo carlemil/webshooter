@@ -1,6 +1,3 @@
-- Sök/filter på namn och klubb i skjutlagslistan
-- Snabbspola till din egen rad i skjutlag
-- Nytt menyval: Skicka förslag
-- Skjutlagsvyn har en tydligare rubrik
-- Resultatvyns nedräkning fortsätter när du varit borta från appen
-- Diverse buggfixar i diagrammen och listorna
+- Dagens resultat visas i diagrammen direkt, även innan tävlingen är slutförd
+- Diagrammen uppdateras när du kommer tillbaka till dem
+- Tydligare färger på Snitt- och Trend-linjerna i resultatdiagrammet
