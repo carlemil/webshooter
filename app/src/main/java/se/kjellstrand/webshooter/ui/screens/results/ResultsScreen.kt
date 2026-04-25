@@ -43,6 +43,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -103,8 +104,13 @@ fun CompetitionResultsScreen(
     }
 
     val refreshIntervalSeconds = 5 * 60
-    var secondsLeft by remember { mutableIntStateOf(refreshIntervalSeconds) }
-    var refreshTrigger by remember { mutableIntStateOf(0) }
+    val refreshIntervalMs = refreshIntervalSeconds * 1000L
+    var lastReloadAt by rememberSaveable { mutableLongStateOf(System.currentTimeMillis()) }
+    var nowMs by remember { mutableLongStateOf(System.currentTimeMillis()) }
+    val secondsLeft = ((refreshIntervalMs - (nowMs - lastReloadAt)) / 1000L)
+        .coerceIn(0L, refreshIntervalSeconds.toLong())
+        .toInt()
+
     var isRefreshing by rememberSaveable { mutableStateOf(false) }
     val refreshVersion = resultsUiState.refreshVersion
     var lastSeenRefreshVersion by remember { mutableIntStateOf(refreshVersion) }
@@ -116,17 +122,17 @@ fun CompetitionResultsScreen(
         lastSeenRefreshVersion = refreshVersion
     }
 
-    LaunchedEffect(lifecycleOwner, isCompetitionToday, refreshTrigger) {
+    LaunchedEffect(lifecycleOwner, isCompetitionToday) {
         if (!isCompetitionToday) return@LaunchedEffect
-        secondsLeft = refreshIntervalSeconds
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
             while (true) {
-                delay(1000L)
-                secondsLeft = (secondsLeft - 1).coerceAtLeast(0)
-                if (secondsLeft <= 0) {
+                nowMs = System.currentTimeMillis()
+                if (nowMs - lastReloadAt >= refreshIntervalMs) {
                     resultsViewModel.refresh()
-                    secondsLeft = refreshIntervalSeconds
+                    lastReloadAt = System.currentTimeMillis()
+                    nowMs = lastReloadAt
                 }
+                delay(1000L)
             }
         }
     }
@@ -228,7 +234,8 @@ fun CompetitionResultsScreen(
             onRefresh = {
                 isRefreshing = true
                 resultsViewModel.refresh()
-                refreshTrigger++
+                lastReloadAt = System.currentTimeMillis()
+                nowMs = lastReloadAt
             },
             modifier = Modifier
                 .fillMaxSize()

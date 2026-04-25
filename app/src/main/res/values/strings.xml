@@ -253,5 +253,6 @@
 
     <string name="loading">Laddar…</string>
     <string name="shooters">%1$d skyttar</string>
+    <string name="search">Sök</string>
 
 </resources>
