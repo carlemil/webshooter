@@ -9,4 +9,5 @@ interface SeriesPointsViewModel {
     fun selectYear(year: Int)
     fun setSearchQuery(query: String)
     fun setShowSearchDialog(show: Boolean)
+    fun refresh()
 }

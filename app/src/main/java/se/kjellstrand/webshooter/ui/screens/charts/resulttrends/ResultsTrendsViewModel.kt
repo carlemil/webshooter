@@ -11,4 +11,5 @@ interface ResultsTrendsViewModel {
     fun removeShooter(userId: Long)
     fun setSearchQuery(query: String)
     fun setShowSearchDialog(show: Boolean)
+    fun refresh()
 }

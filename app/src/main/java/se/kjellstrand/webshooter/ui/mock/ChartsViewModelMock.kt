@@ -16,4 +16,5 @@ class ChartsViewModelMock(
     override fun removeShooter(userId: Long) {}
     override fun setSearchQuery(query: String) {}
     override fun setShowSearchDialog(show: Boolean) {}
+    override fun refresh() {}
 }

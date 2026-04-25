@@ -183,4 +183,9 @@ class ResultsTrendsViewModelImpl @Inject constructor(
             searchQuery = if (!show) "" else _uiState.value.searchQuery
         )
     }
+
+    override fun refresh() {
+        if (currentUserId == 0L) return
+        loadChartData(currentUserId)
+    }
 }

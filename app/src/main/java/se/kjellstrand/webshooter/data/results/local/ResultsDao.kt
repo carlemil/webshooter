@@ -31,9 +31,9 @@ interface ResultsDao {
                   r.userId AS userId,
                   CASE WHEN c.resultsType IN ('FIELD','POINTS_FIELD') THEN r.averageHits ELSE r.averagePoints END AS averageScore
            FROM results r INNER JOIN competitions c ON c.id = r.competitionsId
-           WHERE r.userId = :userId AND c.status = 'completed'"""
+           WHERE r.userId = :userId AND (c.status = 'completed' OR c.date = :today)"""
     )
-    suspend fun getChartPointsForUser(userId: Long): List<ChartPointRow>
+    suspend fun getChartPointsForUser(userId: Long, today: String): List<ChartPointRow>
 
     @Query(
         """SELECT r.competitionsId AS competitionId,
@@ -61,9 +61,9 @@ interface ResultsDao {
                   r.weaponClassName AS weaponClassName,
                   r.stationResultsJson AS stationResultsJson
            FROM results r INNER JOIN competitions c ON c.id = r.competitionsId
-           WHERE r.userId = :userId AND c.status = 'completed' AND c.resultsType = 'PRECISION'"""
+           WHERE r.userId = :userId AND (c.status = 'completed' OR c.date = :today) AND c.resultsType = 'PRECISION'"""
     )
-    suspend fun getPrecisionSeriesForUser(userId: Long): List<SeriesRow>
+    suspend fun getPrecisionSeriesForUser(userId: Long, today: String): List<SeriesRow>
 
     @Query("SELECT DISTINCT userId, userFullname AS fullname FROM results ORDER BY userFullname")
     suspend fun getAllParticipants(): List<ParticipantRow>
@@ -71,10 +71,10 @@ interface ResultsDao {
     @Query(
         """SELECT DISTINCT r.userId, r.userFullname AS fullname
            FROM results r INNER JOIN competitions c ON c.id = r.competitionsId
-           WHERE c.status = 'completed' AND c.resultsType = 'PRECISION'
+           WHERE (c.status = 'completed' OR c.date = :today) AND c.resultsType = 'PRECISION'
            ORDER BY r.userFullname"""
     )
-    suspend fun getPrecisionParticipants(): List<ParticipantRow>
+    suspend fun getPrecisionParticipants(today: String): List<ParticipantRow>
 
     @Query("SELECT DISTINCT weaponClassName FROM results ORDER BY weaponClassName")
     suspend fun getAllWeaponClasses(): List<String>
@@ -87,12 +87,12 @@ interface ResultsDao {
            FROM results r INNER JOIN competitions c ON c.id = r.competitionsId
            WHERE r.userId IN (:userIds)
              AND c.resultsType = 'PRECISION'
-             AND c.status = 'completed'
+             AND (c.status = 'completed' OR c.date = :today)
              AND c.date LIKE :year || '-%'
              AND r.weaponClassName LIKE :classPrefix
            GROUP BY r.userId, r.userFullname"""
     )
-    suspend fun getClubStats(userIds: List<Long>, year: Int, classPrefix: String): List<ClubStatsRow>
+    suspend fun getClubStats(userIds: List<Long>, year: Int, classPrefix: String, today: String): List<ClubStatsRow>
 
     @Query(
         """SELECT r.userId AS userId,
@@ -102,19 +102,19 @@ interface ResultsDao {
            FROM results r INNER JOIN competitions c ON c.id = r.competitionsId
            WHERE r.userId IN (:userIds)
              AND c.resultsType = 'PRECISION'
-             AND c.status = 'completed'
+             AND (c.status = 'completed' OR c.date = :today)
              AND r.weaponClassName LIKE :classPrefix
            GROUP BY r.userId, r.userFullname"""
     )
-    suspend fun getClubStatsAllYears(userIds: List<Long>, classPrefix: String): List<ClubStatsRow>
+    suspend fun getClubStatsAllYears(userIds: List<Long>, classPrefix: String, today: String): List<ClubStatsRow>
 
     @Query(
         """SELECT DISTINCT substr(c.date, 1, 4) AS year
            FROM results r INNER JOIN competitions c ON c.id = r.competitionsId
            WHERE r.userId IN (:userIds)
              AND c.resultsType = 'PRECISION'
-             AND c.status = 'completed'
+             AND (c.status = 'completed' OR c.date = :today)
            ORDER BY year DESC"""
     )
-    suspend fun getClubStatsYears(userIds: List<Long>): List<String>
+    suspend fun getClubStatsYears(userIds: List<Long>, today: String): List<String>
 }

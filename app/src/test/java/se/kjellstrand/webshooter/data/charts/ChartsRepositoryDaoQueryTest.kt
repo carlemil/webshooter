@@ -32,7 +32,7 @@ class ChartsRepositoryDaoQueryTest {
         override suspend fun getByCompetition(competitionId: Long): List<ResultEntity> = emptyList()
         override suspend fun insertAll(results: List<ResultEntity>) {}
         override suspend fun deleteByCompetition(competitionId: Long) {}
-        override suspend fun getChartPointsForUser(userId: Long): List<ChartPointRow> {
+        override suspend fun getChartPointsForUser(userId: Long, today: String): List<ChartPointRow> {
             getChartPointsForUserCalls++
             lastUserId = userId
             return pointsForUser
@@ -47,19 +47,19 @@ class ChartsRepositoryDaoQueryTest {
             return pointsForUsers
         }
         override suspend fun getAllParticipants(): List<ParticipantRow> = participants
-        override suspend fun getPrecisionParticipants(): List<ParticipantRow> = participants
-        override suspend fun getPrecisionSeriesForUser(userId: Long): List<se.kjellstrand.webshooter.data.results.local.SeriesRow> = emptyList()
+        override suspend fun getPrecisionParticipants(today: String): List<ParticipantRow> = participants
+        override suspend fun getPrecisionSeriesForUser(userId: Long, today: String): List<se.kjellstrand.webshooter.data.results.local.SeriesRow> = emptyList()
         override suspend fun getAllWeaponClasses(): List<String> = weaponClasses
-        override suspend fun getClubStats(userIds: List<Long>, year: Int, classPrefix: String): List<se.kjellstrand.webshooter.data.results.local.ClubStatsRow> = emptyList()
-        override suspend fun getClubStatsAllYears(userIds: List<Long>, classPrefix: String): List<se.kjellstrand.webshooter.data.results.local.ClubStatsRow> = emptyList()
-        override suspend fun getClubStatsYears(userIds: List<Long>): List<String> = emptyList()
+        override suspend fun getClubStats(userIds: List<Long>, year: Int, classPrefix: String, today: String): List<se.kjellstrand.webshooter.data.results.local.ClubStatsRow> = emptyList()
+        override suspend fun getClubStatsAllYears(userIds: List<Long>, classPrefix: String, today: String): List<se.kjellstrand.webshooter.data.results.local.ClubStatsRow> = emptyList()
+        override suspend fun getClubStatsYears(userIds: List<Long>, today: String): List<String> = emptyList()
     }
 
     private class FakeCompetitionsDao(
         var completed: List<CompetitionEntity> = emptyList()
     ) : CompetitionsDao {
         override fun observeAll(): Flow<List<CompetitionEntity>> = flowOf(completed)
-        override suspend fun getCompletedCompetitions(): List<CompetitionEntity> = completed
+        override suspend fun getCompletedCompetitions(today: String): List<CompetitionEntity> = completed
         override suspend fun insertAll(competitions: List<CompetitionEntity>) {}
     }
 
