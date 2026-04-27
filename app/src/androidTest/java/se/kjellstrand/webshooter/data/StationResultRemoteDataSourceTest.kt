@@ -1,17 +1,20 @@
+package se.kjellstrand.webshooter.data
+
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import junit.framework.Assert.assertEquals
 import kotlinx.coroutines.runBlocking
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import se.kjellstrand.webshooter.BuildConfig
-import se.kjellstrand.webshooter.data.login.remote.LoginRequest
 import se.kjellstrand.webshooter.data.login.remote.LoginRemoteDataSource
+import se.kjellstrand.webshooter.data.login.remote.LoginRequest
 
 class StationResultRemoteDataSourceTest {
 
@@ -21,14 +24,14 @@ class StationResultRemoteDataSourceTest {
     @Before
     fun setUp() {
         mockWebServer = MockWebServer()
-        mockWebServer.start(8080)
+        mockWebServer.start()
 
         val gson: Gson = GsonBuilder()
             .setLenient()
             .create()
 
         loginApi = Retrofit.Builder()
-            .baseUrl(BuildConfig.BASE_URL)  // Replace with your actual backend URL
+            .baseUrl(mockWebServer.url("/"))
             .addConverterFactory(GsonConverterFactory.create(gson))
             .build()
             .create(LoginRemoteDataSource::class.java)
@@ -41,36 +44,34 @@ class StationResultRemoteDataSourceTest {
 
     @Test
     fun login_returns_correct_LoginDto() {
-        // Given
         val mockResponse = MockResponse()
             .setResponseCode(200)
             .setBody(
                 """{
-                "access_token": 1234567890,
+                "access_token": "1234567890",
                 "token_type": "Bearer",
-                "expires_in": "31536000"
+                "expires_in": 31536000,
+                "refresh_token": "rtoken-abc"
             }"""
             )
         mockWebServer.enqueue(mockResponse)
 
-        // When
         val request = LoginRequest(
-            1,
-            "52FphTYzOrmuqHdfgsdfgytzhSEURIJiMFNp6Qt0",
-            "erbsman@gmail.com",
-            "password",
-            "6nRgbXK3urbFsyi",
-            "erbsman@gmail.com"
-        )  // Use valid test credentials
+            client_id = 1,
+            client_secret = "test-client-secret",
+            email = "test@example.com",
+            password = "test-password",
+            username = "test@example.com"
+        )
 
         val response = runBlocking {
             loginApi.login(request)
         }
 
-        // Then
-        // You can assert more on the actual content if you know what to expect.
-        assert(response.body()?.accessToken?.length!! > 9)
-        assertEquals("Bearer", response.body()?.tokenType)
-        assertEquals(31536000, response.body()?.expiresIn)
+        val body = response.body()
+        assertNotNull(body)
+        assertTrue((body!!.accessToken.length) > 9)
+        assertEquals("Bearer", body.tokenType)
+        assertEquals(31536000L, body.expiresIn)
     }
 }
