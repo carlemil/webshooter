@@ -6,7 +6,7 @@ import java.io.File
 
 class ClubStatsScreenTest {
 
-    private val sourceFile = File("src/main/java/se/kjellstrand/webshooter/ui/screens/clubstats/ClubStatsScreen.kt")
+    private val sourceFile = File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/clubstats/ClubStatsScreen.kt")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 
@@ -73,28 +73,32 @@ class ClubStatsScreenTest {
     }
 
     @Test
-    fun `ClubStatsScreen shows loading indicator`() {
+    fun `ClubStatsScreen shows loading state via ChartStateWrapper`() {
         val source = sourceFile.readText()
         assertTrue(
-            "ClubStatsScreen must show CircularProgressIndicator when loading",
-            source.contains("CircularProgressIndicator")
+            "ClubStatsScreen must use ChartStateWrapper to render loading/error/empty states",
+            source.contains("ChartStateWrapper(")
+        )
+        assertTrue(
+            "ChartStateWrapper must be wired to uiState.isLoading",
+            source.contains("isLoading = uiState.isLoading")
         )
     }
 
     @Test
-    fun `ClubStatsScreen uses shared UserLegend from ui common`() {
+    fun `ClubStatsScreen uses shared ChartLegend from ui common`() {
         val source = sourceFile.readText()
         assertTrue(
-            "ClubStatsScreen must import UserLegend from ui.common",
-            source.contains("se.kjellstrand.webshooter.ui.common.UserLegend")
+            "ClubStatsScreen must import ChartLegend from ui.common",
+            source.contains("se.kjellstrand.webshooter.ui.common.ChartLegend")
         )
         assertTrue(
             "ClubStatsScreen must import UserLegendItem from ui.common",
             source.contains("se.kjellstrand.webshooter.ui.common.UserLegendItem")
         )
         assertTrue(
-            "ClubStatsScreen must call UserLegend(",
-            source.contains("UserLegend(")
+            "ClubStatsScreen must call ChartLegend(",
+            source.contains("ChartLegend(")
         )
         assertTrue(
             "ClubStatsScreen must construct UserLegendItem entries",
@@ -171,23 +175,23 @@ class ClubStatsScreenTest {
     // --- Guard tests (should PASS before and after fix) ---
 
     @Test
-    fun `ChartsScreen still exists`() {
+    fun `ResultsTrendsScreen still exists`() {
         assertTrue(
-            File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/ResultsTrendsScreen.kt").exists()
+            File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsScreen.kt").exists()
         )
     }
 
     @Test
     fun `ClubStatsUiState still exists`() {
         assertTrue(
-            File("src/main/java/se/kjellstrand/webshooter/ui/screens/clubstats/ClubStatsUiState.kt").exists()
+            File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/clubstats/ClubStatsUiState.kt").exists()
         )
     }
 
     @Test
     fun `ClubStatsViewModel still exists`() {
         assertTrue(
-            File("src/main/java/se/kjellstrand/webshooter/ui/screens/clubstats/ClubStatsViewModel.kt").exists()
+            File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/clubstats/ClubStatsViewModel.kt").exists()
         )
     }
 }

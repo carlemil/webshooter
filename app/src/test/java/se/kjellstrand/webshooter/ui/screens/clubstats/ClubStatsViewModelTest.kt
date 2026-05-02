@@ -6,7 +6,7 @@ import java.io.File
 
 class ClubStatsViewModelTest {
 
-    private val baseDir = "src/main/java/se/kjellstrand/webshooter/ui/screens/clubstats"
+    private val baseDir = "src/main/java/se/kjellstrand/webshooter/ui/screens/charts/clubstats"
     private val interfaceFile = File("$baseDir/ClubStatsViewModel.kt")
     private val implFile = File("$baseDir/ClubStatsViewModelImpl.kt")
 
@@ -70,7 +70,7 @@ class ClubStatsViewModelTest {
         val source = implFile.readText()
         assertTrue(
             "ClubStatsViewModelImpl must use MutableStateFlow for _uiState",
-            source.contains("MutableStateFlow(ClubStatsUiState(")
+            Regex("""MutableStateFlow\s*\(\s*ClubStatsUiState\s*\(""").containsMatchIn(source)
         )
     }
 
@@ -93,9 +93,9 @@ class ClubStatsViewModelTest {
     }
 
     @Test
-    fun `ChartsViewModelImpl still exists`() {
+    fun `ResultsTrendsViewModelImpl still exists`() {
         assertTrue(
-            File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/ChartsViewModelImpl.kt").exists()
+            File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsViewModelImpl.kt").exists()
         )
     }
 

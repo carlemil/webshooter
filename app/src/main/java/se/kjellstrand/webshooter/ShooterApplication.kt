@@ -26,7 +26,7 @@ class ShooterApplication : Application() {
             applicationScope.launch {
                 val age = System.currentTimeMillis() - securePrefs.getCompetitionsLastSync()
                 if (age < COMPETITIONS_CACHE_TTL_MS) {
-                    Log.d(TAG, "Skipping competitions sync, last synced ${age}ms ago")
+                    Log.i(TAG, "Skipping competitions sync, last synced ${age}ms ago")
                     return@launch
                 }
                 try {

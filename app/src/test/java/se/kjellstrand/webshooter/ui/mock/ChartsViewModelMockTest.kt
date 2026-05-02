@@ -18,11 +18,11 @@ class ChartsViewModelMockTest {
     }
 
     @Test
-    fun `ChartsViewModelMock implements ChartsViewModel`() {
+    fun `ChartsViewModelMock implements ResultsTrendsViewModel`() {
         val clazz = Class.forName("se.kjellstrand.webshooter.ui.mock.ChartsViewModelMock")
-        val vmInterface = Class.forName("se.kjellstrand.webshooter.ui.screens.charts.ChartsViewModel")
+        val vmInterface = Class.forName("se.kjellstrand.webshooter.ui.screens.charts.resulttrends.ResultsTrendsViewModel")
         assertTrue(
-            "ChartsViewModelMock should implement ChartsViewModel",
+            "ChartsViewModelMock should implement ResultsTrendsViewModel",
             vmInterface.isAssignableFrom(clazz)
         )
     }
@@ -38,8 +38,8 @@ class ChartsViewModelMockTest {
     }
 
     @Test
-    fun `ChartsScreen has preview composable functions`() {
-        val clazz = Class.forName("se.kjellstrand.webshooter.ui.screens.charts.ChartsScreenKt")
+    fun `ResultsTrendsScreen has preview composable functions`() {
+        val clazz = Class.forName("se.kjellstrand.webshooter.ui.screens.charts.resulttrends.ResultsTrendsScreenKt")
         val methods = clazz.declaredMethods.map { it.name }
         assertTrue("Should have a preview function", methods.any { it.contains("Preview") })
     }
@@ -53,14 +53,14 @@ class ChartsViewModelMockTest {
     }
 
     @Test
-    fun `ChartsViewModel interface exists`() {
-        val clazz = Class.forName("se.kjellstrand.webshooter.ui.screens.charts.ChartsViewModel")
+    fun `ResultsTrendsViewModel interface exists`() {
+        val clazz = Class.forName("se.kjellstrand.webshooter.ui.screens.charts.resulttrends.ResultsTrendsViewModel")
         assertTrue(clazz.isInterface)
     }
 
     @Test
     fun `ChartsScreen composable exists`() {
-        val clazz = Class.forName("se.kjellstrand.webshooter.ui.screens.charts.ChartsScreenKt")
+        val clazz = Class.forName("se.kjellstrand.webshooter.ui.screens.charts.resulttrends.ResultsTrendsScreenKt")
         val methods = clazz.declaredMethods.map { it.name }
         assertTrue(methods.any { it == "ChartsScreen" })
     }

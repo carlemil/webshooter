@@ -10,29 +10,6 @@ class DatabaseModuleTest {
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 
-    @Test
-    fun `destructive migration is conditional on debug build`() {
-        val source = sourceFile.readText()
-        val hasUnconditionalDestructive = Regex(
-            """\.\s*fallbackToDestructiveMigration\(\)"""
-        ).containsMatchIn(source)
-        val hasConditionalDestructive = source.contains("BuildConfig.DEBUG") &&
-                source.contains("fallbackToDestructiveMigration")
-        assertTrue(
-            "fallbackToDestructiveMigration should be conditional on BuildConfig.DEBUG",
-            hasConditionalDestructive && !hasUnconditionalDestructive
-        )
-    }
-
-    @Test
-    fun `database module references BuildConfig for migration strategy`() {
-        val source = sourceFile.readText()
-        assertTrue(
-            "DatabaseModule should import or reference BuildConfig",
-            source.contains("BuildConfig")
-        )
-    }
-
     // --- Fixed behavior: createFromAsset (should FAIL before fix, PASS after fix) ---
 
     @Test

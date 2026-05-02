@@ -54,11 +54,11 @@ class ResultsDaoChartQueriesTest {
     @Test
     fun `getChartPointsForUser query restricts to completed competitions and the user`() {
         val pattern = Regex(
-            """WHERE\s+r\.userId\s*=\s*:userId\s+AND\s+c\.status\s*=\s*'completed'""",
+            """WHERE\s+r\.userId\s*=\s*:userId\s+AND\s+\(c\.status\s*=\s*'completed'\s+OR\s+c\.date\s*=\s*:today\)""",
             RegexOption.IGNORE_CASE
         )
         assertTrue(
-            "getChartPointsForUser must filter by user id and completed status",
+            "getChartPointsForUser must filter by user id and completed-or-today status",
             pattern.containsMatchIn(daoSource)
         )
     }

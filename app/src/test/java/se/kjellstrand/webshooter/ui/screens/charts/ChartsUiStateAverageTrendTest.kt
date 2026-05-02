@@ -7,7 +7,7 @@ import java.io.File
 class ChartsUiStateAverageTrendTest {
 
     private val uiStateFile =
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/ResultsTrendsUiState.kt")
+        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsUiState.kt")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 

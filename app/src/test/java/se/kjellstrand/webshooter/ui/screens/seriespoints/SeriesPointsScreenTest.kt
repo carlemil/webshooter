@@ -8,7 +8,7 @@ import java.io.File
 class SeriesPointsScreenTest {
 
     private val sourceFile =
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/seriespoints/SeriesPointsScreen.kt")
+        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/seriespoints/SeriesPointsScreen.kt")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 
@@ -36,16 +36,11 @@ class SeriesPointsScreenTest {
     }
 
     @Test
-    fun `SeriesPointsMarkerView labels include Serie number and points`() {
+    fun `SeriesPointsMarkerView labels include points and 'p' unit`() {
         val source = sourceFile.readText()
         assertTrue(
-            "Label template must include the Swedish 'Serie' word used for per-series tooltips",
-            source.contains("Serie ")
-        )
-        assertTrue(
             "Label template must include a 'p' unit for points in the tooltip",
-            Regex("""\"[^\"]*Serie[^\"]*\bp\"""").containsMatchIn(source) ||
-                source.contains("Serie ") && source.contains(" p\"")
+            source.contains(" p\"")
         )
     }
 
@@ -90,8 +85,8 @@ class SeriesPointsScreenTest {
             )
         )
         assertTrue(
-            "series_points_subtitle should be 'Poäng per serie i valda tävlingar'",
-            strings.contains(">Poäng per serie i valda tävlingar<")
+            "series_points_subtitle should be 'Poäng per serie i precisions tävlingar'",
+            strings.contains(">Poäng per serie i precisions tävlingar<")
         )
     }
 

@@ -7,15 +7,15 @@ import java.io.File
 class UserLegendTest {
 
     private val userLegendFile =
-        File("src/main/java/se/kjellstrand/webshooter/ui/common/UserLegend.kt")
+        File("src/main/java/se/kjellstrand/webshooter/ui/common/ChartLegend.kt")
     private val commonDir = File("src/main/java/se/kjellstrand/webshooter/ui/common")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 
     @Test
-    fun `UserLegend source file exists in ui common`() {
+    fun `ChartLegend source file exists in ui common`() {
         assertTrue(
-            "UserLegend.kt should exist at ui/common/UserLegend.kt",
+            "ChartLegend.kt should exist at ui/common/ChartLegend.kt",
             userLegendFile.exists()
         )
     }
@@ -36,36 +36,36 @@ class UserLegendTest {
     }
 
     @Test
-    fun `UserLegend composable function is declared`() {
+    fun `ChartLegend composable function is declared`() {
         val source = userLegendFile.readText()
         assertTrue(
-            "UserLegend composable should exist and accept items + modifier",
-            source.contains("fun UserLegend(") &&
+            "ChartLegend composable should exist and accept items + modifier",
+            source.contains("fun ChartLegend(") &&
                 source.contains("items: List<UserLegendItem>") &&
                 source.contains("modifier: Modifier")
         )
         assertTrue(
-            "UserLegend should be marked @Composable",
+            "ChartLegend should be marked @Composable",
             source.contains("@Composable")
         )
     }
 
     @Test
-    fun `UserLegend uses FlowRow with scroll state and draws shape per item`() {
+    fun `ChartLegend uses FlowRow with scroll state and draws shape per item`() {
         val source = userLegendFile.readText()
-        assertTrue("UserLegend should lay out with FlowRow", source.contains("FlowRow"))
+        assertTrue("ChartLegend should lay out with FlowRow", source.contains("FlowRow"))
         assertTrue(
-            "UserLegend should scroll vertically via rememberScrollState",
+            "ChartLegend should scroll vertically via rememberScrollState",
             source.contains("verticalScroll") && source.contains("rememberScrollState")
         )
         assertTrue(
-            "UserLegend should draw scatter shapes via a DrawScope helper",
+            "ChartLegend should draw scatter shapes via a DrawScope helper",
             source.contains("drawScatterShape")
         )
     }
 
     @Test
-    fun `UserLegend supports horizontal line shape at index 7`() {
+    fun `ChartLegend supports horizontal line shape at index 7`() {
         val source = userLegendFile.readText()
         assertTrue(
             "drawScatterShape must handle shapeIndex 7 as a horizontal line",
@@ -74,7 +74,7 @@ class UserLegendTest {
     }
 
     @Test
-    fun `UserLegend supports sloped line shape at index 8`() {
+    fun `ChartLegend supports sloped line shape at index 8`() {
         val source = userLegendFile.readText()
         assertTrue(
             "drawScatterShape must handle shapeIndex 8 as a sloped line",
