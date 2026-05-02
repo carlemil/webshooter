@@ -20,7 +20,8 @@ data class ChartDataPoint(
     val date: String,
     val averageSerieScore: Double,
     val weaponClass: String,
-    val resultsType: String
+    val resultsType: String,
+    val competitionTypeName: String? = null
 )
 
 data class Participant(
@@ -38,7 +39,8 @@ data class ChartData(
 data class CompetitionMeta(
     val name: String,
     val date: String,
-    val resultsType: String
+    val resultsType: String,
+    val competitionTypeName: String? = null
 )
 
 @Singleton
@@ -56,6 +58,31 @@ class ChartsRepository @Inject constructor(
 
         val today = LocalDate.now().toString()
         val rows = resultsDao.getChartPointsForUser(userId, today)
+
+        val allWeaponClasses = resultsDao.getAllWeaponClasses()
+        val allParticipants = resultsDao.getAllParticipants().map {
+            Participant(userId = it.userId, fullname = it.fullname)
+        }
+
+        val allCompetitionMeta = mutableMapOf<Long, CompetitionMeta>()
+        val competitionTypeNames = mutableMapOf<Long, String?>()
+        for (competition in competitionsDao.getCompletedCompetitions(today).mapNotNull { it.toDomain(gson) }) {
+            val apiString = try {
+                competition.resultsType.toApiString()
+            } catch (e: Exception) {
+                Log.w(TAG, "Unknown resultsType for competition ${competition.id}, skipping")
+                continue
+            }
+            val typeName = competition.competitionType?.name
+            competitionTypeNames[competition.id] = typeName
+            allCompetitionMeta[competition.id] = CompetitionMeta(
+                name = competition.name,
+                date = competition.date,
+                resultsType = apiString,
+                competitionTypeName = typeName
+            )
+        }
+
         val dataPoints = rows
             .map { row ->
                 ChartDataPoint(
@@ -64,30 +91,11 @@ class ChartsRepository @Inject constructor(
                     date = row.date,
                     averageSerieScore = row.averageScore,
                     weaponClass = row.weaponClassName,
-                    resultsType = row.resultsType
+                    resultsType = row.resultsType,
+                    competitionTypeName = competitionTypeNames[row.competitionId]
                 )
             }
             .sortedBy { it.date }
-
-        val allWeaponClasses = resultsDao.getAllWeaponClasses()
-        val allParticipants = resultsDao.getAllParticipants().map {
-            Participant(userId = it.userId, fullname = it.fullname)
-        }
-
-        val allCompetitionMeta = mutableMapOf<Long, CompetitionMeta>()
-        for (competition in competitionsDao.getCompletedCompetitions(today).mapNotNull { it.toDomain(gson) }) {
-            val apiString = try {
-                competition.resultsType.toApiString()
-            } catch (e: Exception) {
-                Log.w(TAG, "Unknown resultsType for competition ${competition.id}, skipping")
-                continue
-            }
-            allCompetitionMeta[competition.id] = CompetitionMeta(
-                name = competition.name,
-                date = competition.date,
-                resultsType = apiString
-            )
-        }
 
         emit(
             Resource.Success(
@@ -105,7 +113,7 @@ class ChartsRepository @Inject constructor(
     fun getShooterChartData(
         shooterIds: List<Long>,
         competitionIds: List<Long>,
-        @Suppress("UNUSED_PARAMETER") competitionMetadata: Map<Long, CompetitionMeta>
+        competitionMetadata: Map<Long, CompetitionMeta>
     ): Flow<Resource<Map<Long, ChartData>, UserError>> = flow {
         emit(Resource.Loading(true))
 
@@ -121,7 +129,8 @@ class ChartsRepository @Inject constructor(
                     date = row.date,
                     averageSerieScore = row.averageScore,
                     weaponClass = row.weaponClassName,
-                    resultsType = row.resultsType
+                    resultsType = row.resultsType,
+                    competitionTypeName = competitionMetadata[row.competitionId]?.competitionTypeName
                 )
             )
         }
