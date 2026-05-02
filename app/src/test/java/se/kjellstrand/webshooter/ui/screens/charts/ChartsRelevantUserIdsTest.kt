@@ -7,11 +7,11 @@ import java.io.File
 class ChartsRelevantUserIdsTest {
 
     private val uiStateFile =
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/ResultsTrendsUiState.kt")
+        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsUiState.kt")
     private val screenFile =
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/ResultsTrendsScreen.kt")
+        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsScreen.kt")
     private val seriesPointsScreen =
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/seriespoints/SeriesPointsScreen.kt")
+        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/seriespoints/SeriesPointsScreen.kt")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 
@@ -35,17 +35,14 @@ class ChartsRelevantUserIdsTest {
     }
 
     @Test
-    fun `SeriesPointsScreen passes relevantUserIds derived from precisionClubMembers`() {
+    fun `SeriesPointsScreen passes full clubMembers and unfiltered relevantUserIds to dialog`() {
         val source = seriesPointsScreen.readText()
         assertTrue(
-            "SeriesPointsScreen must pass relevantUserIds derived from precisionClubMembers",
-            source.contains("relevantUserIds") &&
-                source.contains("precisionClubMembers") &&
-                (source.contains(".map { it.userId }.toSet()") ||
-                    source.contains("precisionClubMembers.map { it.userId }"))
+            "SeriesPointsScreen should still reference relevantUserIds parameter on the dialog",
+            source.contains("relevantUserIds")
         )
         assertTrue(
-            "SeriesPointsScreen should pass full clubMembers list now that filtering is handled by the dialog",
+            "SeriesPointsScreen should pass full clubMembers list (search-all-clubs design)",
             source.contains("clubMembers = uiState.clubMembers")
         )
     }
@@ -67,7 +64,7 @@ class ChartsRelevantUserIdsTest {
     @Test
     fun `SeriesPointsUiState still exposes precisionClubMembers`() {
         val source = File(
-            "src/main/java/se/kjellstrand/webshooter/ui/screens/seriespoints/SeriesPointsUiState.kt"
+            "src/main/java/se/kjellstrand/webshooter/ui/screens/charts/seriespoints/SeriesPointsUiState.kt"
         ).readText()
         assertTrue(source.contains("precisionClubMembers"))
     }

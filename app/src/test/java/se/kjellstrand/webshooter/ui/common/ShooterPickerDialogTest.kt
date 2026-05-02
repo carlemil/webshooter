@@ -28,16 +28,19 @@ class ShooterPickerDialogTest {
     }
 
     @Test
-    fun `dialog caps both lists to half screen height`() {
+    fun `dialog caps selected list and stretches available list to bottom`() {
         val source = sourceFile.readText()
         assertTrue(
             "Must derive a half-screen max height from LocalConfiguration.current.screenHeightDp",
             source.contains("LocalConfiguration.current.screenHeightDp")
         )
-        val heightInCount = Regex("""heightIn\s*\(\s*max\s*=""").findAll(source).count()
         assertTrue(
-            "Both the selected and the available LazyColumns must apply heightIn(max = ...); found $heightInCount",
-            heightInCount >= 2
+            "Selected LazyColumn must apply heightIn(max = ...) to cap height",
+            Regex("""heightIn\s*\(\s*max\s*=""").containsMatchIn(source)
+        )
+        assertTrue(
+            "Available LazyColumn must use weight(1f) to stretch to dialog bottom",
+            Regex("""\.weight\s*\(\s*1f\s*\)""").containsMatchIn(source)
         )
     }
 

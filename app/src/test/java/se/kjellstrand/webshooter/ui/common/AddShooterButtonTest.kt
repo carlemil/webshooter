@@ -10,9 +10,9 @@ class AddShooterButtonTest {
     private val buttonFile =
         File("src/main/java/se/kjellstrand/webshooter/ui/common/AddShooterButton.kt")
     private val chartsScreen =
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/ResultsTrendsScreen.kt")
+        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsScreen.kt")
     private val seriesPointsScreen =
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/seriespoints/SeriesPointsScreen.kt")
+        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/seriespoints/SeriesPointsScreen.kt")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 

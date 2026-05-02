@@ -6,7 +6,7 @@ import java.io.File
 
 class ClubStatsUiStateTest {
 
-    private val sourceFile = File("src/main/java/se/kjellstrand/webshooter/ui/screens/clubstats/ClubStatsUiState.kt")
+    private val sourceFile = File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/clubstats/ClubStatsUiState.kt")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 
@@ -57,9 +57,9 @@ class ClubStatsUiStateTest {
     // --- Guard tests (should PASS before and after fix) ---
 
     @Test
-    fun `ChartsUiState still exists`() {
+    fun `ResultsTrendsUiState still exists`() {
         assertTrue(
-            File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/ResultsTrendsUiState.kt").exists()
+            File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsUiState.kt").exists()
         )
     }
 

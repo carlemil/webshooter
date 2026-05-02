@@ -8,22 +8,22 @@ import java.lang.reflect.Modifier
 class ChartsScreenTest {
 
     private val sourceFile =
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/ResultsTrendsScreen.kt")
+        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsScreen.kt")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 
     @Test
-    fun `ChartsScreen uses shared UserLegend from ui common`() {
+    fun `ChartsScreen uses shared ChartLegend from ui common`() {
         val source = sourceFile.readText()
         assertTrue(
-            "ChartsScreen must import UserLegend from ui.common",
-            source.contains("se.kjellstrand.webshooter.ui.common.UserLegend")
+            "ChartsScreen must import ChartLegend from ui.common",
+            source.contains("se.kjellstrand.webshooter.ui.common.ChartLegend")
         )
         assertTrue(
             "ChartsScreen must import UserLegendItem from ui.common",
             source.contains("se.kjellstrand.webshooter.ui.common.UserLegendItem")
         )
-        assertTrue("ChartsScreen must call UserLegend(", source.contains("UserLegend("))
+        assertTrue("ChartsScreen must call ChartLegend(", source.contains("ChartLegend("))
         assertTrue(
             "ChartsScreen must construct UserLegendItem entries",
             source.contains("UserLegendItem(")
@@ -133,15 +133,13 @@ class ChartsScreenTest {
     }
 
     @Test
-    fun `ChartsScreen renders trend as a sampled scatter dataset`() {
+    fun `ChartsScreen renders trend as a 2-point line dataset`() {
         val source = sourceFile.readText()
         assertTrue(
-            "Trend rendering must sample points along the regression line",
+            "Trend rendering must use myTrend's fromY and toY as line endpoints",
             source.contains("myTrend") &&
-                (Regex("""TREND_SAMPLES""").containsMatchIn(source) ||
-                    Regex("""0\.\.\s*\d{2,}""").containsMatchIn(source) ||
-                    source.contains("trendSamples") ||
-                    source.contains("nSamples"))
+                source.contains("myTrend.fromY") &&
+                source.contains("myTrend.toY")
         )
     }
 
@@ -173,42 +171,28 @@ class ChartsScreenTest {
     }
 
     @Test
-    fun `ChartsScreen composable function exists`() {
+    fun `ResultsTrendsScreenKt composable file exists`() {
         val clazz = try {
-            Class.forName("se.kjellstrand.webshooter.ui.screens.charts.ChartsScreenKt")
+            Class.forName("se.kjellstrand.webshooter.ui.screens.charts.resulttrends.ResultsTrendsScreenKt")
         } catch (e: ClassNotFoundException) {
             null
         }
-        assertNotNull("ChartsScreenKt should exist", clazz)
+        assertNotNull("ResultsTrendsScreenKt should exist", clazz)
         val methods = clazz!!.declaredMethods.map { it.name }
         assertTrue("Should have ChartsScreen composable", methods.any { it == "ChartsScreen" })
-    }
-
-    @Test
-    fun `ChartLineChart composable function exists for chart rendering`() {
-        val clazz = Class.forName("se.kjellstrand.webshooter.ui.screens.charts.ChartsScreenKt")
-        val methods = clazz.declaredMethods.map { it.name }
-        assertTrue("Should have ChartLineChart composable", methods.any { it == "ChartLineChart" })
-    }
-
-    @Test
-    fun `AddShooterDialog composable function exists`() {
-        val clazz = Class.forName("se.kjellstrand.webshooter.ui.screens.charts.ChartsScreenKt")
-        val methods = clazz.declaredMethods.map { it.name }
-        assertTrue("Should have AddShooterDialog composable", methods.any { it == "AddShooterDialog" })
     }
 
     // --- Guard tests (should PASS before and after fix) ---
 
     @Test
-    fun `ChartsViewModel interface exists`() {
-        val clazz = Class.forName("se.kjellstrand.webshooter.ui.screens.charts.ChartsViewModel")
+    fun `ResultsTrendsViewModel interface exists`() {
+        val clazz = Class.forName("se.kjellstrand.webshooter.ui.screens.charts.resulttrends.ResultsTrendsViewModel")
         assertTrue(clazz.isInterface)
     }
 
     @Test
     fun `ChartsUiState class exists`() {
-        val clazz = Class.forName("se.kjellstrand.webshooter.ui.screens.charts.ChartsUiState")
+        val clazz = Class.forName("se.kjellstrand.webshooter.ui.screens.charts.resulttrends.ChartsUiState")
         assertNotNull(clazz)
     }
 

@@ -42,11 +42,11 @@ class ResultsDaoClubStatsQueryTest {
     @Test
     fun `getClubStats accepts userIds and year parameters`() {
         val pattern = Regex(
-            """fun\s+getClubStats\s*\(\s*userIds\s*:\s*List<Long>\s*,\s*year\s*:\s*Int\s*,\s*classPrefix\s*:\s*String\s*\)""",
+            """fun\s+getClubStats\s*\(\s*userIds\s*:\s*List<Long>\s*,\s*year\s*:\s*Int\s*,\s*classPrefix\s*:\s*String\s*,\s*today\s*:\s*String\s*\)""",
             RegexOption.IGNORE_CASE
         )
         assertTrue(
-            "getClubStats must accept userIds: List<Long> and year: Int",
+            "getClubStats must accept userIds: List<Long>, year: Int, classPrefix: String, today: String",
             pattern.containsMatchIn(daoSource)
         )
     }

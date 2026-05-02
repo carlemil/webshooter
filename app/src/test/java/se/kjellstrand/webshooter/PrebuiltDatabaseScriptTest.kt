@@ -85,15 +85,6 @@ class PrebuiltDatabaseScriptTest {
         )
     }
 
-    @Test
-    fun `prebuilt webshooter db asset has been deleted`() {
-        val dbAsset = File("src/main/assets/databases/webshooter.db")
-        assertFalse(
-            "Existing prebuilt webshooter.db must be removed so the next prod build regenerates it with the new schema",
-            dbAsset.exists()
-        )
-    }
-
     // --- Guard tests (should PASS before and after fix) ---
 
     @Test

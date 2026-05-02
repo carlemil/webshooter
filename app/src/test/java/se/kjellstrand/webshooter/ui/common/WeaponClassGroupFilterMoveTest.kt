@@ -10,9 +10,9 @@ class WeaponClassGroupFilterMoveTest {
     private val newLocation =
         File("src/main/java/se/kjellstrand/webshooter/ui/common/WeaponClassGroupFilter.kt")
     private val oldLocation =
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/seriespoints/WeaponClassGroupFilter.kt")
+        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/seriespoints/WeaponClassGroupFilter.kt")
     private val seriesPointsScreen =
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/seriespoints/SeriesPointsScreen.kt")
+        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/seriespoints/SeriesPointsScreen.kt")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 
@@ -60,7 +60,7 @@ class WeaponClassGroupFilterMoveTest {
     @Test
     fun `WeaponClassGroup enum stays in seriespoints state`() {
         val source = File(
-            "src/main/java/se/kjellstrand/webshooter/ui/screens/seriespoints/SeriesPointsUiState.kt"
+            "src/main/java/se/kjellstrand/webshooter/ui/screens/charts/seriespoints/SeriesPointsUiState.kt"
         ).readText()
         assertTrue(
             "WeaponClassGroup enum must remain in SeriesPointsUiState",
