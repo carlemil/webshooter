@@ -26,27 +26,23 @@ fun WeaponClassGroupFilter(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        WeaponClassGroup.values().forEach { group ->
-            val enabled = group in availableGroups
+        availableGroups.sortedBy { it.ordinal }.forEach { group ->
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.selectable(
                     selected = group == selectedGroup,
-                    enabled = enabled,
                     onClick = { onSelectGroup(group) },
                     role = Role.RadioButton
                 )
             ) {
                 RadioButton(
                     selected = group == selectedGroup,
-                    onClick = null,
-                    enabled = enabled
+                    onClick = null
                 )
                 Text(
                     text = "${group.prefix}*",
                     style = MaterialTheme.typography.bodyMedium,
-                    color = if (enabled) MaterialTheme.colorScheme.onSurface
-                    else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(start = 4.dp)
                 )
             }
