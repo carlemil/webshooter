@@ -5,6 +5,23 @@ import se.kjellstrand.webshooter.data.charts.Participant
 import se.kjellstrand.webshooter.data.club.remote.ClubMember
 import se.kjellstrand.webshooter.ui.screens.charts.seriespoints.WeaponClassGroup
 
+fun groupsForTab(tabKey: String): Set<WeaponClassGroup> = when (tabKey) {
+    "field" -> setOf(
+        WeaponClassGroup.A, WeaponClassGroup.B,
+        WeaponClassGroup.C, WeaponClassGroup.R
+    )
+    MAGNUMPRECISION_TAB_KEY -> setOf(
+        WeaponClassGroup.M1, WeaponClassGroup.M2, WeaponClassGroup.M3,
+        WeaponClassGroup.M4, WeaponClassGroup.M5, WeaponClassGroup.M6,
+        WeaponClassGroup.M7, WeaponClassGroup.M8, WeaponClassGroup.M9,
+    )
+    else -> setOf(WeaponClassGroup.A, WeaponClassGroup.B, WeaponClassGroup.C)
+}
+
+fun defaultGroupForTab(tabKey: String): WeaponClassGroup = when (tabKey) {
+    MAGNUMPRECISION_TAB_KEY -> WeaponClassGroup.M7
+    else -> WeaponClassGroup.C
+}
 
 data class ShooterChartInfo(
     val name: String,

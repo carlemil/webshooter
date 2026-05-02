@@ -72,10 +72,16 @@ class ResultsTrendsViewModelImpl @Inject constructor(
                         val selectedType = _uiState.value.selectedResultsType.ifEmpty {
                             availableTypes.firstOrNull() ?: ""
                         }
+                        val effectiveGroups = groupsForTab(selectedType)
+                        val currentGroup = _uiState.value.selectedGroup
+                        val newGroup = if (currentGroup != null && currentGroup in effectiveGroups) currentGroup
+                                       else defaultGroupForTab(selectedType)
 
                         _uiState.value = _uiState.value.copy(
                             chartData = grouped,
                             availableResultsTypes = availableTypes,
+                            availableGroups = effectiveGroups,
+                            selectedGroup = newGroup,
                             allParticipants = resource.data.allParticipants,
                             selectedResultsType = selectedType,
                             hasError = false
@@ -113,7 +119,12 @@ class ResultsTrendsViewModelImpl @Inject constructor(
     }
 
     override fun selectTab(resultsType: String) {
-        _uiState.value = _uiState.value.copy(selectedResultsType = resultsType)
+        val groups = groupsForTab(resultsType)
+        _uiState.value = _uiState.value.copy(
+            selectedResultsType = resultsType,
+            availableGroups = groups,
+            selectedGroup = defaultGroupForTab(resultsType)
+        )
     }
 
     override fun selectWeaponGroup(group: WeaponClassGroup?) {
