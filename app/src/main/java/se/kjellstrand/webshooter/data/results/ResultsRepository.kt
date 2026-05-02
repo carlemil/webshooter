@@ -26,16 +26,20 @@ open class ResultsRepository @Inject constructor(
         private const val TAG = "ResultsRepository"
     }
 
-    fun get(competitionId: Long): Flow<Resource<ResultsResponse, UserError>> {
+    fun get(
+        competitionId: Long,
+        skipRefreshIfCached: Boolean = false
+    ): Flow<Resource<ResultsResponse, UserError>> {
         return flow {
             emit(Resource.Loading(true))
 
             var hasCached = false
             try {
                 val cached = dao.getByCompetition(competitionId)
-                hasCached = cached.isNotEmpty()
-                if (hasCached) {
+                if (cached.isNotEmpty()) {
+                    hasCached = true
                     emit(Resource.Success(ResultsResponse(results = cached.mapNotNull { it.toDomain(gson) })))
+                    if (skipRefreshIfCached) return@flow
                 }
             } catch (e: Exception) {
                 dao.deleteByCompetition(competitionId)
@@ -60,41 +64,6 @@ open class ResultsRepository @Inject constructor(
             dao.deleteByCompetition(competitionId)
             dao.insertAll(result.results.map { it.toEntity(competitionId, gson) })
 
-            emit(Resource.Success(result))
-        }
-    }
-
-    fun getPreferCached(competitionId: Long): Flow<Resource<ResultsResponse, UserError>> {
-        return flow {
-            emit(Resource.Loading(true))
-            try {
-                val cached = dao.getByCompetition(competitionId)
-                if (cached.isNotEmpty()) {
-                    emit(Resource.Success(ResultsResponse(results = cached.mapNotNull { it.toDomain(gson) })))
-                    return@flow
-                }
-            } catch (e: Exception) {
-                dao.deleteByCompetition(competitionId)
-            }
-
-            val result = try {
-                resultsRemoteDataSource.getResults(competitionId)
-            } catch (e: IOException) {
-                Log.w(TAG, "Error", e)
-                emit(Resource.Error(UserError.IOError))
-                return@flow
-            } catch (e: HttpException) {
-                Log.w(TAG, "Error", e)
-                emit(Resource.Error(UserError.HttpError(e.code())))
-                return@flow
-            } catch (e: Exception) {
-                Log.w(TAG, "Error", e)
-                emit(Resource.Error(UserError.UnknownError))
-                return@flow
-            }
-
-            dao.deleteByCompetition(competitionId)
-            dao.insertAll(result.results.map { it.toEntity(competitionId, gson) })
             emit(Resource.Success(result))
         }
     }

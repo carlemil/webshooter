@@ -68,7 +68,7 @@ class MyResultsViewModelImpl @Inject constructor(
                 launch {
                     val entriesForComp = allEntries.filter { it.competition.id == compId }
                     val newStats = mutableMapOf<Long, ResultStats>()
-                    resultsRepository.getPreferCached(compId).collect { resource ->
+                    resultsRepository.get(compId, skipRefreshIfCached = true).collect { resource ->
                         if (resource is Resource.Success) {
                             resource.data.results.forEach { result ->
                                 val entry =
