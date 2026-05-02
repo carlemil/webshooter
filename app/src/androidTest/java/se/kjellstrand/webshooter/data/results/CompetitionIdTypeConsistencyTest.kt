@@ -15,19 +15,7 @@ class CompetitionIdTypeConsistencyTest {
     @Test
     fun ResultsRepository_get_method_competitionId_parameter_is_Long_type() {
         val method = ResultsRepository::class.java.methods.find {
-            it.name == "get" && it.parameterCount == 1
-        }!!
-        assertEquals(
-            "competitionId parameter should be Long (long)",
-            Long::class.javaPrimitiveType,
-            method.parameterTypes[0]
-        )
-    }
-
-    @Test
-    fun ResultsRepository_getPreferCached_method_competitionId_parameter_is_Long_type() {
-        val method = ResultsRepository::class.java.methods.find {
-            it.name == "getPreferCached" && it.parameterCount == 1
+            it.name == "get" && it.parameterCount == 2
         }!!
         assertEquals(
             "competitionId parameter should be Long (long)",
