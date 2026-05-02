@@ -43,7 +43,6 @@ import com.github.mikephil.charting.highlight.Highlight
 import com.github.mikephil.charting.utils.MPPointF
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.charts.ChartDataPoint
-import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import androidx.compose.ui.graphics.Color
 import se.kjellstrand.webshooter.ui.common.AddShooterButton
 import se.kjellstrand.webshooter.ui.common.CHART_COLORS
@@ -120,11 +119,7 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
                     Tab(
                         selected = type == uiState.selectedResultsType,
                         onClick = { viewModel.selectTab(type) },
-                        text = {
-                            Text(
-                                ResultsType.fromApiString(type)?.displayName
-                                    ?: type.replaceFirstChar { it.uppercase() })
-                        }
+                        text = { Text(trendsTabDisplayName(type)) }
                     )
                 }
             }

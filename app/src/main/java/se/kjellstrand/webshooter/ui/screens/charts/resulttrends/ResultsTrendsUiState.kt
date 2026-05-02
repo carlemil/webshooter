@@ -59,7 +59,7 @@ data class ChartsUiState(
         get() = comparedShooters
             .mapValues { (_, info) ->
                 info.copy(chartData = info.chartData.filter {
-                    it.resultsType == selectedResultsType &&
+                    trendsTabKeyFor(it.competitionTypeName, it.resultsType) == selectedResultsType &&
                         it.averageSerieScore > 0.0 &&
                         (selectedGroup?.matches(it.weaponClass) ?: true)
                 })

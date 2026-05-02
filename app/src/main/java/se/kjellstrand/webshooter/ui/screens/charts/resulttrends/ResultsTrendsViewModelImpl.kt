@@ -59,16 +59,20 @@ class ResultsTrendsViewModelImpl @Inject constructor(
                 when (resource) {
                     is Resource.Success -> {
                         allCompetitionMeta = resource.data.allCompetitionMeta
-                        val grouped = resource.data.dataPoints.groupBy { it.resultsType }
+                        val grouped = resource.data.dataPoints.groupBy {
+                            trendsTabKeyFor(it.competitionTypeName, it.resultsType)
+                        }
                         // Derive available tabs from metadata so they appear as
                         // soon as the repository emits its initial metadata-only
                         // Success — before any datapoints have streamed in.
                         val hiddenTypes = setOf("pointfield")
-                        val availableTypes = resource.data.allCompetitionMeta.values
-                            .map { it.resultsType }
+                        val systemTypes = resource.data.allCompetitionMeta.values
+                            .map { trendsTabKeyFor(it.competitionTypeName, it.resultsType) }
                             .distinct()
                             .filter { it !in hiddenTypes }
-                            .sorted()
+                        val availableTypes = (systemTypes + listOfNotNull(
+                            MAGNUMPRECISION_TAB_KEY.takeIf { grouped.containsKey(MAGNUMPRECISION_TAB_KEY) }
+                        )).distinct().sorted()
                         val selectedType = _uiState.value.selectedResultsType.ifEmpty {
                             availableTypes.firstOrNull() ?: ""
                         }
