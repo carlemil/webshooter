@@ -75,12 +75,10 @@ data class ChartsUiState(
             // so the picker isn't empty during the initial frame.
             if (allParticipantsPoints.isEmpty()) return allParticipants.map { it.userId }.toSet()
             val tabKey = selectedResultsType
-            val group = selectedGroup
             return allParticipantsPoints.entries
                 .filter { (_, points) ->
                     points.any { p ->
-                        trendsTabKeyFor(p.competitionTypeName, p.resultsType) == tabKey &&
-                            (group?.matches(p.weaponClass) ?: true)
+                        trendsTabKeyFor(p.competitionTypeName, p.resultsType) == tabKey
                     }
                 }
                 .map { it.key }
