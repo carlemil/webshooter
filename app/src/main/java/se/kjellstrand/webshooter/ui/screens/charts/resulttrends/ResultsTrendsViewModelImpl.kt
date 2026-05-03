@@ -39,6 +39,7 @@ class ResultsTrendsViewModelImpl @Inject constructor(
                 when (resource) {
                     is Resource.Success -> {
                         currentUserId = resource.data.userId
+                        _uiState.value = _uiState.value.copy(currentUserId = currentUserId)
                         loadChartData(currentUserId)
                     }
                     is Resource.Error -> {
