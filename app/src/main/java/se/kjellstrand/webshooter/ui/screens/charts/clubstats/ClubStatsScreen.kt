@@ -17,6 +17,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -54,6 +57,11 @@ fun ClubStatsScreen(viewModel: ClubStatsViewModel) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
             viewModel.refresh()
         }
+    }
+
+    var highlightedLegendId by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(uiState.year, uiState.selectedGroup) {
+        highlightedLegendId = null
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -105,6 +113,7 @@ fun ClubStatsScreen(viewModel: ClubStatsViewModel) {
         ) {
             ClubStatsScatterChart(
                 shooterStats = uiState.shooterStats,
+                highlightedId = highlightedLegendId,
                 modifier = Modifier
                     .weight(1f)
                     .heightIn(min = screenHeight * CHART_MIN_HEIGHT_FRACTION)
@@ -115,7 +124,8 @@ fun ClubStatsScreen(viewModel: ClubStatsViewModel) {
                 UserLegendItem(
                     label = stats.fullname,
                     color = Color(CHART_COLORS[index % CHART_COLORS.size]),
-                    shapeIndex = index % CHART_SHAPE_RENDERERS.size
+                    shapeIndex = index % CHART_SHAPE_RENDERERS.size,
+                    id = "shooter:${stats.userId}"
                 )
             }
             ChartLegend(
@@ -123,7 +133,11 @@ fun ClubStatsScreen(viewModel: ClubStatsViewModel) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .heightIn(max = screenHeight * (1f - CHART_MIN_HEIGHT_FRACTION))
-                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                highlightedId = highlightedLegendId,
+                onItemClick = { id ->
+                    highlightedLegendId = if (highlightedLegendId == id) null else id
+                }
             )
         }
     }
@@ -153,11 +167,15 @@ private class ShooterMarkerView(
     }
 }
 
+private const val CS_DIMMED_ALPHA = 64
+private fun Int.csDimmed(): Int = (this and 0x00FFFFFF) or (CS_DIMMED_ALPHA shl 24)
+
 @SuppressLint("ClickableViewAccessibility")
 @Composable
 fun ClubStatsScatterChart(
     shooterStats: List<ShooterStats>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    highlightedId: String? = null
 ) {
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface.toArgb()
     val scatterShapeSizePx = with(androidx.compose.ui.platform.LocalDensity.current) { 24.dp.toPx() }
@@ -174,7 +192,7 @@ fun ClubStatsScatterChart(
         update = { chart ->
             val signature = shooterStats.joinToString(",") {
                 "${it.userId}:${it.averagePoints}:${it.competitionCount}"
-            }
+            } + "!" + (highlightedId ?: "")
             if (chart.tag == signature) {
                 return@AndroidView
             }
@@ -188,8 +206,12 @@ fun ClubStatsScatterChart(
                 ).apply {
                     data = index
                 }
+                val baseColor = CHART_COLORS[index % CHART_COLORS.size]
+                val shooterId = "shooter:${stats.userId}"
+                val effectiveColor = if (highlightedId != null && highlightedId != shooterId)
+                    baseColor.csDimmed() else baseColor
                 ScatterDataSet(listOf(entry), stats.fullname).apply {
-                    color = CHART_COLORS[index % CHART_COLORS.size]
+                    color = effectiveColor
                     shapeRenderer = CHART_SHAPE_RENDERERS[index % CHART_SHAPE_RENDERERS.size]
                     scatterShapeSize = scatterShapeSizeDp
                     setDrawValues(false)

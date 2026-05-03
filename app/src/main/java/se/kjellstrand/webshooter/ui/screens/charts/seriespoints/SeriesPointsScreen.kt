@@ -19,6 +19,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
@@ -111,6 +114,16 @@ private fun SeriesPointsContent(
     uiState: SeriesPointsUiState,
     viewModel: SeriesPointsViewModel
 ) {
+    var highlightedLegendId by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(
+        uiState.selectedUserId,
+        uiState.selectedYear,
+        uiState.selectedGroup,
+        uiState.competitions.size
+    ) {
+        highlightedLegendId = null
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
             text = uiState.selectedUserName,
@@ -169,6 +182,7 @@ private fun SeriesPointsContent(
                 competitions = competitions,
                 seriesAverage = uiState.seriesAverage,
                 seriesTrend = uiState.seriesTrend,
+                highlightedId = highlightedLegendId,
                 modifier = Modifier
                     .height(screenHeight * CHART_MIN_HEIGHT_FRACTION)
                     .fillMaxWidth()
@@ -181,7 +195,8 @@ private fun SeriesPointsContent(
                         UserLegendItem(
                             label = stringResource(R.string.charts_legend_average),
                             color = Color(CHART_COLORS[1]),
-                            shapeIndex = 7
+                            shapeIndex = 7,
+                            id = SP_LEGEND_ID_AVERAGE
                         )
                     )
                 }
@@ -190,7 +205,8 @@ private fun SeriesPointsContent(
                         UserLegendItem(
                             label = stringResource(R.string.charts_legend_trend),
                             color = Color(CHART_COLORS[7]),
-                            shapeIndex = 8
+                            shapeIndex = 8,
+                            id = SP_LEGEND_ID_TREND
                         )
                     )
                 }
@@ -201,7 +217,8 @@ private fun SeriesPointsContent(
                         UserLegendItem(
                             label = "${comp.date} ${comp.competitionName}",
                             color = Color(colorForAge(indexFromNewest, total)),
-                            shapeIndex = 7
+                            shapeIndex = 7,
+                            id = competitionLegendId(comp)
                         )
                     )
                 }
@@ -212,7 +229,11 @@ private fun SeriesPointsContent(
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(1f)
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    highlightedId = highlightedLegendId,
+                    onItemClick = { id ->
+                        highlightedLegendId = if (highlightedLegendId == id) null else id
+                    }
                 )
             }
         }
@@ -249,13 +270,23 @@ private class SeriesPointsMarkerView(
 private val TREND_COLOR_ARGB: Int = CHART_COLORS[7]
 private val AVERAGE_COLOR_ARGB: Int = CHART_COLORS[1]
 
+internal const val SP_LEGEND_ID_AVERAGE = "average"
+internal const val SP_LEGEND_ID_TREND = "trend"
+internal const val SP_LEGEND_ID_COMP_PREFIX = "comp:"
+internal fun competitionLegendId(comp: CompetitionSeries): String =
+    "$SP_LEGEND_ID_COMP_PREFIX${comp.competitionId}"
+
+private const val SP_DIMMED_ALPHA = 64
+private fun Int.spDimmed(): Int = (this and 0x00FFFFFF) or (SP_DIMMED_ALPHA shl 24)
+
 @SuppressLint("ClickableViewAccessibility")
 @Composable
 private fun SeriesPointsChart(
     competitions: List<CompetitionSeries>,
     seriesAverage: Float?,
     seriesTrend: SeriesPointsUiState.TrendLine?,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    highlightedId: String? = null
 ) {
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface.toArgb()
 
@@ -287,6 +318,7 @@ private fun SeriesPointsChart(
                     append(seriesTrend.fromX).append(',').append(seriesTrend.fromY).append(';')
                         .append(seriesTrend.toX).append(',').append(seriesTrend.toY)
                 }
+                append('!').append(highlightedId ?: "")
             }
             if (chart.tag == signature) return@AndroidView
             chart.tag = signature
@@ -309,7 +341,10 @@ private fun SeriesPointsChart(
                 }
                 val perEntryLabels = comp.seriesPoints.map { points -> "$points p" }
                 val isLatest = indexFromNewest == 0
-                val lineColor = colorForAge(indexFromNewest, total)
+                val baseLineColor = colorForAge(indexFromNewest, total)
+                val compId = competitionLegendId(comp)
+                val lineColor = if (highlightedId != null && highlightedId != compId)
+                    baseLineColor.spDimmed() else baseLineColor
                 val label = "${comp.date} ${comp.competitionName}"
                 val dataSet = LineDataSet(entries, label).apply {
                     color = lineColor
@@ -342,8 +377,10 @@ private fun SeriesPointsChart(
                     Entry(seriesTrend.fromX, seriesTrend.fromY),
                     Entry(seriesTrend.toX, seriesTrend.toY)
                 )
+                val trendColor = if (highlightedId != null && highlightedId != SP_LEGEND_ID_TREND)
+                    TREND_COLOR_ARGB.spDimmed() else TREND_COLOR_ARGB
                 val trendDataSet = LineDataSet(trendEntries, "Trend").apply {
-                    color = TREND_COLOR_ARGB
+                    color = trendColor
                     lineWidth = 2f
                     setDrawCircles(false)
                     setDrawValues(false)
@@ -363,8 +400,10 @@ private fun SeriesPointsChart(
 
             chart.axisLeft.removeAllLimitLines()
             if (seriesAverage != null) {
+                val avgColor = if (highlightedId != null && highlightedId != SP_LEGEND_ID_AVERAGE)
+                    AVERAGE_COLOR_ARGB.spDimmed() else AVERAGE_COLOR_ARGB
                 val avgLine = LimitLine(seriesAverage).apply {
-                    lineColor = AVERAGE_COLOR_ARGB
+                    lineColor = avgColor
                     lineWidth = 2f
                 }
                 chart.axisLeft.addLimitLine(avgLine)

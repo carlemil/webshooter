@@ -1,6 +1,7 @@
 package se.kjellstrand.webshooter.ui.common
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -13,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
@@ -28,6 +30,7 @@ data class UserLegendItem(
     val label: String,
     val color: Color,
     val shapeIndex: Int,
+    val id: String = label,
 )
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -35,6 +38,8 @@ data class UserLegendItem(
 fun ChartLegend(
     items: List<UserLegendItem>,
     modifier: Modifier = Modifier,
+    highlightedId: String? = null,
+    onItemClick: ((String) -> Unit)? = null,
 ) {
     FlowRow(
         modifier = modifier.verticalScroll(rememberScrollState()),
@@ -42,9 +47,14 @@ fun ChartLegend(
         verticalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         items.forEach { item ->
+            val dimmed = highlightedId != null && highlightedId != item.id
+            val rowModifier = if (onItemClick != null) {
+                Modifier.clickable { onItemClick(item.id) }
+            } else Modifier
             Row(
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = rowModifier.alpha(if (dimmed) 0.35f else 1f)
             ) {
                 Canvas(modifier = Modifier.size(24.dp)) {
                     drawScatterShape(item.shapeIndex, item.color)

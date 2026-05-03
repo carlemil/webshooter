@@ -19,6 +19,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
@@ -107,6 +110,15 @@ fun ChartsScreen(viewModel: ResultsTrendsViewModel) {
 
 @Composable
 private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewModel) {
+    var highlightedLegendId by remember { mutableStateOf<String?>(null) }
+    LaunchedEffect(
+        uiState.selectedResultsType,
+        uiState.selectedGroup,
+        uiState.comparedShooters.keys
+    ) {
+        highlightedLegendId = null
+    }
+
     Column(modifier = Modifier.fillMaxSize()) {
         if (uiState.availableResultsTypes.isNotEmpty()) {
             val selectedIndex = uiState.availableResultsTypes.indexOf(uiState.selectedResultsType)
@@ -150,6 +162,7 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
                 myAverage = uiState.myAverage,
                 myTrend = uiState.myTrend,
                 isHitsBased = isHitsBased,
+                highlightedId = highlightedLegendId,
                 modifier = Modifier
                     .weight(1f)
                     .heightIn(min = screenHeight * CHART_MIN_HEIGHT_FRACTION)
@@ -162,11 +175,12 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
                         UserLegendItem(
                             label = stringResource(R.string.charts_my_results),
                             color = Color(CHART_COLORS[0]),
-                            shapeIndex = 0
+                            shapeIndex = 0,
+                            id = LEGEND_ID_ME
                         )
                     )
                 }
-                comparedShooters.entries.forEachIndexed { index, (_, info) ->
+                comparedShooters.entries.forEachIndexed { index, (userId, info) ->
                     if (info.chartData.isNotEmpty()) {
                         val colorIndex = (index + 1) % CHART_COLORS.size
                         val shapeIndex = (index + 1) % CHART_SHAPE_RENDERERS.size
@@ -174,7 +188,8 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
                             UserLegendItem(
                                 label = info.name,
                                 color = Color(CHART_COLORS[colorIndex]),
-                                shapeIndex = shapeIndex
+                                shapeIndex = shapeIndex,
+                                id = "$LEGEND_ID_COMPARED_PREFIX$userId"
                             )
                         )
                     }
@@ -184,7 +199,8 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
                         UserLegendItem(
                             label = stringResource(R.string.charts_legend_average),
                             color = Color(AVERAGE_COLOR_ARGB),
-                            shapeIndex = 7
+                            shapeIndex = 7,
+                            id = LEGEND_ID_AVERAGE
                         )
                     )
                 }
@@ -193,7 +209,8 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
                         UserLegendItem(
                             label = stringResource(R.string.charts_legend_trend),
                             color = Color(TREND_COLOR_ARGB),
-                            shapeIndex = 8
+                            shapeIndex = 8,
+                            id = LEGEND_ID_TREND
                         )
                     )
                 }
@@ -204,7 +221,11 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
                     modifier = Modifier
                         .fillMaxWidth()
                         .heightIn(max = screenHeight * (1f - CHART_MIN_HEIGHT_FRACTION))
-                        .padding(horizontal = 16.dp, vertical = 8.dp)
+                        .padding(horizontal = 16.dp, vertical = 8.dp),
+                    highlightedId = highlightedLegendId,
+                    onItemClick = { id ->
+                        highlightedLegendId = if (highlightedLegendId == id) null else id
+                    }
                 )
             }
         } else if (!uiState.isLoading && !hasAnyData) {
@@ -251,6 +272,15 @@ private class ChartsMarkerView(
 private val AVERAGE_COLOR_ARGB: Int = android.graphics.Color.rgb(127, 255, 0)
 private val TREND_COLOR_ARGB: Int = android.graphics.Color.rgb(0, 255, 64)
 
+internal const val LEGEND_ID_ME = "me"
+internal const val LEGEND_ID_COMPARED_PREFIX = "compared:"
+internal const val LEGEND_ID_AVERAGE = "average"
+internal const val LEGEND_ID_TREND = "trend"
+
+private const val DIMMED_ALPHA = 64
+
+private fun Int.dimmed(): Int = (this and 0x00FFFFFF) or (DIMMED_ALPHA shl 24)
+
 @SuppressLint("ClickableViewAccessibility")
 @Composable
 fun ChartScatterChart(
@@ -259,7 +289,8 @@ fun ChartScatterChart(
     myAverage: Float?,
     myTrend: ChartsUiState.TrendLine?,
     isHitsBased: Boolean,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    highlightedId: String? = null
 ) {
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface.toArgb()
     val myResultsLabel = stringResource(R.string.charts_my_results)
@@ -308,6 +339,7 @@ fun ChartScatterChart(
                         .append(myTrend.toX).append(',').append(myTrend.toY)
                 }
                 append('|').append(isHitsBased)
+                append('!').append(highlightedId ?: "")
             }
             if (chart.tag == signature) {
                 return@AndroidView
@@ -319,6 +351,9 @@ fun ChartScatterChart(
             val labelMap = mutableMapOf<Int, String>()
             var tagCounter = 0
 
+            fun colorFor(id: String, baseColor: Int): Int =
+                if (highlightedId != null && highlightedId != id) baseColor.dimmed() else baseColor
+
             // My data
             if (myData.isNotEmpty()) {
                 val entries = myData.sortedBy { it.date }.map { dp ->
@@ -329,7 +364,7 @@ fun ChartScatterChart(
                     }
                 }
                 val myDataSet = ScatterDataSet(entries, myResultsLabel).apply {
-                    color = CHART_COLORS[0]
+                    color = colorFor(LEGEND_ID_ME, CHART_COLORS[0])
                     shapeRenderer = CHART_SHAPE_RENDERERS[0]
                     scatterShapeSize = scatterShapeSizeDp
                     setDrawValues(false)
@@ -338,7 +373,7 @@ fun ChartScatterChart(
             }
 
             // Compared shooters
-            comparedShooters.entries.forEachIndexed { index, (_, info) ->
+            comparedShooters.entries.forEachIndexed { index, (userId, info) ->
                 if (info.chartData.isNotEmpty()) {
                     val colorIndex = (index + 1) % CHART_COLORS.size
                     val shapeIndex = (index + 1) % CHART_SHAPE_RENDERERS.size
@@ -350,7 +385,7 @@ fun ChartScatterChart(
                         }
                     }
                     val dataSet = ScatterDataSet(entries, info.name).apply {
-                        color = CHART_COLORS[colorIndex]
+                        color = colorFor("$LEGEND_ID_COMPARED_PREFIX$userId", CHART_COLORS[colorIndex])
                         shapeRenderer = CHART_SHAPE_RENDERERS[shapeIndex]
                         scatterShapeSize = scatterShapeSizeDp
                         setDrawValues(false)
@@ -371,7 +406,7 @@ fun ChartScatterChart(
                         Entry(lastChartX, myTrend.toY)
                     )
                     LineDataSet(trendEntries, "Trend").apply {
-                        color = TREND_COLOR_ARGB
+                        color = colorFor(LEGEND_ID_TREND, TREND_COLOR_ARGB)
                         lineWidth = 2f
                         setDrawCircles(false)
                         setDrawValues(false)
@@ -409,7 +444,7 @@ fun ChartScatterChart(
             chart.axisLeft.removeAllLimitLines()
             if (myAverage != null) {
                 val avgLine = LimitLine(myAverage).apply {
-                    lineColor = AVERAGE_COLOR_ARGB
+                    lineColor = colorFor(LEGEND_ID_AVERAGE, AVERAGE_COLOR_ARGB)
                     lineWidth = 2f
                 }
                 chart.axisLeft.addLimitLine(avgLine)
