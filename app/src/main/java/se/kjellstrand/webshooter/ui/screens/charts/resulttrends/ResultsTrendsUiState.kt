@@ -43,6 +43,7 @@ data class ChartsUiState(
     val hasError: Boolean = false,
     val clubMembers: List<ClubMember> = emptyList(),
     val allParticipants: List<Participant> = emptyList(),
+    val allParticipantsPoints: Map<Long, List<ChartDataPoint>> = emptyMap(),
     val searchQuery: String = "",
     val showSearchDialog: Boolean = false
 ) {
@@ -69,7 +70,22 @@ data class ChartsUiState(
             .toMap()
 
     val relevantUserIds: Set<Long>
-        get() = allParticipants.map { it.userId }.toSet()
+        get() {
+            // While participant points are still loading, fall back to all participants
+            // so the picker isn't empty during the initial frame.
+            if (allParticipantsPoints.isEmpty()) return allParticipants.map { it.userId }.toSet()
+            val tabKey = selectedResultsType
+            val group = selectedGroup
+            return allParticipantsPoints.entries
+                .filter { (_, points) ->
+                    points.any { p ->
+                        trendsTabKeyFor(p.competitionTypeName, p.resultsType) == tabKey &&
+                            (group?.matches(p.weaponClass) ?: true)
+                    }
+                }
+                .map { it.key }
+                .toSet()
+        }
 
     val myAverage: Float?
         get() = filteredChartData.takeIf { it.isNotEmpty() }

@@ -90,6 +90,7 @@ class ResultsTrendsViewModelImpl @Inject constructor(
                             selectedResultsType = selectedType,
                             hasError = false
                         )
+                        loadAllParticipantsPoints(resource.data.allParticipants.map { it.userId })
                     }
                     is Resource.Error -> {
                         _uiState.value = _uiState.value.copy(
@@ -102,6 +103,25 @@ class ResultsTrendsViewModelImpl @Inject constructor(
                             isLoading = resource.isLoading
                         )
                     }
+                }
+            }
+        }
+    }
+
+    private fun loadAllParticipantsPoints(participantIds: List<Long>) {
+        if (participantIds.isEmpty()) return
+        val competitionIds = allCompetitionMeta.keys.toList()
+        if (competitionIds.isEmpty()) return
+        val metadata = allCompetitionMeta
+        viewModelScope.launch {
+            chartsRepository.getShooterChartData(
+                shooterIds = participantIds,
+                competitionIds = competitionIds,
+                competitionMetadata = metadata
+            ).collect { resource ->
+                if (resource is Resource.Success) {
+                    val points = resource.data.mapValues { (_, data) -> data.dataPoints }
+                    _uiState.value = _uiState.value.copy(allParticipantsPoints = points)
                 }
             }
         }
