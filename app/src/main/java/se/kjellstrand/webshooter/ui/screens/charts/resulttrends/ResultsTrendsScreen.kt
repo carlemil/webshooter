@@ -129,7 +129,8 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
             availableGroups = uiState.availableGroups,
             selectedGroup = uiState.selectedGroup,
             onSelectGroup = viewModel::selectWeaponGroup,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
+            modifier = Modifier.align(Alignment.CenterHorizontally),
+            showAllOption = uiState.selectedResultsType == MAGNUMPRECISION_TAB_KEY
         )
 
         val chartData = uiState.filteredChartData

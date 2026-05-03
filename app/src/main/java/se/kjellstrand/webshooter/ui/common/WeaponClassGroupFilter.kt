@@ -20,8 +20,9 @@ import se.kjellstrand.webshooter.ui.screens.charts.seriespoints.WeaponClassGroup
 fun WeaponClassGroupFilter(
     availableGroups: Set<WeaponClassGroup>,
     selectedGroup: WeaponClassGroup?,
-    onSelectGroup: (WeaponClassGroup) -> Unit,
-    modifier: Modifier = Modifier
+    onSelectGroup: (WeaponClassGroup?) -> Unit,
+    modifier: Modifier = Modifier,
+    showAllOption: Boolean = false
 ) {
     Row(
         modifier = modifier
@@ -30,26 +31,43 @@ fun WeaponClassGroupFilter(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        availableGroups.sortedBy { it.ordinal }.forEach { group ->
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.selectable(
-                    selected = group == selectedGroup,
-                    onClick = { onSelectGroup(group) },
-                    role = Role.RadioButton
-                )
-            ) {
-                RadioButton(
-                    selected = group == selectedGroup,
-                    onClick = null
-                )
-                Text(
-                    text = "${group.prefix}*",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    modifier = Modifier.padding(start = 4.dp)
-                )
-            }
+        if (showAllOption) {
+            GroupRadio(
+                label = "Alla",
+                selected = selectedGroup == null,
+                onClick = { onSelectGroup(null) }
+            )
         }
+        availableGroups.sortedBy { it.ordinal }.forEach { group ->
+            // Single-char prefixes (A, B, C, R) get a trailing "*" because they
+            // match any class starting with that letter; multi-char prefixes
+            // (M1..M9) name a single class and read better without the star.
+            val label = if (group.prefix.length == 1) "${group.prefix}*" else group.prefix
+            GroupRadio(
+                label = label,
+                selected = group == selectedGroup,
+                onClick = { onSelectGroup(group) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun GroupRadio(label: String, selected: Boolean, onClick: () -> Unit) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.selectable(
+            selected = selected,
+            onClick = onClick,
+            role = Role.RadioButton
+        )
+    ) {
+        RadioButton(selected = selected, onClick = null)
+        Text(
+            text = label,
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.padding(start = 4.dp)
+        )
     }
 }

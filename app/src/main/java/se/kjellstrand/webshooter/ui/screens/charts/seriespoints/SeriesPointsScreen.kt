@@ -145,7 +145,7 @@ private fun SeriesPointsContent(
         WeaponClassGroupFilter(
             availableGroups = uiState.availableGroups,
             selectedGroup = uiState.selectedGroup,
-            onSelectGroup = viewModel::selectWeaponGroup,
+            onSelectGroup = { group -> group?.let(viewModel::selectWeaponGroup) },
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
 
