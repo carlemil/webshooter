@@ -14,6 +14,12 @@ interface CompetitionsDao {
     @Query("SELECT * FROM competitions WHERE status = 'completed' OR date = :today ORDER BY date DESC")
     suspend fun getCompletedCompetitions(today: String): List<CompetitionEntity>
 
+    @Query("SELECT * FROM competitions")
+    suspend fun getAll(): List<CompetitionEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(competitions: List<CompetitionEntity>)
+
+    @Query("DELETE FROM competitions WHERE id IN (:ids)")
+    suspend fun deleteByIds(ids: List<Long>)
 }

@@ -16,6 +16,9 @@ interface ResultsDao {
     @Query("DELETE FROM results WHERE competitionsId = :competitionId")
     suspend fun deleteByCompetition(competitionId: Long)
 
+    @Query("SELECT DISTINCT competitionsId FROM results")
+    suspend fun getCompetitionIdsWithResults(): List<Long>
+
     @Query(
         """SELECT r.competitionsId AS competitionId,
                   c.name AS competitionName,

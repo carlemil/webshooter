@@ -32,6 +32,7 @@ class ChartsRepositoryDaoQueryTest {
         override suspend fun getByCompetition(competitionId: Long): List<ResultEntity> = emptyList()
         override suspend fun insertAll(results: List<ResultEntity>) {}
         override suspend fun deleteByCompetition(competitionId: Long) {}
+        override suspend fun getCompetitionIdsWithResults(): List<Long> = emptyList()
         override suspend fun getChartPointsForUser(userId: Long, today: String): List<ChartPointRow> {
             getChartPointsForUserCalls++
             lastUserId = userId
@@ -60,7 +61,9 @@ class ChartsRepositoryDaoQueryTest {
     ) : CompetitionsDao {
         override fun observeAll(): Flow<List<CompetitionEntity>> = flowOf(completed)
         override suspend fun getCompletedCompetitions(today: String): List<CompetitionEntity> = completed
+        override suspend fun getAll(): List<CompetitionEntity> = completed
         override suspend fun insertAll(competitions: List<CompetitionEntity>) {}
+        override suspend fun deleteByIds(ids: List<Long>) {}
     }
 
     private fun competition(id: Long, name: String, date: String, type: String) = CompetitionEntity(

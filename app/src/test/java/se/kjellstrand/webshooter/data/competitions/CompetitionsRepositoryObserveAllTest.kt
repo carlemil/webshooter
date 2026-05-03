@@ -18,6 +18,8 @@ import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsRemoteData
 import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsResponse
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
+import se.kjellstrand.webshooter.data.competitions.testing.NoOpResultsRepository
+import se.kjellstrand.webshooter.data.competitions.testing.NoOpResultsDao
 
 class CompetitionsRepositoryObserveAllTest {
 
@@ -60,11 +62,13 @@ class CompetitionsRepositoryObserveAllTest {
     ) : CompetitionsDao {
         override fun observeAll(): Flow<List<CompetitionEntity>> = flowOf(observed)
         override suspend fun getCompletedCompetitions(today: String): List<CompetitionEntity> = emptyList()
+        override suspend fun getAll(): List<CompetitionEntity> = observed
         override suspend fun insertAll(competitions: List<CompetitionEntity>) {}
+        override suspend fun deleteByIds(ids: List<Long>) {}
     }
 
     private fun buildRepo(dao: FakeDao = FakeDao()) =
-        CompetitionsRepository(FakeRemote(), dao, gson)
+        CompetitionsRepository(FakeRemote(), dao, gson, NoOpResultsRepository(), NoOpResultsDao())
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 

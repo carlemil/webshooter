@@ -68,15 +68,27 @@ open class ResultsRepository @Inject constructor(
         }
     }
 
+    open suspend fun refreshResultsFor(competitionId: Long) {
+        try {
+            val fresh = resultsRemoteDataSource.getResults(competitionId)
+            dao.deleteByCompetition(competitionId)
+            dao.insertAll(fresh.results.map { it.toEntity(competitionId, gson) })
+        } catch (e: Exception) {
+            Log.w(TAG, "refreshResultsFor($competitionId) failed; invalidating cache", e)
+            try {
+                dao.deleteByCompetition(competitionId)
+            } catch (_: Exception) {
+            }
+        }
+    }
+
     fun getShooterResults(competitionId: Long, shooterId: Long): Flow<Resource<ResultsResponse, UserError>> {
         return flow {
             emit(Resource.Loading(true))
 
-            var hasCached = false
             try {
                 val cached = dao.getByCompetition(competitionId)
                 if (cached.isNotEmpty()) {
-                    hasCached = true
                     val filtered = cached.mapNotNull { it.toDomain(gson) }
                         .filter { it.signup.user.userID == shooterId }
                     emit(Resource.Success(ResultsResponse(results = filtered)))

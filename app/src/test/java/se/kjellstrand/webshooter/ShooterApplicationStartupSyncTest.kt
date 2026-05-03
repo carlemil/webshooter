@@ -80,6 +80,22 @@ class ShooterApplicationStartupSyncTest {
     }
 
     @Test
+    fun `ShooterApplication onCreate no longer references the cache TTL`() {
+        assertFalse(
+            "Startup should sync unconditionally — TTL constant must be gone",
+            applicationSource.contains("COMPETITIONS_CACHE_TTL_MS")
+        )
+        assertFalse(
+            "Startup should not gate sync on the last-sync timestamp",
+            applicationSource.contains("getCompetitionsLastSync")
+        )
+        assertFalse(
+            "Startup should not stamp the last-sync timestamp",
+            applicationSource.contains("setCompetitionsLastSync")
+        )
+    }
+
+    @Test
     fun `ShooterApplication has applicationScope field of CoroutineScope type`() {
         val field = ShooterApplication::class.java.declaredFields.find {
             it.name == "applicationScope"

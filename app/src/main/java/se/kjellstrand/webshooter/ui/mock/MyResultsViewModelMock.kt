@@ -13,4 +13,5 @@ class MyResultsViewModelMock(
 ) : MyResultsViewModel {
     override val uiState: StateFlow<MyResultsUiState> = MutableStateFlow(initialState)
     override fun reload() {}
+    override fun onScreenOpened() {}
 }

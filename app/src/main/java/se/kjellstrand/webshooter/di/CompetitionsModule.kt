@@ -9,6 +9,8 @@ import retrofit2.Retrofit
 import se.kjellstrand.webshooter.data.competitions.CompetitionsRepository
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionsDao
 import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsRemoteDataSource
+import se.kjellstrand.webshooter.data.results.ResultsRepository
+import se.kjellstrand.webshooter.data.results.local.ResultsDao
 import javax.inject.Singleton
 
 @Module
@@ -26,8 +28,10 @@ class CompetitionsModule {
     fun providesCompetitionsRepository(
         competitionsRemoteDataSource: CompetitionsRemoteDataSource,
         dao: CompetitionsDao,
-        gson: Gson
+        gson: Gson,
+        resultsRepository: ResultsRepository,
+        resultsDao: ResultsDao
     ) : CompetitionsRepository {
-        return CompetitionsRepository(competitionsRemoteDataSource, dao, gson)
+        return CompetitionsRepository(competitionsRemoteDataSource, dao, gson, resultsRepository, resultsDao)
     }
 }

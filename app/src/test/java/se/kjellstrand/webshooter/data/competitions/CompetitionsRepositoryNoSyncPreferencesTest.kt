@@ -1,5 +1,6 @@
 package se.kjellstrand.webshooter.data.competitions
 
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Test
@@ -23,12 +24,14 @@ class CompetitionsRepositoryNoSyncPreferencesTest {
     }
 
     @Test
-    fun `CompetitionsRepository constructor has exactly 3 parameters`() {
+    fun `CompetitionsRepository constructor does not depend on SyncPreferences`() {
         val constructors = CompetitionsRepository::class.java.constructors
-        val threeParamCtor = constructors.firstOrNull { it.parameterCount == 3 }
-        assertNotNull(
-            "CompetitionsRepository should have a 3-parameter constructor (remote, dao, gson) after SyncPreferences removal",
-            threeParamCtor
+        val takesSyncPrefs = constructors.any { c ->
+            c.parameterTypes.any { it.name.endsWith("SyncPreferences") }
+        }
+        assertFalse(
+            "CompetitionsRepository must not have a SyncPreferences ctor parameter",
+            takesSyncPrefs
         )
     }
 

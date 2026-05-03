@@ -1,5 +1,6 @@
 package se.kjellstrand.webshooter.ui.screens.myresults
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -9,8 +10,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.joinAll
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.data.common.Resource
+import se.kjellstrand.webshooter.data.competitions.CompetitionsRepository
 import se.kjellstrand.webshooter.data.mysignups.SignupsRepository
 import se.kjellstrand.webshooter.data.mysignups.remote.SignupEntry
 import se.kjellstrand.webshooter.data.results.ResultsRepository
@@ -19,16 +22,33 @@ import javax.inject.Inject
 @HiltViewModel
 class MyResultsViewModelImpl @Inject constructor(
     private val signupsRepository: SignupsRepository,
-    private val resultsRepository: ResultsRepository
+    private val resultsRepository: ResultsRepository,
+    private val competitionsRepository: CompetitionsRepository
 ) : ViewModel(), MyResultsViewModel {
 
     private val _uiState = MutableStateFlow(MyResultsUiState(isLoading = true))
     override val uiState: StateFlow<MyResultsUiState> = _uiState.asStateFlow()
 
     private var computeJob: Job? = null
+    private var hasSyncedOnce = false
 
     init {
         load()
+    }
+
+    override fun onScreenOpened() {
+        if (hasSyncedOnce) return
+        hasSyncedOnce = true
+        viewModelScope.launch {
+            try {
+                competitionsRepository.syncAll()
+            } catch (e: Exception) {
+                Log.w(TAG, "MyResults onScreenOpened sync failed", e)
+                return@launch
+            }
+            val current = _uiState.value.groupedEntries
+            if (current.isNotEmpty()) fetchResultStats(current)
+        }
     }
 
     private fun load() {
@@ -89,7 +109,7 @@ class MyResultsViewModelImpl @Inject constructor(
                     }
                 }
             }
-            jobs.forEach { it.join() }
+            jobs.joinAll()
             _uiState.update { it.copy(isLoadingStats = false) }
         }
     }
@@ -228,5 +248,9 @@ class MyResultsViewModelImpl @Inject constructor(
     override fun reload() {
         _uiState.value = MyResultsUiState(isLoading = true)
         load()
+    }
+
+    companion object {
+        private const val TAG = "MyResultsViewModel"
     }
 }
