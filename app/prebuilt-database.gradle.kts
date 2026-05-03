@@ -27,6 +27,7 @@ val generatePrebuiltDatabase = tasks.register("generatePrebuiltDatabase") {
 
     inputs.dir(schemaDir)
     outputs.file(dbFile)
+    outputs.upToDateWhen { false }
 
     doLast {
         val schemaFile = File(schemaDir, "$appVersionCode.json")
