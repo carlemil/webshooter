@@ -7,18 +7,15 @@ import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okio.IOException
-import se.kjellstrand.webshooter.BuildConfig
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
 import se.kjellstrand.webshooter.data.login.remote.LoginRemoteDataSource
 import se.kjellstrand.webshooter.data.login.remote.LoginRequest
 import se.kjellstrand.webshooter.data.login.remote.LoginResponse
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-open class LoginRepository @Inject constructor(
-    private val loginRemoteDataSource: LoginRemoteDataSource
+open class LoginRepository(
+    private val loginRemoteDataSource: LoginRemoteDataSource,
+    private val clientSecret: String
 ) {
     companion object {
         private const val TAG = "LoginRepository"
@@ -34,7 +31,7 @@ open class LoginRepository @Inject constructor(
             val result = try {
                 loginRemoteDataSource.login(
                     LoginRequest(
-                        client_secret = BuildConfig.CLIENT_SECRET,
+                        client_secret = clientSecret,
                         email = email,
                         password = password,
                         username = username

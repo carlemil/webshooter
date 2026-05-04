@@ -15,11 +15,11 @@ import se.kjellstrand.webshooter.data.club.remote.ClubInfoResponse
 import se.kjellstrand.webshooter.data.club.remote.ClubRemoteDataSource
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class ClubRepository @Inject constructor(
+
+
+
+class ClubRepository constructor(
     private val remoteDataSource: ClubRemoteDataSource,
     private val dao: ClubDao,
     private val json: Json

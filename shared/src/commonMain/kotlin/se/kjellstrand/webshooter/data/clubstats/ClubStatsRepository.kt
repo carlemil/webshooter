@@ -9,12 +9,12 @@ import se.kjellstrand.webshooter.data.club.ClubRepository
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
 import se.kjellstrand.webshooter.data.results.local.ResultsDao
-import se.kjellstrand.webshooter.ui.screens.charts.seriespoints.WeaponClassGroup
-import javax.inject.Inject
-import javax.inject.Singleton
+import se.kjellstrand.webshooter.data.clubstats.WeaponClassGroup
 
-@Singleton
-class ClubStatsRepository @Inject constructor(
+
+
+
+class ClubStatsRepository constructor(
     private val clubRepository: ClubRepository,
     private val resultsDao: ResultsDao
 ) {

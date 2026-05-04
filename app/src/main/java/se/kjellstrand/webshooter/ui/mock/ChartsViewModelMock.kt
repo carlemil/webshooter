@@ -4,7 +4,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import se.kjellstrand.webshooter.ui.screens.charts.resulttrends.ChartsUiState
 import se.kjellstrand.webshooter.ui.screens.charts.resulttrends.ResultsTrendsViewModel
-import se.kjellstrand.webshooter.ui.screens.charts.seriespoints.WeaponClassGroup
+import se.kjellstrand.webshooter.data.clubstats.WeaponClassGroup
 
 class ChartsViewModelMock(
     initialState: ChartsUiState = ChartsUiState()

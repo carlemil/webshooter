@@ -1,5 +1,7 @@
 package se.kjellstrand.webshooter.ui.screens.charts.seriespoints
 
+import se.kjellstrand.webshooter.data.clubstats.WeaponClassGroup
+
 import android.annotation.SuppressLint
 import android.content.Context
 import android.widget.TextView

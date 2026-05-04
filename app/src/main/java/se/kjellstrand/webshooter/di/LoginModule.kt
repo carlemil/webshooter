@@ -5,6 +5,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
+import se.kjellstrand.webshooter.BuildConfig
 import se.kjellstrand.webshooter.data.login.LoginRepository
 import se.kjellstrand.webshooter.data.login.remote.LoginRemoteDataSource
 import se.kjellstrand.webshooter.data.login.remote.LoginRemoteDataSourceKtor
@@ -25,6 +26,6 @@ class LoginModule {
     fun providesLoginRepository(
         loginRemoteDataSource: LoginRemoteDataSource
     ): LoginRepository {
-        return LoginRepository(loginRemoteDataSource)
+        return LoginRepository(loginRemoteDataSource, BuildConfig.CLIENT_SECRET)
     }
 }

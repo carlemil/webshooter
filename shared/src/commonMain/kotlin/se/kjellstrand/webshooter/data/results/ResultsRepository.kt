@@ -15,11 +15,11 @@ import se.kjellstrand.webshooter.data.results.local.toDomain
 import se.kjellstrand.webshooter.data.results.local.toEntity
 import se.kjellstrand.webshooter.data.results.remote.ResultsRemoteDataSource
 import se.kjellstrand.webshooter.data.results.remote.ResultsResponse
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-open class ResultsRepository @Inject constructor(
+
+
+
+open class ResultsRepository constructor(
     private val resultsRemoteDataSource: ResultsRemoteDataSource,
     private val dao: ResultsDao,
     private val json: Json

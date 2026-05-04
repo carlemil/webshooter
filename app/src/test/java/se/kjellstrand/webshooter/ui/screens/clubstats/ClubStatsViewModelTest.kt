@@ -102,7 +102,7 @@ class ClubStatsViewModelTest {
     @Test
     fun `ClubStatsRepository still exists`() {
         assertTrue(
-            File("src/main/java/se/kjellstrand/webshooter/data/clubstats/ClubStatsRepository.kt").exists()
+            File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/clubstats/ClubStatsRepository.kt").exists()
         )
     }
 }

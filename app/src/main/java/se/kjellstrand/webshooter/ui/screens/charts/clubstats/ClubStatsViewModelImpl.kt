@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.data.clubstats.ClubStatsRepository
 import se.kjellstrand.webshooter.data.common.Resource
-import se.kjellstrand.webshooter.ui.screens.charts.seriespoints.WeaponClassGroup
+import se.kjellstrand.webshooter.data.clubstats.WeaponClassGroup
 import java.time.Year
 import javax.inject.Inject
 

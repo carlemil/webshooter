@@ -12,7 +12,7 @@ import se.kjellstrand.webshooter.data.charts.CompetitionMeta
 import se.kjellstrand.webshooter.data.club.ClubRepository
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.settings.SettingsRepository
-import se.kjellstrand.webshooter.ui.screens.charts.seriespoints.WeaponClassGroup
+import se.kjellstrand.webshooter.data.clubstats.WeaponClassGroup
 import javax.inject.Inject
 
 @HiltViewModel

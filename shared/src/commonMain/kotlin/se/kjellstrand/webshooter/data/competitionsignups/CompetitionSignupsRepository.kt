@@ -16,11 +16,11 @@ import se.kjellstrand.webshooter.data.competitionsignups.local.toEntity
 import se.kjellstrand.webshooter.data.competitionsignups.remote.CompetitionSignupsRemoteDataSource
 import se.kjellstrand.webshooter.data.competitionsignups.remote.CompetitionSignupsResponse
 import se.kjellstrand.webshooter.data.competitionsignups.remote.CompetitionSignupsPaged
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-open class CompetitionSignupsRepository @Inject constructor(
+
+
+
+open class CompetitionSignupsRepository constructor(
     private val remoteDataSource: CompetitionSignupsRemoteDataSource,
     private val dao: CompetitionSignupsDao,
     private val json: Json

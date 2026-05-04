@@ -6,8 +6,8 @@ import java.io.File
 
 class RepositoryCachePatternTest {
 
-    private val patrolsRepo = File("src/main/java/se/kjellstrand/webshooter/data/competitionpatrols/CompetitionPatrolsRepository.kt")
-    private val teamsRepo = File("src/main/java/se/kjellstrand/webshooter/data/competitionteams/CompetitionTeamsRepository.kt")
+    private val patrolsRepo = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/competitionpatrols/CompetitionPatrolsRepository.kt")
+    private val teamsRepo = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/competitionteams/CompetitionTeamsRepository.kt")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 

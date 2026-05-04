@@ -6,7 +6,7 @@ import java.io.File
 
 class HardcodedSecretTest {
 
-    private val loginRepo = File("src/main/java/se/kjellstrand/webshooter/data/login/LoginRepository.kt")
+    private val loginRepo = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/login/LoginRepository.kt")
     private val refreshTokenRequest = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/login/remote/RefreshTokenRequest.kt")
     private val buildGradle = File("build.gradle.kts")
 

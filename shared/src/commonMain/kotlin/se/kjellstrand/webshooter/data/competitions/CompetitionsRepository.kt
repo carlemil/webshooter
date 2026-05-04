@@ -23,11 +23,11 @@ import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsRemoteData
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.data.results.ResultsRepository
 import se.kjellstrand.webshooter.data.results.local.ResultsDao
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-open class CompetitionsRepository @Inject constructor(
+
+
+
+open class CompetitionsRepository constructor(
     private val competitionsRemoteDataSource: CompetitionsRemoteDataSource,
     private val dao: CompetitionsDao,
     private val json: Json,

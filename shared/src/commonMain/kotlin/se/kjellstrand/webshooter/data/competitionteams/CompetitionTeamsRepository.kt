@@ -10,11 +10,11 @@ import se.kjellstrand.webshooter.data.competitionteams.local.toDomain
 import se.kjellstrand.webshooter.data.competitionteams.local.toEntity
 import se.kjellstrand.webshooter.data.competitionteams.remote.CompetitionTeamsRemoteDataSource
 import se.kjellstrand.webshooter.data.competitionteams.remote.CompetitionTeamsResponse
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-open class CompetitionTeamsRepository @Inject constructor(
+
+
+
+open class CompetitionTeamsRepository constructor(
     private val remoteDataSource: CompetitionTeamsRemoteDataSource,
     private val dao: TeamsDao,
     private val json: Json

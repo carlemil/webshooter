@@ -5,7 +5,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import se.kjellstrand.webshooter.ui.screens.charts.seriespoints.WeaponClassGroup
+import se.kjellstrand.webshooter.data.clubstats.WeaponClassGroup
 import java.io.File
 
 /**

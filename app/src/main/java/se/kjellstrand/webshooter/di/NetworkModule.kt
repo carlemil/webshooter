@@ -156,6 +156,10 @@ class NetworkModule {
     fun provideAuthTokenManager(@ApplicationContext context: Context): AuthTokenManager =
         AuthTokenManager(context)
 
+    @Provides
+    @Singleton
+    fun provideSessionManager(): SessionManager = SessionManager()
+
     /**
      * Force the Auth plugin to drop its cached tokens so the next request reads the
      * latest values from [AuthTokenManager]. Call after a successful login or logout.

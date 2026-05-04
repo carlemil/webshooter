@@ -7,7 +7,7 @@ import java.io.File
 class ClubStatsWeaponFilterTest {
 
     private val daoFile = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/results/local/ResultsDao.kt")
-    private val repoFile = File("src/main/java/se/kjellstrand/webshooter/data/clubstats/ClubStatsRepository.kt")
+    private val repoFile = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/clubstats/ClubStatsRepository.kt")
     private val uiStateFile = File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/clubstats/ClubStatsUiState.kt")
     private val vmFile = File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/clubstats/ClubStatsViewModel.kt")
     private val vmImplFile = File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/clubstats/ClubStatsViewModelImpl.kt")

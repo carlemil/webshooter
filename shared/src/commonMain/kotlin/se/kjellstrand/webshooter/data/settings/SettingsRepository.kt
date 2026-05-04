@@ -14,11 +14,11 @@ import se.kjellstrand.webshooter.data.settings.local.toDomain
 import se.kjellstrand.webshooter.data.settings.local.toEntity
 import se.kjellstrand.webshooter.data.settings.remote.SettingsRemoteDataSource
 import se.kjellstrand.webshooter.data.settings.remote.UserProfile
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class SettingsRepository @Inject constructor(
+
+
+
+class SettingsRepository constructor(
     private val remoteDataSource: SettingsRemoteDataSource,
     private val dao: UserProfileDao,
     private val json: Json

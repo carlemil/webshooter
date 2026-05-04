@@ -13,8 +13,8 @@ import se.kjellstrand.webshooter.data.competitions.local.CompetitionsDao
 import se.kjellstrand.webshooter.data.competitions.local.toDomain
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.results.local.ResultsDao
-import javax.inject.Inject
-import javax.inject.Singleton
+
+
 
 data class ChartDataPoint(
     val competitionId: Long,
@@ -45,8 +45,8 @@ data class CompetitionMeta(
     val competitionTypeName: String? = null
 )
 
-@Singleton
-class ChartsRepository @Inject constructor(
+
+class ChartsRepository constructor(
     private val competitionsDao: CompetitionsDao,
     private val resultsDao: ResultsDao,
     private val json: Json

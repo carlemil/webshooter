@@ -1,7 +1,7 @@
 package se.kjellstrand.webshooter.ui.screens.charts.clubstats
 
 import se.kjellstrand.webshooter.data.clubstats.ShooterStats
-import se.kjellstrand.webshooter.ui.screens.charts.seriespoints.WeaponClassGroup
+import se.kjellstrand.webshooter.data.clubstats.WeaponClassGroup
 
 data class ClubStatsUiState(
     val shooterStats: List<ShooterStats> = emptyList(),

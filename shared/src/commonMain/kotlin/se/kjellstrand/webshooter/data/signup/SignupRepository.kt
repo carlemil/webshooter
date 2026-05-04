@@ -9,11 +9,11 @@ import okio.IOException
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
 import se.kjellstrand.webshooter.data.signup.remote.SignupRemoteDataSource
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class SignupRepository @Inject constructor(
+
+
+
+class SignupRepository constructor(
     private val remoteDataSource: SignupRemoteDataSource
 ) {
     fun signup(

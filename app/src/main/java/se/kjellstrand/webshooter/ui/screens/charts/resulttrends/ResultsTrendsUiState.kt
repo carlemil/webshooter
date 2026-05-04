@@ -3,7 +3,7 @@ package se.kjellstrand.webshooter.ui.screens.charts.resulttrends
 import se.kjellstrand.webshooter.data.charts.ChartDataPoint
 import se.kjellstrand.webshooter.data.charts.Participant
 import se.kjellstrand.webshooter.data.club.remote.ClubMember
-import se.kjellstrand.webshooter.ui.screens.charts.seriespoints.WeaponClassGroup
+import se.kjellstrand.webshooter.data.clubstats.WeaponClassGroup
 
 fun groupsForTab(tabKey: String): Set<WeaponClassGroup> = when (tabKey) {
     "field" -> setOf(

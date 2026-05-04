@@ -10,7 +10,7 @@ class WeaponClassGroupFilterMoveTest {
     private val newLocation =
         File("src/main/java/se/kjellstrand/webshooter/ui/common/WeaponClassGroupFilter.kt")
     private val oldLocation =
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/seriespoints/WeaponClassGroupFilter.kt")
+        File("src/main/java/se.kjellstrand.webshooter.data.clubstats.WeaponClassGroupFilter.kt")
     private val seriesPointsScreen =
         File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/seriespoints/SeriesPointsScreen.kt")
 
@@ -58,12 +58,12 @@ class WeaponClassGroupFilterMoveTest {
     // --- Guard tests (should PASS before and after fix) ---
 
     @Test
-    fun `WeaponClassGroup enum stays in seriespoints state`() {
+    fun `WeaponClassGroup enum lives in shared data clubstats package`() {
         val source = File(
-            "src/main/java/se/kjellstrand/webshooter/ui/screens/charts/seriespoints/SeriesPointsUiState.kt"
+            "../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/clubstats/WeaponClassGroup.kt"
         ).readText()
         assertTrue(
-            "WeaponClassGroup enum must remain in SeriesPointsUiState",
+            "WeaponClassGroup enum must be declared in :shared/data/clubstats/",
             source.contains("enum class WeaponClassGroup")
         )
     }

@@ -15,11 +15,11 @@ import se.kjellstrand.webshooter.data.mysignups.local.toDomain
 import se.kjellstrand.webshooter.data.mysignups.local.toEntity
 import se.kjellstrand.webshooter.data.mysignups.remote.SignupGroup
 import se.kjellstrand.webshooter.data.mysignups.remote.SignupsRemoteDataSource
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class SignupsRepository @Inject constructor(
+
+
+
+class SignupsRepository constructor(
     private val remoteDataSource: SignupsRemoteDataSource,
     private val dao: SignupsDao,
     private val json: Json

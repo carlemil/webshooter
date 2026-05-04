@@ -1,7 +1,7 @@
 package se.kjellstrand.webshooter.ui.screens.charts.clubstats
 
 import kotlinx.coroutines.flow.StateFlow
-import se.kjellstrand.webshooter.ui.screens.charts.seriespoints.WeaponClassGroup
+import se.kjellstrand.webshooter.data.clubstats.WeaponClassGroup
 
 interface ClubStatsViewModel {
     val uiState: StateFlow<ClubStatsUiState>

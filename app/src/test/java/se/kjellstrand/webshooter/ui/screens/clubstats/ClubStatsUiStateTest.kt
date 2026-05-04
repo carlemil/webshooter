@@ -66,7 +66,7 @@ class ClubStatsUiStateTest {
     @Test
     fun `ShooterStats data class exists in clubstats package`() {
         assertTrue(
-            File("src/main/java/se/kjellstrand/webshooter/data/clubstats/ShooterStats.kt").exists()
+            File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/clubstats/ShooterStats.kt").exists()
         )
     }
 }

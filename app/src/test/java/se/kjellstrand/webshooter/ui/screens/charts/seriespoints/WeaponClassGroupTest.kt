@@ -5,6 +5,7 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
+import se.kjellstrand.webshooter.data.clubstats.WeaponClassGroup
 
 class WeaponClassGroupTest {
 
@@ -132,7 +133,7 @@ class WeaponClassGroupTest {
         // Guard against accidental package moves — other code imports from here.
         val clazz = WeaponClassGroup::class.java
         assertEquals(
-            "se.kjellstrand.webshooter.ui.screens.charts.seriespoints.WeaponClassGroup",
+            "se.kjellstrand.webshooter.data.clubstats.WeaponClassGroup",
             clazz.name
         )
         assertNotNull(clazz)

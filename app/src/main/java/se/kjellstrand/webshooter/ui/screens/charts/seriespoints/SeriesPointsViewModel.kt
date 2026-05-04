@@ -1,5 +1,7 @@
 package se.kjellstrand.webshooter.ui.screens.charts.seriespoints
 
+import se.kjellstrand.webshooter.data.clubstats.WeaponClassGroup
+
 import kotlinx.coroutines.flow.StateFlow
 
 interface SeriesPointsViewModel {

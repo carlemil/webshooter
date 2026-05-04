@@ -13,8 +13,8 @@ import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
 import se.kjellstrand.webshooter.data.results.local.ResultsDao
 import se.kjellstrand.webshooter.data.results.remote.StationResult
-import javax.inject.Inject
-import javax.inject.Singleton
+
+
 
 data class CompetitionSeries(
     val competitionId: Long,
@@ -30,8 +30,8 @@ data class SeriesPointsData(
     val allParticipants: List<Participant>
 )
 
-@Singleton
-class SeriesPointsRepository @Inject constructor(
+
+class SeriesPointsRepository constructor(
     private val resultsDao: ResultsDao,
     private val json: Json
 ) {

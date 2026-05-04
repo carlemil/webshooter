@@ -6,7 +6,7 @@ import java.io.File
 
 class ClubStatsRepositoryTest {
 
-    private val baseDir = "src/main/java/se/kjellstrand/webshooter/data/clubstats"
+    private val baseDir = "../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/clubstats"
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 
@@ -127,7 +127,7 @@ class ClubStatsRepositoryTest {
     fun `ClubRepository still exists`() {
         assertTrue(
             "ClubRepository.kt must still exist",
-            File("src/main/java/se/kjellstrand/webshooter/data/club/ClubRepository.kt").exists()
+            File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/club/ClubRepository.kt").exists()
         )
     }
 }

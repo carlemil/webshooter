@@ -10,11 +10,11 @@ import okio.IOException
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
 import se.kjellstrand.webshooter.data.cookies.remote.CookiesRemoteDataSource
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-open class CookiesRepository @Inject constructor(
+
+
+
+open class CookiesRepository constructor(
     private val cookiesRemoteDataSource: CookiesRemoteDataSource
 ) {
     companion object {
