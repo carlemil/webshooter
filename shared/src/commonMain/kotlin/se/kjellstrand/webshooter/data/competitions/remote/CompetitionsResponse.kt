@@ -49,8 +49,8 @@ data class Datum (
     @SerialName("contact_city")
     val contactCity: String? = null,
 
-    val lat: Double,
-    val lng: Double,
+    val lat: Double? = null,
+    val lng: Double? = null,
 
     @SerialName("contact_email")
     val contactEmail: String? = null,
@@ -61,7 +61,7 @@ data class Datum (
     @SerialName("google_maps")
     val googleMaps: String? = null,
 
-    val description: String,
+    val description: String = "",
 
     @SerialName("results_type")
     val resultsType: ResultsType,

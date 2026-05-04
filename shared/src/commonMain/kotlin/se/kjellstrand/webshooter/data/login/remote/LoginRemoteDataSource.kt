@@ -19,10 +19,7 @@ class LoginRemoteDataSourceKtor(
 ) : LoginRemoteDataSource {
 
     override suspend fun login(request: LoginRequest): LoginResponse {
-        // Tag the request so the bearer Auth plugin doesn't attach a (possibly
-        // stale) Authorization header to the OAuth token exchange.
         val response: LoginResponse = httpClient.post("api/v4.1.9/oauth/token") {
-            attributes.put(Auth.AuthCircuitBreaker, Unit)
             contentType(ContentType.Application.Json)
             setBody(request)
         }.body()

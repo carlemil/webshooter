@@ -2,6 +2,7 @@ package se.kjellstrand.webshooter.data.settings.remote
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import se.kjellstrand.webshooter.data.common.FlexibleStringSerializer
 
 @Serializable
 data class UserProfileResponse(
@@ -15,7 +16,7 @@ data class UserProfile(
     val email: String,
     @SerialName("shooting_card_number") val shootingCardNumber: String?,
     @SerialName("no_shooting_card_number") val noShootingCardNumber: String?,
-    val birthday: String?,
+    @Serializable(with = FlexibleStringSerializer::class) val birthday: String? = null,
     val gender: String?,
     val phone: String?,
     val mobile: String?,

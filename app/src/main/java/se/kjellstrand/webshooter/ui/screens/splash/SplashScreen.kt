@@ -33,7 +33,15 @@ fun SplashScreen(
     LaunchedEffect(Unit) {
         alpha.animateTo(1f, animationSpec = tween(600))
         delay(800)
-        val destination = if (viewModel.hasSession()) Screen.LandingScreen.route else Screen.LoginScreen.route
+        val destination = if (viewModel.hasSession()) {
+            // Prime the in-memory cookie jar before any authenticated request
+            // fires from LandingScreen — without Laravel session cookies the
+            // backend returns 500 even with a valid bearer token.
+            viewModel.primeCookies()
+            Screen.LandingScreen.route
+        } else {
+            Screen.LoginScreen.route
+        }
         navController.navigate(destination) {
             popUpTo(0) { inclusive = true }
         }

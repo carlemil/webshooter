@@ -49,6 +49,10 @@ class NetworkModule {
         ignoreUnknownKeys = true
         coerceInputValues = true
         explicitNulls = false
+        // Match the old Gson behavior: emit fields even when they equal their
+        // declared default. The OAuth endpoint requires client_id and
+        // grant_type, both of which use defaults in LoginRequest.
+        encodeDefaults = true
     }
 
     @Provides
@@ -66,7 +70,12 @@ class NetworkModule {
         }
 
         install(Logging) {
-            level = if (BuildConfig.DEBUG) LogLevel.HEADERS else LogLevel.NONE
+            level = if (BuildConfig.DEBUG) LogLevel.ALL else LogLevel.NONE
+            logger = object : io.ktor.client.plugins.logging.Logger {
+                override fun log(message: String) {
+                    Log.d("WebshooterHTTP", message)
+                }
+            }
         }
 
         install(HttpCookies) {
@@ -81,6 +90,15 @@ class NetworkModule {
 
         install(Auth) {
             bearer {
+                // Never proactively attach the bearer token to the OAuth token
+                // endpoint. A stale access token from a previous session would
+                // otherwise be sent alongside a password-grant or refresh-token
+                // request, which the backend rejects with 500.
+                sendWithoutRequest { request ->
+                    val segments = request.url.encodedPathSegments
+                    val n = segments.size
+                    !(n >= 2 && segments[n - 2] == "oauth" && segments[n - 1] == "token")
+                }
                 loadTokens {
                     val access = authTokenManager.readToken() ?: return@loadTokens null
                     BearerTokens(access, authTokenManager.readRefreshToken() ?: "")
