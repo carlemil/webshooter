@@ -13,11 +13,11 @@ class NetworkModuleTest {
     @Test
     fun `HTTP logging level is conditional on debug build`() {
         val source = sourceFile.readText()
-        val hasUnconditionalBasic = Regex("""level\s*=\s*HttpLoggingInterceptor\.Level\.BASIC""")
+        val hasUnconditionalHeaders = Regex("""level\s*=\s*LogLevel\.(HEADERS|ALL|BODY|INFO)\s*$""", RegexOption.MULTILINE)
             .containsMatchIn(source)
         assertFalse(
-            "HttpLoggingInterceptor level should not be unconditionally BASIC in production",
-            hasUnconditionalBasic
+            "Ktor Logging level should not be unconditionally verbose in production",
+            hasUnconditionalHeaders
         )
     }
 
@@ -26,7 +26,7 @@ class NetworkModuleTest {
         val source = sourceFile.readText()
         assertTrue(
             "HTTP logging should use BuildConfig.DEBUG to determine log level",
-            source.contains("BuildConfig.DEBUG") && source.contains("HttpLoggingInterceptor")
+            source.contains("BuildConfig.DEBUG") && source.contains("Logging")
         )
     }
 
@@ -38,8 +38,11 @@ class NetworkModuleTest {
     }
 
     @Test
-    fun `OkHttpClient is configured with interceptors`() {
+    fun `HTTP client is configured with the mock interceptor`() {
         val source = sourceFile.readText()
-        assertTrue(source.contains("addInterceptor"))
+        assertTrue(
+            "Mock interceptor must remain wired into the OkHttp engine",
+            source.contains("addInterceptor(mockInterceptor)")
+        )
     }
 }

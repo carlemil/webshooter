@@ -1,10 +1,17 @@
 package se.kjellstrand.webshooter.data.club.remote
 
-import retrofit2.Response
-import retrofit2.http.GET
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import javax.inject.Inject
 
 interface ClubRemoteDataSource {
+    suspend fun getUserClub(): ClubInfoResponse
+}
 
-    @GET("api/v4.1.9/clubs/getUserClub")
-    suspend fun getUserClub(): Response<ClubInfoResponse>
+class ClubRemoteDataSourceKtor @Inject constructor(
+    private val httpClient: HttpClient
+) : ClubRemoteDataSource {
+    override suspend fun getUserClub(): ClubInfoResponse =
+        httpClient.get("api/v4.1.9/clubs/getUserClub").body()
 }

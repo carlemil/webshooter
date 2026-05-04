@@ -1,9 +1,11 @@
 package se.kjellstrand.webshooter.data.signup
 
+import io.ktor.client.network.sockets.ConnectTimeoutException
+import io.ktor.client.network.sockets.SocketTimeoutException
+import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okio.IOException
-import retrofit2.HttpException
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
 import se.kjellstrand.webshooter.data.signup.remote.SignupRemoteDataSource
@@ -28,16 +30,16 @@ class SignupRepository @Inject constructor(
                 put("users_id", userId.toString())
                 if (note.isNotBlank()) put("note", note)
             }
-            val response = remoteDataSource.signup(fields)
-            if (response.isSuccessful) {
-                emit(Resource.Success(Unit))
-            } else {
-                emit(Resource.Error(UserError.HttpError(response.code())))
-            }
+            remoteDataSource.signup(fields)
+            emit(Resource.Success(Unit))
+        } catch (e: ResponseException) {
+            emit(Resource.Error(UserError.HttpError(e.response.status.value)))
+        } catch (e: SocketTimeoutException) {
+            emit(Resource.Error(UserError.IOError))
+        } catch (e: ConnectTimeoutException) {
+            emit(Resource.Error(UserError.IOError))
         } catch (e: IOException) {
             emit(Resource.Error(UserError.IOError))
-        } catch (e: HttpException) {
-            emit(Resource.Error(UserError.HttpError(e.code())))
         } catch (e: Exception) {
             emit(Resource.Error(UserError.UnknownError))
         }
@@ -47,16 +49,16 @@ class SignupRepository @Inject constructor(
     fun removeSignup(signupId: Long): Flow<Resource<Unit, UserError>> = flow {
         emit(Resource.Loading(true))
         try {
-            val response = remoteDataSource.removeSignup(signupId)
-            if (response.isSuccessful) {
-                emit(Resource.Success(Unit))
-            } else {
-                emit(Resource.Error(UserError.HttpError(response.code())))
-            }
+            remoteDataSource.removeSignup(signupId)
+            emit(Resource.Success(Unit))
+        } catch (e: ResponseException) {
+            emit(Resource.Error(UserError.HttpError(e.response.status.value)))
+        } catch (e: SocketTimeoutException) {
+            emit(Resource.Error(UserError.IOError))
+        } catch (e: ConnectTimeoutException) {
+            emit(Resource.Error(UserError.IOError))
         } catch (e: IOException) {
             emit(Resource.Error(UserError.IOError))
-        } catch (e: HttpException) {
-            emit(Resource.Error(UserError.HttpError(e.code())))
         } catch (e: Exception) {
             emit(Resource.Error(UserError.UnknownError))
         }

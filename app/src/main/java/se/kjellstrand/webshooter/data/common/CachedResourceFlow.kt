@@ -1,10 +1,12 @@
 package se.kjellstrand.webshooter.data.common
 
 import android.util.Log
+import io.ktor.client.network.sockets.ConnectTimeoutException
+import io.ktor.client.network.sockets.SocketTimeoutException
+import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okio.IOException
-import retrofit2.HttpException
 
 fun <T> cachedResourceFlow(
     tag: String,
@@ -27,13 +29,21 @@ fun <T> cachedResourceFlow(
 
     val result = try {
         fetchFromRemote()
-    } catch (e: IOException) {
+    } catch (e: ResponseException) {
+        Log.w(tag, "Network error", e)
+        if (cachedData == null) emit(Resource.Error(UserError.HttpError(e.response.status.value)))
+        return@flow
+    } catch (e: SocketTimeoutException) {
         Log.w(tag, "Network error", e)
         if (cachedData == null) emit(Resource.Error(UserError.IOError))
         return@flow
-    } catch (e: HttpException) {
+    } catch (e: ConnectTimeoutException) {
         Log.w(tag, "Network error", e)
-        if (cachedData == null) emit(Resource.Error(UserError.HttpError(e.code())))
+        if (cachedData == null) emit(Resource.Error(UserError.IOError))
+        return@flow
+    } catch (e: IOException) {
+        Log.w(tag, "Network error", e)
+        if (cachedData == null) emit(Resource.Error(UserError.IOError))
         return@flow
     } catch (e: Exception) {
         Log.w(tag, "Network error", e)

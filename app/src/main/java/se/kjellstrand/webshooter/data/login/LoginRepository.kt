@@ -1,15 +1,15 @@
 package se.kjellstrand.webshooter.data.login
 
 import android.util.Log
+import io.ktor.client.network.sockets.ConnectTimeoutException
+import io.ktor.client.network.sockets.SocketTimeoutException
+import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okio.IOException
-import retrofit2.HttpException
-import retrofit2.Response
+import se.kjellstrand.webshooter.BuildConfig
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
-import se.kjellstrand.webshooter.BuildConfig
-import se.kjellstrand.webshooter.data.AuthTokenManager
 import se.kjellstrand.webshooter.data.login.remote.LoginRemoteDataSource
 import se.kjellstrand.webshooter.data.login.remote.LoginRequest
 import se.kjellstrand.webshooter.data.login.remote.LoginResponse
@@ -28,7 +28,7 @@ open class LoginRepository @Inject constructor(
         email: String,
         username: String,
         password: String
-    ): Flow<Resource<Response<LoginResponse>, UserError>> {
+    ): Flow<Resource<LoginResponse, UserError>> {
         return flow {
             emit(Resource.Loading(true))
             val result = try {
@@ -40,13 +40,21 @@ open class LoginRepository @Inject constructor(
                         username = username
                     )
                 )
-            } catch (e: IOException) {
+            } catch (e: ResponseException) {
+                Log.w(TAG, "Error", e)
+                emit(Resource.Error(UserError.HttpError(e.response.status.value)))
+                return@flow
+            } catch (e: SocketTimeoutException) {
                 Log.w(TAG, "Error", e)
                 emit(Resource.Error(UserError.IOError))
                 return@flow
-            } catch (e: HttpException) {
+            } catch (e: ConnectTimeoutException) {
                 Log.w(TAG, "Error", e)
-                emit(Resource.Error(UserError.HttpError(e.code())))
+                emit(Resource.Error(UserError.IOError))
+                return@flow
+            } catch (e: IOException) {
+                Log.w(TAG, "Error", e)
+                emit(Resource.Error(UserError.IOError))
                 return@flow
             } catch (e: Exception) {
                 Log.w(TAG, "Error", e)

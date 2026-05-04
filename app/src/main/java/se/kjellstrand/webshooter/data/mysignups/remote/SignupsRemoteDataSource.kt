@@ -1,9 +1,17 @@
 package se.kjellstrand.webshooter.data.mysignups.remote
 
-import retrofit2.http.GET
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import javax.inject.Inject
 
 interface SignupsRemoteDataSource {
-
-    @GET("api/v4.1.9/signup")
     suspend fun getSignups(): SignupsResponse
+}
+
+class SignupsRemoteDataSourceKtor @Inject constructor(
+    private val httpClient: HttpClient
+) : SignupsRemoteDataSource {
+    override suspend fun getSignups(): SignupsResponse =
+        httpClient.get("api/v4.1.9/signup").body()
 }

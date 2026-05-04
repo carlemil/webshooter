@@ -1,11 +1,13 @@
 package se.kjellstrand.webshooter.data.competitionsignups
 
 import android.util.Log
+import io.ktor.client.network.sockets.ConnectTimeoutException
+import io.ktor.client.network.sockets.SocketTimeoutException
+import io.ktor.client.plugins.ResponseException
 import kotlinx.serialization.json.Json
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okio.IOException
-import retrofit2.HttpException
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
 import se.kjellstrand.webshooter.data.competitionsignups.local.CompetitionSignupsDao
@@ -56,13 +58,21 @@ open class CompetitionSignupsRepository @Inject constructor(
 
             val result = try {
                 remoteDataSource.getSignups(competitionId, page, perPage)
-            } catch (e: IOException) {
+            } catch (e: ResponseException) {
+                Log.w(TAG, "Error", e)
+                emit(Resource.Error(UserError.HttpError(e.response.status.value)))
+                return@flow
+            } catch (e: SocketTimeoutException) {
                 Log.w(TAG, "Error", e)
                 emit(Resource.Error(UserError.IOError))
                 return@flow
-            } catch (e: HttpException) {
+            } catch (e: ConnectTimeoutException) {
                 Log.w(TAG, "Error", e)
-                emit(Resource.Error(UserError.HttpError(e.code())))
+                emit(Resource.Error(UserError.IOError))
+                return@flow
+            } catch (e: IOException) {
+                Log.w(TAG, "Error", e)
+                emit(Resource.Error(UserError.IOError))
                 return@flow
             } catch (e: Exception) {
                 Log.w(TAG, "Error", e)

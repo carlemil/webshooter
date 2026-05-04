@@ -1,16 +1,36 @@
 package se.kjellstrand.webshooter.data.competitions.remote
 
-import retrofit2.http.GET
-import retrofit2.http.Query
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.request.parameter
+import javax.inject.Inject
 
 interface CompetitionsRemoteDataSource {
-
-    @GET("/api/v4.1.9/competitions")
     suspend fun getCompetitions(
-        @Query("page") page: Int,
-        @Query("per_page") perPage: Int,
-        @Query("status") status: String,
-        @Query("type") type: Int,
-        @Query("usersignup") userSignup: Int
+        page: Int,
+        perPage: Int,
+        status: String,
+        type: Int,
+        userSignup: Int
     ): CompetitionsResponse
+}
+
+class CompetitionsRemoteDataSourceKtor @Inject constructor(
+    private val httpClient: HttpClient
+) : CompetitionsRemoteDataSource {
+    override suspend fun getCompetitions(
+        page: Int,
+        perPage: Int,
+        status: String,
+        type: Int,
+        userSignup: Int
+    ): CompetitionsResponse =
+        httpClient.get("api/v4.1.9/competitions") {
+            parameter("page", page)
+            parameter("per_page", perPage)
+            parameter("status", status)
+            parameter("type", type)
+            parameter("usersignup", userSignup)
+        }.body()
 }

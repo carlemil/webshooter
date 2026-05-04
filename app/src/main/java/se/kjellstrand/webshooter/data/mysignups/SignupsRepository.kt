@@ -1,11 +1,13 @@
 package se.kjellstrand.webshooter.data.mysignups
 
 import android.util.Log
+import io.ktor.client.network.sockets.ConnectTimeoutException
+import io.ktor.client.network.sockets.SocketTimeoutException
+import io.ktor.client.plugins.ResponseException
 import kotlinx.serialization.json.Json
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okio.IOException
-import retrofit2.HttpException
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
 import se.kjellstrand.webshooter.data.mysignups.local.SignupsDao
@@ -49,12 +51,18 @@ class SignupsRepository @Inject constructor(
                 dao.insertAll(group.signups.map { it.toEntity(key, json) })
             }
             emit(Resource.Success(result.groupedSignups))
+        } catch (e: ResponseException) {
+            Log.w(TAG, "Error", e)
+            if (!hasCached) emit(Resource.Error(UserError.HttpError(e.response.status.value)))
+        } catch (e: SocketTimeoutException) {
+            Log.w(TAG, "Error", e)
+            if (!hasCached) emit(Resource.Error(UserError.IOError))
+        } catch (e: ConnectTimeoutException) {
+            Log.w(TAG, "Error", e)
+            if (!hasCached) emit(Resource.Error(UserError.IOError))
         } catch (e: IOException) {
             Log.w(TAG, "Error", e)
             if (!hasCached) emit(Resource.Error(UserError.IOError))
-        } catch (e: HttpException) {
-            Log.w(TAG, "Error", e)
-            if (!hasCached) emit(Resource.Error(UserError.HttpError(e.code())))
         } catch (e: Exception) {
             Log.w(TAG, "Error", e)
             if (!hasCached) emit(Resource.Error(UserError.UnknownError))

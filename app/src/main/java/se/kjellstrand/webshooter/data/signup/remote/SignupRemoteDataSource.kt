@@ -1,26 +1,35 @@
 package se.kjellstrand.webshooter.data.signup.remote
 
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.delete
+import io.ktor.client.request.forms.FormDataContent
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.Parameters
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import retrofit2.Response
-import retrofit2.http.DELETE
-import retrofit2.http.FieldMap
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.POST
-import retrofit2.http.Path
+import javax.inject.Inject
 
 interface SignupRemoteDataSource {
+    suspend fun signup(fields: Map<String, String>): SignupResponse
+    suspend fun removeSignup(signupId: Long)
+}
 
-    @FormUrlEncoded
-    @POST("api/v4.1.9/signup")
-    suspend fun signup(
-        @FieldMap fields: Map<String, String>
-    ): Response<SignupResponse>
+class SignupRemoteDataSourceKtor @Inject constructor(
+    private val httpClient: HttpClient
+) : SignupRemoteDataSource {
 
-    @DELETE("api/v4.1.9/signup/{signupId}")
-    suspend fun removeSignup(
-        @Path("signupId") signupId: Long
-    ): Response<Unit>
+    override suspend fun signup(fields: Map<String, String>): SignupResponse =
+        httpClient.post("api/v4.1.9/signup") {
+            setBody(FormDataContent(Parameters.build {
+                fields.forEach { (k, v) -> append(k, v) }
+            }))
+        }.body()
+
+    override suspend fun removeSignup(signupId: Long) {
+        httpClient.delete("api/v4.1.9/signup/$signupId")
+    }
 }
 
 @Serializable

@@ -1,10 +1,17 @@
 package se.kjellstrand.webshooter.data.cookies.remote
 
-import retrofit2.Response
-import retrofit2.http.GET
+import io.ktor.client.HttpClient
+import io.ktor.client.request.get
+import javax.inject.Inject
 
 interface CookiesRemoteDataSource {
+    suspend fun getCookies()
+}
 
-    @GET("/")
-    suspend fun getCookies(): Response<Unit>
+class CookiesRemoteDataSourceKtor @Inject constructor(
+    private val httpClient: HttpClient
+) : CookiesRemoteDataSource {
+    override suspend fun getCookies() {
+        httpClient.get("/")
+    }
 }

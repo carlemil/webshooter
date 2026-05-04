@@ -1,10 +1,12 @@
 package se.kjellstrand.webshooter.data.club
 
-import kotlinx.serialization.json.Json
+import io.ktor.client.network.sockets.ConnectTimeoutException
+import io.ktor.client.network.sockets.SocketTimeoutException
+import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.serialization.json.Json
 import okio.IOException
-import retrofit2.HttpException
 import se.kjellstrand.webshooter.data.club.local.ClubDao
 import se.kjellstrand.webshooter.data.club.local.sanitizeNullStrings
 import se.kjellstrand.webshooter.data.club.local.toDomain
@@ -39,19 +41,18 @@ class ClubRepository @Inject constructor(
         }
 
         try {
-            val response = remoteDataSource.getUserClub()
-            val body = response.body()
-            if (response.isSuccessful && body != null) {
-                val sanitized = body.copy(club = body.club.sanitizeNullStrings())
-                dao.insert(sanitized.club.toEntity(json))
-                emit(Resource.Success(sanitized))
-            } else {
-                if (cached == null) emit(Resource.Error(UserError.HttpError(response.code())))
-            }
+            val body = remoteDataSource.getUserClub()
+            val sanitized = body.copy(club = body.club.sanitizeNullStrings())
+            dao.insert(sanitized.club.toEntity(json))
+            emit(Resource.Success(sanitized))
+        } catch (e: ResponseException) {
+            if (cached == null) emit(Resource.Error(UserError.HttpError(e.response.status.value)))
+        } catch (e: SocketTimeoutException) {
+            if (cached == null) emit(Resource.Error(UserError.IOError))
+        } catch (e: ConnectTimeoutException) {
+            if (cached == null) emit(Resource.Error(UserError.IOError))
         } catch (e: IOException) {
             if (cached == null) emit(Resource.Error(UserError.IOError))
-        } catch (e: HttpException) {
-            if (cached == null) emit(Resource.Error(UserError.HttpError(e.code())))
         } catch (e: Exception) {
             if (cached == null) emit(Resource.Error(UserError.UnknownError))
         }

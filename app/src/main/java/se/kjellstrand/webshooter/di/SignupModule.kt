@@ -4,9 +4,10 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import retrofit2.Retrofit
+import io.ktor.client.HttpClient
 import se.kjellstrand.webshooter.data.signup.SignupRepository
 import se.kjellstrand.webshooter.data.signup.remote.SignupRemoteDataSource
+import se.kjellstrand.webshooter.data.signup.remote.SignupRemoteDataSourceKtor
 import javax.inject.Singleton
 
 @Module
@@ -15,8 +16,8 @@ class SignupModule {
 
     @Provides
     @Singleton
-    fun providesSignupRemoteDataSource(retrofit: Retrofit): SignupRemoteDataSource {
-        return retrofit.create(SignupRemoteDataSource::class.java)
+    fun providesSignupRemoteDataSource(httpClient: HttpClient): SignupRemoteDataSource {
+        return SignupRemoteDataSourceKtor(httpClient)
     }
 
     @Provides

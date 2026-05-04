@@ -4,9 +4,10 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import retrofit2.Retrofit
+import io.ktor.client.HttpClient
 import se.kjellstrand.webshooter.data.cookies.CookiesRepository
 import se.kjellstrand.webshooter.data.cookies.remote.CookiesRemoteDataSource
+import se.kjellstrand.webshooter.data.cookies.remote.CookiesRemoteDataSourceKtor
 import javax.inject.Singleton
 
 @Module
@@ -15,8 +16,8 @@ class CookiesModule {
 
     @Provides
     @Singleton
-    fun providesCookiesRemoteDataSource(retrofit: Retrofit): CookiesRemoteDataSource {
-        return retrofit.create(CookiesRemoteDataSource::class.java)
+    fun providesCookiesRemoteDataSource(httpClient: HttpClient): CookiesRemoteDataSource {
+        return CookiesRemoteDataSourceKtor(httpClient)
     }
 
     @Provides

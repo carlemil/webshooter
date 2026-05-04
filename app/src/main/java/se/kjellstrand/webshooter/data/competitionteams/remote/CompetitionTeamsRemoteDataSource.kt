@@ -1,11 +1,17 @@
 package se.kjellstrand.webshooter.data.competitionteams.remote
 
-import retrofit2.http.GET
-import retrofit2.http.Path
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import javax.inject.Inject
 
 interface CompetitionTeamsRemoteDataSource {
-    @GET("api/v4.1.9/competitions/{competitionId}/teams")
-    suspend fun getTeams(
-        @Path("competitionId") competitionId: Long
-    ): CompetitionTeamsResponse
+    suspend fun getTeams(competitionId: Long): CompetitionTeamsResponse
+}
+
+class CompetitionTeamsRemoteDataSourceKtor @Inject constructor(
+    private val httpClient: HttpClient
+) : CompetitionTeamsRemoteDataSource {
+    override suspend fun getTeams(competitionId: Long): CompetitionTeamsResponse =
+        httpClient.get("api/v4.1.9/competitions/$competitionId/teams").body()
 }

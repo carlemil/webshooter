@@ -1,14 +1,15 @@
 package se.kjellstrand.webshooter.di
 
-import kotlinx.serialization.json.Json
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import retrofit2.Retrofit
+import io.ktor.client.HttpClient
+import kotlinx.serialization.json.Json
 import se.kjellstrand.webshooter.data.results.ResultsRepository
 import se.kjellstrand.webshooter.data.results.local.ResultsDao
 import se.kjellstrand.webshooter.data.results.remote.ResultsRemoteDataSource
+import se.kjellstrand.webshooter.data.results.remote.ResultsRemoteDataSourceKtor
 import javax.inject.Singleton
 
 @Module
@@ -17,8 +18,8 @@ class ResultsModule {
 
     @Provides
     @Singleton
-    fun providesResultsRemoteDataSource(retrofit: Retrofit) : ResultsRemoteDataSource {
-        return retrofit.create(ResultsRemoteDataSource::class.java)
+    fun providesResultsRemoteDataSource(httpClient: HttpClient): ResultsRemoteDataSource {
+        return ResultsRemoteDataSourceKtor(httpClient)
     }
 
     @Provides

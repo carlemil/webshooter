@@ -1,24 +1,27 @@
 package se.kjellstrand.webshooter.data
 
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.okhttp.OkHttp
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.DefaultRequest
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
-import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
-import retrofit2.Retrofit
-import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import se.kjellstrand.webshooter.data.login.remote.LoginRemoteDataSource
+import se.kjellstrand.webshooter.data.login.remote.LoginRemoteDataSourceKtor
 import se.kjellstrand.webshooter.data.login.remote.LoginRequest
 
 class StationResultRemoteDataSourceTest {
 
     private lateinit var mockWebServer: MockWebServer
+    private lateinit var httpClient: HttpClient
     private lateinit var loginApi: LoginRemoteDataSource
 
     @Before
@@ -31,17 +34,21 @@ class StationResultRemoteDataSourceTest {
             coerceInputValues = true
             explicitNulls = false
         }
-        val contentType = "application/json".toMediaType()
 
-        loginApi = Retrofit.Builder()
-            .baseUrl(mockWebServer.url("/"))
-            .addConverterFactory(json.asConverterFactory(contentType))
-            .build()
-            .create(LoginRemoteDataSource::class.java)
+        httpClient = HttpClient(OkHttp) {
+            expectSuccess = true
+            install(ContentNegotiation) { json(json) }
+            install(DefaultRequest) {
+                url(mockWebServer.url("/").toString())
+            }
+        }
+
+        loginApi = LoginRemoteDataSourceKtor(httpClient)
     }
 
     @After
     fun tearDown() {
+        httpClient.close()
         mockWebServer.shutdown()
     }
 
@@ -67,13 +74,11 @@ class StationResultRemoteDataSourceTest {
             username = "test@example.com"
         )
 
-        val response = runBlocking {
+        val body = runBlocking {
             loginApi.login(request)
         }
 
-        val body = response.body()
-        assertNotNull(body)
-        assertTrue((body!!.accessToken.length) > 9)
+        assertTrue((body.accessToken.length) > 9)
         assertEquals("Bearer", body.tokenType)
         assertEquals(31536000L, body.expiresIn)
     }

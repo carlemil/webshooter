@@ -1,14 +1,15 @@
 package se.kjellstrand.webshooter.di
 
-import kotlinx.serialization.json.Json
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import retrofit2.Retrofit
+import io.ktor.client.HttpClient
+import kotlinx.serialization.json.Json
 import se.kjellstrand.webshooter.data.club.ClubRepository
 import se.kjellstrand.webshooter.data.club.local.ClubDao
 import se.kjellstrand.webshooter.data.club.remote.ClubRemoteDataSource
+import se.kjellstrand.webshooter.data.club.remote.ClubRemoteDataSourceKtor
 import javax.inject.Singleton
 
 @Module
@@ -17,8 +18,8 @@ class ClubModule {
 
     @Provides
     @Singleton
-    fun providesClubRemoteDataSource(retrofit: Retrofit): ClubRemoteDataSource {
-        return retrofit.create(ClubRemoteDataSource::class.java)
+    fun providesClubRemoteDataSource(httpClient: HttpClient): ClubRemoteDataSource {
+        return ClubRemoteDataSourceKtor(httpClient)
     }
 
     @Provides

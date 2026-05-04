@@ -1,18 +1,18 @@
 package se.kjellstrand.webshooter.data.settings
 
-import kotlinx.serialization.json.Json
+import io.ktor.client.network.sockets.ConnectTimeoutException
+import io.ktor.client.network.sockets.SocketTimeoutException
+import io.ktor.client.plugins.ResponseException
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.serialization.json.Json
 import okio.IOException
-import retrofit2.HttpException
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
 import se.kjellstrand.webshooter.data.settings.local.UserProfileDao
 import se.kjellstrand.webshooter.data.settings.local.toDomain
 import se.kjellstrand.webshooter.data.settings.local.toEntity
-import se.kjellstrand.webshooter.data.settings.remote.Club
 import se.kjellstrand.webshooter.data.settings.remote.SettingsRemoteDataSource
-import se.kjellstrand.webshooter.data.settings.remote.UpdatePasswordRequest
 import se.kjellstrand.webshooter.data.settings.remote.UserProfile
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -40,18 +40,17 @@ class SettingsRepository @Inject constructor(
         }
 
         try {
-            val response = remoteDataSource.getUserProfile()
-            val profile = response.body()?.user
-            if (response.isSuccessful && profile != null) {
-                dao.insert(profile.toEntity(json))
-                emit(Resource.Success(profile))
-            } else {
-                if (cached == null) emit(Resource.Error(UserError.HttpError(response.code())))
-            }
+            val updated = remoteDataSource.getUserProfile().user
+            dao.insert(updated.toEntity(json))
+            emit(Resource.Success(updated))
+        } catch (e: ResponseException) {
+            if (cached == null) emit(Resource.Error(UserError.HttpError(e.response.status.value)))
+        } catch (e: SocketTimeoutException) {
+            if (cached == null) emit(Resource.Error(UserError.IOError))
+        } catch (e: ConnectTimeoutException) {
+            if (cached == null) emit(Resource.Error(UserError.IOError))
         } catch (e: IOException) {
             if (cached == null) emit(Resource.Error(UserError.IOError))
-        } catch (e: HttpException) {
-            if (cached == null) emit(Resource.Error(UserError.HttpError(e.code())))
         } catch (e: Exception) {
             if (cached == null) emit(Resource.Error(UserError.UnknownError))
         }
@@ -93,18 +92,17 @@ class SettingsRepository @Inject constructor(
                     put("clubs[$i][swish]", club.swish ?: "")
                 }
             }
-            val response = remoteDataSource.updateUserProfile(fields)
-            val updated = response.body()?.user
-            if (response.isSuccessful && updated != null) {
-                dao.insert(updated.toEntity(json))
-                emit(Resource.Success(updated))
-            } else {
-                emit(Resource.Error(UserError.HttpError(response.code())))
-            }
+            val updated = remoteDataSource.updateUserProfile(fields).user
+            dao.insert(updated.toEntity(json))
+            emit(Resource.Success(updated))
+        } catch (e: ResponseException) {
+            emit(Resource.Error(UserError.HttpError(e.response.status.value)))
+        } catch (e: SocketTimeoutException) {
+            emit(Resource.Error(UserError.IOError))
+        } catch (e: ConnectTimeoutException) {
+            emit(Resource.Error(UserError.IOError))
         } catch (e: IOException) {
             emit(Resource.Error(UserError.IOError))
-        } catch (e: HttpException) {
-            emit(Resource.Error(UserError.HttpError(e.code())))
         } catch (e: Exception) {
             emit(Resource.Error(UserError.UnknownError))
         }
@@ -123,16 +121,16 @@ class SettingsRepository @Inject constructor(
                 "password" to newPassword,
                 "password_confirmation" to confirmation
             )
-            val response = remoteDataSource.updatePassword(fields)
-            if (response.isSuccessful) {
-                emit(Resource.Success(Unit))
-            } else {
-                emit(Resource.Error(UserError.HttpError(response.code())))
-            }
+            remoteDataSource.updatePassword(fields)
+            emit(Resource.Success(Unit))
+        } catch (e: ResponseException) {
+            emit(Resource.Error(UserError.HttpError(e.response.status.value)))
+        } catch (e: SocketTimeoutException) {
+            emit(Resource.Error(UserError.IOError))
+        } catch (e: ConnectTimeoutException) {
+            emit(Resource.Error(UserError.IOError))
         } catch (e: IOException) {
             emit(Resource.Error(UserError.IOError))
-        } catch (e: HttpException) {
-            emit(Resource.Error(UserError.HttpError(e.code())))
         } catch (e: Exception) {
             emit(Resource.Error(UserError.UnknownError))
         }

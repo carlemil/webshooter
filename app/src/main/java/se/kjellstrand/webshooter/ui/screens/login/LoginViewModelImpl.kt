@@ -65,13 +65,12 @@ class LoginViewModelImpl @Inject constructor(
                 .collect { resource ->
                     when (resource) {
                         is Resource.Success -> {
-                            resource.data.body()?.let { loginResponse ->
-                                authTokenManager.storeTokens(
-                                    loginResponse.accessToken,
-                                    loginResponse.refreshToken,
-                                    loginResponse.expiresIn
-                                )
-                            }
+                            val loginResponse = resource.data
+                            authTokenManager.storeTokens(
+                                loginResponse.accessToken,
+                                loginResponse.refreshToken,
+                                loginResponse.expiresIn
+                            )
                             _uiState.value = _uiState.value.copy(
                                 isLoading = false,
                                 isSuccess = true

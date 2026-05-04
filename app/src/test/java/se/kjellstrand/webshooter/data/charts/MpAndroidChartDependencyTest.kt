@@ -28,8 +28,8 @@ class MpAndroidChartDependencyTest {
     // --- Guard tests (should PASS before and after fix) ---
 
     @Test
-    fun `Retrofit dependency is available`() {
-        val clazz = Class.forName("retrofit2.Retrofit")
+    fun `Ktor client dependency is available`() {
+        val clazz = Class.forName("io.ktor.client.HttpClient")
         assertNotNull(clazz)
     }
 

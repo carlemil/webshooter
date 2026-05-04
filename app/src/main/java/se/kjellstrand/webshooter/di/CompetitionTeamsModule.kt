@@ -1,14 +1,15 @@
 package se.kjellstrand.webshooter.di
 
-import kotlinx.serialization.json.Json
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import retrofit2.Retrofit
+import io.ktor.client.HttpClient
+import kotlinx.serialization.json.Json
 import se.kjellstrand.webshooter.data.competitionteams.CompetitionTeamsRepository
 import se.kjellstrand.webshooter.data.competitionteams.local.TeamsDao
 import se.kjellstrand.webshooter.data.competitionteams.remote.CompetitionTeamsRemoteDataSource
+import se.kjellstrand.webshooter.data.competitionteams.remote.CompetitionTeamsRemoteDataSourceKtor
 import javax.inject.Singleton
 
 @Module
@@ -17,8 +18,8 @@ class CompetitionTeamsModule {
 
     @Provides
     @Singleton
-    fun providesCompetitionTeamsRemoteDataSource(retrofit: Retrofit): CompetitionTeamsRemoteDataSource {
-        return retrofit.create(CompetitionTeamsRemoteDataSource::class.java)
+    fun providesCompetitionTeamsRemoteDataSource(httpClient: HttpClient): CompetitionTeamsRemoteDataSource {
+        return CompetitionTeamsRemoteDataSourceKtor(httpClient)
     }
 
     @Provides

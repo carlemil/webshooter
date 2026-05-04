@@ -1,14 +1,15 @@
 package se.kjellstrand.webshooter.di
 
-import kotlinx.serialization.json.Json
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import retrofit2.Retrofit
+import io.ktor.client.HttpClient
+import kotlinx.serialization.json.Json
 import se.kjellstrand.webshooter.data.mysignups.SignupsRepository
 import se.kjellstrand.webshooter.data.mysignups.local.SignupsDao
 import se.kjellstrand.webshooter.data.mysignups.remote.SignupsRemoteDataSource
+import se.kjellstrand.webshooter.data.mysignups.remote.SignupsRemoteDataSourceKtor
 import javax.inject.Singleton
 
 @Module
@@ -17,8 +18,8 @@ class SignupsModule {
 
     @Provides
     @Singleton
-    fun providesSignupsRemoteDataSource(retrofit: Retrofit): SignupsRemoteDataSource {
-        return retrofit.create(SignupsRemoteDataSource::class.java)
+    fun providesSignupsRemoteDataSource(httpClient: HttpClient): SignupsRemoteDataSource {
+        return SignupsRemoteDataSourceKtor(httpClient)
     }
 
     @Provides
