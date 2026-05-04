@@ -6,7 +6,7 @@ import java.io.File
 
 class ResultEntityTest {
 
-    private val sourceFile = File("src/main/java/se/kjellstrand/webshooter/data/results/local/ResultEntity.kt")
+    private val sourceFile = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/results/local/ResultEntity.kt")
     private val source: String by lazy { sourceFile.readText() }
 
     private fun fieldType(name: String): String? =

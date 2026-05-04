@@ -6,8 +6,8 @@ import java.io.File
 
 class ResultsDaoClubStatsQueryTest {
 
-    private val daoFile = File("src/main/java/se/kjellstrand/webshooter/data/results/local/ResultsDao.kt")
-    private val clubStatsRowFile = File("src/main/java/se/kjellstrand/webshooter/data/results/local/ClubStatsRow.kt")
+    private val daoFile = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/results/local/ResultsDao.kt")
+    private val clubStatsRowFile = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/results/local/ClubStatsRow.kt")
     private val daoSource: String by lazy { daoFile.readText() }
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---

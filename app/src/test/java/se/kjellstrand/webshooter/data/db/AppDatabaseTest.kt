@@ -6,7 +6,7 @@ import java.io.File
 
 class AppDatabaseTest {
 
-    private val sourceFile = File("src/main/java/se/kjellstrand/webshooter/data/db/AppDatabase.kt")
+    private val sourceFile = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/db/AppDatabase.kt")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 

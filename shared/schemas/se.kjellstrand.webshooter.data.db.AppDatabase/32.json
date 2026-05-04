@@ -41,32 +41,27 @@
           {
             "fieldPath": "contactName",
             "columnName": "contactName",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "contactVenue",
             "columnName": "contactVenue",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "contactCity",
             "columnName": "contactCity",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "contactEmail",
             "columnName": "contactEmail",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "contactTelephone",
             "columnName": "contactTelephone",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "lat",
@@ -83,20 +78,17 @@
           {
             "fieldPath": "googleMaps",
             "columnName": "googleMaps",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "description",
             "columnName": "description",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "website",
             "columnName": "website",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "resultsType",
@@ -107,38 +99,32 @@
           {
             "fieldPath": "resultsTypeHuman",
             "columnName": "resultsTypeHuman",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "signupsOpeningDate",
             "columnName": "signupsOpeningDate",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "signupsClosingDate",
             "columnName": "signupsClosingDate",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "allowSignupsAfterClosingDateHuman",
             "columnName": "allowSignupsAfterClosingDateHuman",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "startTimeHuman",
             "columnName": "startTimeHuman",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "finalTimeHuman",
             "columnName": "finalTimeHuman",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "signupsCount",
@@ -194,9 +180,7 @@
           "columnNames": [
             "id"
           ]
-        },
-        "indices": [],
-        "foreignKeys": []
+        }
       },
       {
         "tableName": "results",
@@ -247,8 +231,7 @@
           {
             "fieldPath": "stdMedal",
             "columnName": "stdMedal",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "signupJson",
@@ -316,8 +299,7 @@
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_results_userId_competitionsId` ON `${TABLE_NAME}` (`userId`, `competitionsId`)"
           }
-        ],
-        "foreignKeys": []
+        ]
       },
       {
         "tableName": "patrols",
@@ -377,8 +359,7 @@
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_patrols_competitionId` ON `${TABLE_NAME}` (`competitionId`)"
           }
-        ],
-        "foreignKeys": []
+        ]
       },
       {
         "tableName": "teams",
@@ -426,8 +407,7 @@
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_teams_competitionId` ON `${TABLE_NAME}` (`competitionId`)"
           }
-        ],
-        "foreignKeys": []
+        ]
       },
       {
         "tableName": "competition_signups",
@@ -481,8 +461,7 @@
             "orders": [],
             "createSql": "CREATE INDEX IF NOT EXISTS `index_competition_signups_competitionId` ON `${TABLE_NAME}` (`competitionId`)"
           }
-        ],
-        "foreignKeys": []
+        ]
       },
       {
         "tableName": "signups",
@@ -521,14 +500,12 @@
           {
             "fieldPath": "startTime",
             "columnName": "startTime",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "endTime",
             "columnName": "endTime",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "lane",
@@ -539,8 +516,7 @@
           {
             "fieldPath": "note",
             "columnName": "note",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "registrationFee",
@@ -581,14 +557,12 @@
           {
             "fieldPath": "patrolJson",
             "columnName": "patrolJson",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "resultsPlacementsJson",
             "columnName": "resultsPlacementsJson",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           }
         ],
         "primaryKey": {
@@ -596,9 +570,7 @@
           "columnNames": [
             "id"
           ]
-        },
-        "indices": [],
-        "foreignKeys": []
+        }
       },
       {
         "tableName": "club",
@@ -613,8 +585,7 @@
           {
             "fieldPath": "clubsNr",
             "columnName": "clubsNr",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "name",
@@ -625,56 +596,47 @@
           {
             "fieldPath": "email",
             "columnName": "email",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "phone",
             "columnName": "phone",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "addressStreet",
             "columnName": "addressStreet",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "addressZipcode",
             "columnName": "addressZipcode",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "addressCity",
             "columnName": "addressCity",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "addressCountry",
             "columnName": "addressCountry",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "bankgiro",
             "columnName": "bankgiro",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "postgiro",
             "columnName": "postgiro",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "swish",
             "columnName": "swish",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "adminsJson",
@@ -694,9 +656,7 @@
           "columnNames": [
             "id"
           ]
-        },
-        "indices": [],
-        "foreignKeys": []
+        }
       },
       {
         "tableName": "user_profile",
@@ -729,56 +689,47 @@
           {
             "fieldPath": "shootingCardNumber",
             "columnName": "shootingCardNumber",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "noShootingCardNumber",
             "columnName": "noShootingCardNumber",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "birthday",
             "columnName": "birthday",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "gender",
             "columnName": "gender",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "phone",
             "columnName": "phone",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "mobile",
             "columnName": "mobile",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "gradeField",
             "columnName": "gradeField",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "gradeTrackshooting",
             "columnName": "gradeTrackshooting",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "apiToken",
             "columnName": "apiToken",
-            "affinity": "TEXT",
-            "notNull": false
+            "affinity": "TEXT"
           },
           {
             "fieldPath": "fullname",
@@ -810,12 +761,9 @@
           "columnNames": [
             "userId"
           ]
-        },
-        "indices": [],
-        "foreignKeys": []
+        }
       }
     ],
-    "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
       "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2e8383526e8d218e7c09d02e5912caa1')"

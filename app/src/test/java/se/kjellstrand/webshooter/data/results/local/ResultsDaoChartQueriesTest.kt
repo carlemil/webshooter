@@ -6,8 +6,8 @@ import java.io.File
 
 class ResultsDaoChartQueriesTest {
 
-    private val daoFile = File("src/main/java/se/kjellstrand/webshooter/data/results/local/ResultsDao.kt")
-    private val rowFile = File("src/main/java/se/kjellstrand/webshooter/data/results/local/ChartPointRow.kt")
+    private val daoFile = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/results/local/ResultsDao.kt")
+    private val rowFile = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/results/local/ChartPointRow.kt")
     private val daoSource: String by lazy { daoFile.readText() }
     private val rowSource: String by lazy { rowFile.readText() }
 

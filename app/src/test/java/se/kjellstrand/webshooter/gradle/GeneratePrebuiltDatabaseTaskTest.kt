@@ -8,6 +8,8 @@ class GeneratePrebuiltDatabaseTaskTest {
 
     private val prebuiltDbFile = File("prebuilt-database.gradle.kts")
     private val buildFile = File("build.gradle.kts")
+    private val sharedBuildFile = File("../shared/build.gradle.kts")
+    private val dbVersionFile = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/db/DbVersion.kt")
 
     // --- Prebuilt database task tests ---
 
@@ -96,20 +98,24 @@ class GeneratePrebuiltDatabaseTaskTest {
     }
 
     @Test
-    fun `build file should have ksp room schema location configured`() {
-        val content = buildFile.readText()
+    fun `shared build file should configure room schema directory`() {
+        val content = sharedBuildFile.readText()
         assertTrue(
-            "KSP room.schemaLocation must be configured",
-            content.contains("room.schemaLocation")
+            "shared/build.gradle.kts must configure schemaDirectory for Room",
+            content.contains("schemaDirectory")
         )
     }
 
     @Test
-    fun `build file should have generateDbVersion task`() {
-        val content = buildFile.readText()
+    fun `DB_VERSION constant exists in shared commonMain`() {
         assertTrue(
-            "generateDbVersion task must exist for DB version generation",
-            content.contains("generateDbVersion")
+            "DbVersion.kt with the DB_VERSION constant must live in :shared/commonMain",
+            dbVersionFile.exists()
+        )
+        val content = dbVersionFile.readText()
+        assertTrue(
+            "DbVersion.kt must declare a DB_VERSION constant",
+            content.contains("DB_VERSION")
         )
     }
 }

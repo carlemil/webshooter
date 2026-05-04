@@ -16,29 +16,6 @@ val appVersionName = "1.20.0"
 extra["appVersionCode"] = appVersionCode
 apply(from = "prebuilt-database.gradle.kts")
 
-val dbVersionDir = layout.buildDirectory.dir("generated/source/dbversion")
-
-ksp {
-    arg("room.schemaLocation", "$projectDir/schemas")
-}
-
-val generateDbVersion = tasks.register("generateDbVersion") {
-    outputs.dir(dbVersionDir)
-    doLast {
-        val dir = dbVersionDir.get().asFile
-        dir.mkdirs()
-        File(dir, "DbVersion.kt").writeText(
-            "package se.kjellstrand.webshooter.data.db\n\nconst val DB_VERSION = $appVersionCode\n"
-        )
-    }
-}
-
-tasks.configureEach {
-    if (name.startsWith("ksp") || (name.startsWith("compile") && name.endsWith("Kotlin"))) {
-        dependsOn(generateDbVersion)
-    }
-}
-
 android {
     namespace = "se.kjellstrand.webshooter"
     compileSdk = 36
@@ -81,10 +58,6 @@ android {
             isShrinkResources = false
             signingConfig = signingConfigs.getByName("release")
         }
-    }
-
-    sourceSets {
-        getByName("main").java.srcDir(dbVersionDir)
     }
 
     flavorDimensions += "server"
@@ -200,10 +173,9 @@ dependencies {
     // Settings (multiplatform key-value storage)
     implementation(libs.multiplatform.settings)
 
-    // Room
-    implementation(libs.androidx.room.runtime)
+    // Room (runtime comes via :shared; only the Android-specific ktx
+    //  helpers stay here for Room.databaseBuilder in DatabaseModule).
     implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler)
 
     // Firebase
     implementation(platform(libs.firebase.bom))

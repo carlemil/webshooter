@@ -110,13 +110,13 @@ class ClubStatsRepositoryTest {
     fun `ClubStatsRow still exists in results local package`() {
         assertTrue(
             "ClubStatsRow.kt must still exist",
-            File("src/main/java/se/kjellstrand/webshooter/data/results/local/ClubStatsRow.kt").exists()
+            File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/results/local/ClubStatsRow.kt").exists()
         )
     }
 
     @Test
     fun `ResultsDao still has getClubStats method`() {
-        val source = File("src/main/java/se/kjellstrand/webshooter/data/results/local/ResultsDao.kt").readText()
+        val source = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/results/local/ResultsDao.kt").readText()
         assertTrue(
             "ResultsDao must still have getClubStats",
             source.contains("fun getClubStats(")

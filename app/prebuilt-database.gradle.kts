@@ -21,7 +21,7 @@ val appVersionCode: Int by project.extra
 val generatePrebuiltDatabase = tasks.register("generatePrebuiltDatabase") {
     description = "Fetches competition results from the API and populates a prebuilt Room database asset"
 
-    val schemaDir = file("schemas/se.kjellstrand.webshooter.data.db.AppDatabase")
+    val schemaDir = file("../shared/schemas/se.kjellstrand.webshooter.data.db.AppDatabase")
     val dbFile = file("src/main/assets/databases/webshooter.db")
     val maxCompetitionId = 300
 

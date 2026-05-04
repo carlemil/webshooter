@@ -6,9 +6,9 @@ import java.io.File
 
 class DatabaseIndicesTest {
 
-    private val teamEntityFile = File("src/main/java/se/kjellstrand/webshooter/data/competitionteams/local/TeamEntity.kt")
-    private val patrolEntityFile = File("src/main/java/se/kjellstrand/webshooter/data/competitionpatrols/local/PatrolEntity.kt")
-    private val signupEntityFile = File("src/main/java/se/kjellstrand/webshooter/data/competitionsignups/local/CompetitionSignupEntity.kt")
+    private val teamEntityFile = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/competitionteams/local/TeamEntity.kt")
+    private val patrolEntityFile = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/competitionpatrols/local/PatrolEntity.kt")
+    private val signupEntityFile = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/competitionsignups/local/CompetitionSignupEntity.kt")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 
