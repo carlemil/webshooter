@@ -15,10 +15,18 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            // Filled in as code moves to commonMain in subsequent commits.
+            // Public API surface — exposed transitively to :app.
+            api(libs.kotlinx.coroutines.core)
+            api(libs.kotlinx.serialization.json)
+            api(libs.napier)
+
+            // Internal helpers used by shared classes.
+            implementation(libs.ktor.client.core)
+            implementation(libs.kotlinx.datetime)
+            implementation(libs.okio)
         }
         androidMain.dependencies {
-            // Filled in as Android-specific code moves to androidMain.
+            implementation(libs.kotlinx.coroutines.android)
         }
     }
 }

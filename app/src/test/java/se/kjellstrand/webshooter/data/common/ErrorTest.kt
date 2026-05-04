@@ -6,7 +6,7 @@ import java.io.File
 
 class ErrorTest {
 
-    private val errorFile = File("src/main/java/se/kjellstrand/webshooter/data/common/Error.kt")
+    private val errorFile = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/common/Error.kt")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 
