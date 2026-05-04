@@ -195,6 +195,9 @@ dependencies {
     // Crypto (multiplatform SHA-1)
     implementation(libs.kotlincrypto.hash.sha1)
 
+    // Settings (multiplatform key-value storage)
+    implementation(libs.multiplatform.settings)
+
     // Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)

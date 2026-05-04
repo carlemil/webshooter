@@ -1,14 +1,17 @@
 package se.kjellstrand.webshooter.data
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.StrictMode
 import android.util.Log
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.russhwolf.settings.Settings
+import com.russhwolf.settings.SharedPreferencesSettings
 
 class AuthTokenManager(context: Context) {
     private val masterKeyAlias: MasterKey
-    private val sharedPreferences: android.content.SharedPreferences
+    private val settings: Settings
 
     init {
         // MasterKey and EncryptedSharedPreferences perform unavoidable
@@ -19,7 +22,7 @@ class AuthTokenManager(context: Context) {
                 .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
                 .build()
 
-            sharedPreferences = try {
+            val sharedPreferences: SharedPreferences = try {
                 EncryptedSharedPreferences.create(
                     context,
                     PREFS_FILE,
@@ -38,55 +41,47 @@ class AuthTokenManager(context: Context) {
                     EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
                 )
             }
+            settings = SharedPreferencesSettings(sharedPreferences)
         } finally {
             StrictMode.setThreadPolicy(oldPolicy)
         }
     }
 
     fun storeToken(newToken: String) {
-        with(sharedPreferences.edit()) {
-            putString(AUTH_TOKEN_KEY, newToken)
-            commit()
-        }
+        settings.putString(AUTH_TOKEN_KEY, newToken)
         token = newToken
     }
 
     fun storeTokens(accessToken: String, newRefreshToken: String, expiresInSeconds: Long) {
         val expiresAt = System.currentTimeMillis() + expiresInSeconds * 1000
-        with(sharedPreferences.edit()) {
-            putString(AUTH_TOKEN_KEY, accessToken)
-            putString(REFRESH_TOKEN_KEY, newRefreshToken)
-            putLong(TOKEN_EXPIRES_AT_KEY, expiresAt)
-            commit()
-        }
+        settings.putString(AUTH_TOKEN_KEY, accessToken)
+        settings.putString(REFRESH_TOKEN_KEY, newRefreshToken)
+        settings.putLong(TOKEN_EXPIRES_AT_KEY, expiresAt)
         token = accessToken
         refreshToken = newRefreshToken
         tokenExpiresAtMillis = expiresAt
     }
 
     fun readToken(): String? {
-        token = sharedPreferences.getString(AUTH_TOKEN_KEY, null)
+        token = settings.getStringOrNull(AUTH_TOKEN_KEY)
         return token
     }
 
     fun readRefreshToken(): String? {
-        refreshToken = sharedPreferences.getString(REFRESH_TOKEN_KEY, null)
+        refreshToken = settings.getStringOrNull(REFRESH_TOKEN_KEY)
         return refreshToken
     }
 
     fun isTokenExpired(): Boolean {
         val expiresAt = tokenExpiresAtMillis
-            ?: sharedPreferences.getLong(TOKEN_EXPIRES_AT_KEY, 0L)
+            ?: settings.getLong(TOKEN_EXPIRES_AT_KEY, 0L)
         return expiresAt > 0 && System.currentTimeMillis() >= expiresAt
     }
 
     fun clearToken() {
-        with(sharedPreferences.edit()) {
-            remove(AUTH_TOKEN_KEY)
-            remove(REFRESH_TOKEN_KEY)
-            remove(TOKEN_EXPIRES_AT_KEY)
-            commit()
-        }
+        settings.remove(AUTH_TOKEN_KEY)
+        settings.remove(REFRESH_TOKEN_KEY)
+        settings.remove(TOKEN_EXPIRES_AT_KEY)
         token = null
         refreshToken = null
         tokenExpiresAtMillis = null

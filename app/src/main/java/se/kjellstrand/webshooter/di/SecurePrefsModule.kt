@@ -3,9 +3,10 @@ package se.kjellstrand.webshooter.data.secure
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
-import androidx.core.content.edit
 import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
+import com.russhwolf.settings.Settings
+import com.russhwolf.settings.SharedPreferencesSettings
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -19,14 +20,14 @@ class SecurePrefs @Inject constructor(@ApplicationContext context: Context) {
         private const val TAG = "SecurePrefs"
     }
 
-    private val sharedPrefs: SharedPreferences
+    private val settings: Settings
 
     init {
         val masterKey = MasterKey.Builder(context)
             .setKeyScheme(MasterKey.KeyScheme.AES256_GCM)
             .build()
 
-        sharedPrefs = try {
+        val sharedPrefs: SharedPreferences = try {
             EncryptedSharedPreferences.create(
                 context,
                 FILE_NAME,
@@ -45,19 +46,16 @@ class SecurePrefs @Inject constructor(@ApplicationContext context: Context) {
                 EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
             )
         }
+        settings = SharedPreferencesSettings(sharedPrefs)
     }
 
     fun saveUsername(username: String) {
-        sharedPrefs.edit {
-            putString(KEY_USERNAME, username)
-        }
+        settings.putString(KEY_USERNAME, username)
     }
 
-    fun getUsername(): String = sharedPrefs.getString(KEY_USERNAME, "") ?: ""
+    fun getUsername(): String = settings.getString(KEY_USERNAME, "")
 
     fun clearUsername() {
-        sharedPrefs.edit {
-            remove(KEY_USERNAME)
-        }
+        settings.remove(KEY_USERNAME)
     }
 }
