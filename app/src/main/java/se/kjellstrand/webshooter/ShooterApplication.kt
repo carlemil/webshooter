@@ -1,8 +1,9 @@
 package se.kjellstrand.webshooter
 
 import android.app.Application
-import android.util.Log
 import dagger.hilt.android.HiltAndroidApp
+import io.github.aakira.napier.DebugAntilog
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.data.AuthTokenManager
@@ -20,12 +21,16 @@ class ShooterApplication : Application() {
     override fun onCreate() {
         super.onCreate()
 
+        if (BuildConfig.DEBUG) {
+            Napier.base(DebugAntilog())
+        }
+
         if (authTokenManager.readToken() == null) return
         applicationScope.launch {
             try {
                 competitionsRepository.syncAll()
             } catch (e: Exception) {
-                Log.w(TAG, "Failed to sync competitions on startup", e)
+                Napier.w("Failed to sync competitions on startup", e, TAG)
             }
         }
     }

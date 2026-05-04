@@ -1,9 +1,10 @@
 package se.kjellstrand.webshooter.data.competitions.local
 
-import android.util.Log
+import io.github.aakira.napier.Napier
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import org.kotlincrypto.hash.sha1.SHA1
 import se.kjellstrand.webshooter.data.common.Club
 import se.kjellstrand.webshooter.data.common.CompetitionType
 import se.kjellstrand.webshooter.data.common.WeaponClass
@@ -11,7 +12,6 @@ import se.kjellstrand.webshooter.data.common.WeaponGroup
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.competitions.remote.Usersignup
-import java.security.MessageDigest
 
 private const val TAG = "CompetitionMappers"
 
@@ -26,7 +26,7 @@ fun CompetitionEntity.contentHash(): String {
         signupsCount, patrolsCount, allowTeams,
         competitionTypeJson, weaponGroupsJson, weaponClassesJson, userSignupsJson, clubJson
     ).joinToString("") { it?.toString() ?: " " }
-    val bytes = MessageDigest.getInstance("SHA-1").digest(joined.toByteArray(Charsets.UTF_8))
+    val bytes = SHA1().digest(joined.encodeToByteArray())
     return bytes.joinToString("") { "%02x".format(it) }
 }
 
@@ -97,6 +97,6 @@ fun CompetitionEntity.toDomain(json: Json): Datum? = try {
         club = json.decodeFromString<Club>(clubJson)
     )
 } catch (e: SerializationException) {
-    Log.w(TAG, "Error", e)
+    Napier.w("Error", e, TAG)
     null
 }

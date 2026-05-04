@@ -3,7 +3,10 @@ accompanistSystemuicontroller = "0.27.0"
 activityCompose = "1.9.2"
 composeBom = "2024.09.02"
 kotlinxSerialization = "1.7.3"
+kotlinxDatetime = "0.6.1"
 ktor = "2.3.13"
+napier = "2.7.1"
+kotlincryptoHash = "0.5.3"
 coreKtx = "1.13.1"
 espressoCore = "3.6.1"
 hiltAndroid = "2.51.1"
@@ -51,6 +54,9 @@ androidx-ui-test-manifest = { module = "androidx.compose.ui:ui-test-manifest" }
 androidx-ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 androidx-ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
+napier = { module = "io.github.aakira:napier", version.ref = "napier" }
+kotlincrypto-hash-sha1 = { module = "org.kotlincrypto.hash:sha1", version.ref = "kotlincryptoHash" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-okhttp = { module = "io.ktor:ktor-client-okhttp", version.ref = "ktor" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }

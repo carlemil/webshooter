@@ -1,6 +1,6 @@
 package se.kjellstrand.webshooter.data.results
 
-import android.util.Log
+import io.github.aakira.napier.Napier
 import io.ktor.client.network.sockets.ConnectTimeoutException
 import io.ktor.client.network.sockets.SocketTimeoutException
 import io.ktor.client.plugins.ResponseException
@@ -50,23 +50,23 @@ open class ResultsRepository @Inject constructor(
             val result = try {
                 resultsRemoteDataSource.getResults(competitionId)
             } catch (e: ResponseException) {
-                Log.w(TAG, "Error", e)
+                Napier.w("Error", e, TAG)
                 if (!hasCached) emit(Resource.Error(UserError.HttpError(e.response.status.value)))
                 return@flow
             } catch (e: SocketTimeoutException) {
-                Log.w(TAG, "Error", e)
+                Napier.w("Error", e, TAG)
                 if (!hasCached) emit(Resource.Error(UserError.IOError))
                 return@flow
             } catch (e: ConnectTimeoutException) {
-                Log.w(TAG, "Error", e)
+                Napier.w("Error", e, TAG)
                 if (!hasCached) emit(Resource.Error(UserError.IOError))
                 return@flow
             } catch (e: IOException) {
-                Log.w(TAG, "Error", e)
+                Napier.w("Error", e, TAG)
                 if (!hasCached) emit(Resource.Error(UserError.IOError))
                 return@flow
             } catch (e: Exception) {
-                Log.w(TAG, "Error", e)
+                Napier.w("Error", e, TAG)
                 if (!hasCached) emit(Resource.Error(UserError.UnknownError))
                 return@flow
             }
@@ -84,7 +84,7 @@ open class ResultsRepository @Inject constructor(
             dao.deleteByCompetition(competitionId)
             dao.insertAll(fresh.results.map { it.toEntity(competitionId, json) })
         } catch (e: Exception) {
-            Log.w(TAG, "refreshResultsFor($competitionId) failed; invalidating cache", e)
+            Napier.w("refreshResultsFor($competitionId) failed; invalidating cache", e, TAG)
             try {
                 dao.deleteByCompetition(competitionId)
             } catch (_: Exception) {
@@ -111,23 +111,23 @@ open class ResultsRepository @Inject constructor(
             val result = try {
                 resultsRemoteDataSource.getResults(competitionId)
             } catch (e: ResponseException) {
-                Log.w(TAG, "Error", e)
+                Napier.w("Error", e, TAG)
                 emit(Resource.Error(UserError.HttpError(e.response.status.value)))
                 return@flow
             } catch (e: SocketTimeoutException) {
-                Log.w(TAG, "Error", e)
+                Napier.w("Error", e, TAG)
                 emit(Resource.Error(UserError.IOError))
                 return@flow
             } catch (e: ConnectTimeoutException) {
-                Log.w(TAG, "Error", e)
+                Napier.w("Error", e, TAG)
                 emit(Resource.Error(UserError.IOError))
                 return@flow
             } catch (e: IOException) {
-                Log.w(TAG, "Error", e)
+                Napier.w("Error", e, TAG)
                 emit(Resource.Error(UserError.IOError))
                 return@flow
             } catch (e: Exception) {
-                Log.w(TAG, "Error", e)
+                Napier.w("Error", e, TAG)
                 emit(Resource.Error(UserError.UnknownError))
                 return@flow
             }

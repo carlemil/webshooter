@@ -1,6 +1,6 @@
 package se.kjellstrand.webshooter.ui.screens.myresults
 
-import android.util.Log
+import io.github.aakira.napier.Napier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -43,7 +43,7 @@ class MyResultsViewModelImpl @Inject constructor(
             try {
                 competitionsRepository.syncAll()
             } catch (e: Exception) {
-                Log.w(TAG, "MyResults onScreenOpened sync failed", e)
+                Napier.w("MyResults onScreenOpened sync failed", e, TAG)
                 return@launch
             }
             val current = _uiState.value.groupedEntries

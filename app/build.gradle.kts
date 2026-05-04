@@ -186,6 +186,15 @@ dependencies {
     // Serialization
     implementation(libs.kotlinx.serialization.json)
 
+    // Datetime
+    implementation(libs.kotlinx.datetime)
+
+    // Logging (multiplatform)
+    implementation(libs.napier)
+
+    // Crypto (multiplatform SHA-1)
+    implementation(libs.kotlincrypto.hash.sha1)
+
     // Room
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)

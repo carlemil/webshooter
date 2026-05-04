@@ -1,6 +1,6 @@
 package se.kjellstrand.webshooter.data.mysignups
 
-import android.util.Log
+import io.github.aakira.napier.Napier
 import io.ktor.client.network.sockets.ConnectTimeoutException
 import io.ktor.client.network.sockets.SocketTimeoutException
 import io.ktor.client.plugins.ResponseException
@@ -52,19 +52,19 @@ class SignupsRepository @Inject constructor(
             }
             emit(Resource.Success(result.groupedSignups))
         } catch (e: ResponseException) {
-            Log.w(TAG, "Error", e)
+            Napier.w("Error", e, TAG)
             if (!hasCached) emit(Resource.Error(UserError.HttpError(e.response.status.value)))
         } catch (e: SocketTimeoutException) {
-            Log.w(TAG, "Error", e)
+            Napier.w("Error", e, TAG)
             if (!hasCached) emit(Resource.Error(UserError.IOError))
         } catch (e: ConnectTimeoutException) {
-            Log.w(TAG, "Error", e)
+            Napier.w("Error", e, TAG)
             if (!hasCached) emit(Resource.Error(UserError.IOError))
         } catch (e: IOException) {
-            Log.w(TAG, "Error", e)
+            Napier.w("Error", e, TAG)
             if (!hasCached) emit(Resource.Error(UserError.IOError))
         } catch (e: Exception) {
-            Log.w(TAG, "Error", e)
+            Napier.w("Error", e, TAG)
             if (!hasCached) emit(Resource.Error(UserError.UnknownError))
         }
         emit(Resource.Loading(false))

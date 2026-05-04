@@ -1,6 +1,6 @@
 package se.kjellstrand.webshooter.data.settings.local
 
-import android.util.Log
+import io.github.aakira.napier.Napier
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -50,6 +50,6 @@ fun UserProfileEntity.toDomain(json: Json): UserProfile? = try {
         clubs = json.decodeFromString<List<Club>>(clubsJson)
     )
 } catch (e: SerializationException) {
-    Log.w(TAG, "Error", e)
+    Napier.w("Error", e, TAG)
     null
 }

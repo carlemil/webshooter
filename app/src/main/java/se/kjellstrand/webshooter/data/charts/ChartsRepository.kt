@@ -1,10 +1,12 @@
 package se.kjellstrand.webshooter.data.charts
 
-import android.util.Log
-import kotlinx.serialization.json.Json
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import java.time.LocalDate
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
+import kotlinx.serialization.json.Json
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionsDao
@@ -56,7 +58,7 @@ class ChartsRepository @Inject constructor(
     fun getChartData(userId: Long): Flow<Resource<ChartData, UserError>> = flow {
         emit(Resource.Loading(true))
 
-        val today = LocalDate.now().toString()
+        val today = Clock.System.todayIn(TimeZone.currentSystemDefault()).toString()
         val rows = resultsDao.getChartPointsForUser(userId, today)
 
         val allWeaponClasses = resultsDao.getAllWeaponClasses()
@@ -70,7 +72,7 @@ class ChartsRepository @Inject constructor(
             val apiString = try {
                 competition.resultsType.toApiString()
             } catch (e: Exception) {
-                Log.w(TAG, "Unknown resultsType for competition ${competition.id}, skipping")
+                Napier.w("Unknown resultsType for competition ${competition.id}, skipping", tag = TAG)
                 continue
             }
             val typeName = competition.competitionType?.name

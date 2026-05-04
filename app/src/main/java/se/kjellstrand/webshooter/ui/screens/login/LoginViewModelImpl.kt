@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import android.util.Log
+import io.github.aakira.napier.Napier
 import se.kjellstrand.webshooter.data.AuthTokenManager
 import se.kjellstrand.webshooter.data.MockModeManager
 import se.kjellstrand.webshooter.data.common.Resource
@@ -100,7 +100,7 @@ class LoginViewModelImpl @Inject constructor(
             try {
                 competitionsRepository.syncAll()
             } catch (e: Exception) {
-                Log.w(TAG, "Failed to sync competitions", e)
+                Napier.w("Failed to sync competitions", e, TAG)
             }
         }
     }

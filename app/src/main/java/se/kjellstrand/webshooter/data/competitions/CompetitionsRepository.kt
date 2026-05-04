@@ -1,6 +1,6 @@
 package se.kjellstrand.webshooter.data.competitions
 
-import android.util.Log
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -10,6 +10,9 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
 import kotlinx.serialization.json.Json
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionEntity
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionsDao
@@ -20,7 +23,6 @@ import se.kjellstrand.webshooter.data.competitions.remote.CompetitionsRemoteData
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.data.results.ResultsRepository
 import se.kjellstrand.webshooter.data.results.local.ResultsDao
-import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -39,7 +41,7 @@ open class CompetitionsRepository @Inject constructor(
             .flowOn(Dispatchers.Default)
 
     suspend fun syncAll() {
-        val today = LocalDate.now().toString()
+        val today = Clock.System.todayIn(TimeZone.currentSystemDefault()).toString()
         val existing = dao.getAll().associateBy { it.id }
         val idsWithResults = resultsDao.getCompetitionIdsWithResults().toHashSet()
         val toRefreshIds = mutableSetOf<Long>()
@@ -51,7 +53,7 @@ open class CompetitionsRepository @Inject constructor(
             val result = try {
                 competitionsRemoteDataSource.getCompetitions(page, pageSize, "all", 0, 0)
             } catch (e: Exception) {
-                Log.w(TAG, "syncAll page $page failed", e)
+                Napier.w("syncAll page $page failed", e, TAG)
                 return
             }
             for (item in result.competitions.data) {

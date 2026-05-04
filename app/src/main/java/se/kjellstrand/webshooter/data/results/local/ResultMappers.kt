@@ -1,6 +1,6 @@
 package se.kjellstrand.webshooter.data.results.local
 
-import android.util.Log
+import io.github.aakira.napier.Napier
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -45,6 +45,6 @@ fun ResultEntity.toDomain(json: Json): Result? = try {
         results = json.decodeFromString<List<StationResult>>(stationResultsJson)
     )
 } catch (e: SerializationException) {
-    Log.w(TAG, "Error", e)
+    Napier.w("Error", e, TAG)
     null
 }

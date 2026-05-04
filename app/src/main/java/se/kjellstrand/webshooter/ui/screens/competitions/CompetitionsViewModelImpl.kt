@@ -1,6 +1,6 @@
 package se.kjellstrand.webshooter.ui.screens.competitions
 
-import android.util.Log
+import io.github.aakira.napier.Napier
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -61,7 +61,7 @@ class CompetitionsViewModelImpl @Inject constructor(
                                 _uiState.value = _uiState.value.copy(isLoading = false)
                             }
                         } catch (e: Exception) {
-                            Log.w(TAG, "Self-sync failed", e)
+                            Napier.w("Self-sync failed", e, TAG)
                             if (_uiState.value.competitions?.data?.isEmpty() == true) {
                                 _uiState.value = _uiState.value.copy(
                                     isLoading = false,

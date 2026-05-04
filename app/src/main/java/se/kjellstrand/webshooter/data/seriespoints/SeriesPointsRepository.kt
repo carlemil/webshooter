@@ -1,11 +1,13 @@
 package se.kjellstrand.webshooter.data.seriespoints
 
-import android.util.Log
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
-import java.time.LocalDate
 import se.kjellstrand.webshooter.data.charts.Participant
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
@@ -40,13 +42,13 @@ class SeriesPointsRepository @Inject constructor(
     fun getSeriesPoints(userId: Long): Flow<Resource<SeriesPointsData, UserError>> = flow {
         emit(Resource.Loading(true))
 
-        val today = LocalDate.now().toString()
+        val today = Clock.System.todayIn(TimeZone.currentSystemDefault()).toString()
         val rows = resultsDao.getPrecisionSeriesForUser(userId, today)
         val competitions = rows.mapNotNull { row ->
             val stations: List<StationResult>? = try {
                 json.decodeFromString<List<StationResult>>(row.stationResultsJson)
             } catch (e: SerializationException) {
-                Log.w(TAG, "Failed to parse stationResultsJson for ${row.competitionId}", e)
+                Napier.w("Failed to parse stationResultsJson for ${row.competitionId}", e, TAG)
                 null
             }
             if (stations.isNullOrEmpty()) return@mapNotNull null

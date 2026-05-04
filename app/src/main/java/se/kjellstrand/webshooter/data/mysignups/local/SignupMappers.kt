@@ -1,6 +1,6 @@
 package se.kjellstrand.webshooter.data.mysignups.local
 
-import android.util.Log
+import io.github.aakira.napier.Napier
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -52,6 +52,6 @@ fun SignupEntryEntity.toDomain(json: Json): SignupEntry? = try {
         resultsPlacements = resultsPlacementsJson?.let { json.decodeFromString<SignupResultsPlacement>(it) }
     )
 } catch (e: SerializationException) {
-    Log.w(TAG, "Error", e)
+    Napier.w("Error", e, TAG)
     null
 }

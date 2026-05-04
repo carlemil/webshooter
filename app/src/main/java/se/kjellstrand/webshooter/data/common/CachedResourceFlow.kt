@@ -1,6 +1,6 @@
 package se.kjellstrand.webshooter.data.common
 
-import android.util.Log
+import io.github.aakira.napier.Napier
 import io.ktor.client.network.sockets.ConnectTimeoutException
 import io.ktor.client.network.sockets.SocketTimeoutException
 import io.ktor.client.plugins.ResponseException
@@ -30,23 +30,23 @@ fun <T> cachedResourceFlow(
     val result = try {
         fetchFromRemote()
     } catch (e: ResponseException) {
-        Log.w(tag, "Network error", e)
+        Napier.w("Network error", e, tag)
         if (cachedData == null) emit(Resource.Error(UserError.HttpError(e.response.status.value)))
         return@flow
     } catch (e: SocketTimeoutException) {
-        Log.w(tag, "Network error", e)
+        Napier.w("Network error", e, tag)
         if (cachedData == null) emit(Resource.Error(UserError.IOError))
         return@flow
     } catch (e: ConnectTimeoutException) {
-        Log.w(tag, "Network error", e)
+        Napier.w("Network error", e, tag)
         if (cachedData == null) emit(Resource.Error(UserError.IOError))
         return@flow
     } catch (e: IOException) {
-        Log.w(tag, "Network error", e)
+        Napier.w("Network error", e, tag)
         if (cachedData == null) emit(Resource.Error(UserError.IOError))
         return@flow
     } catch (e: Exception) {
-        Log.w(tag, "Network error", e)
+        Napier.w("Network error", e, tag)
         if (cachedData == null) emit(Resource.Error(UserError.UnknownError))
         return@flow
     }

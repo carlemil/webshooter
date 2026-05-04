@@ -1,6 +1,6 @@
 package se.kjellstrand.webshooter.data.login
 
-import android.util.Log
+import io.github.aakira.napier.Napier
 import io.ktor.client.network.sockets.ConnectTimeoutException
 import io.ktor.client.network.sockets.SocketTimeoutException
 import io.ktor.client.plugins.ResponseException
@@ -41,23 +41,23 @@ open class LoginRepository @Inject constructor(
                     )
                 )
             } catch (e: ResponseException) {
-                Log.w(TAG, "Error", e)
+                Napier.w("Error", e, TAG)
                 emit(Resource.Error(UserError.HttpError(e.response.status.value)))
                 return@flow
             } catch (e: SocketTimeoutException) {
-                Log.w(TAG, "Error", e)
+                Napier.w("Error", e, TAG)
                 emit(Resource.Error(UserError.IOError))
                 return@flow
             } catch (e: ConnectTimeoutException) {
-                Log.w(TAG, "Error", e)
+                Napier.w("Error", e, TAG)
                 emit(Resource.Error(UserError.IOError))
                 return@flow
             } catch (e: IOException) {
-                Log.w(TAG, "Error", e)
+                Napier.w("Error", e, TAG)
                 emit(Resource.Error(UserError.IOError))
                 return@flow
             } catch (e: Exception) {
-                Log.w(TAG, "Error", e)
+                Napier.w("Error", e, TAG)
                 emit(Resource.Error(UserError.UnknownError))
                 return@flow
             }
