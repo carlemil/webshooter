@@ -34,9 +34,12 @@ kotlin {
             implementation(libs.okio)
             implementation(libs.androidx.sqlite.bundled)
             implementation(libs.kotlincrypto.hash.sha1)
+            api(libs.multiplatform.settings)
         }
         androidMain.dependencies {
             implementation(libs.kotlinx.coroutines.android)
+            implementation(libs.androidx.security.crypto)
+            implementation(libs.androidx.security.crypto.ktx)
         }
     }
 }

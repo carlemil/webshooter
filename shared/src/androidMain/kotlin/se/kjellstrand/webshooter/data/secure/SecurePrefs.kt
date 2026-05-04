@@ -7,12 +7,8 @@ import androidx.security.crypto.EncryptedSharedPreferences
 import androidx.security.crypto.MasterKey
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.SharedPreferencesSettings
-import dagger.hilt.android.qualifiers.ApplicationContext
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class SecurePrefs @Inject constructor(@ApplicationContext context: Context) {
+class SecurePrefs(context: Context) {
 
     companion object {
         private const val FILE_NAME = "secure_prefs"

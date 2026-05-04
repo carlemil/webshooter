@@ -133,8 +133,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.security.crypto)
-    implementation(libs.androidx.security.crypto.ktx)
+    // androidx-security-crypto comes via :shared/androidMain (used by AuthTokenManager + SecurePrefs).
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
@@ -170,8 +169,7 @@ dependencies {
     // Crypto (multiplatform SHA-1)
     implementation(libs.kotlincrypto.hash.sha1)
 
-    // Settings (multiplatform key-value storage)
-    implementation(libs.multiplatform.settings)
+    // multiplatform-settings comes via :shared/commonMain.
 
     // Room (runtime comes via :shared; only the Android-specific ktx
     //  helpers stay here for Room.databaseBuilder in DatabaseModule).

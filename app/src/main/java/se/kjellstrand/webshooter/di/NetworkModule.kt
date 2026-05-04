@@ -158,6 +158,11 @@ class NetworkModule {
 
     @Provides
     @Singleton
+    fun provideSecurePrefs(@ApplicationContext context: Context): se.kjellstrand.webshooter.data.secure.SecurePrefs =
+        se.kjellstrand.webshooter.data.secure.SecurePrefs(context)
+
+    @Provides
+    @Singleton
     fun provideSessionManager(): SessionManager = SessionManager()
 
     /**
