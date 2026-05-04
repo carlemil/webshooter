@@ -1,6 +1,6 @@
 package se.kjellstrand.webshooter.di
 
-import com.google.gson.Gson
+import kotlinx.serialization.json.Json
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,8 +26,8 @@ class ClubModule {
     fun providesClubRepository(
         remoteDataSource: ClubRemoteDataSource,
         dao: ClubDao,
-        gson: Gson
+        json: Json
     ): ClubRepository {
-        return ClubRepository(remoteDataSource, dao, gson)
+        return ClubRepository(remoteDataSource, dao, json)
     }
 }

@@ -1,12 +1,16 @@
 package se.kjellstrand.webshooter.data.settings.local
 
-import com.google.gson.Gson
+import kotlinx.serialization.json.Json
 import org.junit.Assert.*
 import org.junit.Test
 
 class UserProfileMappersTest {
 
-    private val gson = Gson()
+    private val json = Json {
+        ignoreUnknownKeys = true
+        coerceInputValues = true
+        explicitNulls = false
+    }
 
     private fun validEntity() = UserProfileEntity(
         userId = 1L,
@@ -33,20 +37,20 @@ class UserProfileMappersTest {
     @Test
     fun `toDomain returns null for corrupted clubsJson`() {
         val entity = validEntity().copy(clubsJson = "not valid json!!!")
-        assertNull(entity.toDomain(gson))
+        assertNull(entity.toDomain(json))
     }
 
     @Test
     fun `toDomain returns null for malformed clubsJson object instead of array`() {
         val entity = validEntity().copy(clubsJson = """{"id":1}""")
-        assertNull(entity.toDomain(gson))
+        assertNull(entity.toDomain(json))
     }
 
     // --- Guard tests (should PASS before and after fix) ---
 
     @Test
     fun `toDomain maps valid entity correctly`() {
-        val result = validEntity().toDomain(gson)
+        val result = validEntity().toDomain(json)
         assertNotNull(result)
         assertEquals(1L, result!!.userId)
         assertEquals("Test", result.name)
@@ -56,7 +60,7 @@ class UserProfileMappersTest {
 
     @Test
     fun `toDomain handles empty clubs list`() {
-        val result = validEntity().toDomain(gson)
+        val result = validEntity().toDomain(json)
         assertNotNull(result)
         assertTrue(result!!.clubs.isEmpty())
     }

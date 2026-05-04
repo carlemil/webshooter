@@ -1,6 +1,6 @@
 package se.kjellstrand.webshooter.data.settings
 
-import com.google.gson.Gson
+import kotlinx.serialization.json.Json
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okio.IOException
@@ -21,7 +21,7 @@ import javax.inject.Singleton
 class SettingsRepository @Inject constructor(
     private val remoteDataSource: SettingsRemoteDataSource,
     private val dao: UserProfileDao,
-    private val gson: Gson
+    private val json: Json
 ) {
 
     fun getUserProfile(): Flow<Resource<UserProfile, UserError>> = flow {
@@ -32,7 +32,7 @@ class SettingsRepository @Inject constructor(
         } catch (e: Exception) {
             null
         }
-        val profile = cached?.toDomain(gson)
+        val profile = cached?.toDomain(json)
         if (profile != null) {
             emit(Resource.Success(profile))
         } else {
@@ -43,7 +43,7 @@ class SettingsRepository @Inject constructor(
             val response = remoteDataSource.getUserProfile()
             val profile = response.body()?.user
             if (response.isSuccessful && profile != null) {
-                dao.insert(profile.toEntity(gson))
+                dao.insert(profile.toEntity(json))
                 emit(Resource.Success(profile))
             } else {
                 if (cached == null) emit(Resource.Error(UserError.HttpError(response.code())))
@@ -96,7 +96,7 @@ class SettingsRepository @Inject constructor(
             val response = remoteDataSource.updateUserProfile(fields)
             val updated = response.body()?.user
             if (response.isSuccessful && updated != null) {
-                dao.insert(updated.toEntity(gson))
+                dao.insert(updated.toEntity(json))
                 emit(Resource.Success(updated))
             } else {
                 emit(Resource.Error(UserError.HttpError(response.code())))

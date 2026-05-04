@@ -1,7 +1,7 @@
 package se.kjellstrand.webshooter.data.club.local
 
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import se.kjellstrand.webshooter.data.club.remote.ClubData
 import se.kjellstrand.webshooter.data.club.remote.ClubInfoResponse
 import se.kjellstrand.webshooter.data.club.remote.ClubMember
@@ -19,7 +19,7 @@ fun ClubData.sanitizeNullStrings(): ClubData = copy(
     swish = swish.nullIfLiteralNull()
 )
 
-fun ClubData.toEntity(gson: Gson): ClubEntity = ClubEntity(
+fun ClubData.toEntity(json: Json): ClubEntity = ClubEntity(
     id = id,
     clubsNr = clubsNr,
     name = name,
@@ -32,11 +32,11 @@ fun ClubData.toEntity(gson: Gson): ClubEntity = ClubEntity(
     bankgiro = bankgiro,
     postgiro = postgiro,
     swish = swish,
-    adminsJson = gson.toJson(admins),
-    usersJson = gson.toJson(users)
+    adminsJson = json.encodeToString(admins),
+    usersJson = json.encodeToString(users)
 )
 
-fun ClubEntity.toDomain(gson: Gson): ClubInfoResponse = ClubInfoResponse(
+fun ClubEntity.toDomain(json: Json): ClubInfoResponse = ClubInfoResponse(
     club = ClubData(
         id = id,
         clubsNr = clubsNr,
@@ -50,7 +50,7 @@ fun ClubEntity.toDomain(gson: Gson): ClubInfoResponse = ClubInfoResponse(
         bankgiro = bankgiro,
         postgiro = postgiro,
         swish = swish,
-        admins = gson.fromJson(adminsJson, object : TypeToken<List<ClubMember>>() {}.type),
-        users = gson.fromJson(usersJson, object : TypeToken<List<ClubMember>>() {}.type)
+        admins = json.decodeFromString<List<ClubMember>>(adminsJson),
+        users = json.decodeFromString<List<ClubMember>>(usersJson)
     )
 )

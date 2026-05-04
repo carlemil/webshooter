@@ -1,9 +1,9 @@
 package se.kjellstrand.webshooter.data.results.local
 
 import android.util.Log
-import com.google.gson.Gson
-import com.google.gson.JsonSyntaxException
-import com.google.gson.reflect.TypeToken
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import se.kjellstrand.webshooter.data.common.WeaponClass
 import se.kjellstrand.webshooter.data.results.remote.Result
 import se.kjellstrand.webshooter.data.results.remote.Signup
@@ -12,7 +12,7 @@ import se.kjellstrand.webshooter.data.results.remote.StdMedal
 
 private const val TAG = "ResultMappers"
 
-fun Result.toEntity(competitionId: Long, gson: Gson): ResultEntity = ResultEntity(
+fun Result.toEntity(competitionId: Long, json: Json): ResultEntity = ResultEntity(
     id = id,
     competitionsId = competitionId,
     signupsId = signupsID,
@@ -21,9 +21,9 @@ fun Result.toEntity(competitionId: Long, gson: Gson): ResultEntity = ResultEntit
     hits = hits,
     points = points,
     stdMedal = stdMedal?.name,
-    signupJson = gson.toJson(signup),
-    weaponClassJson = gson.toJson(weaponClass),
-    stationResultsJson = gson.toJson(results),
+    signupJson = json.encodeToString(signup),
+    weaponClassJson = json.encodeToString(weaponClass),
+    stationResultsJson = json.encodeToString(results),
     userId = signup.user.userID,
     userFullname = signup.user.fullname,
     weaponClassName = weaponClass.classname,
@@ -31,7 +31,7 @@ fun Result.toEntity(competitionId: Long, gson: Gson): ResultEntity = ResultEntit
     averageHits = if (results.isEmpty()) 0.0 else results.map { it.hits }.average()
 )
 
-fun ResultEntity.toDomain(gson: Gson): Result? = try {
+fun ResultEntity.toDomain(json: Json): Result? = try {
     Result(
         id = id,
         signupsID = signupsId,
@@ -40,11 +40,11 @@ fun ResultEntity.toDomain(gson: Gson): Result? = try {
         hits = hits,
         points = points,
         stdMedal = stdMedal?.let { StdMedal.fromValue(it) },
-        signup = gson.fromJson(signupJson, Signup::class.java),
-        weaponClass = gson.fromJson(weaponClassJson, WeaponClass::class.java),
-        results = gson.fromJson(stationResultsJson, object : TypeToken<List<StationResult>>() {}.type)
+        signup = json.decodeFromString<Signup>(signupJson),
+        weaponClass = json.decodeFromString<WeaponClass>(weaponClassJson),
+        results = json.decodeFromString<List<StationResult>>(stationResultsJson)
     )
-} catch (e: JsonSyntaxException) {
+} catch (e: SerializationException) {
     Log.w(TAG, "Error", e)
     null
 }

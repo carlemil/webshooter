@@ -1,6 +1,6 @@
 package se.kjellstrand.webshooter.data.competitionteams
 
-import com.google.gson.Gson
+import kotlinx.serialization.json.Json
 import kotlinx.coroutines.flow.Flow
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.common.UserError
@@ -17,7 +17,7 @@ import javax.inject.Singleton
 open class CompetitionTeamsRepository @Inject constructor(
     private val remoteDataSource: CompetitionTeamsRemoteDataSource,
     private val dao: TeamsDao,
-    private val gson: Gson
+    private val json: Json
 ) {
     companion object {
         private const val TAG = "CompetitionTeamsRepository"
@@ -28,13 +28,13 @@ open class CompetitionTeamsRepository @Inject constructor(
             tag = TAG,
             fetchFromCache = {
                 val cached = dao.getByCompetition(competitionId)
-                if (cached.isNotEmpty()) CompetitionTeamsResponse(teams = cached.map { it.toDomain(gson) }) else null
+                if (cached.isNotEmpty()) CompetitionTeamsResponse(teams = cached.map { it.toDomain(json) }) else null
             },
             deleteCache = { dao.deleteByCompetition(competitionId) },
             fetchFromRemote = { remoteDataSource.getTeams(competitionId) },
             saveToCache = { result ->
                 dao.deleteByCompetition(competitionId)
-                dao.insertAll(result.teams.map { it.toEntity(competitionId, gson) })
+                dao.insertAll(result.teams.map { it.toEntity(competitionId, json) })
             }
         )
     }

@@ -1,5 +1,8 @@
 package se.kjellstrand.webshooter.data.login.remote
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class LoginRequest(
     val client_id: Int = 1,
     val client_secret: String,

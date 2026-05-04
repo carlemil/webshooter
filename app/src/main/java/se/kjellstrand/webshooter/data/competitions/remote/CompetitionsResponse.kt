@@ -1,125 +1,130 @@
 package se.kjellstrand.webshooter.data.competitions.remote
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import se.kjellstrand.webshooter.data.common.Club
 import se.kjellstrand.webshooter.data.common.CompetitionType
 import se.kjellstrand.webshooter.data.common.WeaponClass
 import se.kjellstrand.webshooter.data.common.WeaponGroup
 
+@Serializable
 data class CompetitionsResponse (
     val competitions: Competitions
 )
 
+@Serializable
 data class Competitions (
-    @SerializedName("current_page")
+    @SerialName("current_page")
     val currentPage: Long,
 
     val data: List<Datum>,
 
-    @SerializedName("last_page")
+    @SerialName("last_page")
     val lastPage: Long,
 
     val total: Long,
     val status: String,
 
-    @SerializedName("competitiontypes")
+    @SerialName("competitiontypes")
     val competitionTypes: List<CompetitionType>
 )
 
+@Serializable
 data class Datum (
     val id: Long,
 
     val name: String,
 
-    @SerializedName("allow_teams")
+    @SerialName("allow_teams")
     val allowTeams: Long,
 
     val website: String? = null,
 
-    @SerializedName("contact_name")
+    @SerialName("contact_name")
     val contactName: String? = null,
 
-    @SerializedName("contact_venue")
+    @SerialName("contact_venue")
     val contactVenue: String? = null,
 
-    @SerializedName("contact_city")
+    @SerialName("contact_city")
     val contactCity: String? = null,
 
     val lat: Double,
     val lng: Double,
 
-    @SerializedName("contact_email")
+    @SerialName("contact_email")
     val contactEmail: String? = null,
 
-    @SerializedName("contact_telephone")
+    @SerialName("contact_telephone")
     val contactTelephone: String? = null,
 
-    @SerializedName("google_maps")
+    @SerialName("google_maps")
     val googleMaps: String? = null,
 
     val description: String,
 
-    @SerializedName("results_type")
+    @SerialName("results_type")
     val resultsType: ResultsType,
 
     val date: String,
 
-    @SerializedName("signups_opening_date")
+    @SerialName("signups_opening_date")
     val signupsOpeningDate: String,
 
-    @SerializedName("signups_closing_date")
+    @SerialName("signups_closing_date")
     val signupsClosingDate: String,
 
-    @SerializedName("weapongroups")
+    @SerialName("weapongroups")
     val weaponGroups: List<WeaponGroup>,
 
-    @SerializedName("signups_count")
+    @SerialName("signups_count")
     val signupsCount: Long,
 
-    @SerializedName("patrols_count")
+    @SerialName("patrols_count")
     val patrolsCount: Long,
 
-    @SerializedName("status")
+    @SerialName("status")
     val status: String,
 
-    @SerializedName("status_human")
+    @SerialName("status_human")
     val statusHuman: String,
 
-    @SerializedName("start_time_human")
+    @SerialName("start_time_human")
     val startTimeHuman: String,
 
-    @SerializedName("final_time_human")
+    @SerialName("final_time_human")
     val finalTimeHuman: String,
 
-    @SerializedName("allow_signups_after_closing_date_human")
+    @SerialName("allow_signups_after_closing_date_human")
     val allowSignupsAfterClosingDateHuman: String,
 
-    @SerializedName("results_type_human")
+    @SerialName("results_type_human")
     val resultsTypeHuman: String,
 
-    @SerializedName("competitiontype")
+    @SerialName("competitiontype")
     val competitionType: CompetitionType,
 
-    @SerializedName("weaponclasses")
+    @SerialName("weaponclasses")
     val weaponClasses: List<WeaponClass>,
 
-    @SerializedName("usersignups")
+    @SerialName("usersignups")
     val userSignups: List<Usersignup>,
 
     val club: Club
 )
 
+@Serializable
 enum class ResultsType(val apiString: String, val displayName: String) {
-    @SerializedName("precision")
+    @SerialName("precision")
     PRECISION("precision", "Precision"),
 
-    @SerializedName("military")
+    @SerialName("military")
     MILITARY("military", "Militär"),
 
-    @SerializedName("field")
+    @SerialName("field")
     FIELD("field", "Fält"),
 
-    @SerializedName("pointfield")
+    @SerialName("pointfield")
     POINTS_FIELD("pointfield", "Poängfält");
 
     companion object {
@@ -128,15 +133,16 @@ enum class ResultsType(val apiString: String, val displayName: String) {
     }
 }
 
+@Serializable
 data class Usersignup (
     val id: Long,
 
-    @SerializedName("weaponclasses_id")
+    @SerialName("weaponclasses_id")
     val weaponClassesID: Long,
 
-    @SerializedName("start_time_human")
+    @SerialName("start_time_human")
     val startTimeHuman: String,
 
-    @SerializedName("end_time_human")
+    @SerialName("end_time_human")
     val endTimeHuman: String
 )

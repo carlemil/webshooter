@@ -1,15 +1,15 @@
 package se.kjellstrand.webshooter.data.settings.local
 
 import android.util.Log
-import com.google.gson.Gson
-import com.google.gson.JsonSyntaxException
-import com.google.gson.reflect.TypeToken
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import se.kjellstrand.webshooter.data.settings.remote.Club
 import se.kjellstrand.webshooter.data.settings.remote.UserProfile
 
 private const val TAG = "UserProfileMappers"
 
-fun UserProfile.toEntity(gson: Gson): UserProfileEntity = UserProfileEntity(
+fun UserProfile.toEntity(json: Json): UserProfileEntity = UserProfileEntity(
     userId = userId,
     name = name,
     lastname = lastname,
@@ -26,10 +26,10 @@ fun UserProfile.toEntity(gson: Gson): UserProfileEntity = UserProfileEntity(
     fullname = fullname,
     clubsId = clubsId,
     status = status,
-    clubsJson = gson.toJson(clubs)
+    clubsJson = json.encodeToString(clubs)
 )
 
-fun UserProfileEntity.toDomain(gson: Gson): UserProfile? = try {
+fun UserProfileEntity.toDomain(json: Json): UserProfile? = try {
     UserProfile(
         userId = userId,
         name = name,
@@ -47,9 +47,9 @@ fun UserProfileEntity.toDomain(gson: Gson): UserProfile? = try {
         fullname = fullname,
         clubsId = clubsId,
         status = status,
-        clubs = gson.fromJson(clubsJson, object : TypeToken<List<Club>>() {}.type)
+        clubs = json.decodeFromString<List<Club>>(clubsJson)
     )
-} catch (e: JsonSyntaxException) {
+} catch (e: SerializationException) {
     Log.w(TAG, "Error", e)
     null
 }

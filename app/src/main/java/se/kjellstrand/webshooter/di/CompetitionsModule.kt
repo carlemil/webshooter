@@ -1,6 +1,6 @@
 package se.kjellstrand.webshooter.di
 
-import com.google.gson.Gson
+import kotlinx.serialization.json.Json
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,10 +28,10 @@ class CompetitionsModule {
     fun providesCompetitionsRepository(
         competitionsRemoteDataSource: CompetitionsRemoteDataSource,
         dao: CompetitionsDao,
-        gson: Gson,
+        json: Json,
         resultsRepository: ResultsRepository,
         resultsDao: ResultsDao
     ) : CompetitionsRepository {
-        return CompetitionsRepository(competitionsRemoteDataSource, dao, gson, resultsRepository, resultsDao)
+        return CompetitionsRepository(competitionsRemoteDataSource, dao, json, resultsRepository, resultsDao)
     }
 }

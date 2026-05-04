@@ -1,6 +1,6 @@
 package se.kjellstrand.webshooter.data.competitions.testing
 
-import com.google.gson.Gson
+import kotlinx.serialization.json.Json
 import okio.IOException
 import se.kjellstrand.webshooter.data.results.ResultsRepository
 import se.kjellstrand.webshooter.data.results.local.ChartPointRow
@@ -59,7 +59,7 @@ open class NoOpResultsRepository(
     private val refreshAction: (suspend (Long) -> Unit)? = null,
     private val backingDao: ResultsDao = NoOpResultsDao(),
     private val remote: ResultsRemoteDataSource = StubResultsRemoteDataSource()
-) : ResultsRepository(remote, backingDao, Gson()) {
+) : ResultsRepository(remote, backingDao, testJson()) {
 
     val refreshCalls = mutableListOf<Long>()
     private val concurrency = java.util.concurrent.atomic.AtomicInteger(0)
@@ -75,6 +75,12 @@ open class NoOpResultsRepository(
             concurrency.decrementAndGet()
         }
     }
+}
+
+fun testJson(): Json = Json {
+    ignoreUnknownKeys = true
+    coerceInputValues = true
+    explicitNulls = false
 }
 
 fun resultEntity(id: Long, competitionId: Long, userId: Long = 0L): ResultEntity = ResultEntity(

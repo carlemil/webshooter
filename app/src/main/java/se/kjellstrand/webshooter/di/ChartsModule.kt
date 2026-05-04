@@ -1,6 +1,6 @@
 package se.kjellstrand.webshooter.di
 
-import com.google.gson.Gson
+import kotlinx.serialization.json.Json
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,8 +19,8 @@ class ChartsModule {
     fun providesChartsRepository(
         competitionsDao: CompetitionsDao,
         resultsDao: ResultsDao,
-        gson: Gson
+        json: Json
     ): ChartsRepository {
-        return ChartsRepository(competitionsDao, resultsDao, gson)
+        return ChartsRepository(competitionsDao, resultsDao, json)
     }
 }

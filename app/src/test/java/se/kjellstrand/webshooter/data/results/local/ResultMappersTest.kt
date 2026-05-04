@@ -1,6 +1,6 @@
 package se.kjellstrand.webshooter.data.results.local
 
-import com.google.gson.Gson
+import kotlinx.serialization.json.Json
 import org.junit.Assert.*
 import org.junit.Test
 import se.kjellstrand.webshooter.data.common.ClassnameGeneral
@@ -12,7 +12,11 @@ import se.kjellstrand.webshooter.data.results.remote.User
 
 class ResultMappersTest {
 
-    private val gson = Gson()
+    private val json = Json {
+        ignoreUnknownKeys = true
+        coerceInputValues = true
+        explicitNulls = false
+    }
 
     private fun sampleResult(
         stations: List<StationResult> = listOf(
@@ -67,26 +71,26 @@ class ResultMappersTest {
     @Test
     fun `toDomain returns null for corrupted signupJson`() {
         val entity = validEntity().copy(signupJson = "not valid json {{{")
-        assertNull(entity.toDomain(gson))
+        assertNull(entity.toDomain(json))
     }
 
     @Test
     fun `toDomain returns null for corrupted weaponClassJson`() {
         val entity = validEntity().copy(weaponClassJson = "corrupt!!!")
-        assertNull(entity.toDomain(gson))
+        assertNull(entity.toDomain(json))
     }
 
     @Test
     fun `toDomain returns null for corrupted stationResultsJson`() {
         val entity = validEntity().copy(stationResultsJson = "{bad}")
-        assertNull(entity.toDomain(gson))
+        assertNull(entity.toDomain(json))
     }
 
     // --- Guard tests (should PASS before and after fix) ---
 
     @Test
     fun `toDomain maps valid entity correctly`() {
-        val result = validEntity().toDomain(gson)
+        val result = validEntity().toDomain(json)
         assertNotNull(result)
         assertEquals(1L, result!!.id)
         assertEquals(20L, result.signupsID)
@@ -95,7 +99,7 @@ class ResultMappersTest {
 
     @Test
     fun `toDomain handles empty stationResults list`() {
-        val result = validEntity().copy(stationResultsJson = "[]").toDomain(gson)
+        val result = validEntity().copy(stationResultsJson = "[]").toDomain(json)
         assertNotNull(result)
         assertTrue(result!!.results.isEmpty())
     }
@@ -104,39 +108,39 @@ class ResultMappersTest {
 
     @Test
     fun `toEntity copies userId from signup user`() {
-        val entity = sampleResult(userId = 99L).toEntity(competitionId = 7L, gson = gson)
+        val entity = sampleResult(userId = 99L).toEntity(competitionId = 7L, json = json)
         assertEquals(99L, entity.userId)
     }
 
     @Test
     fun `toEntity copies userFullname from signup user`() {
-        val entity = sampleResult(fullname = "Alice Tester").toEntity(7L, gson)
+        val entity = sampleResult(fullname = "Alice Tester").toEntity(7L, json)
         assertEquals("Alice Tester", entity.userFullname)
     }
 
     @Test
     fun `toEntity copies weaponClassName from weaponClass`() {
-        val entity = sampleResult(weaponClassName = "B").toEntity(7L, gson)
+        val entity = sampleResult(weaponClassName = "B").toEntity(7L, json)
         assertEquals("B", entity.weaponClassName)
     }
 
     @Test
     fun `toEntity computes averagePoints from station results`() {
         // points: 30, 50, 40 -> average 40.0
-        val entity = sampleResult().toEntity(7L, gson)
+        val entity = sampleResult().toEntity(7L, json)
         assertEquals(40.0, entity.averagePoints, 0.0001)
     }
 
     @Test
     fun `toEntity computes averageHits from station results`() {
         // hits: 4, 6, 5 -> average 5.0
-        val entity = sampleResult().toEntity(7L, gson)
+        val entity = sampleResult().toEntity(7L, json)
         assertEquals(5.0, entity.averageHits, 0.0001)
     }
 
     @Test
     fun `toEntity returns zero averages when station results empty`() {
-        val entity = sampleResult(stations = emptyList()).toEntity(7L, gson)
+        val entity = sampleResult(stations = emptyList()).toEntity(7L, json)
         assertEquals(0.0, entity.averagePoints, 0.0001)
         assertEquals(0.0, entity.averageHits, 0.0001)
     }
@@ -145,7 +149,7 @@ class ResultMappersTest {
 
     @Test
     fun `toEntity preserves competitionId and core scalar fields`() {
-        val entity = sampleResult().toEntity(competitionId = 77L, gson = gson)
+        val entity = sampleResult().toEntity(competitionId = 77L, json = json)
         assertEquals(77L, entity.competitionsId)
         assertEquals(1L, entity.id)
         assertEquals(20L, entity.signupsId)
@@ -155,7 +159,7 @@ class ResultMappersTest {
 
     @Test
     fun `toEntity still serializes signup weaponClass and stationResults to JSON`() {
-        val entity = sampleResult().toEntity(7L, gson)
+        val entity = sampleResult().toEntity(7L, json)
         assertTrue(entity.signupJson.contains("Jane Doe"))
         assertTrue(entity.weaponClassJson.contains("classname"))
         assertTrue(entity.stationResultsJson.startsWith("["))

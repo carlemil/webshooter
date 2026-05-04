@@ -1,7 +1,8 @@
 package se.kjellstrand.webshooter.data.common
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class CompetitionType (
     val id: Int,
     val name: String,

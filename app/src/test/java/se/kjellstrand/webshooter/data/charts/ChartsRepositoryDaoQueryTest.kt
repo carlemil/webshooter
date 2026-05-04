@@ -1,6 +1,6 @@
 package se.kjellstrand.webshooter.data.charts
 
-import com.google.gson.Gson
+import kotlinx.serialization.json.Json
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.toList
@@ -74,8 +74,8 @@ class ChartsRepositoryDaoQueryTest {
         signupsOpeningDate = null, signupsClosingDate = null,
         allowSignupsAfterClosingDateHuman = null, startTimeHuman = null, finalTimeHuman = null,
         signupsCount = 0, patrolsCount = 0, allowTeams = 0,
-        competitionTypeJson = "{}", weaponGroupsJson = "[]", weaponClassesJson = "[]",
-        userSignupsJson = "[]", clubJson = "{}"
+        competitionTypeJson = """{"id":0,"name":""}""", weaponGroupsJson = "[]", weaponClassesJson = "[]",
+        userSignupsJson = "[]", clubJson = """{"id":0,"name":""}"""
     )
 
     private fun chartRow(
@@ -107,7 +107,7 @@ class ChartsRepositoryDaoQueryTest {
         val repo = ChartsRepository(
             competitionsDao,
             resultsDao,
-            Gson()
+            Json { ignoreUnknownKeys = true; coerceInputValues = true; explicitNulls = false }
         )
         return TestRig(repo)
     }

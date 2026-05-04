@@ -1,6 +1,6 @@
 package se.kjellstrand.webshooter.data.competitions
 
-import com.google.gson.Gson
+import kotlinx.serialization.json.Json
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
@@ -23,7 +23,11 @@ import se.kjellstrand.webshooter.data.competitions.testing.NoOpResultsDao
 
 class CompetitionsRepositoryObserveAllTest {
 
-    private val gson = Gson()
+    private val json = Json {
+        ignoreUnknownKeys = true
+        coerceInputValues = true
+        explicitNulls = false
+    }
 
     private fun datum(id: Long): Datum = Datum(
         id = id,
@@ -68,7 +72,7 @@ class CompetitionsRepositoryObserveAllTest {
     }
 
     private fun buildRepo(dao: FakeDao = FakeDao()) =
-        CompetitionsRepository(FakeRemote(), dao, gson, NoOpResultsRepository(), NoOpResultsDao())
+        CompetitionsRepository(FakeRemote(), dao, json, NoOpResultsRepository(), NoOpResultsDao())
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 
@@ -94,7 +98,7 @@ class CompetitionsRepositoryObserveAllTest {
 
     @Test
     fun `observeAll emits domain Datum list when DAO emits entities`(): Unit = runBlocking {
-        val entities = listOf(datum(1).toEntity(gson), datum(2).toEntity(gson))
+        val entities = listOf(datum(1).toEntity(json), datum(2).toEntity(json))
         val dao = FakeDao(observed = entities)
         val repo = buildRepo(dao)
 
@@ -107,7 +111,7 @@ class CompetitionsRepositoryObserveAllTest {
     @Test
     fun `observeAll filters out entities that fail to deserialize`(): Unit = runBlocking {
         // One valid entity, one with corrupt JSON in competitionTypeJson → toDomain returns null → filtered out
-        val good = datum(10).toEntity(gson)
+        val good = datum(10).toEntity(json)
         val bad = good.copy(id = 11, competitionTypeJson = "{not valid json")
         val dao = FakeDao(observed = listOf(good, bad))
         val repo = buildRepo(dao)

@@ -1,24 +1,25 @@
 package se.kjellstrand.webshooter.data.competitionsignups.local
 
-import com.google.gson.Gson
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import se.kjellstrand.webshooter.data.competitionsignups.remote.CompetitionSignupClub
 import se.kjellstrand.webshooter.data.competitionsignups.remote.CompetitionSignupEntry
 import se.kjellstrand.webshooter.data.competitionsignups.remote.CompetitionSignupUser
 import se.kjellstrand.webshooter.data.competitionsignups.remote.CompetitionSignupWeaponClass
 
-fun CompetitionSignupEntry.toEntity(competitionId: Long, gson: Gson): CompetitionSignupEntity =
+fun CompetitionSignupEntry.toEntity(competitionId: Long, json: Json): CompetitionSignupEntity =
     CompetitionSignupEntity(
         id = id,
         competitionId = competitionId,
-        userJson = gson.toJson(user),
-        clubJson = gson.toJson(club),
-        weaponClassJson = gson.toJson(weaponclass)
+        userJson = json.encodeToString(user),
+        clubJson = json.encodeToString(club),
+        weaponClassJson = json.encodeToString(weaponclass)
     )
 
-fun CompetitionSignupEntity.toDomain(gson: Gson): CompetitionSignupEntry =
+fun CompetitionSignupEntity.toDomain(json: Json): CompetitionSignupEntry =
     CompetitionSignupEntry(
         id = id,
-        user = gson.fromJson(userJson, CompetitionSignupUser::class.java),
-        club = gson.fromJson(clubJson, CompetitionSignupClub::class.java),
-        weaponclass = gson.fromJson(weaponClassJson, CompetitionSignupWeaponClass::class.java)
+        user = json.decodeFromString<CompetitionSignupUser?>(userJson),
+        club = json.decodeFromString<CompetitionSignupClub?>(clubJson),
+        weaponclass = json.decodeFromString<CompetitionSignupWeaponClass?>(weaponClassJson)
     )

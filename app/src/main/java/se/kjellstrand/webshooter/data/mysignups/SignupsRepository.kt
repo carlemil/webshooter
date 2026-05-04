@@ -1,7 +1,7 @@
 package se.kjellstrand.webshooter.data.mysignups
 
 import android.util.Log
-import com.google.gson.Gson
+import kotlinx.serialization.json.Json
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okio.IOException
@@ -20,7 +20,7 @@ import javax.inject.Singleton
 class SignupsRepository @Inject constructor(
     private val remoteDataSource: SignupsRemoteDataSource,
     private val dao: SignupsDao,
-    private val gson: Gson
+    private val json: Json
 ) {
     companion object {
         private const val TAG = "SignupsRepository"
@@ -35,7 +35,7 @@ class SignupsRepository @Inject constructor(
             hasCached = cached.isNotEmpty()
             if (hasCached) {
                 val grouped = cached.groupBy { it.groupKey }
-                    .mapValues { (_, entities) -> SignupGroup(signups = entities.mapNotNull { it.toDomain(gson) }) }
+                    .mapValues { (_, entities) -> SignupGroup(signups = entities.mapNotNull { it.toDomain(json) }) }
                 emit(Resource.Success(grouped))
             }
         } catch (e: Exception) {
@@ -46,7 +46,7 @@ class SignupsRepository @Inject constructor(
             val result = remoteDataSource.getSignups()
             dao.deleteAll()
             result.groupedSignups.forEach { (key, group) ->
-                dao.insertAll(group.signups.map { it.toEntity(key, gson) })
+                dao.insertAll(group.signups.map { it.toEntity(key, json) })
             }
             emit(Resource.Success(result.groupedSignups))
         } catch (e: IOException) {

@@ -1,11 +1,10 @@
 package se.kjellstrand.webshooter.data.seriespoints
 
 import android.util.Log
-import com.google.gson.Gson
-import com.google.gson.JsonSyntaxException
-import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.serialization.SerializationException
+import kotlinx.serialization.json.Json
 import java.time.LocalDate
 import se.kjellstrand.webshooter.data.charts.Participant
 import se.kjellstrand.webshooter.data.common.Resource
@@ -32,7 +31,7 @@ data class SeriesPointsData(
 @Singleton
 class SeriesPointsRepository @Inject constructor(
     private val resultsDao: ResultsDao,
-    private val gson: Gson
+    private val json: Json
 ) {
     companion object {
         private const val TAG = "SeriesPointsRepository"
@@ -43,11 +42,10 @@ class SeriesPointsRepository @Inject constructor(
 
         val today = LocalDate.now().toString()
         val rows = resultsDao.getPrecisionSeriesForUser(userId, today)
-        val type = object : TypeToken<List<StationResult>>() {}.type
         val competitions = rows.mapNotNull { row ->
             val stations: List<StationResult>? = try {
-                gson.fromJson(row.stationResultsJson, type)
-            } catch (e: JsonSyntaxException) {
+                json.decodeFromString<List<StationResult>>(row.stationResultsJson)
+            } catch (e: SerializationException) {
                 Log.w(TAG, "Failed to parse stationResultsJson for ${row.competitionId}", e)
                 null
             }

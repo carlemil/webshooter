@@ -1,18 +1,22 @@
 package se.kjellstrand.webshooter.data.competitionsignups.remote
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class CompetitionSignupsResponse(
-    @SerializedName("signups") val signups: CompetitionSignupsPaged
+    @SerialName("signups") val signups: CompetitionSignupsPaged
 )
 
+@Serializable
 data class CompetitionSignupsPaged(
-    @SerializedName("current_page") val currentPage: Int,
-    @SerializedName("data") val data: List<CompetitionSignupEntry>,
-    @SerializedName("last_page") val lastPage: Int,
-    @SerializedName("total") val total: Int
+    @SerialName("current_page") val currentPage: Int,
+    @SerialName("data") val data: List<CompetitionSignupEntry>,
+    @SerialName("last_page") val lastPage: Int,
+    @SerialName("total") val total: Int
 )
 
+@Serializable
 data class CompetitionSignupEntry(
     val id: Long,
     val user: CompetitionSignupUser?,
@@ -20,11 +24,14 @@ data class CompetitionSignupEntry(
     val weaponclass: CompetitionSignupWeaponClass?
 )
 
+@Serializable
 data class CompetitionSignupUser(val name: String, val lastname: String)
 
+@Serializable
 data class CompetitionSignupClub(val name: String)
 
+@Serializable
 data class CompetitionSignupWeaponClass(
     val classname: String,
-    @SerializedName("classname_general") val classnameGeneral: String
+    @SerialName("classname_general") val classnameGeneral: String
 )

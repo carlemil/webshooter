@@ -1,6 +1,7 @@
 package se.kjellstrand.webshooter.data.signup.remote
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import retrofit2.Response
 import retrofit2.http.DELETE
 import retrofit2.http.FieldMap
@@ -22,12 +23,14 @@ interface SignupRemoteDataSource {
     ): Response<Unit>
 }
 
+@Serializable
 data class SignupResponse(
     val signup: SignupData?
 )
 
+@Serializable
 data class SignupData(
     val id: Long,
-    @SerializedName("competitions_id") val competitionsId: Long,
-    @SerializedName("weapon_classes_id") val weaponClassesId: Long
+    @SerialName("competitions_id") val competitionsId: Long,
+    @SerialName("weapon_classes_id") val weaponClassesId: Long
 )

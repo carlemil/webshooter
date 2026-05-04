@@ -1,7 +1,7 @@
 package se.kjellstrand.webshooter.data.results
 
 import android.util.Log
-import com.google.gson.Gson
+import kotlinx.serialization.json.Json
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okio.IOException
@@ -20,7 +20,7 @@ import javax.inject.Singleton
 open class ResultsRepository @Inject constructor(
     private val resultsRemoteDataSource: ResultsRemoteDataSource,
     private val dao: ResultsDao,
-    private val gson: Gson
+    private val json: Json
 ) {
     companion object {
         private const val TAG = "ResultsRepository"
@@ -38,7 +38,7 @@ open class ResultsRepository @Inject constructor(
                 val cached = dao.getByCompetition(competitionId)
                 if (cached.isNotEmpty()) {
                     hasCached = true
-                    emit(Resource.Success(ResultsResponse(results = cached.mapNotNull { it.toDomain(gson) })))
+                    emit(Resource.Success(ResultsResponse(results = cached.mapNotNull { it.toDomain(json) })))
                     if (skipRefreshIfCached) return@flow
                 }
             } catch (e: Exception) {
@@ -62,7 +62,7 @@ open class ResultsRepository @Inject constructor(
             }
 
             dao.deleteByCompetition(competitionId)
-            dao.insertAll(result.results.map { it.toEntity(competitionId, gson) })
+            dao.insertAll(result.results.map { it.toEntity(competitionId, json) })
 
             emit(Resource.Success(result))
         }
@@ -72,7 +72,7 @@ open class ResultsRepository @Inject constructor(
         try {
             val fresh = resultsRemoteDataSource.getResults(competitionId)
             dao.deleteByCompetition(competitionId)
-            dao.insertAll(fresh.results.map { it.toEntity(competitionId, gson) })
+            dao.insertAll(fresh.results.map { it.toEntity(competitionId, json) })
         } catch (e: Exception) {
             Log.w(TAG, "refreshResultsFor($competitionId) failed; invalidating cache", e)
             try {
@@ -89,7 +89,7 @@ open class ResultsRepository @Inject constructor(
             try {
                 val cached = dao.getByCompetition(competitionId)
                 if (cached.isNotEmpty()) {
-                    val filtered = cached.mapNotNull { it.toDomain(gson) }
+                    val filtered = cached.mapNotNull { it.toDomain(json) }
                         .filter { it.signup.user.userID == shooterId }
                     emit(Resource.Success(ResultsResponse(results = filtered)))
                     return@flow
@@ -115,7 +115,7 @@ open class ResultsRepository @Inject constructor(
             }
 
             dao.deleteByCompetition(competitionId)
-            dao.insertAll(result.results.map { it.toEntity(competitionId, gson) })
+            dao.insertAll(result.results.map { it.toEntity(competitionId, json) })
 
             val filtered = result.results.filter { it.signup.user.userID == shooterId }
             emit(Resource.Success(result.copy(results = filtered)))

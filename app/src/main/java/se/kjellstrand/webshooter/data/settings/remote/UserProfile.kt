@@ -1,7 +1,8 @@
 package se.kjellstrand.webshooter.data.settings.remote
 
 import androidx.annotation.StringRes
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import se.kjellstrand.webshooter.R
 
 enum class Gender(@StringRes val labelRes: Int) {
@@ -24,45 +25,49 @@ enum class Gender(@StringRes val labelRes: Int) {
     }
 }
 
+@Serializable
 data class UserProfileResponse(
     val user: UserProfile
 )
 
+@Serializable
 data class UserProfile(
     val name: String,
     val lastname: String,
     val email: String,
-    @SerializedName("shooting_card_number") val shootingCardNumber: String?,
-    @SerializedName("no_shooting_card_number") val noShootingCardNumber: String?,
+    @SerialName("shooting_card_number") val shootingCardNumber: String?,
+    @SerialName("no_shooting_card_number") val noShootingCardNumber: String?,
     val birthday: String?,
     val gender: String?,
     val phone: String?,
     val mobile: String?,
-    @SerializedName("grade_field") val gradeField: String?,
-    @SerializedName("grade_trackshooting") val gradeTrackshooting: String?,
-    @SerializedName("api_token") val apiToken: String?,
-    @SerializedName("user_id") val userId: Long,
+    @SerialName("grade_field") val gradeField: String?,
+    @SerialName("grade_trackshooting") val gradeTrackshooting: String?,
+    @SerialName("api_token") val apiToken: String?,
+    @SerialName("user_id") val userId: Long,
     val fullname: String,
-    @SerializedName("clubs_id") val clubsId: Long,
+    @SerialName("clubs_id") val clubsId: Long,
     val status: String,
     val clubs: List<Club> = emptyList(),
 )
 
+@Serializable
 data class Club(
     val id: Long,
-    @SerializedName("clubs_nr") val clubsNr: Int?,
+    @SerialName("clubs_nr") val clubsNr: Int?,
     val name: String,
     val email: String?,
     val phone: String?,
-    @SerializedName("address_street") val addressStreet: String?,
-    @SerializedName("address_zipcode") val addressZipcode: String?,
-    @SerializedName("address_city") val addressCity: String?,
-    @SerializedName("address_country") val addressCountry: String?,
+    @SerialName("address_street") val addressStreet: String?,
+    @SerialName("address_zipcode") val addressZipcode: String?,
+    @SerialName("address_city") val addressCity: String?,
+    @SerialName("address_country") val addressCountry: String?,
     val bankgiro: String?,
     val postgiro: String?,
     val swish: String?,
 )
 
+@Serializable
 data class UpdatePasswordRequest(
     val current_password: String,
     val password: String,

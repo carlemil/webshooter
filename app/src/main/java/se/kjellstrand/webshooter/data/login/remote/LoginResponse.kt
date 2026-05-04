@@ -1,17 +1,19 @@
 package se.kjellstrand.webshooter.data.login.remote
 
-import com.google.gson.annotations.SerializedName
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class LoginResponse (
-    @SerializedName("token_type")
+    @SerialName("token_type")
     val tokenType: String,
 
-    @SerializedName("expires_in")
+    @SerialName("expires_in")
     val expiresIn: Long,
 
-    @SerializedName("access_token")
+    @SerialName("access_token")
     val accessToken: String,
 
-    @SerializedName("refresh_token")
+    @SerialName("refresh_token")
     val refreshToken: String
 )

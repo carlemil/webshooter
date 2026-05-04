@@ -1,23 +1,23 @@
 package se.kjellstrand.webshooter.data.competitionpatrols.local
 
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import se.kjellstrand.webshooter.data.competitionpatrols.remote.PatrolEntry
 import se.kjellstrand.webshooter.data.competitionpatrols.remote.PatrolSignupEntry
 
-fun PatrolEntry.toEntity(competitionId: Long, gson: Gson): PatrolEntity = PatrolEntity(
+fun PatrolEntry.toEntity(competitionId: Long, json: Json): PatrolEntity = PatrolEntity(
     id = id,
     competitionId = competitionId,
     sortorder = sortorder,
     startTimeHuman = startTimeHuman,
     endTimeHuman = endTimeHuman,
-    signupsJson = gson.toJson(signups)
+    signupsJson = json.encodeToString(signups)
 )
 
-fun PatrolEntity.toDomain(gson: Gson): PatrolEntry = PatrolEntry(
+fun PatrolEntity.toDomain(json: Json): PatrolEntry = PatrolEntry(
     id = id,
     sortorder = sortorder,
     startTimeHuman = startTimeHuman,
     endTimeHuman = endTimeHuman,
-    signups = gson.fromJson(signupsJson, object : TypeToken<List<PatrolSignupEntry>>() {}.type)
+    signups = json.decodeFromString<List<PatrolSignupEntry>>(signupsJson)
 )

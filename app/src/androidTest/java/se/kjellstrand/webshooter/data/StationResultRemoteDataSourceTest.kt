@@ -1,8 +1,8 @@
 package se.kjellstrand.webshooter.data
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.json.Json
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.After
@@ -12,7 +12,7 @@ import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
+import retrofit2.converter.kotlinx.serialization.asConverterFactory
 import se.kjellstrand.webshooter.data.login.remote.LoginRemoteDataSource
 import se.kjellstrand.webshooter.data.login.remote.LoginRequest
 
@@ -26,13 +26,16 @@ class StationResultRemoteDataSourceTest {
         mockWebServer = MockWebServer()
         mockWebServer.start()
 
-        val gson: Gson = GsonBuilder()
-            .setLenient()
-            .create()
+        val json = Json {
+            ignoreUnknownKeys = true
+            coerceInputValues = true
+            explicitNulls = false
+        }
+        val contentType = "application/json".toMediaType()
 
         loginApi = Retrofit.Builder()
             .baseUrl(mockWebServer.url("/"))
-            .addConverterFactory(GsonConverterFactory.create(gson))
+            .addConverterFactory(json.asConverterFactory(contentType))
             .build()
             .create(LoginRemoteDataSource::class.java)
     }

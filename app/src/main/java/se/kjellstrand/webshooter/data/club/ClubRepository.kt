@@ -1,6 +1,6 @@
 package se.kjellstrand.webshooter.data.club
 
-import com.google.gson.Gson
+import kotlinx.serialization.json.Json
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okio.IOException
@@ -20,7 +20,7 @@ import javax.inject.Singleton
 class ClubRepository @Inject constructor(
     private val remoteDataSource: ClubRemoteDataSource,
     private val dao: ClubDao,
-    private val gson: Gson
+    private val json: Json
 ) {
     fun getUserClub(): Flow<Resource<ClubInfoResponse, UserError>> = flow {
         emit(Resource.Loading(true))
@@ -32,7 +32,7 @@ class ClubRepository @Inject constructor(
         }
         try {
             if (cached != null) {
-                emit(Resource.Success(cached.toDomain(gson)))
+                emit(Resource.Success(cached.toDomain(json)))
             }
         } catch (e: Exception) {
             cached = null
@@ -43,7 +43,7 @@ class ClubRepository @Inject constructor(
             val body = response.body()
             if (response.isSuccessful && body != null) {
                 val sanitized = body.copy(club = body.club.sanitizeNullStrings())
-                dao.insert(sanitized.club.toEntity(gson))
+                dao.insert(sanitized.club.toEntity(json))
                 emit(Resource.Success(sanitized))
             } else {
                 if (cached == null) emit(Resource.Error(UserError.HttpError(response.code())))

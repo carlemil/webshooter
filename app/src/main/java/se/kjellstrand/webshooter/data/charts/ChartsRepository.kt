@@ -1,7 +1,7 @@
 package se.kjellstrand.webshooter.data.charts
 
 import android.util.Log
-import com.google.gson.Gson
+import kotlinx.serialization.json.Json
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.time.LocalDate
@@ -47,7 +47,7 @@ data class CompetitionMeta(
 class ChartsRepository @Inject constructor(
     private val competitionsDao: CompetitionsDao,
     private val resultsDao: ResultsDao,
-    private val gson: Gson
+    private val json: Json
 ) {
     companion object {
         private const val TAG = "ChartsRepository"
@@ -66,7 +66,7 @@ class ChartsRepository @Inject constructor(
 
         val allCompetitionMeta = mutableMapOf<Long, CompetitionMeta>()
         val competitionTypeNames = mutableMapOf<Long, String?>()
-        for (competition in competitionsDao.getCompletedCompetitions(today).mapNotNull { it.toDomain(gson) }) {
+        for (competition in competitionsDao.getCompletedCompetitions(today).mapNotNull { it.toDomain(json) }) {
             val apiString = try {
                 competition.resultsType.toApiString()
             } catch (e: Exception) {

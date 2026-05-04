@@ -1,12 +1,16 @@
 package se.kjellstrand.webshooter.data.mysignups.local
 
-import com.google.gson.Gson
+import kotlinx.serialization.json.Json
 import org.junit.Assert.*
 import org.junit.Test
 
 class SignupMappersTest {
 
-    private val gson = Gson()
+    private val json = Json {
+        ignoreUnknownKeys = true
+        coerceInputValues = true
+        explicitNulls = false
+    }
 
     private fun validEntity() = SignupEntryEntity(
         id = 1L,
@@ -33,26 +37,26 @@ class SignupMappersTest {
     @Test
     fun `toDomain returns null for corrupted competitionJson`() {
         val entity = validEntity().copy(competitionJson = "not json!!!")
-        assertNull(entity.toDomain(gson))
+        assertNull(entity.toDomain(json))
     }
 
     @Test
     fun `toDomain returns null for corrupted weaponClassJson`() {
         val entity = validEntity().copy(weaponClassJson = "{{{bad")
-        assertNull(entity.toDomain(gson))
+        assertNull(entity.toDomain(json))
     }
 
     @Test
     fun `toDomain returns null for corrupted patrolJson`() {
         val entity = validEntity().copy(patrolJson = "corrupt")
-        assertNull(entity.toDomain(gson))
+        assertNull(entity.toDomain(json))
     }
 
     // --- Guard tests (should PASS before and after fix) ---
 
     @Test
     fun `toDomain maps valid entity correctly`() {
-        val result = validEntity().toDomain(gson)
+        val result = validEntity().toDomain(json)
         assertNotNull(result)
         assertEquals(1L, result!!.id)
         assertEquals(10L, result.competitionsId)
@@ -61,7 +65,7 @@ class SignupMappersTest {
 
     @Test
     fun `toDomain handles null patrol and resultsPlacement`() {
-        val result = validEntity().toDomain(gson)
+        val result = validEntity().toDomain(json)
         assertNotNull(result)
         assertNull(result!!.patrol)
         assertNull(result.resultsPlacements)
@@ -69,7 +73,7 @@ class SignupMappersTest {
 
     @Test
     fun `toDomain handles null resultsPlacementsJson`() {
-        val result = validEntity().copy(resultsPlacementsJson = null).toDomain(gson)
+        val result = validEntity().copy(resultsPlacementsJson = null).toDomain(json)
         assertNotNull(result)
         assertNull(result!!.resultsPlacements)
     }

@@ -1,6 +1,6 @@
 package se.kjellstrand.webshooter.data.competitions
 
-import com.google.gson.Gson
+import kotlinx.serialization.json.Json
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
@@ -25,7 +25,11 @@ import se.kjellstrand.webshooter.data.competitions.testing.resultEntity
 
 class CompetitionsRepositorySyncAllTest {
 
-    private val gson = Gson()
+    private val json = Json {
+        ignoreUnknownKeys = true
+        coerceInputValues = true
+        explicitNulls = false
+    }
 
     private fun datum(
         id: Long,
@@ -139,7 +143,7 @@ class CompetitionsRepositorySyncAllTest {
             resultsDao.seed(cid, resultIds.map { resultEntity(it, cid) })
         }
         val resultsRepo = NoOpResultsRepository()
-        val repo = CompetitionsRepository(remote, dao, gson, resultsRepo, resultsDao)
+        val repo = CompetitionsRepository(remote, dao, json, resultsRepo, resultsDao)
         return Rig(repo, dao, remote, resultsRepo, resultsDao)
     }
 
@@ -215,7 +219,7 @@ class CompetitionsRepositorySyncAllTest {
 
     @Test
     fun `syncAll triggers refreshResultsFor when a cached competition has changed`(): Unit = runBlocking {
-        val cachedOpen = datum(1, "open").toEntity(gson)
+        val cachedOpen = datum(1, "open").toEntity(json)
         val rig = buildRig(
             seeded = listOf(cachedOpen),
             pages = mapOf(1 to response(1, 1, listOf(datum(1, "completed"))))
@@ -228,7 +232,7 @@ class CompetitionsRepositorySyncAllTest {
 
     @Test
     fun `syncAll does not refresh when cached row is identical AND results are present`(): Unit = runBlocking {
-        val cached = datum(1, "completed").toEntity(gson)
+        val cached = datum(1, "completed").toEntity(json)
         val rig = buildRig(
             seeded = listOf(cached),
             pages = mapOf(1 to response(1, 1, listOf(datum(1, "completed")))),
@@ -263,7 +267,7 @@ class CompetitionsRepositorySyncAllTest {
 
     @Test
     fun `syncAll fetches results for an unchanged past competition that has no cached results`(): Unit = runBlocking {
-        val cached = datum(1, "completed").toEntity(gson)
+        val cached = datum(1, "completed").toEntity(json)
         val rig = buildRig(
             seeded = listOf(cached),
             pages = mapOf(1 to response(1, 1, listOf(datum(1, "completed")))),
@@ -302,7 +306,7 @@ class CompetitionsRepositorySyncAllTest {
 
     @Test
     fun `syncAll does not fetch results when a future competition's content changes`(): Unit = runBlocking {
-        val before = datum(1, "open", signupsCount = 10, date = FUTURE_DATE).toEntity(gson)
+        val before = datum(1, "open", signupsCount = 10, date = FUTURE_DATE).toEntity(json)
         val rig = buildRig(
             seeded = listOf(before),
             pages = mapOf(1 to response(1, 1, listOf(datum(1, "open", signupsCount = 11, date = FUTURE_DATE))))
@@ -324,7 +328,7 @@ class CompetitionsRepositorySyncAllTest {
 
     @Test
     fun `syncAll detects a change in signupsCount`(): Unit = runBlocking {
-        val before = datum(1, "open", signupsCount = 10).toEntity(gson)
+        val before = datum(1, "open", signupsCount = 10).toEntity(json)
         val rig = buildRig(
             seeded = listOf(before),
             pages = mapOf(1 to response(1, 1, listOf(datum(1, "open", signupsCount = 11))))
@@ -339,7 +343,7 @@ class CompetitionsRepositorySyncAllTest {
 
     @Test
     fun `syncAll does not refresh when pagination fails after a detected change`(): Unit = runBlocking {
-        val cached = datum(1, "open").toEntity(gson)
+        val cached = datum(1, "open").toEntity(json)
         val rig = buildRig(
             seeded = listOf(cached),
             pages = mapOf(
@@ -358,8 +362,8 @@ class CompetitionsRepositorySyncAllTest {
 
     @Test
     fun `syncAll preserves rows that look deleted-upstream when pagination fails`(): Unit = runBlocking {
-        val cachedKept = datum(1, "open").toEntity(gson)
-        val cachedOnlyInDb = datum(2, "open").toEntity(gson)
+        val cachedKept = datum(1, "open").toEntity(json)
+        val cachedOnlyInDb = datum(2, "open").toEntity(json)
         val rig = buildRig(
             seeded = listOf(cachedKept, cachedOnlyInDb),
             pages = mapOf(1 to response(1, 2, listOf(datum(1, "open")))),
@@ -383,8 +387,8 @@ class CompetitionsRepositorySyncAllTest {
 
     @Test
     fun `syncAll purges competitions and their results when they disappear from the API`(): Unit = runBlocking {
-        val keep = datum(1, "completed").toEntity(gson)
-        val gone = datum(2, "completed").toEntity(gson)
+        val keep = datum(1, "completed").toEntity(json)
+        val gone = datum(2, "completed").toEntity(json)
         val rig = buildRig(
             seeded = listOf(keep, gone),
             pages = mapOf(1 to response(1, 1, listOf(datum(1, "completed")))),
@@ -410,7 +414,7 @@ class CompetitionsRepositorySyncAllTest {
 
     @Test
     fun `syncAll caps eager refresh concurrency at 4`(): Unit = runBlocking {
-        val seeded = (1..20L).map { datum(it, "open").toEntity(gson) }
+        val seeded = (1..20L).map { datum(it, "open").toEntity(json) }
         val pageItems = (1..20L).map { datum(it, "completed") }
         val resultsRepo = object : NoOpResultsRepository() {
             override suspend fun refreshResultsFor(competitionId: Long) {
@@ -426,7 +430,7 @@ class CompetitionsRepositorySyncAllTest {
         }
         val dao = FakeDao(seeded = seeded)
         val resultsDao = NoOpResultsDao()
-        val repo = CompetitionsRepository(remote, dao, gson, resultsRepo, resultsDao)
+        val repo = CompetitionsRepository(remote, dao, json, resultsRepo, resultsDao)
 
         repo.syncAll()
 

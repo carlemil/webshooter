@@ -1,7 +1,6 @@
 package se.kjellstrand.webshooter.data.competitions
 
 import android.util.Log
-import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -11,6 +10,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
+import kotlinx.serialization.json.Json
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionEntity
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionsDao
 import se.kjellstrand.webshooter.data.competitions.local.contentHash
@@ -28,14 +28,14 @@ import javax.inject.Singleton
 open class CompetitionsRepository @Inject constructor(
     private val competitionsRemoteDataSource: CompetitionsRemoteDataSource,
     private val dao: CompetitionsDao,
-    private val gson: Gson,
+    private val json: Json,
     private val resultsRepository: ResultsRepository,
     private val resultsDao: ResultsDao
 ) {
 
     fun observeAll(): Flow<List<Datum>> =
         dao.observeAll()
-            .map { entities -> entities.mapNotNull { it.toDomain(gson) } }
+            .map { entities -> entities.mapNotNull { it.toDomain(json) } }
             .flowOn(Dispatchers.Default)
 
     suspend fun syncAll() {
@@ -55,7 +55,7 @@ open class CompetitionsRepository @Inject constructor(
                 return
             }
             for (item in result.competitions.data) {
-                val entity = item.toEntity(gson)
+                val entity = item.toEntity(json)
                 freshEntities += entity
                 if (entity.date > today) continue
                 val prev = existing[entity.id]

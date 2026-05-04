@@ -1,6 +1,6 @@
 package se.kjellstrand.webshooter.di
 
-import com.google.gson.Gson
+import kotlinx.serialization.json.Json
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -26,8 +26,8 @@ class SignupsModule {
     fun providesSignupsRepository(
         remoteDataSource: SignupsRemoteDataSource,
         dao: SignupsDao,
-        gson: Gson
+        json: Json
     ): SignupsRepository {
-        return SignupsRepository(remoteDataSource, dao, gson)
+        return SignupsRepository(remoteDataSource, dao, json)
     }
 }

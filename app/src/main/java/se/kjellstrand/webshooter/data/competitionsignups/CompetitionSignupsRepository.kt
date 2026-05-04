@@ -1,7 +1,7 @@
 package se.kjellstrand.webshooter.data.competitionsignups
 
 import android.util.Log
-import com.google.gson.Gson
+import kotlinx.serialization.json.Json
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okio.IOException
@@ -21,7 +21,7 @@ import javax.inject.Singleton
 open class CompetitionSignupsRepository @Inject constructor(
     private val remoteDataSource: CompetitionSignupsRemoteDataSource,
     private val dao: CompetitionSignupsDao,
-    private val gson: Gson
+    private val json: Json
 ) {
     companion object {
         private const val TAG = "CompetitionSignupsRepository"
@@ -39,7 +39,7 @@ open class CompetitionSignupsRepository @Inject constructor(
                 try {
                     val cached = dao.getByCompetition(competitionId)
                     if (cached.isNotEmpty()) {
-                        val domains = cached.map { it.toDomain(gson) }
+                        val domains = cached.map { it.toDomain(json) }
                         emit(Resource.Success(CompetitionSignupsResponse(
                             signups = CompetitionSignupsPaged(
                                 currentPage = 1,
@@ -71,7 +71,7 @@ open class CompetitionSignupsRepository @Inject constructor(
             }
 
             if (page == 1) dao.deleteByCompetition(competitionId)
-            dao.insertAll(result.signups.data.map { it.toEntity(competitionId, gson) })
+            dao.insertAll(result.signups.data.map { it.toEntity(competitionId, json) })
 
             emit(Resource.Success(result))
         }
