@@ -2,7 +2,7 @@ package se.kjellstrand.webshooter.ui.mock
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import se.kjellstrand.webshooter.data.settings.remote.Gender
+import se.kjellstrand.webshooter.ui.screens.settings.Gender
 import se.kjellstrand.webshooter.ui.screens.settings.SettingsUiState
 import se.kjellstrand.webshooter.ui.screens.settings.SettingsTab
 import se.kjellstrand.webshooter.ui.screens.settings.SettingsViewModel

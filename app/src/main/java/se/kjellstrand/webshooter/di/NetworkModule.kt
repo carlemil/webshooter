@@ -96,7 +96,12 @@ class NetworkModule {
                         val response = client.post("api/v4.1.9/oauth/token") {
                             attributes.put(Auth.AuthCircuitBreaker, Unit)
                             contentType(ContentType.Application.Json)
-                            setBody(RefreshTokenRequest(refresh_token = refresh))
+                            setBody(
+                                RefreshTokenRequest(
+                                    client_secret = BuildConfig.CLIENT_SECRET,
+                                    refresh_token = refresh
+                                )
+                            )
                         }
                         if (response.status.isSuccess()) {
                             val body = json.decodeFromString(LoginResponse.serializer(), response.bodyAsText())

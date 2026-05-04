@@ -9,14 +9,13 @@ import io.ktor.client.request.setBody
 import io.ktor.http.Parameters
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
-import javax.inject.Inject
 
 interface SignupRemoteDataSource {
     suspend fun signup(fields: Map<String, String>): SignupResponse
     suspend fun removeSignup(signupId: Long)
 }
 
-class SignupRemoteDataSourceKtor @Inject constructor(
+class SignupRemoteDataSourceKtor(
     private val httpClient: HttpClient
 ) : SignupRemoteDataSource {
 

@@ -87,19 +87,19 @@ private fun ClubInformationTab(club: ClubData?) {
             Text(text = club.name, style = MaterialTheme.typography.headlineSmall)
             Spacer(modifier = Modifier.height(16.dp))
             InfoCard {
-                if (!club.clubsNr.isNullOrBlank()) InfoRow(
-                    stringResource(R.string.club_club_number),
-                    club.clubsNr
-                )
-                if (!club.email.isNullOrBlank()) InfoRow(
-                    label = stringResource(R.string.email),
-                    value = club.email,
-                    onClick = { clipboardManager.setText(AnnotatedString(club.email)) }
-                )
-                if (!club.phone.isNullOrBlank()) InfoRow(
-                    stringResource(R.string.phone),
-                    club.phone
-                )
+                club.clubsNr?.takeIf { it.isNotBlank() }?.let { clubsNr ->
+                    InfoRow(stringResource(R.string.club_club_number), clubsNr)
+                }
+                club.email?.takeIf { it.isNotBlank() }?.let { email ->
+                    InfoRow(
+                        label = stringResource(R.string.email),
+                        value = email,
+                        onClick = { clipboardManager.setText(AnnotatedString(email)) }
+                    )
+                }
+                club.phone?.takeIf { it.isNotBlank() }?.let { phone ->
+                    InfoRow(stringResource(R.string.phone), phone)
+                }
 
                 val street = club.addressStreet ?: ""
                 val zip = club.addressZipcode ?: ""
@@ -251,26 +251,26 @@ private fun MemberItem(member: ClubMember) {
                 text = member.fullname ?: "${member.name} ${member.lastname ?: ""}".trim(),
                 style = MaterialTheme.typography.titleSmall
             )
-            if (!member.email.isNullOrBlank()) {
+            member.email?.takeIf { it.isNotBlank() }?.let { email ->
                 Text(
-                    text = member.email,
+                    text = email,
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.clickable {
-                        clipboardManager.setText(AnnotatedString(member.email))
+                        clipboardManager.setText(AnnotatedString(email))
                     }
                 )
             }
-            if (!member.shootingCardNumber.isNullOrBlank()) {
+            member.shootingCardNumber?.takeIf { it.isNotBlank() }?.let { number ->
                 Text(
-                    text = stringResource(R.string.shooting_card_number, member.shootingCardNumber),
+                    text = stringResource(R.string.shooting_card_number, number),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            if (!member.status.isNullOrBlank()) {
+            member.status?.takeIf { it.isNotBlank() }?.let { status ->
                 Text(
-                    text = stringResource(R.string.club_member_status, member.status),
+                    text = stringResource(R.string.club_member_status, status),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

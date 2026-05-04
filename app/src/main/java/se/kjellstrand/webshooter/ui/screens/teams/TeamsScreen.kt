@@ -154,9 +154,9 @@ private fun TeamHeaderItem(team: TeamEntry) {
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                if (team.weapongroup != null) {
+                team.weapongroup?.let { weapongroup ->
                     WeaponClassBadge(
-                        weaponGroupName = team.weapongroup.name,
+                        weaponGroupName = weapongroup.name,
                         isHighlighted = false,
                         size = WeaponClassBadgeSize.Small
                     )

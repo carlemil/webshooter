@@ -22,6 +22,7 @@ kotlin {
 
             // Internal helpers used by shared classes.
             implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.auth)
             implementation(libs.kotlinx.datetime)
             implementation(libs.okio)
         }

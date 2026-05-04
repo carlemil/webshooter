@@ -55,7 +55,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import se.kjellstrand.webshooter.R
-import se.kjellstrand.webshooter.data.settings.remote.Gender
 import se.kjellstrand.webshooter.ui.mock.MockSettings
 import se.kjellstrand.webshooter.ui.mock.SettingsViewModelMock
 import se.kjellstrand.webshooter.data.settings.remote.UserProfile

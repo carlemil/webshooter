@@ -7,7 +7,6 @@ import io.ktor.client.request.get
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.Parameters
-import javax.inject.Inject
 
 interface SettingsRemoteDataSource {
     suspend fun getUserProfile(): UserProfileResponse
@@ -15,7 +14,7 @@ interface SettingsRemoteDataSource {
     suspend fun updatePassword(fields: Map<String, String>)
 }
 
-class SettingsRemoteDataSourceKtor @Inject constructor(
+class SettingsRemoteDataSourceKtor(
     private val httpClient: HttpClient
 ) : SettingsRemoteDataSource {
 

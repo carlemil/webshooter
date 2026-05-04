@@ -10,7 +10,6 @@ import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.data.AuthTokenManager
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.settings.SettingsRepository
-import se.kjellstrand.webshooter.data.settings.remote.Gender
 import se.kjellstrand.webshooter.data.settings.remote.UserProfile
 import se.kjellstrand.webshooter.data.secure.SecurePrefs
 import javax.inject.Inject

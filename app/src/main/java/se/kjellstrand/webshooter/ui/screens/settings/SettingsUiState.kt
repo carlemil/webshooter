@@ -1,6 +1,5 @@
 package se.kjellstrand.webshooter.ui.screens.settings
 
-import se.kjellstrand.webshooter.data.settings.remote.Gender
 import se.kjellstrand.webshooter.data.settings.remote.UserProfile
 
 data class SettingsUiState(

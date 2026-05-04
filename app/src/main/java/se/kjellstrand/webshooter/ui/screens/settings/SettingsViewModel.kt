@@ -1,7 +1,6 @@
 package se.kjellstrand.webshooter.ui.screens.settings
 
 import kotlinx.coroutines.flow.StateFlow
-import se.kjellstrand.webshooter.data.settings.remote.Gender
 
 interface SettingsViewModel {
     val uiState: StateFlow<SettingsUiState>

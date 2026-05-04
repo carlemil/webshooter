@@ -4,7 +4,6 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
-import javax.inject.Inject
 
 interface CompetitionSignupsRemoteDataSource {
     suspend fun getSignups(
@@ -14,7 +13,7 @@ interface CompetitionSignupsRemoteDataSource {
     ): CompetitionSignupsResponse
 }
 
-class CompetitionSignupsRemoteDataSourceKtor @Inject constructor(
+class CompetitionSignupsRemoteDataSourceKtor(
     private val httpClient: HttpClient
 ) : CompetitionSignupsRemoteDataSource {
     override suspend fun getSignups(

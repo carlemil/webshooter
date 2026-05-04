@@ -9,13 +9,12 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
-import javax.inject.Inject
 
 interface LoginRemoteDataSource {
     suspend fun login(request: LoginRequest): LoginResponse
 }
 
-class LoginRemoteDataSourceKtor @Inject constructor(
+class LoginRemoteDataSourceKtor(
     private val httpClient: HttpClient
 ) : LoginRemoteDataSource {
 

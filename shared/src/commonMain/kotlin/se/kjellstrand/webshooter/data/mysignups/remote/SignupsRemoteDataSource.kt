@@ -3,13 +3,12 @@ package se.kjellstrand.webshooter.data.mysignups.remote
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
-import javax.inject.Inject
 
 interface SignupsRemoteDataSource {
     suspend fun getSignups(): SignupsResponse
 }
 
-class SignupsRemoteDataSourceKtor @Inject constructor(
+class SignupsRemoteDataSourceKtor(
     private val httpClient: HttpClient
 ) : SignupsRemoteDataSource {
     override suspend fun getSignups(): SignupsResponse =
