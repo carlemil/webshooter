@@ -15,6 +15,7 @@ import se.kjellstrand.webshooter.data.competitions.remote.Usersignup
 
 private const val TAG = "CompetitionMappers"
 
+@OptIn(ExperimentalStdlibApi::class)
 fun CompetitionEntity.contentHash(): String {
     val joined = listOf(
         id, name, date, status, statusHuman,
@@ -26,8 +27,7 @@ fun CompetitionEntity.contentHash(): String {
         signupsCount, patrolsCount, allowTeams,
         competitionTypeJson, weaponGroupsJson, weaponClassesJson, userSignupsJson, clubJson
     ).joinToString("") { it?.toString() ?: " " }
-    val bytes = SHA1().digest(joined.encodeToByteArray())
-    return bytes.joinToString("") { "%02x".format(it) }
+    return SHA1().digest(joined.encodeToByteArray()).toHexString()
 }
 
 fun Datum.toEntity(json: Json): CompetitionEntity = CompetitionEntity(
