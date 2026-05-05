@@ -6,24 +6,23 @@ import java.io.File
 
 class DatabaseModuleTest {
 
-    private val sourceFile = File("src/main/java/se/kjellstrand/webshooter/di/DatabaseModule.kt")
+    private val moduleFile = File("src/main/java/se/kjellstrand/webshooter/di/DatabaseModule.kt")
+    private val factoryFile = File("../shared/src/androidMain/kotlin/se/kjellstrand/webshooter/data/db/DatabaseFactory.kt")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 
-    // --- Fixed behavior: createFromAsset (should FAIL before fix, PASS after fix) ---
-
     @Test
     fun `database should be created from prebuilt asset`() {
-        val source = sourceFile.readText()
+        val source = factoryFile.readText()
         assertTrue(
-            "DatabaseModule must use createFromAsset to load the prebuilt database",
+            "Database factory must use createFromAsset to load the prebuilt database",
             source.contains("createFromAsset")
         )
     }
 
     @Test
     fun `createFromAsset should reference the correct asset path`() {
-        val source = sourceFile.readText()
+        val source = factoryFile.readText()
         assertTrue(
             "createFromAsset must reference databases/webshooter.db",
             source.contains("""createFromAsset("databases/webshooter.db")""")
@@ -33,22 +32,32 @@ class DatabaseModuleTest {
     // --- Guard tests (should PASS before and after fix) ---
 
     @Test
-    fun `source file exists`() {
-        assertTrue("DatabaseModule.kt should exist", sourceFile.exists())
+    fun `source files exist`() {
+        assertTrue("DatabaseModule.kt should exist", moduleFile.exists())
+        assertTrue("DatabaseFactory.kt should exist", factoryFile.exists())
     }
 
     @Test
-    fun `database module provides AppDatabase`() {
-        val source = sourceFile.readText()
+    fun `database module forwards to the shared factory`() {
+        val source = moduleFile.readText()
         assertTrue(
-            "Should provide AppDatabase via Room.databaseBuilder",
+            "DatabaseModule should call createAppDatabase(context) from :shared",
+            source.contains("createAppDatabase(context)")
+        )
+    }
+
+    @Test
+    fun `database factory builds a Room database`() {
+        val source = factoryFile.readText()
+        assertTrue(
+            "Factory should provide AppDatabase via Room.databaseBuilder",
             source.contains("Room.databaseBuilder")
         )
     }
 
     @Test
     fun `database name is webshooter db`() {
-        val source = sourceFile.readText()
+        val source = factoryFile.readText()
         assertTrue(
             "Database name should be webshooter.db",
             source.contains("webshooter.db")

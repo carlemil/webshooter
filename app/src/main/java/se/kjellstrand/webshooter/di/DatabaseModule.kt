@@ -1,7 +1,6 @@
 package se.kjellstrand.webshooter.di
 
 import android.content.Context
-import androidx.room.Room
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,8 +11,8 @@ import se.kjellstrand.webshooter.data.competitionpatrols.local.PatrolsDao
 import se.kjellstrand.webshooter.data.competitionteams.local.TeamsDao
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionsDao
 import se.kjellstrand.webshooter.data.competitionsignups.local.CompetitionSignupsDao
-import se.kjellstrand.webshooter.BuildConfig
 import se.kjellstrand.webshooter.data.db.AppDatabase
+import se.kjellstrand.webshooter.data.db.createAppDatabase
 import se.kjellstrand.webshooter.data.results.local.ResultsDao
 import se.kjellstrand.webshooter.data.settings.local.UserProfileDao
 import se.kjellstrand.webshooter.data.mysignups.local.SignupsDao
@@ -26,10 +25,7 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
-        Room.databaseBuilder(context, AppDatabase::class.java, "webshooter.db")
-            .createFromAsset("databases/webshooter.db")
-            .fallbackToDestructiveMigration(dropAllTables = true)
-            .build()
+        createAppDatabase(context)
 
     @Provides fun provideCompetitionsDao(db: AppDatabase): CompetitionsDao = db.competitionsDao()
     @Provides fun provideResultsDao(db: AppDatabase): ResultsDao = db.resultsDao()
