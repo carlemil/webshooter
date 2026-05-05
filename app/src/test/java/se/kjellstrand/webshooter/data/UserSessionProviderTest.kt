@@ -1,20 +1,17 @@
 package se.kjellstrand.webshooter.data
 
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.runBlocking
 import org.junit.Assert.*
 import org.junit.Test
-import java.io.Closeable
 
 class UserSessionProviderTest {
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 
     @Test
-    fun `UserSessionProvider implements Closeable`() {
+    fun `UserSessionProvider implements AutoCloseable`() {
         assertTrue(
-            "UserSessionProvider should implement Closeable",
-            Closeable::class.java.isAssignableFrom(UserSessionProvider::class.java)
+            "UserSessionProvider should implement AutoCloseable",
+            AutoCloseable::class.java.isAssignableFrom(UserSessionProvider::class.java)
         )
     }
 

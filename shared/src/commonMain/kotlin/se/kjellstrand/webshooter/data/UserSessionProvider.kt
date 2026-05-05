@@ -10,16 +10,12 @@ import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.settings.SettingsRepository
 import se.kjellstrand.webshooter.data.settings.remote.UserProfile
-import java.io.Closeable
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-class UserSessionProvider @Inject constructor(
+class UserSessionProvider(
     private val settingsRepository: SettingsRepository
-) : Closeable {
+) : AutoCloseable {
     private val job = SupervisorJob()
-    private val scope = CoroutineScope(job + Dispatchers.IO)
+    private val scope = CoroutineScope(job + Dispatchers.Default)
     private val _userProfile = MutableStateFlow<UserProfile?>(null)
     val userProfile: StateFlow<UserProfile?> = _userProfile.asStateFlow()
 
