@@ -19,6 +19,12 @@ kotlin {
         }
     }
 
+    iosX64()
+    iosArm64()
+    iosSimulatorArm64()
+
+    applyDefaultHierarchyTemplate()
+
     sourceSets {
         commonMain.dependencies {
             // Public API surface — exposed transitively to :app.
@@ -41,6 +47,10 @@ kotlin {
             implementation(libs.androidx.security.crypto)
             implementation(libs.androidx.security.crypto.ktx)
         }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.darwin)
+            implementation(libs.multiplatform.settings.keychain)
+        }
     }
 }
 
@@ -60,4 +70,7 @@ android {
 
 dependencies {
     add("kspAndroid", libs.androidx.room.compiler)
+    add("kspIosX64", libs.androidx.room.compiler)
+    add("kspIosArm64", libs.androidx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
 }
