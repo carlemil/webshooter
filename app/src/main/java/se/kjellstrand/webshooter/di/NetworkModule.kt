@@ -35,6 +35,9 @@ import se.kjellstrand.webshooter.BuildConfig
 import se.kjellstrand.webshooter.data.AuthTokenManager
 import se.kjellstrand.webshooter.data.MockInterceptor
 import se.kjellstrand.webshooter.data.SessionManager
+import se.kjellstrand.webshooter.data.createAuthTokenManager
+import se.kjellstrand.webshooter.data.secure.SecurePrefs
+import se.kjellstrand.webshooter.data.secure.createSecurePrefs
 import se.kjellstrand.webshooter.data.login.remote.LoginResponse
 import se.kjellstrand.webshooter.data.login.remote.RefreshTokenRequest
 import javax.inject.Singleton
@@ -172,12 +175,12 @@ class NetworkModule {
     @Provides
     @Singleton
     fun provideAuthTokenManager(@ApplicationContext context: Context): AuthTokenManager =
-        AuthTokenManager(context)
+        createAuthTokenManager(context)
 
     @Provides
     @Singleton
-    fun provideSecurePrefs(@ApplicationContext context: Context): se.kjellstrand.webshooter.data.secure.SecurePrefs =
-        se.kjellstrand.webshooter.data.secure.SecurePrefs(context)
+    fun provideSecurePrefs(@ApplicationContext context: Context): SecurePrefs =
+        createSecurePrefs(context)
 
     @Provides
     @Singleton
