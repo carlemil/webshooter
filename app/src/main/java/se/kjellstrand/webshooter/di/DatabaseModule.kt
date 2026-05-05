@@ -28,7 +28,7 @@ object DatabaseModule {
     fun provideDatabase(@ApplicationContext context: Context): AppDatabase =
         Room.databaseBuilder(context, AppDatabase::class.java, "webshooter.db")
             .createFromAsset("databases/webshooter.db")
-            .fallbackToDestructiveMigration()
+            .fallbackToDestructiveMigration(dropAllTables = true)
             .build()
 
     @Provides fun provideCompetitionsDao(db: AppDatabase): CompetitionsDao = db.competitionsDao()
