@@ -1,5 +1,6 @@
 package se.kjellstrand.webshooter.data
 
+import com.russhwolf.settings.ExperimentalSettingsImplementation
 import com.russhwolf.settings.KeychainSettings
 
 /**
@@ -7,5 +8,6 @@ import com.russhwolf.settings.KeychainSettings
  * The service name is the same as the Android prefs file name so the two
  * platforms stay symmetric.
  */
+@OptIn(ExperimentalSettingsImplementation::class)
 fun createAuthTokenManager(): AuthTokenManager =
     AuthTokenManager(KeychainSettings(service = AuthTokenManager.PREFS_FILE))
