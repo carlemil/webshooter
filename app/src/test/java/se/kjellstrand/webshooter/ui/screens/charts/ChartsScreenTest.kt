@@ -1,16 +1,21 @@
 package se.kjellstrand.webshooter.ui.screens.charts
 
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNotNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
-import org.junit.Assert.*
 import java.io.File
-import java.lang.reflect.Modifier
 
+/**
+ * Source-level invariants for the (combined-chart) ResultsTrendsScreen.
+ * After the chart-library migration the screen is pure Compose Canvas — these
+ * assertions verify the structural invariants that survived without dragging
+ * any MPAndroidChart-specific shape into the test surface.
+ */
 class ChartsScreenTest {
 
     private val sourceFile =
         File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsScreen.kt")
-
-    // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 
     @Test
     fun `ChartsScreen uses shared ChartLegend from ui common`() {
@@ -31,51 +36,23 @@ class ChartsScreenTest {
     }
 
     @Test
-    fun `ChartsScreen disables MPAndroidChart built-in legend`() {
+    fun `ChartsScreen renders the chart via Compose Canvas (no MPAndroidChart)`() {
         val source = sourceFile.readText()
         assertTrue(
-            "ChartsScreen must set legend.isEnabled = false so the composable UserLegend is the sole legend",
-            source.contains("legend.isEnabled = false")
+            "ChartsScreen must render via Compose Canvas",
+            source.contains("Canvas(")
+        )
+        assertTrue(
+            "ChartsScreen must use the shared drawScatterShape helper",
+            source.contains("drawScatterShape(")
         )
         assertFalse(
-            "Old built-in legend styling must be removed (legend.isWordWrapEnabled)",
-            source.contains("legend.isWordWrapEnabled")
-        )
-    }
-
-    @Test
-    fun `ChartsScreen uses shapeRenderer from CHART_SHAPE_RENDERERS`() {
-        val source = sourceFile.readText()
-        assertTrue(
-            "Scatter datasets must use shapeRenderer = CHART_SHAPE_RENDERERS[...] so shapes match the composable legend",
-            source.contains("shapeRenderer = CHART_SHAPE_RENDERERS")
+            "ChartsScreen must NOT use AndroidView (chart is now pure Compose)",
+            source.contains("AndroidView")
         )
         assertFalse(
-            "Old setScatterShape(CHART_SHAPES[...]) calls must be replaced with shapeRenderer",
-            source.contains("setScatterShape(CHART_SHAPES")
-        )
-    }
-
-    @Test
-    fun `ChartsScreen defines ChartsMarkerView subclass`() {
-        val source = sourceFile.readText()
-        assertTrue(
-            "ChartsScreen must define a ChartsMarkerView class extending MarkerView",
-            source.contains("class ChartsMarkerView") &&
-                source.contains("MarkerView(context, R.layout.marker_view)")
-        )
-        assertTrue(
-            "ChartsScreen must import MarkerView",
-            source.contains("com.github.mikephil.charting.components.MarkerView")
-        )
-    }
-
-    @Test
-    fun `ChartsScreen attaches ChartsMarkerView to the chart`() {
-        val source = sourceFile.readText()
-        assertTrue(
-            "chart.marker must be assigned to a ChartsMarkerView",
-            source.contains("chart.marker = ChartsMarkerView(")
+            "ChartsScreen must NOT import MPAndroidChart classes",
+            source.contains("com.github.mikephil")
         )
     }
 
@@ -118,28 +95,21 @@ class ChartsScreenTest {
     }
 
     @Test
-    fun `ChartsScreen draws average as a LimitLine on axisLeft`() {
+    fun `ChartsScreen draws an average horizontal line when myAverage is set`() {
         val source = sourceFile.readText()
         assertTrue(
-            "ChartsScreen must use LimitLine for the average",
-            source.contains("LimitLine") &&
-                (source.contains("axisLeft.removeAllLimitLines") ||
-                    source.contains("axisLeft.addLimitLine"))
-        )
-        assertTrue(
-            "ChartsScreen must import LimitLine",
-            source.contains("com.github.mikephil.charting.components.LimitLine")
+            "ChartsScreen must draw the average line via Compose drawLine",
+            source.contains("if (myAverage != null)") &&
+                Regex("""drawLine\s*\(""").containsMatchIn(source)
         )
     }
 
     @Test
-    fun `ChartsScreen renders trend as a 2-point line dataset`() {
+    fun `ChartsScreen renders trend as a 2-point line using myTrend's fromY and toY`() {
         val source = sourceFile.readText()
         assertTrue(
             "Trend rendering must use myTrend's fromY and toY as line endpoints",
-            source.contains("myTrend") &&
-                source.contains("myTrend.fromY") &&
-                source.contains("myTrend.toY")
+            source.contains("myTrend.fromY") && source.contains("myTrend.toY")
         )
     }
 
@@ -157,14 +127,10 @@ class ChartsScreenTest {
     }
 
     @Test
-    fun `ChartsScreen builds label map keyed by Entry data tag`() {
+    fun `ChartsScreen marker tooltip formats date and points with 'p' unit`() {
         val source = sourceFile.readText()
         assertTrue(
-            "Entries must carry a tag via Entry.data for lookup in the marker",
-            source.contains(".data =") || source.contains("data = ")
-        )
-        assertTrue(
-            "Marker label should include the date and averageSerieScore unit",
+            "Marker tooltip must format the underlying averageSerieScore as '<value> p'",
             source.contains("averageSerieScore") &&
                 Regex("""\"[^\"]* p\"""").containsMatchIn(source)
         )
@@ -199,12 +165,6 @@ class ChartsScreenTest {
     @Test
     fun `WeaponClassBadge composable exists`() {
         val clazz = Class.forName("se.kjellstrand.webshooter.ui.common.WeaponClassBadgesKt")
-        assertNotNull(clazz)
-    }
-
-    @Test
-    fun `MPAndroidChart LineChart class is available`() {
-        val clazz = Class.forName("com.github.mikephil.charting.charts.LineChart")
         assertNotNull(clazz)
     }
 }

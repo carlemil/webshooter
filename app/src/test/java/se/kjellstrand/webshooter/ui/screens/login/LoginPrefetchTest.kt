@@ -12,7 +12,7 @@ import java.io.File
 class LoginPrefetchTest {
 
     private val loginSource: String by lazy {
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/login/LoginViewModelImpl.kt").readText()
+        File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/login/LoginViewModelImpl.kt").readText()
     }
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---

@@ -9,7 +9,7 @@ import java.io.File
 class CompetitionsViewModelSelfSyncTest {
 
     private val viewModelSource: String by lazy {
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/competitions/CompetitionsViewModelImpl.kt").readText()
+        File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/competitions/CompetitionsViewModelImpl.kt").readText()
     }
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---

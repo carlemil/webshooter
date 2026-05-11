@@ -1,15 +1,15 @@
 package se.kjellstrand.webshooter.ui.screens.charts.resulttrends
 
-import android.annotation.SuppressLint
-import android.content.Context
-import android.widget.TextView
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
@@ -22,44 +22,48 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextMeasurer
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.drawText
+import androidx.compose.ui.text.rememberTextMeasurer
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.toArgb
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import com.github.mikephil.charting.charts.CombinedChart
-import com.github.mikephil.charting.components.LimitLine
-import com.github.mikephil.charting.components.MarkerView
-import com.github.mikephil.charting.data.CombinedData
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.LineData
-import com.github.mikephil.charting.data.LineDataSet
-import com.github.mikephil.charting.data.ScatterData
-import com.github.mikephil.charting.data.ScatterDataSet
-import com.github.mikephil.charting.formatter.IndexAxisValueFormatter
-import com.github.mikephil.charting.highlight.Highlight
-import com.github.mikephil.charting.utils.MPPointF
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.charts.ChartDataPoint
-import androidx.compose.ui.graphics.Color
 import se.kjellstrand.webshooter.ui.common.AddShooterButton
 import se.kjellstrand.webshooter.ui.common.CHART_COLORS
 import se.kjellstrand.webshooter.ui.common.CHART_MIN_HEIGHT_FRACTION
-import se.kjellstrand.webshooter.ui.common.CHART_SHAPE_RENDERERS
+import se.kjellstrand.webshooter.ui.common.CHART_SHAPE_COUNT
+import se.kjellstrand.webshooter.ui.common.ChartLegend
+import se.kjellstrand.webshooter.ui.common.ChartShape
 import se.kjellstrand.webshooter.ui.common.ChartStateWrapper
 import se.kjellstrand.webshooter.ui.common.ShooterPickerDialog
-import se.kjellstrand.webshooter.ui.common.ChartLegend
 import se.kjellstrand.webshooter.ui.common.UserLegendItem
 import se.kjellstrand.webshooter.ui.common.WeaponClassGroupFilter
-import se.kjellstrand.webshooter.ui.common.applyBaseChartStyle
+import se.kjellstrand.webshooter.ui.common.drawScatterShape
 import se.kjellstrand.webshooter.ui.mock.ChartsViewModelMock
 import se.kjellstrand.webshooter.ui.mock.MockCharts
-import kotlin.collections.get
+import kotlin.math.abs
+import kotlin.math.ceil
+import kotlin.math.floor
 
 @Composable
 fun ChartsScreen(viewModel: ResultsTrendsViewModel) {
@@ -73,10 +77,7 @@ fun ChartsScreen(viewModel: ResultsTrendsViewModel) {
     }
 
     Scaffold { _ ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
+        Column(modifier = Modifier.fillMaxSize()) {
             Text(
                 text = stringResource(R.string.charts_subtitle),
                 style = MaterialTheme.typography.bodySmall,
@@ -124,9 +125,7 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
             val selectedIndex = uiState.availableResultsTypes.indexOf(uiState.selectedResultsType)
                 .coerceAtLeast(0)
 
-            TabRow(
-                selectedTabIndex = selectedIndex
-            ) {
+            TabRow(selectedTabIndex = selectedIndex) {
                 uiState.availableResultsTypes.forEach { type ->
                     Tab(
                         selected = type == uiState.selectedResultsType,
@@ -148,13 +147,11 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
         val chartData = uiState.filteredChartData
         val comparedShooters = uiState.filteredComparedShooters
         val hasAnyData = chartData.isNotEmpty() ||
-                comparedShooters.values.any { it.chartData.isNotEmpty() }
+            comparedShooters.values.any { it.chartData.isNotEmpty() }
         val isHitsBased = uiState.selectedResultsType == "field" ||
-                uiState.selectedResultsType == "pointfield"
+            uiState.selectedResultsType == "pointfield"
 
         val screenHeight = LocalConfiguration.current.screenHeightDp.dp
-        // Render the chart frame as soon as metadata (tabs) exists, even if no
-        // datapoints have streamed in yet — they pop in progressively.
         if (uiState.availableResultsTypes.isNotEmpty()) {
             ChartScatterChart(
                 myData = chartData,
@@ -163,6 +160,9 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
                 myTrend = uiState.myTrend,
                 isHitsBased = isHitsBased,
                 highlightedId = highlightedLegendId,
+                onHighlightChanged = { id ->
+                    highlightedLegendId = if (highlightedLegendId == id) null else id
+                },
                 modifier = Modifier
                     .weight(1f)
                     .heightIn(min = screenHeight * CHART_MIN_HEIGHT_FRACTION)
@@ -183,7 +183,7 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
                 comparedShooters.entries.forEachIndexed { index, (userId, info) ->
                     if (info.chartData.isNotEmpty()) {
                         val colorIndex = (index + 1) % CHART_COLORS.size
-                        val shapeIndex = (index + 1) % CHART_SHAPE_RENDERERS.size
+                        val shapeIndex = (index + 1) % CHART_SHAPE_COUNT
                         add(
                             UserLegendItem(
                                 label = info.name,
@@ -252,36 +252,14 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
     }
 }
 
-private class ChartsMarkerView(
-    context: Context,
-    private val labels: Map<Int, String>
-) : MarkerView(context, R.layout.marker_view) {
-
-    private val textView: TextView = findViewById(R.id.marker_text)
-
-    override fun refreshContent(e: Entry?, highlight: Highlight?) {
-        textView.text = labels[e?.data as? Int] ?: ""
-        super.refreshContent(e, highlight)
-    }
-
-    override fun getOffset(): MPPointF {
-        return MPPointF(-(width / 2f), -height.toFloat())
-    }
-}
-
-private val AVERAGE_COLOR_ARGB: Int = android.graphics.Color.rgb(127, 255, 0)
-private val TREND_COLOR_ARGB: Int = android.graphics.Color.rgb(0, 255, 64)
+private val AVERAGE_COLOR_ARGB: Int = 0xFF7FFF00.toInt()
+private val TREND_COLOR_ARGB: Int = 0xFF00FF40.toInt()
 
 internal const val LEGEND_ID_ME = "me"
 internal const val LEGEND_ID_COMPARED_PREFIX = "compared:"
 internal const val LEGEND_ID_AVERAGE = "average"
 internal const val LEGEND_ID_TREND = "trend"
 
-private const val DIMMED_ALPHA = 64
-
-private fun Int.dimmed(): Int = (this and 0x00FFFFFF) or (DIMMED_ALPHA shl 24)
-
-@SuppressLint("ClickableViewAccessibility")
 @Composable
 fun ChartScatterChart(
     myData: List<ChartDataPoint>,
@@ -290,171 +268,403 @@ fun ChartScatterChart(
     myTrend: ChartsUiState.TrendLine?,
     isHitsBased: Boolean,
     modifier: Modifier = Modifier,
-    highlightedId: String? = null
+    highlightedId: String? = null,
+    onHighlightChanged: (String) -> Unit = {},
 ) {
-    val onSurfaceColor = MaterialTheme.colorScheme.onSurface.toArgb()
+    val onSurface = MaterialTheme.colorScheme.onSurface
+    val onSurfaceVariant = MaterialTheme.colorScheme.onSurfaceVariant
+    val gridColor = onSurfaceVariant.copy(alpha = 0.18f)
+    val labelStyle = MaterialTheme.typography.bodySmall.copy(color = onSurfaceVariant)
+    val textMeasurer = rememberTextMeasurer()
+    val density = LocalDensity.current
+    val pointSizePx = with(density) { 18.dp.toPx() }
+    val tapRadiusPx = with(density) { 24.dp.toPx() }
     val myResultsLabel = stringResource(R.string.charts_my_results)
-    val scatterShapeSizePx = with(androidx.compose.ui.platform.LocalDensity.current) { 24.dp.toPx() }
 
-    AndroidView(
-        modifier = modifier,
-        factory = { context ->
-            CombinedChart(context).apply {
-                applyBaseChartStyle(onSurfaceColor)
-                xAxis.labelRotationAngle = -45f
-                legend.isEnabled = false
-                setDrawOrder(
-                    arrayOf(
-                        CombinedChart.DrawOrder.LINE,
-                        CombinedChart.DrawOrder.SCATTER
+    // Distinct sorted dates form the X-axis. Each date's float position is its
+    // index in this list, so each series can map its dates to X coordinates.
+    val sortedDates = remember(myData, comparedShooters) {
+        (myData + comparedShooters.values.flatMap { it.chartData })
+            .map { it.date }
+            .distinct()
+            .sorted()
+    }
+
+    val series = remember(myData, comparedShooters, highlightedId, sortedDates) {
+        buildList {
+            if (myData.isNotEmpty()) {
+                add(
+                    buildSeries(
+                        id = LEGEND_ID_ME,
+                        label = myResultsLabel,
+                        baseColor = Color(CHART_COLORS[0]),
+                        shape = ChartShape.forIndex(0),
+                        chartData = myData,
+                        sortedDates = sortedDates,
+                        highlightedId = highlightedId,
                     )
                 )
             }
-        },
-        update = { chart ->
-            // Collect all dates for X axis
-            val allDataPoints = myData + comparedShooters.values.flatMap { it.chartData }
-            val sortedDates = allDataPoints.map { it.date }.distinct().sorted()
-            val dateIndexMap = sortedDates.withIndex().associate { (i, d) -> d to i.toFloat() }
-
-            // Build a signature of the inputs so we can skip rebuilding the
-            // ScatterData (which resets the user's zoom/pan) when nothing changed.
-            val signature = buildString {
-                append(myData.size).append('|')
-                myData.forEach {
-                    append(it.date).append(':').append(it.averageSerieScore).append(',')
-                }
-                append('#')
-                comparedShooters.forEach { (id, info) ->
-                    append(id).append('=').append(info.name).append(':')
-                    info.chartData.forEach {
-                        append(it.date).append(':').append(it.averageSerieScore).append(',')
-                    }
-                    append(';')
-                }
-                append('@').append(myAverage ?: "")
-                append('~')
-                if (myTrend != null) {
-                    append(myTrend.fromX).append(',').append(myTrend.fromY).append(';')
-                        .append(myTrend.toX).append(',').append(myTrend.toY)
-                }
-                append('|').append(isHitsBased)
-                append('!').append(highlightedId ?: "")
-            }
-            if (chart.tag == signature) {
-                return@AndroidView
-            }
-            chart.tag = signature
-
-            val dataSets = mutableListOf<ScatterDataSet>()
-            val scatterShapeSizeDp = scatterShapeSizePx
-            val labelMap = mutableMapOf<Int, String>()
-            var tagCounter = 0
-
-            fun colorFor(id: String, baseColor: Int): Int =
-                if (highlightedId != null && highlightedId != id) baseColor.dimmed() else baseColor
-
-            // My data
-            if (myData.isNotEmpty()) {
-                val entries = myData.sortedBy { it.date }.map { dp ->
-                    val tag = tagCounter++
-                    labelMap[tag] = "$myResultsLabel\n${dp.date}: ${"%.1f".format(dp.averageSerieScore).removeSuffix(".0").removeSuffix(",0")} p"
-                    Entry(dateIndexMap[dp.date] ?: 0f, dp.averageSerieScore.toFloat()).apply {
-                        data = tag
-                    }
-                }
-                val myDataSet = ScatterDataSet(entries, myResultsLabel).apply {
-                    color = colorFor(LEGEND_ID_ME, CHART_COLORS[0])
-                    shapeRenderer = CHART_SHAPE_RENDERERS[0]
-                    scatterShapeSize = scatterShapeSizeDp
-                    setDrawValues(false)
-                }
-                dataSets.add(myDataSet)
-            }
-
-            // Compared shooters
             comparedShooters.entries.forEachIndexed { index, (userId, info) ->
                 if (info.chartData.isNotEmpty()) {
                     val colorIndex = (index + 1) % CHART_COLORS.size
-                    val shapeIndex = (index + 1) % CHART_SHAPE_RENDERERS.size
-                    val entries = info.chartData.sortedBy { it.date }.map { dp ->
-                        val tag = tagCounter++
-                        labelMap[tag] = "${info.name}\n${dp.date}: ${"%.1f".format(dp.averageSerieScore).removeSuffix(".0").removeSuffix(",0")} p"
-                        Entry(dateIndexMap[dp.date] ?: 0f, dp.averageSerieScore.toFloat()).apply {
-                            data = tag
+                    val shapeIndex = (index + 1) % CHART_SHAPE_COUNT
+                    add(
+                        buildSeries(
+                            id = "$LEGEND_ID_COMPARED_PREFIX$userId",
+                            label = info.name,
+                            baseColor = Color(CHART_COLORS[colorIndex]),
+                            shape = ChartShape.forIndex(shapeIndex),
+                            chartData = info.chartData,
+                            sortedDates = sortedDates,
+                            highlightedId = highlightedId,
+                        )
+                    )
+                }
+            }
+        }
+    }
+
+    val xMin = 0f
+    val xMax = (sortedDates.size - 1).toFloat().coerceAtLeast(0f)
+    val rawYValues = series.flatMap { s -> s.points.map { it.y } } +
+        (myAverage?.let { listOf(it) } ?: emptyList()) +
+        (myTrend?.let { listOf(it.fromY, it.toY) } ?: emptyList())
+    val yRaw0 = rawYValues.minOrNull() ?: 0f
+    val yRaw1 = if (isHitsBased) 6f else (rawYValues.maxOrNull() ?: 1f)
+    val yPad = ((yRaw1 - yRaw0).coerceAtLeast(1f)) * 0.05f
+    val yMin = if (isHitsBased) 0f else floor(yRaw0 - yPad)
+    val yMax = if (isHitsBased) 6f else ceil(yRaw1 + yPad)
+
+    var tappedPoint by remember(series) { mutableStateOf<TappedScatter?>(null) }
+
+    Box(modifier = modifier) {
+        if (sortedDates.isEmpty()) {
+            // Keep the chart frame visible even before data streams in.
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                val plot = computePlotArea(size.width, size.height, density)
+                drawChartFrame(plot, onSurface)
+            }
+            return@Box
+        }
+
+        Canvas(
+            modifier = Modifier
+                .fillMaxSize()
+                .pointerInput(series, xMin, xMax, yMin, yMax) {
+                    detectTapGestures { tap ->
+                        val plot = computePlotArea(size.width.toFloat(), size.height.toFloat(), density)
+                        val nearest = findNearestScatter(
+                            series = series,
+                            tap = tap,
+                            plot = plot,
+                            xMin = xMin, xMax = xMax,
+                            yMin = yMin, yMax = yMax,
+                            maxDistancePx = tapRadiusPx,
+                        )
+                        if (nearest != null) {
+                            tappedPoint = nearest
+                            onHighlightChanged(nearest.seriesId)
                         }
                     }
-                    val dataSet = ScatterDataSet(entries, info.name).apply {
-                        color = colorFor("$LEGEND_ID_COMPARED_PREFIX$userId", CHART_COLORS[colorIndex])
-                        shapeRenderer = CHART_SHAPE_RENDERERS[shapeIndex]
-                        scatterShapeSize = scatterShapeSizeDp
-                        setDrawValues(false)
-                    }
-                    dataSets.add(dataSet)
                 }
-            }
+        ) {
+            val plot = computePlotArea(size.width, size.height, density)
+            drawAxesWithDateLabels(
+                plot = plot,
+                sortedDates = sortedDates,
+                xMin = xMin, xMax = xMax,
+                yMin = yMin, yMax = yMax,
+                axisColor = onSurface,
+                gridColor = gridColor,
+                labelStyle = labelStyle,
+                textMeasurer = textMeasurer,
+            )
 
-            // Trend line: two endpoints of the regression line, rendered as a
-            // real LineDataSet inside a CombinedChart.
-            val sortedMy = myData.sortedBy { it.date }
-            val trendLineDataSet: LineDataSet? =
-                if (!isHitsBased && myTrend != null && sortedMy.size >= 2) {
-                    val firstChartX = dateIndexMap[sortedMy.first().date] ?: 0f
-                    val lastChartX = dateIndexMap[sortedMy.last().date] ?: 0f
-                    val trendEntries = listOf(
-                        Entry(firstChartX, myTrend.fromY),
-                        Entry(lastChartX, myTrend.toY)
-                    )
-                    LineDataSet(trendEntries, "Trend").apply {
-                        color = colorFor(LEGEND_ID_TREND, TREND_COLOR_ARGB)
-                        lineWidth = 2f
-                        setDrawCircles(false)
-                        setDrawValues(false)
-                        isHighlightEnabled = false
-                    }
-                } else null
-
-            // Configure axis-max flag BEFORE assigning chart.data: calcMinMax()
-            // fires inside that assignment and locks in the axis range using the
-            // current mCustomAxisMax flag. Setting it afterwards leaves the fält
-            // cap sticky on the next precision render.
-            if (isHitsBased) {
-                chart.axisLeft.axisMaximum = 6f
-            } else {
-                chart.axisLeft.resetAxisMaximum()
-            }
-
-            if (dataSets.isNotEmpty() || trendLineDataSet != null) {
-                val combined = CombinedData().apply {
-                    if (dataSets.isNotEmpty()) {
-                        setData(ScatterData(dataSets.toList()))
-                    }
-                    if (trendLineDataSet != null) {
-                        setData(LineData(trendLineDataSet))
-                    }
-                }
-                chart.data = combined
-                chart.xAxis.valueFormatter = IndexAxisValueFormatter(sortedDates)
-                chart.xAxis.labelCount = minOf(sortedDates.size, 6)
-            } else {
-                chart.data = null
-            }
-
-            // Average line: horizontal LimitLine on the left axis.
-            chart.axisLeft.removeAllLimitLines()
+            // Average horizontal line.
             if (myAverage != null) {
-                val avgLine = LimitLine(myAverage).apply {
-                    lineColor = colorFor(LEGEND_ID_AVERAGE, AVERAGE_COLOR_ARGB)
-                    lineWidth = 2f
-                }
-                chart.axisLeft.addLimitLine(avgLine)
+                val avgBase = Color(AVERAGE_COLOR_ARGB)
+                val avgEffective = if (highlightedId != null && highlightedId != LEGEND_ID_AVERAGE)
+                    avgBase.copy(alpha = 0.25f) else avgBase
+                val y = plot.bottom - (myAverage - yMin) / (yMax - yMin) * plot.height
+                drawLine(
+                    color = avgEffective,
+                    start = Offset(plot.left, y),
+                    end = Offset(plot.right, y),
+                    strokeWidth = 2.dp.toPx(),
+                )
             }
 
-            chart.marker = ChartsMarkerView(chart.context, labelMap)
+            // Trend line: drawn from the first to the last "my data" point on
+            // the X-axis; only present for non-hits-based result types.
+            val sortedMy = myData.sortedBy { it.date }
+            if (myTrend != null && !isHitsBased && sortedMy.size >= 2) {
+                val firstX = sortedDates.indexOf(sortedMy.first().date).toFloat().coerceAtLeast(0f)
+                val lastX = sortedDates.indexOf(sortedMy.last().date).toFloat().coerceAtLeast(0f)
+                val (x0, y0) = projectPoint(firstX, myTrend.fromY, plot, xMin, xMax, yMin, yMax)
+                val (x1, y1) = projectPoint(lastX, myTrend.toY, plot, xMin, xMax, yMin, yMax)
+                val trendBase = Color(TREND_COLOR_ARGB)
+                val trendEffective = if (highlightedId != null && highlightedId != LEGEND_ID_TREND)
+                    trendBase.copy(alpha = 0.25f) else trendBase
+                drawLine(
+                    color = trendEffective,
+                    start = Offset(x0, y0),
+                    end = Offset(x1, y1),
+                    strokeWidth = 2.dp.toPx(),
+                )
+            }
 
-            chart.invalidate()
+            // Scatter points across all series.
+            series.forEach { s ->
+                s.points.forEach { p ->
+                    val (px, py) = projectPoint(p.x, p.y, plot, xMin, xMax, yMin, yMax)
+                    drawScatterShape(
+                        shape = s.shape,
+                        color = s.color,
+                        center = Offset(px, py),
+                        size = pointSizePx,
+                    )
+                }
+            }
         }
+
+        val tp = tappedPoint
+        if (tp != null && (highlightedId == null || highlightedId == tp.seriesId)) {
+            ScatterMarker(
+                tapped = tp,
+                xMin = xMin, xMax = xMax,
+                yMin = yMin, yMax = yMax,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ScatterMarker(
+    tapped: TappedScatter,
+    xMin: Float, xMax: Float,
+    yMin: Float, yMax: Float,
+) {
+    val density = LocalDensity.current
+    Box(modifier = Modifier.fillMaxSize()) {
+        Box(
+            modifier = Modifier
+                .layout { measurable, constraints ->
+                    val placeable = measurable.measure(constraints.copy(minWidth = 0, minHeight = 0))
+                    val plot = computePlotArea(constraints.maxWidth.toFloat(), constraints.maxHeight.toFloat(), density)
+                    val (px, py) = projectPoint(tapped.x, tapped.y, plot, xMin, xMax, yMin, yMax)
+                    val x = (px - placeable.width / 2f).toInt()
+                        .coerceIn(0, (constraints.maxWidth - placeable.width).coerceAtLeast(0))
+                    val y = (py - placeable.height - 8 * density.density).toInt().coerceAtLeast(0)
+                    layout(constraints.maxWidth, constraints.maxHeight) {
+                        placeable.place(IntOffset(x, y))
+                    }
+                }
+                .clip(RoundedCornerShape(6.dp))
+                .background(MaterialTheme.colorScheme.surfaceContainerHigh)
+                .padding(horizontal = 8.dp, vertical = 6.dp)
+        ) {
+            Text(
+                text = tapped.label,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurface,
+            )
+        }
+    }
+}
+
+private data class ScatterSeries(
+    val id: String,
+    val label: String,
+    val color: Color,
+    val shape: ChartShape,
+    val points: List<ScatterPoint>,
+)
+
+private data class ScatterPoint(
+    val x: Float,
+    val y: Float,
+    val displayLabel: String,
+)
+
+private data class TappedScatter(
+    val seriesId: String,
+    val x: Float,
+    val y: Float,
+    val label: String,
+)
+
+private data class PlotArea(
+    val left: Float,
+    val top: Float,
+    val right: Float,
+    val bottom: Float,
+) {
+    val width: Float get() = right - left
+    val height: Float get() = bottom - top
+}
+
+private fun buildSeries(
+    id: String,
+    label: String,
+    baseColor: Color,
+    shape: ChartShape,
+    chartData: List<ChartDataPoint>,
+    sortedDates: List<String>,
+    highlightedId: String?,
+): ScatterSeries {
+    val dim = highlightedId != null && highlightedId != id
+    val effective = if (dim) baseColor.copy(alpha = 0.25f) else baseColor
+    val points = chartData.sortedBy { it.date }.map { dp ->
+        val xVal = sortedDates.indexOf(dp.date).toFloat().coerceAtLeast(0f)
+        val yVal = dp.averageSerieScore.toFloat()
+        val display = "%.1f".format(dp.averageSerieScore).removeSuffix(".0").removeSuffix(",0")
+        ScatterPoint(
+            x = xVal,
+            y = yVal,
+            displayLabel = "$label\n${dp.date}: $display p",
+        )
+    }
+    return ScatterSeries(
+        id = id,
+        label = label,
+        color = effective,
+        shape = shape,
+        points = points,
     )
+}
+
+private fun computePlotArea(canvasWidth: Float, canvasHeight: Float, density: Density): PlotArea {
+    val leftPad = with(density) { 36.dp.toPx() }
+    // Extra bottom padding for the rotated date labels.
+    val bottomPad = with(density) { 44.dp.toPx() }
+    val rightPad = with(density) { 8.dp.toPx() }
+    val topPad = with(density) { 8.dp.toPx() }
+    return PlotArea(
+        left = leftPad,
+        top = topPad,
+        right = canvasWidth - rightPad,
+        bottom = canvasHeight - bottomPad,
+    )
+}
+
+private fun projectPoint(
+    x: Float,
+    y: Float,
+    plot: PlotArea,
+    xMin: Float, xMax: Float,
+    yMin: Float, yMax: Float,
+): Pair<Float, Float> {
+    // Guard against single-point ranges (xMax == xMin) which would otherwise
+    // produce a NaN coordinate.
+    val xSpan = (xMax - xMin).takeIf { it > 0f } ?: 1f
+    val ySpan = (yMax - yMin).takeIf { it > 0f } ?: 1f
+    val px = plot.left + (x - xMin) / xSpan * plot.width
+    val py = plot.bottom - (y - yMin) / ySpan * plot.height
+    return px to py
+}
+
+private fun DrawScope.drawChartFrame(plot: PlotArea, axisColor: Color) {
+    drawLine(
+        color = axisColor,
+        start = Offset(plot.left, plot.top),
+        end = Offset(plot.left, plot.bottom),
+        strokeWidth = 1.dp.toPx(),
+    )
+    drawLine(
+        color = axisColor,
+        start = Offset(plot.left, plot.bottom),
+        end = Offset(plot.right, plot.bottom),
+        strokeWidth = 1.dp.toPx(),
+    )
+}
+
+private fun DrawScope.drawAxesWithDateLabels(
+    plot: PlotArea,
+    sortedDates: List<String>,
+    xMin: Float, xMax: Float,
+    yMin: Float, yMax: Float,
+    axisColor: Color,
+    gridColor: Color,
+    labelStyle: TextStyle,
+    textMeasurer: TextMeasurer,
+) {
+    drawChartFrame(plot, axisColor)
+
+    // Y-axis: 5 evenly spaced ticks.
+    val ySteps = 5
+    for (i in 0..ySteps) {
+        val frac = i.toFloat() / ySteps
+        val y = plot.bottom - frac * plot.height
+        val value = yMin + frac * (yMax - yMin)
+        drawLine(
+            color = gridColor,
+            start = Offset(plot.left, y),
+            end = Offset(plot.right, y),
+            strokeWidth = 0.5.dp.toPx(),
+        )
+        val label = textMeasurer.measure(AnnotatedString("%.0f".format(value)), labelStyle)
+        drawText(
+            textLayoutResult = label,
+            topLeft = Offset(plot.left - label.size.width - 4.dp.toPx(), y - label.size.height / 2f),
+        )
+    }
+
+    // X-axis: rotated -45° date labels, max 6.
+    val maxLabels = 6
+    val total = sortedDates.size
+    if (total == 0) return
+    val step = ceil(total.toFloat() / maxLabels).toInt().coerceAtLeast(1)
+    val xSpan = (xMax - xMin).takeIf { it > 0f } ?: 1f
+    var i = 0
+    while (i < total) {
+        val dateString = sortedDates[i]
+        val xVal = i.toFloat()
+        val x = plot.left + (xVal - xMin) / xSpan * plot.width
+        drawLine(
+            color = gridColor,
+            start = Offset(x, plot.top),
+            end = Offset(x, plot.bottom),
+            strokeWidth = 0.5.dp.toPx(),
+        )
+        val label = textMeasurer.measure(AnnotatedString(dateString), labelStyle)
+        // Rotate -45° around the label's anchor (just below the axis line).
+        rotate(degrees = -45f, pivot = Offset(x, plot.bottom + 4.dp.toPx())) {
+            drawText(
+                textLayoutResult = label,
+                topLeft = Offset(x - label.size.width, plot.bottom + 4.dp.toPx()),
+            )
+        }
+        i += step
+    }
+}
+
+private fun findNearestScatter(
+    series: List<ScatterSeries>,
+    tap: Offset,
+    plot: PlotArea,
+    xMin: Float, xMax: Float,
+    yMin: Float, yMax: Float,
+    maxDistancePx: Float,
+): TappedScatter? {
+    var best: TappedScatter? = null
+    var bestDist = Float.MAX_VALUE
+    series.forEach { s ->
+        s.points.forEach { p ->
+            val (px, py) = projectPoint(p.x, p.y, plot, xMin, xMax, yMin, yMax)
+            val d = abs(tap.x - px) + abs(tap.y - py)
+            if (d < bestDist) {
+                bestDist = d
+                best = TappedScatter(
+                    seriesId = s.id,
+                    x = p.x,
+                    y = p.y,
+                    label = p.displayLabel,
+                )
+            }
+        }
+    }
+    return if (bestDist <= maxDistancePx * 2f) best else null
 }
 
 @Preview(showBackground = true, name = "Charts - Default with data")

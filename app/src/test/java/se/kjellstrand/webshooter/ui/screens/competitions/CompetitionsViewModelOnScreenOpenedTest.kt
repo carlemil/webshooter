@@ -8,11 +8,11 @@ import java.io.File
 class CompetitionsViewModelOnScreenOpenedTest {
 
     private val viewModelSource: String by lazy {
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/competitions/CompetitionsViewModelImpl.kt").readText()
+        File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/competitions/CompetitionsViewModelImpl.kt").readText()
     }
 
     private val interfaceSource: String by lazy {
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/competitions/CompetitionsViewModel.kt").readText()
+        File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/competitions/CompetitionsViewModel.kt").readText()
     }
 
     private val screenSource: String by lazy {

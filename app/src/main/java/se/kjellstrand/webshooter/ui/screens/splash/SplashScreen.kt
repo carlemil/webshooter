@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
 import se.kjellstrand.webshooter.ui.navigation.Screen
@@ -26,7 +26,7 @@ import se.kjellstrand.webshooter.ui.navigation.Screen
 @Composable
 fun SplashScreen(
     navController: NavController,
-    viewModel: SplashViewModel = hiltViewModel<SplashViewModel>()
+    viewModel: SplashViewModel = koinViewModel<SplashViewModel>()
 ) {
     val alpha = remember { Animatable(0f) }
 

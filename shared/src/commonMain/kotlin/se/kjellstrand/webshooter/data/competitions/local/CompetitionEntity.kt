@@ -34,5 +34,9 @@ data class CompetitionEntity(
     val weaponGroupsJson: String,
     val weaponClassesJson: String,
     val userSignupsJson: String,
-    val clubJson: String
+    val clubJson: String,
+    // True after a results fetch persistently 5xx'd (server-side bug for
+    // competitions without results). Skipped from future refresh attempts
+    // until either contentHash() changes or a manual reset.
+    val noResults: Boolean = false,
 )

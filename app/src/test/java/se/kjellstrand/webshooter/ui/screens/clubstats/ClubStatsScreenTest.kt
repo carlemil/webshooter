@@ -51,24 +51,25 @@ class ClubStatsScreenTest {
     }
 
     @Test
-    fun `ClubStatsScreen uses ScatterChart via AndroidView`() {
+    fun `ClubStatsScreen renders the scatter via Compose Canvas (no MPAndroidChart)`() {
         val source = sourceFile.readText()
+        // After the chart-library migration the screen is pure Compose Canvas
+        // using the shared ChartShape/drawScatterShape helpers.
         assertTrue(
-            "ClubStatsScreen must use AndroidView",
+            "ClubStatsScreen must render via Compose Canvas",
+            source.contains("Canvas(")
+        )
+        assertTrue(
+            "ClubStatsScreen must use the shared ChartShape helpers",
+            source.contains("drawScatterShape(")
+        )
+        assertFalse(
+            "ClubStatsScreen must NOT use AndroidView (chart is now pure Compose)",
             source.contains("AndroidView")
         )
-        assertTrue(
-            "ClubStatsScreen must use ScatterChart",
-            source.contains("ScatterChart")
-        )
-    }
-
-    @Test
-    fun `ClubStatsScreen uses ScatterDataSet`() {
-        val source = sourceFile.readText()
-        assertTrue(
-            "ClubStatsScreen must use ScatterDataSet",
-            source.contains("ScatterDataSet")
+        assertFalse(
+            "ClubStatsScreen must NOT import MPAndroidChart classes",
+            source.contains("com.github.mikephil")
         )
     }
 
@@ -184,14 +185,14 @@ class ClubStatsScreenTest {
     @Test
     fun `ClubStatsUiState still exists`() {
         assertTrue(
-            File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/clubstats/ClubStatsUiState.kt").exists()
+            File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/charts/clubstats/ClubStatsUiState.kt").exists()
         )
     }
 
     @Test
     fun `ClubStatsViewModel still exists`() {
         assertTrue(
-            File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/clubstats/ClubStatsViewModel.kt").exists()
+            File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/charts/clubstats/ClubStatsViewModel.kt").exists()
         )
     }
 }

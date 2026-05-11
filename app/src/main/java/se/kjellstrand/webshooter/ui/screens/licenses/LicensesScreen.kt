@@ -43,7 +43,6 @@ fun LicensesScreen() {
         LicenseItem("Retrofit", "https://github.com/square/retrofit", "Apache 2.0"),
         LicenseItem("OkHttp", "https://github.com/square/okhttp", "Apache 2.0"),
         LicenseItem("Gson", "https://github.com/google/gson", "Apache 2.0"),
-        LicenseItem("MPAndroidChart", "https://github.com/PhilJay/MPAndroidChart", "Apache 2.0"),
         LicenseItem("Firebase Crashlytics", "https://firebase.google.com/docs/crashlytics", "Apache 2.0"),
         LicenseItem("Firebase Analytics", "https://firebase.google.com/docs/analytics", "Apache 2.0"),
     )

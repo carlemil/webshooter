@@ -57,13 +57,17 @@ open class CompetitionsRepository constructor(
                 return
             }
             for (item in result.competitions.data) {
-                val entity = item.toEntity(json)
+                val prev = existing[item.id]
+                // Preserve the noResults flag across remote overwrites; the
+                // remote payload doesn't carry it, and a content change below
+                // is what clears it (worth retrying when the row changes).
+                val entity = item.toEntity(json).copy(noResults = prev?.noResults == true)
                 freshEntities += entity
                 if (entity.date > today) continue
-                val prev = existing[entity.id]
                 val contentChanged = prev != null && prev.contentHash() != entity.contentHash()
                 val missingResults = entity.id !in idsWithResults
-                if (contentChanged || missingResults) {
+                val knownNoResults = prev?.noResults == true && !contentChanged
+                if ((contentChanged || missingResults) && !knownNoResults) {
                     toRefreshIds += entity.id
                 }
             }
@@ -86,7 +90,17 @@ open class CompetitionsRepository constructor(
             coroutineScope {
                 val sem = Semaphore(REFRESH_CONCURRENCY)
                 toRefreshIds.map { id ->
-                    async { sem.withPermit { resultsRepository.refreshResultsFor(id) } }
+                    async {
+                        sem.withPermit {
+                            when (resultsRepository.refreshResultsFor(id)) {
+                                ResultsRepository.RefreshOutcome.ServerError ->
+                                    dao.setNoResults(id, true)
+                                ResultsRepository.RefreshOutcome.Success ->
+                                    if (existing[id]?.noResults == true) dao.setNoResults(id, false)
+                                ResultsRepository.RefreshOutcome.TransientFailure -> Unit
+                            }
+                        }
+                    }
                 }.awaitAll()
             }
         }

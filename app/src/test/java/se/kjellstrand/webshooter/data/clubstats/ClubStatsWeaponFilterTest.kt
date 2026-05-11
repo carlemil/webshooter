@@ -8,9 +8,9 @@ class ClubStatsWeaponFilterTest {
 
     private val daoFile = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/results/local/ResultsDao.kt")
     private val repoFile = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/clubstats/ClubStatsRepository.kt")
-    private val uiStateFile = File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/clubstats/ClubStatsUiState.kt")
-    private val vmFile = File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/clubstats/ClubStatsViewModel.kt")
-    private val vmImplFile = File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/clubstats/ClubStatsViewModelImpl.kt")
+    private val uiStateFile = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/charts/clubstats/ClubStatsUiState.kt")
+    private val vmFile = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/charts/clubstats/ClubStatsViewModel.kt")
+    private val vmImplFile = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/charts/clubstats/ClubStatsViewModelImpl.kt")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 
@@ -103,8 +103,11 @@ class ClubStatsWeaponFilterTest {
     }
 
     @Test
-    fun `ClubStatsViewModelImpl is still annotated HiltViewModel`() {
+    fun `ClubStatsViewModelImpl is no longer annotated HiltViewModel`() {
         val source = vmImplFile.readText()
-        assertTrue(source.contains("@HiltViewModel"))
+        assertTrue(
+            "After Koin migration, ClubStatsViewModelImpl should not carry @HiltViewModel",
+            !source.contains("@HiltViewModel")
+        )
     }
 }

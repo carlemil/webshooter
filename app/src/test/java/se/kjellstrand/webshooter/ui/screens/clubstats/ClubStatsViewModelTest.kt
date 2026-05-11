@@ -6,7 +6,7 @@ import java.io.File
 
 class ClubStatsViewModelTest {
 
-    private val baseDir = "src/main/java/se/kjellstrand/webshooter/ui/screens/charts/clubstats"
+    private val baseDir = "../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/charts/clubstats"
     private val interfaceFile = File("$baseDir/ClubStatsViewModel.kt")
     private val implFile = File("$baseDir/ClubStatsViewModelImpl.kt")
 
@@ -38,11 +38,11 @@ class ClubStatsViewModelTest {
     }
 
     @Test
-    fun `ClubStatsViewModelImpl is annotated with HiltViewModel`() {
+    fun `ClubStatsViewModelImpl is no longer annotated with HiltViewModel`() {
         val source = implFile.readText()
         assertTrue(
-            "ClubStatsViewModelImpl must be annotated with @HiltViewModel",
-            source.contains("@HiltViewModel")
+            "ClubStatsViewModelImpl should NOT carry @HiltViewModel after the Koin migration",
+            !source.contains("@HiltViewModel")
         )
     }
 
@@ -95,7 +95,7 @@ class ClubStatsViewModelTest {
     @Test
     fun `ResultsTrendsViewModelImpl still exists`() {
         assertTrue(
-            File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsViewModelImpl.kt").exists()
+            File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsViewModelImpl.kt").exists()
         )
     }
 

@@ -13,49 +13,13 @@ class SeriesPointsScreenTest {
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 
     @Test
-    fun `SeriesPointsScreen defines SeriesPointsMarkerView subclass`() {
+    fun `SeriesPointsScreen marker tooltip uses points + 'p' unit`() {
         val source = sourceFile.readText()
+        // The marker overlay is now a Compose Box with a Text composable —
+        // confirm the points + "p" formatting survived the migration.
         assertTrue(
-            "SeriesPointsScreen must define a SeriesPointsMarkerView class extending MarkerView",
-            source.contains("class SeriesPointsMarkerView") &&
-                source.contains("MarkerView(context, R.layout.marker_view)")
-        )
-        assertTrue(
-            "SeriesPointsScreen must import MarkerView",
-            source.contains("com.github.mikephil.charting.components.MarkerView")
-        )
-    }
-
-    @Test
-    fun `SeriesPointsScreen attaches SeriesPointsMarkerView to the chart`() {
-        val source = sourceFile.readText()
-        assertTrue(
-            "chart.marker must be assigned to a SeriesPointsMarkerView",
-            source.contains("chart.marker = SeriesPointsMarkerView(")
-        )
-    }
-
-    @Test
-    fun `SeriesPointsMarkerView labels include points and 'p' unit`() {
-        val source = sourceFile.readText()
-        assertTrue(
-            "Label template must include a 'p' unit for points in the tooltip",
+            "Marker tooltip must format the value as '<points> p'",
             source.contains(" p\"")
-        )
-    }
-
-    @Test
-    fun `SeriesPointsMarkerView uses a keyed map for dataSetIndex and xIndex`() {
-        val source = sourceFile.readText()
-        assertTrue(
-            "Marker labels must be stored in a Map<Pair<Int, Int>, String> or equivalent",
-            source.contains("Map<Pair<Int, Int>, String>") ||
-                source.contains("mutableMapOf<Pair<Int, Int>, String>()") ||
-                source.contains("mapOf<Pair<Int, Int>, String>")
-        )
-        assertTrue(
-            "Marker refreshContent must read highlight.dataSetIndex",
-            source.contains("dataSetIndex")
         )
     }
 
@@ -98,19 +62,28 @@ class SeriesPointsScreenTest {
     }
 
     @Test
-    fun `SeriesPointsScreen still uses LineChart via AndroidView`() {
+    fun `SeriesPointsScreen renders the chart via Compose Canvas (no MPAndroidChart)`() {
         val source = sourceFile.readText()
-        assertTrue(source.contains("LineChart"))
-        assertTrue(source.contains("AndroidView"))
+        assertTrue(
+            "SeriesPointsScreen must render via Compose Canvas",
+            source.contains("Canvas(")
+        )
+        assertFalse(
+            "SeriesPointsScreen must NOT use AndroidView (chart is now pure Compose)",
+            source.contains("AndroidView")
+        )
+        assertFalse(
+            "SeriesPointsScreen must NOT import MPAndroidChart classes",
+            source.contains("com.github.mikephil")
+        )
     }
 
     @Test
     fun `SeriesPointsScreen preserves reversed ordering for newest on top`() {
         val source = sourceFile.readText()
         assertTrue(
-            "SeriesPointsScreen must still reverse dataSets so newest renders on top",
-            source.contains("dataSets.reverse()") ||
-                source.contains("reversed()")
+            "SeriesPointsScreen must reverse the series so newest renders on top",
+            source.contains("reversed()") || source.contains(".reverse()")
         )
     }
 }

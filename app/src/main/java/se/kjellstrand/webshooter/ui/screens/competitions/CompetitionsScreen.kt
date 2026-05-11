@@ -60,7 +60,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
@@ -80,7 +80,7 @@ import java.time.ZoneId
 @Composable
 fun CompetitionsScreen(
     navController: NavController,
-    competitionsViewModel: CompetitionsViewModel = hiltViewModel<CompetitionsViewModelImpl>()
+    competitionsViewModel: CompetitionsViewModel = koinViewModel<CompetitionsViewModelImpl>()
 ) {
     val competitionsState by competitionsViewModel.uiState.collectAsState()
     val listState = rememberLazyListState()

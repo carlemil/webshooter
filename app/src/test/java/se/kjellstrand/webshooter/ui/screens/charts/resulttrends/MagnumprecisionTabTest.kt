@@ -16,13 +16,13 @@ import java.io.File
 class MagnumprecisionTabTest {
 
     private val vmImplFile =
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsViewModelImpl.kt")
+        File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsViewModelImpl.kt")
     private val screenFile =
         File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsScreen.kt")
     private val uiStateFile =
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsUiState.kt")
+        File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsUiState.kt")
     private val tabKeyFile =
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/TrendsTabKey.kt")
+        File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/TrendsTabKey.kt")
 
     private fun callTrendsTabDisplayName(tabKey: String): String? {
         val clazz = try {

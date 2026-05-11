@@ -30,12 +30,16 @@ val generatePrebuiltDatabase = tasks.register("generatePrebuiltDatabase") {
     outputs.upToDateWhen { false }
 
     doLast {
-        val schemaFile = File(schemaDir, "$appVersionCode.json")
-        if (!schemaFile.exists()) {
-            throw GradleException(
-                "Room schema not found at ${schemaFile.path}. Run :app:kspProdReleaseKotlin first."
+        // Always use the highest-numbered schema file in the schemas dir
+        // (i.e. the one matching the current DB_VERSION). Previously this
+        // was keyed off appVersionCode, which silently went stale whenever
+        // DB_VERSION was bumped without bumping versionCode in lockstep.
+        val schemaFile = schemaDir.listFiles { _, name -> name.endsWith(".json") }
+            ?.maxByOrNull { it.nameWithoutExtension.toIntOrNull() ?: -1 }
+            ?: throw GradleException(
+                "No Room schema files found in ${schemaDir.path}. Run :app:kspProdReleaseKotlin first."
             )
-        }
+        logger.lifecycle("Generating prebuilt DB against schema ${schemaFile.name}")
 
         // Read credentials from local.properties
         val propsFile = rootProject.file("local.properties")
@@ -110,8 +114,8 @@ val generatePrebuiltDatabase = tasks.register("generatePrebuiltDatabase") {
                 conn.createStatement().use { stmt ->
                     stmt.execute(createSql)
                 }
-                // Create indices
-                val indices = entityObj.getAsJsonArray("indices")
+                // Create indices (entities without indexes omit the field entirely)
+                val indices = entityObj.getAsJsonArray("indices") ?: continue
                 for (index in indices) {
                     val indexSql = index.asJsonObject.get("createSql").asString
                         .replace("\${TABLE_NAME}", tableName)

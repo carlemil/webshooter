@@ -117,6 +117,9 @@ class CompetitionsRepositorySyncAllTest {
             deletedIdBatches.add(ids)
             ids.forEach { rows.remove(it) }
         }
+        override suspend fun setNoResults(id: Long, value: Boolean) {
+            rows[id]?.let { rows[id] = it.copy(noResults = value) }
+        }
     }
 
     private data class Rig(
@@ -417,11 +420,12 @@ class CompetitionsRepositorySyncAllTest {
         val seeded = (1..20L).map { datum(it, "open").toEntity(json) }
         val pageItems = (1..20L).map { datum(it, "completed") }
         val resultsRepo = object : NoOpResultsRepository() {
-            override suspend fun refreshResultsFor(competitionId: Long) {
+            override suspend fun refreshResultsFor(competitionId: Long): RefreshOutcome {
                 // Trigger super to record concurrency tracking, but also yield a bit to
                 // give other coroutines a chance to overlap.
-                super.refreshResultsFor(competitionId)
+                val outcome = super.refreshResultsFor(competitionId)
                 delay(5)
+                return outcome
             }
         }
 

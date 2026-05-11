@@ -7,7 +7,7 @@ import java.io.File
 class ChartsRelevantUserIdsTest {
 
     private val uiStateFile =
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsUiState.kt")
+        File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsUiState.kt")
     private val screenFile =
         File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsScreen.kt")
     private val seriesPointsScreen =
@@ -64,7 +64,7 @@ class ChartsRelevantUserIdsTest {
     @Test
     fun `SeriesPointsUiState still exposes precisionClubMembers`() {
         val source = File(
-            "src/main/java/se/kjellstrand/webshooter/ui/screens/charts/seriespoints/SeriesPointsUiState.kt"
+            "../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/charts/seriespoints/SeriesPointsUiState.kt"
         ).readText()
         assertTrue(source.contains("precisionClubMembers"))
     }

@@ -1,5 +1,6 @@
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget
 
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
@@ -27,6 +28,13 @@ kotlin {
 
     applyDefaultHierarchyTemplate()
 
+    targets.withType<KotlinNativeTarget>().configureEach {
+        binaries.framework {
+            baseName = "Shared"
+            isStatic = true
+        }
+    }
+
     sourceSets {
         commonMain.dependencies {
             // Public API surface — exposed transitively to :app.
@@ -46,11 +54,19 @@ kotlin {
             implementation(libs.androidx.sqlite.bundled)
             implementation(libs.kotlincrypto.hash.sha1)
             api(libs.multiplatform.settings)
+            api(libs.koin.core)
+            api(libs.koin.core.viewmodel)
+            api(libs.androidx.lifecycle.viewmodel)
         }
         androidMain.dependencies {
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.androidx.security.crypto)
             implementation(libs.androidx.security.crypto.ktx)
+            // OkHttp engine for the Android HttpClient factory; the
+            // engine block also needs okhttp3.Interceptor on the classpath
+            // so :app can pass MockInterceptor through extraOkHttpInterceptors.
+            api(libs.ktor.client.okhttp)
+            api(libs.okhttp)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)

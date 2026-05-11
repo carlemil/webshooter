@@ -1,0 +1,778 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 33,
+    "identityHash": "ac4439b5fb7b20575111206f7840db18",
+    "entities": [
+      {
+        "tableName": "competitions",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `name` TEXT NOT NULL, `date` TEXT NOT NULL, `status` TEXT NOT NULL, `statusHuman` TEXT NOT NULL, `contactName` TEXT, `contactVenue` TEXT, `contactCity` TEXT, `contactEmail` TEXT, `contactTelephone` TEXT, `lat` REAL NOT NULL, `lng` REAL NOT NULL, `googleMaps` TEXT, `description` TEXT, `website` TEXT, `resultsType` TEXT NOT NULL, `resultsTypeHuman` TEXT, `signupsOpeningDate` TEXT, `signupsClosingDate` TEXT, `allowSignupsAfterClosingDateHuman` TEXT, `startTimeHuman` TEXT, `finalTimeHuman` TEXT, `signupsCount` INTEGER NOT NULL, `patrolsCount` INTEGER NOT NULL, `allowTeams` INTEGER NOT NULL, `competitionTypeJson` TEXT NOT NULL, `weaponGroupsJson` TEXT NOT NULL, `weaponClassesJson` TEXT NOT NULL, `userSignupsJson` TEXT NOT NULL, `clubJson` TEXT NOT NULL, `noResults` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "date",
+            "columnName": "date",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "statusHuman",
+            "columnName": "statusHuman",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "contactName",
+            "columnName": "contactName",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "contactVenue",
+            "columnName": "contactVenue",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "contactCity",
+            "columnName": "contactCity",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "contactEmail",
+            "columnName": "contactEmail",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "contactTelephone",
+            "columnName": "contactTelephone",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "lat",
+            "columnName": "lat",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lng",
+            "columnName": "lng",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "googleMaps",
+            "columnName": "googleMaps",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "description",
+            "columnName": "description",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "website",
+            "columnName": "website",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "resultsType",
+            "columnName": "resultsType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "resultsTypeHuman",
+            "columnName": "resultsTypeHuman",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "signupsOpeningDate",
+            "columnName": "signupsOpeningDate",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "signupsClosingDate",
+            "columnName": "signupsClosingDate",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "allowSignupsAfterClosingDateHuman",
+            "columnName": "allowSignupsAfterClosingDateHuman",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "startTimeHuman",
+            "columnName": "startTimeHuman",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "finalTimeHuman",
+            "columnName": "finalTimeHuman",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "signupsCount",
+            "columnName": "signupsCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "patrolsCount",
+            "columnName": "patrolsCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "allowTeams",
+            "columnName": "allowTeams",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "competitionTypeJson",
+            "columnName": "competitionTypeJson",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weaponGroupsJson",
+            "columnName": "weaponGroupsJson",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weaponClassesJson",
+            "columnName": "weaponClassesJson",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userSignupsJson",
+            "columnName": "userSignupsJson",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "clubJson",
+            "columnName": "clubJson",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "noResults",
+            "columnName": "noResults",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "results",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `competitionsId` INTEGER NOT NULL, `signupsId` INTEGER NOT NULL, `placement` INTEGER NOT NULL, `figureHits` INTEGER NOT NULL, `hits` INTEGER NOT NULL, `points` INTEGER NOT NULL, `stdMedal` TEXT, `signupJson` TEXT NOT NULL, `weaponClassJson` TEXT NOT NULL, `stationResultsJson` TEXT NOT NULL, `userId` INTEGER NOT NULL, `userFullname` TEXT NOT NULL, `weaponClassName` TEXT NOT NULL, `averagePoints` REAL NOT NULL, `averageHits` REAL NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "competitionsId",
+            "columnName": "competitionsId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "signupsId",
+            "columnName": "signupsId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "placement",
+            "columnName": "placement",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "figureHits",
+            "columnName": "figureHits",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "hits",
+            "columnName": "hits",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "points",
+            "columnName": "points",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "stdMedal",
+            "columnName": "stdMedal",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "signupJson",
+            "columnName": "signupJson",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weaponClassJson",
+            "columnName": "weaponClassJson",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "stationResultsJson",
+            "columnName": "stationResultsJson",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userId",
+            "columnName": "userId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userFullname",
+            "columnName": "userFullname",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weaponClassName",
+            "columnName": "weaponClassName",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "averagePoints",
+            "columnName": "averagePoints",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "averageHits",
+            "columnName": "averageHits",
+            "affinity": "REAL",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_results_userId_competitionsId",
+            "unique": false,
+            "columnNames": [
+              "userId",
+              "competitionsId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_results_userId_competitionsId` ON `${TABLE_NAME}` (`userId`, `competitionsId`)"
+          }
+        ]
+      },
+      {
+        "tableName": "patrols",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `competitionId` INTEGER NOT NULL, `sortorder` INTEGER NOT NULL, `startTimeHuman` TEXT NOT NULL, `endTimeHuman` TEXT NOT NULL, `signupsJson` TEXT NOT NULL, PRIMARY KEY(`id`, `competitionId`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "competitionId",
+            "columnName": "competitionId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sortorder",
+            "columnName": "sortorder",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startTimeHuman",
+            "columnName": "startTimeHuman",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "endTimeHuman",
+            "columnName": "endTimeHuman",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "signupsJson",
+            "columnName": "signupsJson",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id",
+            "competitionId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_patrols_competitionId",
+            "unique": false,
+            "columnNames": [
+              "competitionId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_patrols_competitionId` ON `${TABLE_NAME}` (`competitionId`)"
+          }
+        ]
+      },
+      {
+        "tableName": "teams",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `competitionId` INTEGER NOT NULL, `name` TEXT NOT NULL, `signupsJson` TEXT NOT NULL, PRIMARY KEY(`id`, `competitionId`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "competitionId",
+            "columnName": "competitionId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "signupsJson",
+            "columnName": "signupsJson",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id",
+            "competitionId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_teams_competitionId",
+            "unique": false,
+            "columnNames": [
+              "competitionId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_teams_competitionId` ON `${TABLE_NAME}` (`competitionId`)"
+          }
+        ]
+      },
+      {
+        "tableName": "competition_signups",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `competitionId` INTEGER NOT NULL, `userJson` TEXT NOT NULL, `clubJson` TEXT NOT NULL, `weaponClassJson` TEXT NOT NULL, PRIMARY KEY(`id`, `competitionId`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "competitionId",
+            "columnName": "competitionId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "userJson",
+            "columnName": "userJson",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "clubJson",
+            "columnName": "clubJson",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weaponClassJson",
+            "columnName": "weaponClassJson",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id",
+            "competitionId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_competition_signups_competitionId",
+            "unique": false,
+            "columnNames": [
+              "competitionId"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_competition_signups_competitionId` ON `${TABLE_NAME}` (`competitionId`)"
+          }
+        ]
+      },
+      {
+        "tableName": "signups",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `groupKey` TEXT NOT NULL, `competitionsId` INTEGER NOT NULL, `weaponClassesId` INTEGER NOT NULL, `patrolsId` INTEGER NOT NULL, `startTime` TEXT, `endTime` TEXT, `lane` INTEGER NOT NULL, `note` TEXT, `registrationFee` INTEGER NOT NULL, `specialWishes` TEXT NOT NULL, `startTimeHuman` TEXT NOT NULL, `endTimeHuman` TEXT NOT NULL, `competitionJson` TEXT NOT NULL, `weaponClassJson` TEXT NOT NULL, `patrolJson` TEXT, `resultsPlacementsJson` TEXT, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "groupKey",
+            "columnName": "groupKey",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "competitionsId",
+            "columnName": "competitionsId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weaponClassesId",
+            "columnName": "weaponClassesId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "patrolsId",
+            "columnName": "patrolsId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startTime",
+            "columnName": "startTime",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "endTime",
+            "columnName": "endTime",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "lane",
+            "columnName": "lane",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "note",
+            "columnName": "note",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "registrationFee",
+            "columnName": "registrationFee",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "specialWishes",
+            "columnName": "specialWishes",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "startTimeHuman",
+            "columnName": "startTimeHuman",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "endTimeHuman",
+            "columnName": "endTimeHuman",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "competitionJson",
+            "columnName": "competitionJson",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "weaponClassJson",
+            "columnName": "weaponClassJson",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "patrolJson",
+            "columnName": "patrolJson",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "resultsPlacementsJson",
+            "columnName": "resultsPlacementsJson",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "club",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `clubsNr` TEXT, `name` TEXT NOT NULL, `email` TEXT, `phone` TEXT, `addressStreet` TEXT, `addressZipcode` TEXT, `addressCity` TEXT, `addressCountry` TEXT, `bankgiro` TEXT, `postgiro` TEXT, `swish` TEXT, `adminsJson` TEXT NOT NULL, `usersJson` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "clubsNr",
+            "columnName": "clubsNr",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "phone",
+            "columnName": "phone",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "addressStreet",
+            "columnName": "addressStreet",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "addressZipcode",
+            "columnName": "addressZipcode",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "addressCity",
+            "columnName": "addressCity",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "addressCountry",
+            "columnName": "addressCountry",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "bankgiro",
+            "columnName": "bankgiro",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "postgiro",
+            "columnName": "postgiro",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "swish",
+            "columnName": "swish",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "adminsJson",
+            "columnName": "adminsJson",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "usersJson",
+            "columnName": "usersJson",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      },
+      {
+        "tableName": "user_profile",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`userId` INTEGER NOT NULL, `name` TEXT NOT NULL, `lastname` TEXT NOT NULL, `email` TEXT NOT NULL, `shootingCardNumber` TEXT, `noShootingCardNumber` TEXT, `birthday` TEXT, `gender` TEXT, `phone` TEXT, `mobile` TEXT, `gradeField` TEXT, `gradeTrackshooting` TEXT, `apiToken` TEXT, `fullname` TEXT NOT NULL, `clubsId` INTEGER NOT NULL, `status` TEXT NOT NULL, `clubsJson` TEXT NOT NULL, PRIMARY KEY(`userId`))",
+        "fields": [
+          {
+            "fieldPath": "userId",
+            "columnName": "userId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastname",
+            "columnName": "lastname",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shootingCardNumber",
+            "columnName": "shootingCardNumber",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "noShootingCardNumber",
+            "columnName": "noShootingCardNumber",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "birthday",
+            "columnName": "birthday",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "gender",
+            "columnName": "gender",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "phone",
+            "columnName": "phone",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "mobile",
+            "columnName": "mobile",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "gradeField",
+            "columnName": "gradeField",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "gradeTrackshooting",
+            "columnName": "gradeTrackshooting",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "apiToken",
+            "columnName": "apiToken",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "fullname",
+            "columnName": "fullname",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "clubsId",
+            "columnName": "clubsId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "status",
+            "columnName": "status",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "clubsJson",
+            "columnName": "clubsJson",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "userId"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ac4439b5fb7b20575111206f7840db18')"
+    ]
+  }
+}

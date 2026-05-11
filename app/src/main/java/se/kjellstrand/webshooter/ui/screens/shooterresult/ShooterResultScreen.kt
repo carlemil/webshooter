@@ -29,7 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import se.kjellstrand.webshooter.ui.navigation.safePopBackStack
@@ -48,7 +47,7 @@ import se.kjellstrand.webshooter.ui.common.ScreenTopBar
 @Composable
 fun ShooterResultScreen(
     navController: NavController,
-    viewModel: ShooterResultViewModel = hiltViewModel<ShooterResultViewModelImpl>()
+    viewModel: ShooterResultViewModel,
 ) {
     val uiState by viewModel.uiState.collectAsState()
     Scaffold(

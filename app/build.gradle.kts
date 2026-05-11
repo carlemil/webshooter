@@ -1,7 +1,6 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.google.dagger.hilt.android")
     alias(libs.plugins.ksp)
     alias(libs.plugins.compose.compiler)
     id("com.github.triplet.play") version "3.11.0"
@@ -140,11 +139,8 @@ dependencies {
     // Navigation
     implementation(libs.androidx.navigation.compose)
 
-    // Dagger - Hilt
-    implementation(libs.hilt.android)
-    ksp(libs.hilt.compiler)
-    ksp(libs.androidx.hilt.compiler)
-    implementation(libs.androidx.hilt.navigation.compose)
+    // Koin (DI) — koin-core comes via :shared as api dep
+    implementation(libs.koin.compose.viewmodel)
 
     // Networking
     implementation(libs.okhttp)
@@ -180,8 +176,7 @@ dependencies {
     implementation(libs.firebase.crashlytics)
     implementation(libs.firebase.analytics)
 
-    // Charts
-    implementation(libs.mpandroidchart)
+    // Charts: pure Compose Canvas — see ChartStyles.kt + chart screens.
 
     // Extended Icons
     implementation(libs.androidx.material.icons.extended)

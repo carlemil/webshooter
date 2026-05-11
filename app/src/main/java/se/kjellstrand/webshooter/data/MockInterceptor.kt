@@ -1,7 +1,6 @@
 package se.kjellstrand.webshooter.data
 
 import android.content.Context
-import dagger.hilt.android.qualifiers.ApplicationContext
 import okhttp3.Headers.Companion.headersOf
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
@@ -11,12 +10,9 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import se.kjellstrand.webshooter.BuildConfig
 import se.kjellstrand.webshooter.R
 import java.io.IOException
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@Singleton
-open class MockInterceptor @Inject constructor(
-    @ApplicationContext private val context: Context
+open class MockInterceptor(
+    private val context: Context,
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         if (!MockModeManager.isMockMode) {

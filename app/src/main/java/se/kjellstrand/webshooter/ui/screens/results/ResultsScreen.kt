@@ -460,8 +460,10 @@ private fun GroupHeaderItem(
                         size = WeaponClassBadgeSize.Large
                     )
                 } else {
-                    val headerText =
-                        if (isMedlGrouping) {
+                    val headerText = when (group.header) {
+                        ResultsViewModelImpl.GROUP_HEADER_UNKNOWN_CLUB -> stringResource(R.string.unknown)
+                        ResultsViewModelImpl.GROUP_HEADER_NO_MEDAL -> stringResource(R.string.dash)
+                        else -> if (isMedlGrouping) {
                             when (group.header) {
                                 StdMedal.S.value -> stringResource(R.string.silver)
                                 StdMedal.B.value -> stringResource(R.string.bronze)
@@ -470,6 +472,7 @@ private fun GroupHeaderItem(
                         } else {
                             group.header
                         }
+                    }
                     Text(
                         text = headerText,
                         style = MaterialTheme.typography.titleMedium,

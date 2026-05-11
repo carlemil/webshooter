@@ -14,7 +14,7 @@ class AppNavHostSafetyTest {
     fun `getBackStackEntry call is wrapped in try-catch or null safety`() {
         val source = sourceFile.readText()
         val getBackStackEntrySection = source.substringAfter("getBackStackEntry")
-            .substringBefore("hiltViewModel")
+            .substringBefore("koinViewModel")
         // The getBackStackEntry call should be wrapped in a try-catch
         val hasTryCatch = source.contains("try") &&
             source.substringAfter("getBackStackEntry").substringBefore("}").let { after ->

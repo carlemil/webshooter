@@ -32,7 +32,7 @@ import android.content.Intent
 import androidx.core.net.toUri
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -86,7 +86,7 @@ fun WebShooterScreen(navController: NavController) {
         drawerNavController.popBackStack(Screen.CompetitionsList.route, inclusive = false)
     }
 
-    val competitionsViewModel: CompetitionsViewModelImpl = hiltViewModel()
+    val competitionsViewModel: CompetitionsViewModelImpl = koinViewModel()
 
     val context = LocalContext.current
     val suggestionLabel = stringResource(R.string.web_shooter_send_suggestion)
@@ -198,13 +198,13 @@ fun WebShooterScreen(navController: NavController) {
                     MyEntriesScreen()
                 }
                 composable(Screen.Charts.route) {
-                    ChartsScreen(hiltViewModel<ResultsTrendsViewModelImpl>())
+                    ChartsScreen(koinViewModel<ResultsTrendsViewModelImpl>())
                 }
                 composable(Screen.SeriesPoints.route) {
-                    SeriesPointsScreen(hiltViewModel<SeriesPointsViewModelImpl>())
+                    SeriesPointsScreen(koinViewModel<SeriesPointsViewModelImpl>())
                 }
                 composable(Screen.ClubStats.route) {
-                    ClubStatsScreen(hiltViewModel<ClubStatsViewModelImpl>())
+                    ClubStatsScreen(koinViewModel<ClubStatsViewModelImpl>())
                 }
                 composable(Screen.Club.route) {
                     ClubScreen()

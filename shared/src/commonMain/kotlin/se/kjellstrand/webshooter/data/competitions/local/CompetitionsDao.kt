@@ -22,4 +22,7 @@ interface CompetitionsDao {
 
     @Query("DELETE FROM competitions WHERE id IN (:ids)")
     suspend fun deleteByIds(ids: List<Long>)
+
+    @Query("UPDATE competitions SET noResults = :value WHERE id = :id")
+    suspend fun setNoResults(id: Long, value: Boolean)
 }

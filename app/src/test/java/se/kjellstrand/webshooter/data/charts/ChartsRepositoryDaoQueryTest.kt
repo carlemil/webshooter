@@ -64,6 +64,7 @@ class ChartsRepositoryDaoQueryTest {
         override suspend fun getAll(): List<CompetitionEntity> = completed
         override suspend fun insertAll(competitions: List<CompetitionEntity>) {}
         override suspend fun deleteByIds(ids: List<Long>) {}
+        override suspend fun setNoResults(id: Long, value: Boolean) {}
     }
 
     private fun competition(id: Long, name: String, date: String, type: String) = CompetitionEntity(

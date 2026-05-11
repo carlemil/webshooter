@@ -53,7 +53,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.ui.mock.MockSettings
 import se.kjellstrand.webshooter.ui.mock.SettingsViewModelMock
@@ -62,7 +62,7 @@ import se.kjellstrand.webshooter.data.settings.remote.UserProfile
 @Composable
 fun SettingsScreen(
     onLoggedOut: () -> Unit = {},
-    viewModel: SettingsViewModel = hiltViewModel<SettingsViewModelImpl>()
+    viewModel: SettingsViewModel = koinViewModel<SettingsViewModelImpl>()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -176,7 +176,7 @@ private fun ViewProfileContent(profile: UserProfile?, onEditClick: () -> Unit, o
             ProfileInfoRow(stringResource(R.string.settings_mobile), profile.mobile ?: stringResource(R.string.dash))
             ProfileInfoRow(stringResource(R.string.phone), profile.phone ?: stringResource(R.string.dash))
             val genderEnum = Gender.fromApiValue(profile.gender)
-            ProfileInfoRow(stringResource(R.string.settings_gender), if (genderEnum == Gender.UNSET) stringResource(R.string.dash) else stringResource(genderEnum.labelRes))
+            ProfileInfoRow(stringResource(R.string.settings_gender), if (genderEnum == Gender.UNSET) stringResource(R.string.dash) else stringResource(genderLabelRes(genderEnum)))
             ProfileInfoRow(stringResource(R.string.settings_birth_year), profile.birthday?.substringBefore("-") ?: stringResource(R.string.dash))
             ProfileInfoRow(stringResource(R.string.settings_shooting_card_no), profile.shootingCardNumber ?: stringResource(R.string.dash))
         }
@@ -303,6 +303,13 @@ private fun EditProfileContent(uiState: SettingsUiState, viewModel: SettingsView
     }
 }
 
+@androidx.annotation.StringRes
+private fun genderLabelRes(gender: Gender): Int = when (gender) {
+    Gender.UNSET -> R.string.select_gender
+    Gender.MALE -> R.string.male
+    Gender.FEMALE -> R.string.female
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun GenderDropdown(selected: Gender, onSelect: (Gender) -> Unit) {
@@ -310,7 +317,7 @@ private fun GenderDropdown(selected: Gender, onSelect: (Gender) -> Unit) {
 
     ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = it }) {
         OutlinedTextField(
-            value = stringResource(selected.labelRes),
+            value = stringResource(genderLabelRes(selected)),
             onValueChange = {},
             readOnly = true,
             label = { Text(stringResource(R.string.settings_gender)) },
@@ -322,7 +329,7 @@ private fun GenderDropdown(selected: Gender, onSelect: (Gender) -> Unit) {
         ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             Gender.entries.forEach { gender ->
                 DropdownMenuItem(
-                    text = { Text(stringResource(gender.labelRes)) },
+                    text = { Text(stringResource(genderLabelRes(gender))) },
                     onClick = {
                         onSelect(gender)
                         expanded = false

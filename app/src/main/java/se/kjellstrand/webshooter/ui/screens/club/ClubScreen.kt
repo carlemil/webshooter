@@ -29,14 +29,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.club.remote.ClubData
 import se.kjellstrand.webshooter.data.club.remote.ClubMember
 import se.kjellstrand.webshooter.ui.mock.ClubViewModelMock
 
 @Composable
-fun ClubScreen(viewModel: ClubViewModel = hiltViewModel<ClubViewModelImpl>()) {
+fun ClubScreen(viewModel: ClubViewModel = koinViewModel<ClubViewModelImpl>()) {
     val uiState by viewModel.uiState.collectAsState()
 
     Column(modifier = Modifier.fillMaxSize()) {

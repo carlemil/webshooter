@@ -4,6 +4,7 @@ import io.github.aakira.napier.Napier
 import io.ktor.client.network.sockets.ConnectTimeoutException
 import io.ktor.client.network.sockets.SocketTimeoutException
 import io.ktor.client.plugins.ResponseException
+import io.ktor.client.plugins.ServerResponseException
 import kotlinx.serialization.json.Json
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -78,17 +79,33 @@ open class ResultsRepository constructor(
         }
     }
 
-    open suspend fun refreshResultsFor(competitionId: Long) {
-        try {
+    /** Outcome of a per-competition results refresh, used by callers to
+     *  decide whether the competition should be marked as
+     *  results-fetch-skippable in subsequent syncs. */
+    enum class RefreshOutcome {
+        /** Server returned results; cache replaced. */
+        Success,
+        /** Server returned 5xx (the backend bug for competitions without
+         *  any results yet) — caller should mark the competition skippable. */
+        ServerError,
+        /** Network/IO error or other transient failure — keep retrying. */
+        TransientFailure,
+    }
+
+    open suspend fun refreshResultsFor(competitionId: Long): RefreshOutcome {
+        return try {
             val fresh = resultsRemoteDataSource.getResults(competitionId)
             dao.deleteByCompetition(competitionId)
             dao.insertAll(fresh.results.map { it.toEntity(competitionId, json) })
+            RefreshOutcome.Success
+        } catch (e: ServerResponseException) {
+            Napier.w("refreshResultsFor($competitionId) got 5xx; marking skippable", e, TAG)
+            try { dao.deleteByCompetition(competitionId) } catch (_: Exception) {}
+            RefreshOutcome.ServerError
         } catch (e: Exception) {
             Napier.w("refreshResultsFor($competitionId) failed; invalidating cache", e, TAG)
-            try {
-                dao.deleteByCompetition(competitionId)
-            } catch (_: Exception) {
-            }
+            try { dao.deleteByCompetition(competitionId) } catch (_: Exception) {}
+            RefreshOutcome.TransientFailure
         }
     }
 

@@ -40,14 +40,14 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.mysignups.remote.SignupEntry
 import se.kjellstrand.webshooter.ui.mock.MyResultsViewModelMock
 
 @Composable
 fun MyEntriesScreen(
-    viewModel: MyResultsViewModel = hiltViewModel<MyResultsViewModelImpl>()
+    viewModel: MyResultsViewModel = koinViewModel<MyResultsViewModelImpl>()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 

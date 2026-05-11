@@ -1,148 +1,130 @@
 package se.kjellstrand.webshooter.ui.common
 
-import android.graphics.Canvas
-import android.graphics.Paint
-import android.graphics.Path
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.StrokeJoin
+import androidx.compose.ui.graphics.drawscope.DrawScope
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
-import com.github.mikephil.charting.interfaces.datasets.IScatterDataSet
-import com.github.mikephil.charting.renderer.scatter.IShapeRenderer
-import com.github.mikephil.charting.utils.ViewPortHandler
-import android.graphics.Color as AndroidColor
 
 const val CHART_MIN_HEIGHT_FRACTION = 0.5f
 
-val CHART_COLORS = listOf(
-    AndroidColor.rgb(76, 175, 80),   // Green
-    AndroidColor.rgb(33, 150, 243),  // Blue
-    AndroidColor.rgb(255, 152, 0),   // Orange
-    AndroidColor.rgb(156, 39, 176),  // Purple
-    AndroidColor.rgb(244, 67, 54),   // Red (Material Red 500)
-    AndroidColor.rgb(233, 30, 199),  // Magenta/Fuchsia (replacing Brown)
-    AndroidColor.rgb(0, 188, 212),   // Cyan
-    AndroidColor.rgb(255, 235, 59)   // Yellow
+/**
+ * Default per-series color palette. Uses ARGB ints so that the value is
+ * portable across Android Color and Compose Color (use `Color(value)` to lift).
+ */
+val CHART_COLORS: List<Int> = listOf(
+    0xFF4CAF50.toInt(), // Green
+    0xFF2196F3.toInt(), // Blue
+    0xFFFF9800.toInt(), // Orange
+    0xFF9C27B0.toInt(), // Purple
+    0xFFF44336.toInt(), // Red (Material Red 500)
+    0xFFE91EC7.toInt(), // Magenta/Fuchsia
+    0xFF00BCD4.toInt(), // Cyan
+    0xFFFFEB3B.toInt(), // Yellow
 )
 
-private val STROKE_WIDTH = 8.dp.value
-private val SHAPE_SIZE_MOD = 4.dp.value
+/**
+ * Number of distinct scatter shapes (kept as a constant so callers don't need
+ * to import [ChartShape] just to compute `index % shapeCount`).
+ */
+const val CHART_SHAPE_COUNT: Int = 7
 
-private class CircleRenderer : IShapeRenderer {
-    override fun renderShape(
-        c: Canvas, dataSet: IScatterDataSet, viewPortHandler: ViewPortHandler,
-        posX: Float, posY: Float, renderPaint: Paint
-    ) {
-        val shapeHalf = dataSet.scatterShapeSize / SHAPE_SIZE_MOD
-        renderPaint.style = Paint.Style.FILL
-        c.drawCircle(posX, posY, shapeHalf, renderPaint)
+/** The 7 scatter shapes, ordered by `shapeIndex`. */
+enum class ChartShape {
+    Circle, Square, Triangle, Cross, X, ChevronDown, ChevronUp;
+
+    companion object {
+        fun forIndex(index: Int): ChartShape = entries[index.mod(entries.size)]
     }
 }
 
-private class SquareRenderer : IShapeRenderer {
-    override fun renderShape(
-        c: Canvas, dataSet: IScatterDataSet, viewPortHandler: ViewPortHandler,
-        posX: Float, posY: Float, renderPaint: Paint
-    ) {
-        val shapeHalf = dataSet.scatterShapeSize / SHAPE_SIZE_MOD
-        renderPaint.style = Paint.Style.FILL
-        c.drawRect(
-            posX - shapeHalf, posY - shapeHalf,
-            posX + shapeHalf, posY + shapeHalf, renderPaint
+/**
+ * Draw a scatter shape into the current [DrawScope] centered on [center].
+ * [size] is the bounding diameter in pixels; stroke shapes use a 2.dp line.
+ */
+fun DrawScope.drawScatterShape(
+    shape: ChartShape,
+    color: Color,
+    center: Offset,
+    size: Float,
+) {
+    val half = size / 2f
+    val strokeWidth = 2.dp.toPx()
+    when (shape) {
+        ChartShape.Circle -> drawCircle(color = color, radius = half, center = center)
+        ChartShape.Square -> drawRect(
+            color = color,
+            topLeft = Offset(center.x - half, center.y - half),
+            size = androidx.compose.ui.geometry.Size(size, size),
         )
+        ChartShape.Triangle -> {
+            val path = Path().apply {
+                moveTo(center.x, center.y - half)
+                lineTo(center.x + half, center.y + half)
+                lineTo(center.x - half, center.y + half)
+                close()
+            }
+            drawPath(path = path, color = color)
+        }
+        ChartShape.Cross -> {
+            drawLine(
+                color = color,
+                start = Offset(center.x - half, center.y),
+                end = Offset(center.x + half, center.y),
+                strokeWidth = strokeWidth,
+                cap = StrokeCap.Round,
+            )
+            drawLine(
+                color = color,
+                start = Offset(center.x, center.y - half),
+                end = Offset(center.x, center.y + half),
+                strokeWidth = strokeWidth,
+                cap = StrokeCap.Round,
+            )
+        }
+        ChartShape.X -> {
+            val arm = half * 0.8f
+            drawLine(
+                color = color,
+                start = Offset(center.x - arm, center.y - arm),
+                end = Offset(center.x + arm, center.y + arm),
+                strokeWidth = strokeWidth,
+                cap = StrokeCap.Round,
+            )
+            drawLine(
+                color = color,
+                start = Offset(center.x + arm, center.y - arm),
+                end = Offset(center.x - arm, center.y + arm),
+                strokeWidth = strokeWidth,
+                cap = StrokeCap.Round,
+            )
+        }
+        ChartShape.ChevronDown -> {
+            val path = Path().apply {
+                moveTo(center.x - half, center.y - half * 0.5f)
+                lineTo(center.x, center.y + half * 0.5f)
+                lineTo(center.x + half, center.y - half * 0.5f)
+            }
+            drawPath(
+                path = path,
+                color = color,
+                style = Stroke(width = strokeWidth, cap = StrokeCap.Round, join = StrokeJoin.Round),
+            )
+        }
+        ChartShape.ChevronUp -> {
+            val path = Path().apply {
+                moveTo(center.x - half, center.y + half * 0.5f)
+                lineTo(center.x, center.y - half * 0.5f)
+                lineTo(center.x + half, center.y + half * 0.5f)
+            }
+            drawPath(
+                path = path,
+                color = color,
+                style = Stroke(width = strokeWidth, cap = StrokeCap.Round, join = StrokeJoin.Round),
+            )
+        }
     }
 }
-
-private class TriangleRenderer : IShapeRenderer {
-    private val path = Path()
-    override fun renderShape(
-        c: Canvas, dataSet: IScatterDataSet, viewPortHandler: ViewPortHandler,
-        posX: Float, posY: Float, renderPaint: Paint
-    ) {
-        val shapeHalf = dataSet.scatterShapeSize / SHAPE_SIZE_MOD
-        renderPaint.style = Paint.Style.FILL
-        path.reset()
-        path.moveTo(posX, posY - shapeHalf)
-        path.lineTo(posX + shapeHalf, posY + shapeHalf)
-        path.lineTo(posX - shapeHalf, posY + shapeHalf)
-        path.close()
-        c.drawPath(path, renderPaint)
-    }
-}
-
-private class CrossRenderer : IShapeRenderer {
-    override fun renderShape(
-        c: Canvas, dataSet: IScatterDataSet, viewPortHandler: ViewPortHandler,
-        posX: Float, posY: Float, renderPaint: Paint
-    ) {
-        val shapeHalf = dataSet.scatterShapeSize / SHAPE_SIZE_MOD
-        renderPaint.style = Paint.Style.STROKE
-        renderPaint.strokeWidth = STROKE_WIDTH
-        c.drawLine(posX - shapeHalf, posY, posX + shapeHalf, posY, renderPaint)
-        c.drawLine(posX, posY - shapeHalf, posX, posY + shapeHalf, renderPaint)
-    }
-}
-
-private class XRenderer : IShapeRenderer {
-    override fun renderShape(
-        c: Canvas, dataSet: IScatterDataSet, viewPortHandler: ViewPortHandler,
-        posX: Float, posY: Float, renderPaint: Paint
-    ) {
-        val shapeSize = dataSet.scatterShapeSize / SHAPE_SIZE_MOD * 0.8f
-        renderPaint.style = Paint.Style.STROKE
-        renderPaint.strokeWidth = STROKE_WIDTH
-        c.drawLine(
-            posX - shapeSize, posY - shapeSize,
-            posX + shapeSize, posY + shapeSize, renderPaint
-        )
-        c.drawLine(
-            posX + shapeSize, posY - shapeSize,
-            posX - shapeSize, posY + shapeSize, renderPaint
-        )
-    }
-}
-
-private class ChevronDownRenderer : IShapeRenderer {
-    private val path = Path()
-    override fun renderShape(
-        c: Canvas, dataSet: IScatterDataSet, viewPortHandler: ViewPortHandler,
-        posX: Float, posY: Float, renderPaint: Paint
-    ) {
-        val shapeHalf = dataSet.scatterShapeSize / SHAPE_SIZE_MOD
-        renderPaint.style = Paint.Style.STROKE
-        renderPaint.strokeWidth = STROKE_WIDTH
-        renderPaint.strokeCap = Paint.Cap.ROUND
-        renderPaint.strokeJoin = Paint.Join.ROUND
-        path.reset()
-        path.moveTo(posX - shapeHalf, posY - shapeHalf * 0.5f)
-        path.lineTo(posX, posY + shapeHalf * 0.5f)
-        path.lineTo(posX + shapeHalf, posY - shapeHalf * 0.5f)
-        c.drawPath(path, renderPaint)
-    }
-}
-
-private class ChevronUpRenderer : IShapeRenderer {
-    private val path = Path()
-    override fun renderShape(
-        c: Canvas, dataSet: IScatterDataSet, viewPortHandler: ViewPortHandler,
-        posX: Float, posY: Float, renderPaint: Paint
-    ) {
-        val shapeHalf = dataSet.scatterShapeSize / SHAPE_SIZE_MOD
-        renderPaint.style = Paint.Style.STROKE
-        renderPaint.strokeWidth = STROKE_WIDTH
-        renderPaint.strokeCap = Paint.Cap.ROUND
-        renderPaint.strokeJoin = Paint.Join.ROUND
-        path.reset()
-        path.moveTo(posX - shapeHalf, posY + shapeHalf * 0.5f)
-        path.lineTo(posX, posY - shapeHalf * 0.5f)
-        path.lineTo(posX + shapeHalf, posY + shapeHalf * 0.5f)
-        c.drawPath(path, renderPaint)
-    }
-}
-
-val CHART_SHAPE_RENDERERS: List<IShapeRenderer> = listOf(
-    CircleRenderer(),
-    SquareRenderer(),
-    TriangleRenderer(),
-    CrossRenderer(),
-    XRenderer(),
-    ChevronDownRenderer(),
-    ChevronUpRenderer()
-)

@@ -17,15 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.DrawScope
-import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
-import com.github.mikephil.charting.data.Entry
-import com.github.mikephil.charting.data.ScatterDataSet
-import com.github.mikephil.charting.utils.ViewPortHandler
-import android.graphics.Paint as AndroidPaint
 
+/** A single legend chip. [shapeIndex] indexes into [ChartShape.forIndex] for
+ *  shapes (0..6); 7 = horizontal line (used for "average" series), 8 = sloped
+ *  line (used for "trend" series). */
 data class UserLegendItem(
     val label: String,
     val color: Color,
@@ -57,50 +53,39 @@ fun ChartLegend(
                 modifier = rowModifier.alpha(if (dimmed) 0.35f else 1f)
             ) {
                 Canvas(modifier = Modifier.size(24.dp)) {
-                    drawScatterShape(item.shapeIndex, item.color)
+                    val cx = size.width / 2f
+                    val cy = size.height / 2f
+                    val r = size.minDimension / 2f
+                    val strokeWidth = 2.dp.toPx()
+                    when (item.shapeIndex) {
+                        in 0 until CHART_SHAPE_COUNT ->
+                            drawScatterShape(
+                                shape = ChartShape.forIndex(item.shapeIndex),
+                                color = item.color,
+                                center = Offset(cx, cy),
+                                size = r * 2f,
+                            )
+                        // 7 = horizontal line (average series legend swatch)
+                        7 -> drawLine(
+                            color = item.color,
+                            start = Offset(cx - r, cy),
+                            end = Offset(cx + r, cy),
+                            strokeWidth = strokeWidth,
+                        )
+                        // 8 = sloped line (trend series legend swatch)
+                        8 -> drawLine(
+                            color = item.color,
+                            start = Offset(cx - r, cy + r * 0.6f),
+                            end = Offset(cx + r, cy - r * 0.6f),
+                            strokeWidth = strokeWidth,
+                        )
+                    }
                 }
                 Text(
                     text = item.label,
                     style = MaterialTheme.typography.bodySmall
                 )
             }
-        }
-    }
-}
-
-private val legendViewPortHandler = ViewPortHandler()
-
-private fun DrawScope.drawScatterShape(shapeIndex: Int, color: Color) {
-    val cx = size.width / 2f
-    val cy = size.height / 2f
-    val r = size.minDimension / 2f
-    val strokeWidth = 2.dp.toPx()
-
-    if (shapeIndex in CHART_SHAPE_RENDERERS.indices) {
-        val argb = color.toArgb()
-        val paint = AndroidPaint().apply {
-            this.color = argb
-            isAntiAlias = true
-        }
-        val dataSet = ScatterDataSet(mutableListOf<Entry>(), "").apply {
-            scatterShapeSize = r * 2f
-        }
-        CHART_SHAPE_RENDERERS[shapeIndex].renderShape(
-            drawContext.canvas.nativeCanvas,
-            dataSet,
-            legendViewPortHandler,
-            cx, cy,
-            paint
-        )
-        return
-    }
-
-    when (shapeIndex) {
-        7 -> { // HORIZONTAL LINE (for average)
-            drawLine(color, Offset(cx - r, cy), Offset(cx + r, cy), strokeWidth)
-        }
-        8 -> { // SLOPED LINE (for trend)
-            drawLine(color, Offset(cx - r, cy + r * 0.6f), Offset(cx + r, cy - r * 0.6f), strokeWidth)
         }
     }
 }

@@ -1,65 +1,35 @@
 package se.kjellstrand.webshooter
 
-import kotlinx.coroutines.CoroutineScope
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
-import se.kjellstrand.webshooter.data.AuthTokenManager
-import se.kjellstrand.webshooter.data.competitions.CompetitionsRepository
 import java.io.File
 
+/**
+ * Source-level guards for [ShooterApplication]. After the Koin migration the
+ * dependencies are no longer Hilt-injected `lateinit var` fields; instead
+ * they are resolved inline via `KoinPlatform.getKoin().get<...>()`. The
+ * checks below confirm Koin is bootstrapped at the right time and the
+ * startup-sync side-effect is preserved.
+ */
 class ShooterApplicationStartupSyncTest {
 
     private val applicationSource: String by lazy {
         File("src/main/java/se/kjellstrand/webshooter/ShooterApplication.kt").readText()
     }
 
-    // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
-
     @Test
-    fun `ShooterApplication has competitionsRepository field`() {
-        val field = ShooterApplication::class.java.declaredFields.find {
-            it.name == "competitionsRepository"
-        }
-        assertNotNull(
-            "ShooterApplication should have a competitionsRepository field for injection",
-            field
-        )
-    }
-
-    @Test
-    fun `competitionsRepository field is of correct type`() {
-        val field = ShooterApplication::class.java.declaredFields.find {
-            it.name == "competitionsRepository"
-        }
-        assertNotNull("competitionsRepository field should exist", field)
+    fun `ShooterApplication initializes Koin before super onCreate`() {
+        // initKoin must run BEFORE super.onCreate() — anything else breaks
+        // the contract that subsequent VM construction can resolve dependencies.
+        val initKoinIdx = applicationSource.indexOf("initKoin(")
+        val superOnCreateIdx = applicationSource.indexOf("super.onCreate(")
+        assertTrue("initKoin(...) must appear in onCreate", initKoinIdx >= 0)
+        assertTrue("super.onCreate() must appear in onCreate", superOnCreateIdx >= 0)
         assertTrue(
-            "competitionsRepository should be of type CompetitionsRepository",
-            CompetitionsRepository::class.java.isAssignableFrom(field!!.type)
-        )
-    }
-
-    @Test
-    fun `ShooterApplication has authTokenManager field`() {
-        val field = ShooterApplication::class.java.declaredFields.find {
-            it.name == "authTokenManager"
-        }
-        assertNotNull(
-            "ShooterApplication should have an authTokenManager field for injection",
-            field
-        )
-    }
-
-    @Test
-    fun `authTokenManager field is of correct type`() {
-        val field = ShooterApplication::class.java.declaredFields.find {
-            it.name == "authTokenManager"
-        }
-        assertNotNull("authTokenManager field should exist", field)
-        assertTrue(
-            "authTokenManager should be of type AuthTokenManager",
-            AuthTokenManager::class.java.isAssignableFrom(field!!.type)
+            "initKoin(...) must be called before super.onCreate()",
+            initKoinIdx < superOnCreateIdx
         )
     }
 
@@ -96,35 +66,37 @@ class ShooterApplicationStartupSyncTest {
     }
 
     @Test
-    fun `ShooterApplication has applicationScope field of CoroutineScope type`() {
-        val field = ShooterApplication::class.java.declaredFields.find {
-            it.name == "applicationScope"
-        }
-        assertNotNull(
-            "ShooterApplication should still have an applicationScope field",
-            field
-        )
+    fun `ShooterApplication uses the Koin ApplicationCoroutineScope qualifier`() {
         assertTrue(
-            "applicationScope should be of type CoroutineScope, was: ${field!!.type.name}",
-            CoroutineScope::class.java.isAssignableFrom(field.type)
+            "ShooterApplication source should resolve the scope via ApplicationCoroutineScopeQualifier",
+            applicationSource.contains("ApplicationCoroutineScopeQualifier")
         )
     }
 
     @Test
     fun `ShooterApplication no longer constructs its own CoroutineScope`() {
-        // Before this fix, the source contained `CoroutineScope(SupervisorJob() + Dispatchers.IO)`.
-        // After, it uses the Hilt-injected @ApplicationScope and that literal disappears.
         assertFalse(
-            "ShooterApplication should not construct CoroutineScope(SupervisorJob() + ...) — it should inject @ApplicationScope instead",
+            "ShooterApplication should not construct CoroutineScope(SupervisorJob() + ...) — it should resolve it from Koin",
             applicationSource.contains("CoroutineScope(SupervisorJob()")
         )
     }
 
     @Test
-    fun `ShooterApplication source imports ApplicationScope qualifier`() {
+    fun `ShooterApplication no longer uses Hilt`() {
+        val annotation = ShooterApplication::class.java.annotations.find {
+            it.annotationClass.simpleName == "HiltAndroidApp"
+        }
         assertTrue(
-            "ShooterApplication source should import se.kjellstrand.webshooter.di.ApplicationScope",
-            applicationSource.contains("import se.kjellstrand.webshooter.di.ApplicationScope")
+            "ShooterApplication should NOT carry @HiltAndroidApp anymore (Koin replaced it)",
+            annotation == null
+        )
+        assertFalse(
+            "ShooterApplication source should not contain dagger.hilt imports",
+            applicationSource.contains("dagger.hilt")
+        )
+        assertFalse(
+            "ShooterApplication source should not contain @Inject annotations",
+            applicationSource.contains("@Inject")
         )
     }
 
@@ -142,13 +114,5 @@ class ShooterApplicationStartupSyncTest {
     fun `ShooterApplication has onCreate method`() {
         val method = ShooterApplication::class.java.methods.find { it.name == "onCreate" }
         assertNotNull("ShooterApplication should have onCreate", method)
-    }
-
-    @Test
-    fun `ShooterApplication has HiltAndroidApp annotation`() {
-        val annotation = ShooterApplication::class.java.annotations.find {
-            it.annotationClass.simpleName == "HiltAndroidApp"
-        }
-        assertNotNull("ShooterApplication should have @HiltAndroidApp annotation", annotation)
     }
 }

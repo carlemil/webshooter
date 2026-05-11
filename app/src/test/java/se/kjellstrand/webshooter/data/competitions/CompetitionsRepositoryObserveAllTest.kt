@@ -69,6 +69,7 @@ class CompetitionsRepositoryObserveAllTest {
         override suspend fun getAll(): List<CompetitionEntity> = observed
         override suspend fun insertAll(competitions: List<CompetitionEntity>) {}
         override suspend fun deleteByIds(ids: List<Long>) {}
+        override suspend fun setNoResults(id: Long, value: Boolean) {}
     }
 
     private fun buildRepo(dao: FakeDao = FakeDao()) =

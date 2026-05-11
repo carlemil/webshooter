@@ -39,11 +39,16 @@ data class Result(
 data class StationResult(
     val id: Long,
 
+    // The server can return `null` for any of the numeric station fields
+    // when a station hasn't been scored yet (mid-competition data, partial
+    // patrols, etc.). With `Json { coerceInputValues = true }` configured
+    // in `NetworkModule`, these defaults turn null/missing → 0L so the
+    // whole results payload still parses.
     @SerialName("figure_hits")
-    val figureHits: Long,
+    val figureHits: Long = 0L,
 
-    val hits: Long,
-    val points: Long
+    val hits: Long = 0L,
+    val points: Long = 0L,
 )
 
 @Serializable

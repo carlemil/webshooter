@@ -67,9 +67,10 @@ class UserLegendTest {
     @Test
     fun `ChartLegend supports horizontal line shape at index 7`() {
         val source = userLegendFile.readText()
+        // Either `7 -> drawLine(...)` or `7 -> { ... drawLine(...) }`.
         assertTrue(
-            "drawScatterShape must handle shapeIndex 7 as a horizontal line",
-            Regex("""7\s*->\s*\{[\s\S]{0,400}drawLine""").containsMatchIn(source)
+            "ChartLegend's when() must handle shapeIndex 7 as a horizontal line via drawLine",
+            Regex("""\b7\s*->\s*[\s\S]{0,400}drawLine""").containsMatchIn(source)
         )
     }
 
@@ -77,8 +78,8 @@ class UserLegendTest {
     fun `ChartLegend supports sloped line shape at index 8`() {
         val source = userLegendFile.readText()
         assertTrue(
-            "drawScatterShape must handle shapeIndex 8 as a sloped line",
-            Regex("""8\s*->\s*\{[\s\S]{0,400}drawLine""").containsMatchIn(source)
+            "ChartLegend's when() must handle shapeIndex 8 as a sloped line via drawLine",
+            Regex("""\b8\s*->\s*[\s\S]{0,400}drawLine""").containsMatchIn(source)
         )
     }
 
@@ -90,11 +91,33 @@ class UserLegendTest {
     }
 
     @Test
-    fun `ChartStyles still exposes CHART_SHAPE_RENDERERS and CHART_COLORS`() {
+    fun `ChartStyles exposes CHART_COLORS and the new ChartShape enum`() {
         val chartStyles = File("src/main/java/se/kjellstrand/webshooter/ui/common/ChartStyles.kt")
         assertTrue("ChartStyles.kt should exist", chartStyles.exists())
         val source = chartStyles.readText()
-        assertTrue(source.contains("CHART_COLORS"))
-        assertTrue(source.contains("CHART_SHAPE_RENDERERS"))
+        assertTrue("ChartStyles must expose CHART_COLORS", source.contains("CHART_COLORS"))
+        assertTrue("ChartStyles must expose the ChartShape enum", source.contains("enum class ChartShape"))
+        assertTrue(
+            "ChartStyles must expose drawScatterShape DrawScope helper",
+            source.contains("fun DrawScope.drawScatterShape")
+        )
+    }
+
+    @Test
+    fun `ChartStylesLegacy compatibility shim is gone (all screens migrated)`() {
+        val legacy = File("src/main/java/se/kjellstrand/webshooter/ui/common/ChartStylesLegacy.kt")
+        assertTrue(
+            "ChartStylesLegacy.kt should be deleted now that all chart screens are pure Compose",
+            !legacy.exists()
+        )
+    }
+
+    @Test
+    fun `ChartSetup MPAndroidChart helper is gone`() {
+        val chartSetup = File("src/main/java/se/kjellstrand/webshooter/ui/common/ChartSetup.kt")
+        assertTrue(
+            "ChartSetup.kt (applyBaseChartStyle) should be deleted along with MPAndroidChart",
+            !chartSetup.exists()
+        )
     }
 }

@@ -9,11 +9,11 @@ import java.io.File
 class MyResultsViewModelOnScreenOpenedTest {
 
     private val viewModelSource: String by lazy {
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/myresults/MyResultsViewModelImpl.kt").readText()
+        File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/myresults/MyResultsViewModelImpl.kt").readText()
     }
 
     private val interfaceSource: String by lazy {
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/myresults/MyResultsViewModel.kt").readText()
+        File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/myresults/MyResultsViewModel.kt").readText()
     }
 
     private val screenSource: String by lazy {

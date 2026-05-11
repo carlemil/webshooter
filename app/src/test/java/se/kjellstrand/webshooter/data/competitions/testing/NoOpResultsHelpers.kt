@@ -65,12 +65,13 @@ open class NoOpResultsRepository(
     private val concurrency = java.util.concurrent.atomic.AtomicInteger(0)
     @Volatile var maxConcurrency: Int = 0
 
-    override suspend fun refreshResultsFor(competitionId: Long) {
+    override suspend fun refreshResultsFor(competitionId: Long): RefreshOutcome {
         val now = concurrency.incrementAndGet()
         if (now > maxConcurrency) maxConcurrency = now
-        try {
+        return try {
             refreshCalls.add(competitionId)
             refreshAction?.invoke(competitionId)
+            RefreshOutcome.Success
         } finally {
             concurrency.decrementAndGet()
         }

@@ -6,7 +6,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -16,7 +15,10 @@ import androidx.navigation.navDeepLink
 import android.util.Log
 import android.widget.Toast
 import kotlinx.coroutines.flow.collectLatest
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 import se.kjellstrand.webshooter.data.SessionManager
+import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsScreen
 import se.kjellstrand.webshooter.ui.screens.splash.SplashScreen
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsViewModelImpl
@@ -25,6 +27,7 @@ import se.kjellstrand.webshooter.ui.screens.login.LoginScreen
 import se.kjellstrand.webshooter.ui.screens.results.CompetitionResultsScreen
 import se.kjellstrand.webshooter.ui.screens.results.ResultsViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.shooterresult.ShooterResultScreen
+import se.kjellstrand.webshooter.ui.screens.shooterresult.ShooterResultViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.patrols.CompetitionPatrolsScreen
 import se.kjellstrand.webshooter.ui.screens.patrols.PatrolsViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.signups.CompetitionSignupsScreen
@@ -36,7 +39,7 @@ import se.kjellstrand.webshooter.ui.screens.teams.TeamsViewModelImpl
 
 @Composable
 fun AppNavHost(navController: NavHostController) {
-    val sessionViewModel: SessionViewModel = hiltViewModel()
+    val sessionViewModel: SessionViewModel = koinViewModel()
 
     LaunchedEffect(Unit) {
         sessionViewModel.sessionManager.events.collectLatest { event ->
@@ -61,7 +64,7 @@ fun AppNavHost(navController: NavHostController) {
             WebShooterScreen(navController)
         }
         composable(Screen.CompetitionsList.route) {
-            val competitionsViewModel: CompetitionsViewModelImpl = hiltViewModel()
+            val competitionsViewModel: CompetitionsViewModelImpl = koinViewModel()
             CompetitionsScreen(navController, competitionsViewModel)
         }
         composable(
@@ -75,8 +78,16 @@ fun AppNavHost(navController: NavHostController) {
             deepLinks = listOf(
                 navDeepLink { uriPattern = Screen.CompetitionResults.deepLink }
             )
-        ) {
-            val resultsViewModel: ResultsViewModelImpl = hiltViewModel()
+        ) { backStackEntry ->
+            val competitionId = NavigationArguments.requireLong(backStackEntry.arguments, "competitionId")
+            val resultsType = runCatching {
+                ResultsType.valueOf(NavigationArguments.requireString(backStackEntry.arguments, "resultsType"))
+            }.getOrDefault(ResultsType.FIELD)
+            val competitionName = backStackEntry.arguments?.getString("competitionName") ?: ""
+            val competitionDate = backStackEntry.arguments?.getString("competitionDate") ?: ""
+            val resultsViewModel: ResultsViewModelImpl = koinViewModel {
+                parametersOf(competitionId, competitionDate, resultsType, competitionName)
+            }
             CompetitionResultsScreen(resultsViewModel, navController)
         }
         composable(
@@ -86,14 +97,25 @@ fun AppNavHost(navController: NavHostController) {
                 navArgument("shooterId") { type = NavType.LongType },
                 navArgument("resultsType") { type = NavType.StringType }
             )
-        ) {
-            ShooterResultScreen(navController)
+        ) { backStackEntry ->
+            val competitionId = NavigationArguments.requireLong(backStackEntry.arguments, "competitionId")
+            val shooterId = NavigationArguments.requireLong(backStackEntry.arguments, "shooterId")
+            val resultsType = runCatching {
+                ResultsType.valueOf(NavigationArguments.requireString(backStackEntry.arguments, "resultsType"))
+            }.getOrDefault(ResultsType.FIELD)
+            val shooterResultViewModel: ShooterResultViewModelImpl = koinViewModel {
+                parametersOf(competitionId, shooterId, resultsType)
+            }
+            ShooterResultScreen(navController, shooterResultViewModel)
         }
         composable(
             route = Screen.CompetitionSignupsList.route,
             arguments = listOf(navArgument("competitionId") { type = NavType.LongType })
-        ) {
-            val signupsListViewModel: SignupsViewModelImpl = hiltViewModel()
+        ) { backStackEntry ->
+            val competitionId = NavigationArguments.requireLong(backStackEntry.arguments, "competitionId")
+            val signupsListViewModel: SignupsViewModelImpl = koinViewModel {
+                parametersOf(competitionId)
+            }
             CompetitionSignupsScreen(navController, signupsListViewModel)
         }
         composable(
@@ -102,15 +124,22 @@ fun AppNavHost(navController: NavHostController) {
                 navArgument("competitionId") { type = NavType.LongType },
                 navArgument("competitionTypeId") { type = NavType.IntType }
             )
-        ) {
-            val patrolsViewModel: PatrolsViewModelImpl = hiltViewModel()
+        ) { backStackEntry ->
+            val competitionId = NavigationArguments.requireLong(backStackEntry.arguments, "competitionId")
+            val competitionTypeId = NavigationArguments.requireInt(backStackEntry.arguments, "competitionTypeId")
+            val patrolsViewModel: PatrolsViewModelImpl = koinViewModel {
+                parametersOf(competitionId, competitionTypeId)
+            }
             CompetitionPatrolsScreen(navController, patrolsViewModel)
         }
         composable(
             route = Screen.CompetitionTeams.route,
             arguments = listOf(navArgument("competitionId") { type = NavType.LongType })
-        ) {
-            val teamsViewModel: TeamsViewModelImpl = hiltViewModel()
+        ) { backStackEntry ->
+            val competitionId = NavigationArguments.requireLong(backStackEntry.arguments, "competitionId")
+            val teamsViewModel: TeamsViewModelImpl = koinViewModel {
+                parametersOf(competitionId)
+            }
             CompetitionTeamsScreen(navController, teamsViewModel)
         }
         composable(
@@ -143,8 +172,11 @@ fun AppNavHost(navController: NavHostController) {
                 }
                 return@composable
             }
-            val competitionsViewModel: CompetitionsViewModelImpl = hiltViewModel(parentEntry)
-            val signupViewModel: SignupViewModelImpl = hiltViewModel()
+            val competitionsViewModel: CompetitionsViewModelImpl =
+                koinViewModel(viewModelStoreOwner = parentEntry)
+            val signupViewModel: SignupViewModelImpl = koinViewModel {
+                parametersOf(competitionId)
+            }
             val competitionsState by competitionsViewModel.uiState.collectAsState()
             val signupState by signupViewModel.uiState.collectAsState()
             val competition = remember(competitionId) {

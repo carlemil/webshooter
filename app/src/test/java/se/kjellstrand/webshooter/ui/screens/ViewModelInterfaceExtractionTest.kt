@@ -1,20 +1,28 @@
 package se.kjellstrand.webshooter.ui.screens
 
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
+import org.junit.Assert.assertTrue
 import org.junit.Test
-import se.kjellstrand.webshooter.ui.screens.club.ClubUiState
 import se.kjellstrand.webshooter.ui.screens.club.ClubTab
-import se.kjellstrand.webshooter.ui.screens.settings.SettingsUiState
+import se.kjellstrand.webshooter.ui.screens.club.ClubUiState
 import se.kjellstrand.webshooter.ui.screens.settings.SettingsTab
+import se.kjellstrand.webshooter.ui.screens.settings.SettingsUiState
 import se.kjellstrand.webshooter.ui.screens.shooterresult.ShooterResultUiState
 import se.kjellstrand.webshooter.ui.screens.signup.SignupUiState
 import java.io.File
 
+/**
+ * After the KMP migration, ViewModel interfaces and impls live in
+ * `:shared/commonMain` — `:app` only contains the Compose screens that
+ * consume them. This test still enforces the interface/impl split via
+ * reflection (which works because :shared is on the test classpath) and
+ * verifies the screen files reference the impl types correctly.
+ */
 class ViewModelInterfaceExtractionTest {
 
-    private val baseDir = "src/main/java/se/kjellstrand/webshooter/ui/screens"
-
-    // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
+    private val screenBaseDir = "src/main/java/se/kjellstrand/webshooter/ui/screens"
 
     @Test
     fun `ClubViewModel should be an interface`() {
@@ -81,33 +89,24 @@ class ViewModelInterfaceExtractionTest {
     }
 
     @Test
-    fun `ClubScreen should reference ClubViewModelImpl in hiltViewModel`() {
-        val source = File("$baseDir/club/ClubScreen.kt").readText()
+    fun `ClubScreen should reference ClubViewModelImpl in koinViewModel`() {
+        val source = File("$screenBaseDir/club/ClubScreen.kt").readText()
         assertTrue(
-            "ClubScreen should use hiltViewModel<ClubViewModelImpl>()",
-            source.contains("hiltViewModel<ClubViewModelImpl>()")
+            "ClubScreen should use koinViewModel<ClubViewModelImpl>()",
+            source.contains("koinViewModel<ClubViewModelImpl>()")
         )
     }
 
     @Test
-    fun `SettingsScreen should reference SettingsViewModelImpl in hiltViewModel`() {
-        val source = File("$baseDir/settings/SettingsScreen.kt").readText()
+    fun `SettingsScreen should reference SettingsViewModelImpl in koinViewModel`() {
+        val source = File("$screenBaseDir/settings/SettingsScreen.kt").readText()
         assertTrue(
-            "SettingsScreen should use hiltViewModel<SettingsViewModelImpl>()",
-            source.contains("hiltViewModel<SettingsViewModelImpl>()")
+            "SettingsScreen should use koinViewModel<SettingsViewModelImpl>()",
+            source.contains("koinViewModel<SettingsViewModelImpl>()")
         )
     }
 
-    @Test
-    fun `ShooterResultScreen should reference ShooterResultViewModelImpl in hiltViewModel`() {
-        val source = File("$baseDir/shooterresult/ShooterResultScreen.kt").readText()
-        assertTrue(
-            "ShooterResultScreen should use hiltViewModel<ShooterResultViewModelImpl>()",
-            source.contains("hiltViewModel<ShooterResultViewModelImpl>()")
-        )
-    }
-
-    // --- Guard tests (should PASS before and after fix) ---
+    // --- Guard tests (default UiState invariants) ---
 
     @Test
     fun `ClubUiState has correct defaults`() {
@@ -145,17 +144,5 @@ class ViewModelInterfaceExtractionTest {
         assertEquals("", state.note)
         assertFalse(state.isSuccess)
         assertNull(state.error)
-    }
-
-    @Test
-    fun `all ViewModel files exist`() {
-        listOf(
-            "club/ClubViewModel.kt",
-            "settings/SettingsViewModel.kt",
-            "shooterresult/ShooterResultViewModel.kt",
-            "signup/SignupViewModel.kt"
-        ).forEach { path ->
-            assertTrue("$path should exist", File("$baseDir/$path").exists())
-        }
     }
 }

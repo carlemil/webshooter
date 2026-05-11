@@ -42,11 +42,11 @@ class LoginPreviewTest {
     }
 
     @Test
-    fun `LoginScreen should use LoginViewModelImpl in hiltViewModel`() {
+    fun `LoginScreen should use LoginViewModelImpl in koinViewModel`() {
         val source = loginScreenFile.readText()
         assertTrue(
-            "LoginScreen should use hiltViewModel<LoginViewModelImpl>()",
-            source.contains("hiltViewModel<LoginViewModelImpl>()")
+            "LoginScreen should use koinViewModel<LoginViewModelImpl>()",
+            source.contains("koinViewModel<LoginViewModelImpl>()")
         )
     }
 

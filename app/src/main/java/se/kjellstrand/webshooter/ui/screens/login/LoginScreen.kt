@@ -34,7 +34,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
+import org.koin.compose.viewmodel.koinViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.flow.collectLatest
@@ -45,7 +45,7 @@ import se.kjellstrand.webshooter.ui.navigation.Screen
 @Composable
 fun LoginScreen(
     navController: NavController,
-    loginViewModel: LoginViewModel = hiltViewModel<LoginViewModelImpl>()
+    loginViewModel: LoginViewModel = koinViewModel<LoginViewModelImpl>()
 ) {
     val uiState by loginViewModel.uiState.collectAsState()
     val eventFlow = loginViewModel.eventFlow

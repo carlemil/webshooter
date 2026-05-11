@@ -17,9 +17,9 @@ import java.io.File
 class ResultsTrendsPerTabGroupsTest {
 
     private val uiStateFile =
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsUiState.kt")
+        File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsUiState.kt")
     private val vmImplFile =
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsViewModelImpl.kt")
+        File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsViewModelImpl.kt")
 
     /** Look up a top-level Kotlin function by name from the package's compiled file class. */
     private fun callTopLevel(funName: String, vararg args: Any?): Any? {
