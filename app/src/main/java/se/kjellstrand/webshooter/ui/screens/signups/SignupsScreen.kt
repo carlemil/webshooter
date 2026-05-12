@@ -49,9 +49,6 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import se.kjellstrand.webshooter.ui.navigation.safePopBackStack
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitionsignups.remote.CompetitionSignupEntry
 import se.kjellstrand.webshooter.ui.mock.SignupsViewModelMock
@@ -64,7 +61,7 @@ import se.kjellstrand.webshooter.resources.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CompetitionSignupsScreen(
-    navController: NavController,
+    onBack: () -> Unit,
     viewModel: SignupsViewModel,
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -85,7 +82,7 @@ fun CompetitionSignupsScreen(
                 else
                     stringResource(Res.string.competition_signups_list_participants),
                 navigationIcon = {
-                    IconButton(onClick = { navController.safePopBackStack() }) {
+                    IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
@@ -330,7 +327,7 @@ private fun SignupRow(entries: List<CompetitionSignupEntry>, isCurrentUser: Bool
 @Composable
 fun SignupsScreenPreview() {
     CompetitionSignupsScreen(
-        navController = rememberNavController(),
+        onBack = {},
         viewModel = SignupsViewModelMock()
     )
 }
@@ -339,7 +336,7 @@ fun SignupsScreenPreview() {
 @Composable
 fun SignupsScreenLoadingPreview() {
     CompetitionSignupsScreen(
-        navController = rememberNavController(),
+        onBack = {},
         viewModel = SignupsViewModelMock(CompetitionSignupsUiState(isLoading = true))
     )
 }
@@ -348,7 +345,7 @@ fun SignupsScreenLoadingPreview() {
 @Composable
 fun SignupsScreenEmptyPreview() {
     CompetitionSignupsScreen(
-        navController = rememberNavController(),
+        onBack = {},
         viewModel = SignupsViewModelMock(CompetitionSignupsUiState())
     )
 }

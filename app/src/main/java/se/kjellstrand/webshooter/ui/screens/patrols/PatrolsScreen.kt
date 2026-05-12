@@ -50,8 +50,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitionpatrols.remote.PatrolEntry
@@ -59,7 +57,6 @@ import se.kjellstrand.webshooter.ui.mock.PatrolsViewModelMock
 import se.kjellstrand.webshooter.data.competitionpatrols.remote.PatrolSignupEntry
 import se.kjellstrand.webshooter.ui.common.GroupCardHeader
 import se.kjellstrand.webshooter.ui.common.ScreenTopBar
-import se.kjellstrand.webshooter.ui.navigation.safePopBackStack
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
 import se.kjellstrand.webshooter.ui.theme.appColors
@@ -68,7 +65,7 @@ import se.kjellstrand.webshooter.resources.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CompetitionPatrolsScreen(
-    navController: NavController,
+    onBack: () -> Unit,
     viewModel: PatrolsViewModel,
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -126,7 +123,7 @@ fun CompetitionPatrolsScreen(
             ScreenTopBar(
                 title = stringResource(if (isFalt) Res.string.competitions_patrols_button else Res.string.competitions_relays_button),
                 navigationIcon = {
-                    IconButton(onClick = { navController.safePopBackStack() }) {
+                    IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
@@ -391,7 +388,7 @@ private fun SignupRow(signup: PatrolSignupEntry, isCurrentUser: Boolean) {
 @Composable
 fun PatrolsScreenPreview() {
     CompetitionPatrolsScreen(
-        navController = rememberNavController(),
+        onBack = {},
         viewModel = PatrolsViewModelMock()
     )
 }
@@ -400,7 +397,7 @@ fun PatrolsScreenPreview() {
 @Composable
 fun PatrolsScreenLoadingPreview() {
     CompetitionPatrolsScreen(
-        navController = rememberNavController(),
+        onBack = {},
         viewModel = PatrolsViewModelMock(CompetitionPatrolsUiState(isLoading = true))
     )
 }
@@ -409,7 +406,7 @@ fun PatrolsScreenLoadingPreview() {
 @Composable
 fun PatrolsScreenEmptyPreview() {
     CompetitionPatrolsScreen(
-        navController = rememberNavController(),
+        onBack = {},
         viewModel = PatrolsViewModelMock(CompetitionPatrolsUiState())
     )
 }

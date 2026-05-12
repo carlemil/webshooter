@@ -39,9 +39,6 @@ import androidx.compose.ui.res.dimensionResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import se.kjellstrand.webshooter.ui.navigation.safePopBackStack
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.common.WeaponClass
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
@@ -55,7 +52,7 @@ import se.kjellstrand.webshooter.ui.common.Dimens
 fun SignupScreen(
     competition: Datum,
     viewModel: SignupViewModel,
-    navController: NavController
+    onBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -64,7 +61,7 @@ fun SignupScreen(
             ScreenTopBar(
                 title = competition.name,
                 navigationIcon = {
-                    IconButton(onClick = { navController.safePopBackStack() }) {
+                    IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.navigate_back))
                     }
                 }
@@ -211,7 +208,7 @@ fun SignupScreenPreview() {
     SignupScreen(
         competition = MockCompetitions().competitions.data.first(),
         viewModel = SignupViewModelMock(),
-        navController = rememberNavController()
+        onBack = {}
     )
 }
 
@@ -221,7 +218,7 @@ fun SignupScreenLoadingPreview() {
     SignupScreen(
         competition = MockCompetitions().competitions.data.first(),
         viewModel = SignupViewModelMock(SignupUiState(isLoading = true)),
-        navController = rememberNavController()
+        onBack = {}
     )
 }
 
@@ -231,6 +228,6 @@ fun SignupScreenErrorPreview() {
     SignupScreen(
         competition = MockCompetitions().competitions.data.first(),
         viewModel = SignupViewModelMock(SignupUiState(error = "Registration failed")),
-        navController = rememberNavController()
+        onBack = {}
     )
 }

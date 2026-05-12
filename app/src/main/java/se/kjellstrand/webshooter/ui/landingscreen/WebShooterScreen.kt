@@ -26,20 +26,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.platform.LocalContext
 import org.jetbrains.compose.resources.stringResource
-import android.content.Intent
-import androidx.core.net.toUri
+import io.ktor.http.encodeURLParameter
+import org.koin.compose.koinInject
+import se.kjellstrand.webshooter.ui.platform.UrlLauncher
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.koin.compose.viewmodel.koinViewModel
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
-import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.ui.screens.charts.resulttrends.ChartsScreen
 import se.kjellstrand.webshooter.ui.screens.charts.resulttrends.ResultsTrendsViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.charts.seriespoints.SeriesPointsScreen
@@ -57,7 +55,14 @@ import se.kjellstrand.webshooter.resources.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WebShooterScreen(navController: NavController) {
+fun WebShooterScreen(
+    onLogout: () -> Unit,
+    onNavigateToResults: (competitionId: Long, resultsType: String, name: String, date: String) -> Unit,
+    onNavigateToSignup: (competitionId: Long) -> Unit,
+    onNavigateToSignupsList: (competitionId: Long) -> Unit,
+    onNavigateToPatrols: (competitionId: Long, competitionTypeId: Int) -> Unit,
+    onNavigateToTeams: (competitionId: Long) -> Unit,
+) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
 
@@ -89,15 +94,12 @@ fun WebShooterScreen(navController: NavController) {
 
     val competitionsViewModel: CompetitionsViewModelImpl = koinViewModel()
 
-    val context = LocalContext.current
+    val urlLauncher: UrlLauncher = koinInject()
     val suggestionLabel = stringResource(Res.string.web_shooter_send_suggestion)
     val suggestionSubject = stringResource(Res.string.send_suggestion_email_subject)
     val suggestionRecipient = stringResource(Res.string.send_suggestion_email_recipient)
     val sendSuggestionEmail: () -> Unit = {
-        val intent = Intent(Intent.ACTION_SENDTO, "mailto:$suggestionRecipient".toUri()).apply {
-            putExtra(Intent.EXTRA_SUBJECT, suggestionSubject)
-        }
-        context.startActivity(intent)
+        urlLauncher.openUrl("mailto:$suggestionRecipient?subject=${suggestionSubject.encodeURLParameter()}")
     }
 
     ModalNavigationDrawer(
@@ -193,7 +195,14 @@ fun WebShooterScreen(navController: NavController) {
                 startDestination = Screen.CompetitionsList.route
             ) {
                 composable(Screen.CompetitionsList.route) {
-                    CompetitionsScreen(navController, competitionsViewModel)
+                    CompetitionsScreen(
+                        onNavigateToResults = onNavigateToResults,
+                        onNavigateToSignup = onNavigateToSignup,
+                        onNavigateToSignupsList = onNavigateToSignupsList,
+                        onNavigateToPatrols = onNavigateToPatrols,
+                        onNavigateToTeams = onNavigateToTeams,
+                        competitionsViewModel = competitionsViewModel,
+                    )
                 }
                 composable(Screen.MyEntries.route) {
                     MyEntriesScreen()
@@ -211,13 +220,7 @@ fun WebShooterScreen(navController: NavController) {
                     ClubScreen()
                 }
                 composable(Screen.Settings.route) {
-                    SettingsScreen(
-                        onLoggedOut = {
-                            navController.navigate(Screen.LoginScreen.route) {
-                                popUpTo(0) { inclusive = true }
-                            }
-                        }
-                    )
+                    SettingsScreen(onLoggedOut = onLogout)
                 }
                 composable(Screen.Licenses.route) {
                     LicensesScreen()
@@ -232,9 +235,12 @@ data class NavigationItem(val label: String, val route: String)
 @Preview(showBackground = true)
 @Composable
 fun WebShooterScreenPreview() {
-    val navController = rememberNavController()
-
     WebShooterScreen(
-        navController = navController
+        onLogout = {},
+        onNavigateToResults = { _, _, _, _ -> },
+        onNavigateToSignup = {},
+        onNavigateToSignupsList = {},
+        onNavigateToPatrols = { _, _ -> },
+        onNavigateToTeams = {},
     )
 }

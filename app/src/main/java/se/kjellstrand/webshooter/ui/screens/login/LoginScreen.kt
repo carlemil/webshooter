@@ -35,17 +35,13 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.koin.compose.viewmodel.koinViewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.flow.collectLatest
-import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.ui.common.UiEvent
-import se.kjellstrand.webshooter.ui.navigation.Screen
 import se.kjellstrand.webshooter.resources.*
 
 @Composable
 fun LoginScreen(
-    navController: NavController,
+    onLoginSuccess: () -> Unit,
     loginViewModel: LoginViewModel = koinViewModel<LoginViewModelImpl>()
 ) {
     val uiState by loginViewModel.uiState.collectAsState()
@@ -62,11 +58,7 @@ fun LoginScreen(
     LaunchedEffect(Unit) {
         eventFlow.collectLatest { event ->
             when (event) {
-                is UiEvent.NavigateToLandingPage -> {
-                    navController.navigate(Screen.LandingScreen.route) {
-                        popUpTo(0) { inclusive = true }
-                    }
-                }
+                is UiEvent.NavigateToLandingPage -> onLoginSuccess()
 
                 is UiEvent.ShowErrorMessage -> {
                 }
@@ -157,7 +149,7 @@ fun LoginScreen(
 fun LoginScreenPreview() {
     MaterialTheme {
         LoginScreen(
-            navController = rememberNavController(),
+            onLoginSuccess = {},
             loginViewModel = se.kjellstrand.webshooter.ui.mock.LoginViewModelMock()
         )
     }
@@ -168,7 +160,7 @@ fun LoginScreenPreview() {
 fun LoginScreenLoadingPreview() {
     MaterialTheme {
         LoginScreen(
-            navController = rememberNavController(),
+            onLoginSuccess = {},
             loginViewModel = se.kjellstrand.webshooter.ui.mock.LoginViewModelMock(
                 LoginUiState(isLoading = true, autoLoginAttempted = true)
             )
@@ -181,7 +173,7 @@ fun LoginScreenLoadingPreview() {
 fun LoginScreenErrorPreview() {
     MaterialTheme {
         LoginScreen(
-            navController = rememberNavController(),
+            onLoginSuccess = {},
             loginViewModel = se.kjellstrand.webshooter.ui.mock.LoginViewModelMock(
                 LoginUiState(errorMessage = "Invalid credentials", autoLoginAttempted = true)
             )

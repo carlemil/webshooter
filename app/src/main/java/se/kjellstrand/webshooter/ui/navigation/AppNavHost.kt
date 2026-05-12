@@ -40,6 +40,10 @@ import se.kjellstrand.webshooter.ui.screens.teams.TeamsViewModelImpl
 @Composable
 fun AppNavHost(navController: NavHostController) {
     val sessionViewModel: SessionViewModel = koinViewModel()
+    val toastContext = LocalContext.current
+    val showMessage: (String) -> Unit = { message ->
+        Toast.makeText(toastContext, message, Toast.LENGTH_LONG).show()
+    }
 
     LaunchedEffect(Unit) {
         sessionViewModel.sessionManager.events.collectLatest { event ->
@@ -53,19 +57,75 @@ fun AppNavHost(navController: NavHostController) {
         }
     }
 
+    val navigateToResults: (Long, String, String, String) -> Unit =
+        { competitionId, resultsType, name, date ->
+            navController.safeNavigate(
+                Screen.CompetitionResults.createRoute(competitionId, resultsType, name, date)
+            )
+        }
+    val navigateToSignup: (Long) -> Unit = { competitionId ->
+        navController.safeNavigate(Screen.CompetitionSignup.createRoute(competitionId))
+    }
+    val navigateToSignupsList: (Long) -> Unit = { competitionId ->
+        navController.safeNavigate(Screen.CompetitionSignupsList.createRoute(competitionId))
+    }
+    val navigateToPatrols: (Long, Int) -> Unit = { competitionId, competitionTypeId ->
+        navController.safeNavigate(
+            Screen.CompetitionPatrols.createRoute(competitionId, competitionTypeId)
+        )
+    }
+    val navigateToTeams: (Long) -> Unit = { competitionId ->
+        navController.safeNavigate(Screen.CompetitionTeams.createRoute(competitionId))
+    }
+
     NavHost(navController, startDestination = Screen.SplashScreen.route) {
         composable(Screen.SplashScreen.route) {
-            SplashScreen(navController)
+            SplashScreen(
+                onNavigateToLanding = {
+                    navController.navigate(Screen.LandingScreen.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+                onNavigateToLogin = {
+                    navController.navigate(Screen.LoginScreen.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+            )
         }
         composable(Screen.LoginScreen.route) {
-            LoginScreen(navController)
+            LoginScreen(
+                onLoginSuccess = {
+                    navController.navigate(Screen.LandingScreen.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+            )
         }
         composable(Screen.LandingScreen.route) {
-            WebShooterScreen(navController)
+            WebShooterScreen(
+                onLogout = {
+                    navController.navigate(Screen.LoginScreen.route) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+                onNavigateToResults = navigateToResults,
+                onNavigateToSignup = navigateToSignup,
+                onNavigateToSignupsList = navigateToSignupsList,
+                onNavigateToPatrols = navigateToPatrols,
+                onNavigateToTeams = navigateToTeams,
+            )
         }
         composable(Screen.CompetitionsList.route) {
             val competitionsViewModel: CompetitionsViewModelImpl = koinViewModel()
-            CompetitionsScreen(navController, competitionsViewModel)
+            CompetitionsScreen(
+                onNavigateToResults = navigateToResults,
+                onNavigateToSignup = navigateToSignup,
+                onNavigateToSignupsList = navigateToSignupsList,
+                onNavigateToPatrols = navigateToPatrols,
+                onNavigateToTeams = navigateToTeams,
+                competitionsViewModel = competitionsViewModel,
+            )
         }
         composable(
             route = Screen.CompetitionResults.route,
@@ -88,7 +148,16 @@ fun AppNavHost(navController: NavHostController) {
             val resultsViewModel: ResultsViewModelImpl = koinViewModel {
                 parametersOf(competitionId, competitionDate, resultsType, competitionName)
             }
-            CompetitionResultsScreen(resultsViewModel, navController)
+            CompetitionResultsScreen(
+                resultsViewModel = resultsViewModel,
+                onBack = { navController.safePopBackStack() },
+                onNavigateToShooter = { shooterId ->
+                    navController.safeNavigate(
+                        Screen.ShooterResult.createRoute(competitionId, shooterId, resultsType.name)
+                    )
+                },
+                showMessage = showMessage,
+            )
         }
         composable(
             route = Screen.ShooterResult.route,
@@ -106,7 +175,7 @@ fun AppNavHost(navController: NavHostController) {
             val shooterResultViewModel: ShooterResultViewModelImpl = koinViewModel {
                 parametersOf(competitionId, shooterId, resultsType)
             }
-            ShooterResultScreen(navController, shooterResultViewModel)
+            ShooterResultScreen(onBack = { navController.safePopBackStack() }, viewModel = shooterResultViewModel)
         }
         composable(
             route = Screen.CompetitionSignupsList.route,
@@ -116,7 +185,7 @@ fun AppNavHost(navController: NavHostController) {
             val signupsListViewModel: SignupsViewModelImpl = koinViewModel {
                 parametersOf(competitionId)
             }
-            CompetitionSignupsScreen(navController, signupsListViewModel)
+            CompetitionSignupsScreen(onBack = { navController.safePopBackStack() }, viewModel = signupsListViewModel)
         }
         composable(
             route = Screen.CompetitionPatrols.route,
@@ -130,7 +199,7 @@ fun AppNavHost(navController: NavHostController) {
             val patrolsViewModel: PatrolsViewModelImpl = koinViewModel {
                 parametersOf(competitionId, competitionTypeId)
             }
-            CompetitionPatrolsScreen(navController, patrolsViewModel)
+            CompetitionPatrolsScreen(onBack = { navController.safePopBackStack() }, viewModel = patrolsViewModel)
         }
         composable(
             route = Screen.CompetitionTeams.route,
@@ -140,7 +209,7 @@ fun AppNavHost(navController: NavHostController) {
             val teamsViewModel: TeamsViewModelImpl = koinViewModel {
                 parametersOf(competitionId)
             }
-            CompetitionTeamsScreen(navController, teamsViewModel)
+            CompetitionTeamsScreen(onBack = { navController.safePopBackStack() }, viewModel = teamsViewModel)
         }
         composable(
             route = Screen.CompetitionSignup.route,
@@ -189,7 +258,7 @@ fun AppNavHost(navController: NavHostController) {
                 }
             }
             if (competition != null) {
-                SignupScreen(competition, signupViewModel, navController)
+                SignupScreen(competition, signupViewModel, onBack = { navController.safePopBackStack() })
             }
         }
     }

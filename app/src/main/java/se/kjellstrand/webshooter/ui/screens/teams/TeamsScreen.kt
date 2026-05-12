@@ -32,8 +32,6 @@ import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitionteams.remote.TeamEntry
 import se.kjellstrand.webshooter.ui.mock.TeamsViewModelMock
@@ -42,14 +40,13 @@ import se.kjellstrand.webshooter.ui.common.GroupCardHeader
 import se.kjellstrand.webshooter.ui.common.ScreenTopBar
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
-import se.kjellstrand.webshooter.ui.navigation.safePopBackStack
 import se.kjellstrand.webshooter.ui.theme.appColors
 import se.kjellstrand.webshooter.resources.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CompetitionTeamsScreen(
-    navController: NavController,
+    onBack: () -> Unit,
     viewModel: TeamsViewModel,
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -66,7 +63,7 @@ fun CompetitionTeamsScreen(
                 else
                     stringResource(Res.string.competitions_teams_button),
                 navigationIcon = {
-                    IconButton(onClick = { navController.safePopBackStack() }) {
+                    IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
@@ -194,7 +191,7 @@ private fun TeamSignupRow(signup: TeamSignupEntry, isCurrentUser: Boolean) {
 @Composable
 fun TeamsScreenPreview() {
     CompetitionTeamsScreen(
-        navController = rememberNavController(),
+        onBack = {},
         viewModel = TeamsViewModelMock()
     )
 }
@@ -203,7 +200,7 @@ fun TeamsScreenPreview() {
 @Composable
 fun TeamsScreenLoadingPreview() {
     CompetitionTeamsScreen(
-        navController = rememberNavController(),
+        onBack = {},
         viewModel = TeamsViewModelMock(CompetitionTeamsUiState(isLoading = true))
     )
 }
@@ -212,7 +209,7 @@ fun TeamsScreenLoadingPreview() {
 @Composable
 fun TeamsScreenEmptyPreview() {
     CompetitionTeamsScreen(
-        navController = rememberNavController(),
+        onBack = {},
         viewModel = TeamsViewModelMock(CompetitionTeamsUiState())
     )
 }

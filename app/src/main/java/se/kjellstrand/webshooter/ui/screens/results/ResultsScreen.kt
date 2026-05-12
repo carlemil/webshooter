@@ -1,6 +1,5 @@
 package se.kjellstrand.webshooter.ui.screens.results
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -53,7 +52,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -91,11 +89,12 @@ import se.kjellstrand.webshooter.ui.common.Dimens
 @Composable
 fun CompetitionResultsScreen(
     resultsViewModel: ResultsViewModel,
-    navController: NavController
+    onBack: () -> Unit,
+    onNavigateToShooter: (shooterId: Long) -> Unit,
+    showMessage: (String) -> Unit,
 ) {
     val resultsUiState by resultsViewModel.uiState.collectAsState()
     var isFilterBottomSheetOpen by rememberSaveable { mutableStateOf(false) }
-    val context = LocalContext.current
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -168,16 +167,13 @@ fun CompetitionResultsScreen(
     }
     var occurrenceIdx by remember(currentUserIndices) { mutableIntStateOf(-1) }
 
-    // Hoist the StringResource into Composable scope so the LaunchedEffect can
-    // capture the resolved String. Compose Resources' getString() is suspend
-    // so we can't call it synchronously from the Toast site.
     val noResultsMessage = stringResource(Res.string.results_no_results_found)
     LaunchedEffect(Unit) {
         resultsViewModel.resultsEvent.collect { event ->
             when (event) {
                 is ResultsEvent.Empty -> {
-                    Toast.makeText(context, noResultsMessage, Toast.LENGTH_LONG).show()
-                    navController.popBackStack()
+                    showMessage(noResultsMessage)
+                    onBack()
                 }
             }
         }
@@ -188,7 +184,7 @@ fun CompetitionResultsScreen(
             ScreenTopBar(
                 title = resultsUiState.competitionName,
                 navigationIcon = {
-                    IconButton(onClick = { navController.safePopBackStack() }) {
+                    IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
@@ -260,7 +256,7 @@ fun CompetitionResultsScreen(
                 ResultsList(
                     resultsUiState,
                     resultsViewModel.competitionId,
-                    navController,
+                    onNavigateToShooter,
                     resultsUiState.resultsType,
                     listState,
                     bottomContentPadding = paddingValues.calculateBottomPadding()
@@ -289,7 +285,7 @@ fun CompetitionResultsScreen(
 fun ResultsList(
     resultsUiState: ResultsUiState,
     competitionId: Long,
-    navController: NavController,
+    onNavigateToShooter: (shooterId: Long) -> Unit,
     resultsType: ResultsType = ResultsType.FIELD,
     listState: LazyListState = rememberLazyListState(),
     bottomContentPadding: Dp = 0.dp
@@ -365,15 +361,7 @@ fun ResultsList(
                             resultsType = resultsType,
                             loggedInUserId = resultsUiState.loggedInUserId,
                             inCard = true,
-                            onItemClick = {
-                                navController.safeNavigate(
-                                    Screen.ShooterResult.createRoute(
-                                        competitionId,
-                                        result.signup.user.userID,
-                                        resultsType.name
-                                    )
-                                )
-                            }
+                            onItemClick = { onNavigateToShooter(result.signup.user.userID) }
                         )
                         if (!isLast) HorizontalDivider()
                     }
@@ -407,15 +395,7 @@ fun ResultsList(
                             isMedlGrouping = isMedlGrouping,
                             isClubGrouping = isClubGrouping,
                             isWeaponClassGrouping = isWeaponClassGrouping,
-                            onItemClick = {
-                                navController.safeNavigate(
-                                    Screen.ShooterResult.createRoute(
-                                        competitionId,
-                                        result.signup.user.userID,
-                                        resultsType.name
-                                    )
-                                )
-                            }
+                            onItemClick = { onNavigateToShooter(result.signup.user.userID) }
                         )
                     }
                 }
@@ -799,7 +779,9 @@ fun ResultItem(
 fun ResultsScreenPreview() {
     CompetitionResultsScreen(
         resultsViewModel = ResultsViewModelMock(),
-        navController = NavController(LocalContext.current)
+        onBack = {},
+        onNavigateToShooter = {},
+        showMessage = {},
     )
 }
 
@@ -808,7 +790,9 @@ fun ResultsScreenPreview() {
 fun ResultsScreenLoadingPreview() {
     CompetitionResultsScreen(
         resultsViewModel = ResultsViewModelMock(ResultsUiState(isLoading = true)),
-        navController = NavController(LocalContext.current)
+        onBack = {},
+        onNavigateToShooter = {},
+        showMessage = {},
     )
 }
 
@@ -817,6 +801,8 @@ fun ResultsScreenLoadingPreview() {
 fun ResultsScreenEmptyPreview() {
     CompetitionResultsScreen(
         resultsViewModel = ResultsViewModelMock(ResultsUiState()),
-        navController = NavController(LocalContext.current)
+        onBack = {},
+        onNavigateToShooter = {},
+        showMessage = {},
     )
 }

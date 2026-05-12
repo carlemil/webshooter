@@ -1,7 +1,8 @@
 package se.kjellstrand.webshooter.ui.screens.competitions
 
-import android.content.Intent
-import android.provider.CalendarContract
+import org.koin.compose.koinInject
+import se.kjellstrand.webshooter.ui.platform.CalendarOpener
+import se.kjellstrand.webshooter.ui.platform.UrlLauncher
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -52,7 +53,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.integerResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -61,16 +61,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import org.koin.compose.viewmodel.koinViewModel
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.common.CompetitionType
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadges
 import se.kjellstrand.webshooter.ui.mock.CompetitionsViewModelMock
-import se.kjellstrand.webshooter.ui.navigation.Screen
-import se.kjellstrand.webshooter.ui.navigation.safeNavigate
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -81,7 +77,11 @@ import se.kjellstrand.webshooter.ui.common.Dimens
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CompetitionsScreen(
-    navController: NavController,
+    onNavigateToResults: (competitionId: Long, resultsType: String, name: String, date: String) -> Unit,
+    onNavigateToSignup: (competitionId: Long) -> Unit,
+    onNavigateToSignupsList: (competitionId: Long) -> Unit,
+    onNavigateToPatrols: (competitionId: Long, competitionTypeId: Int) -> Unit,
+    onNavigateToTeams: (competitionId: Long) -> Unit,
     competitionsViewModel: CompetitionsViewModel = koinViewModel<CompetitionsViewModelImpl>()
 ) {
     val competitionsState by competitionsViewModel.uiState.collectAsState()
@@ -179,38 +179,19 @@ fun CompetitionsScreen(
                                 else -> Res.string.competitions_relays_button
                             },
                             onResultsClick = {
-                                navController.safeNavigate(
-                                    Screen.CompetitionResults.createRoute(
-                                        competition.id,
-                                        (competition.resultsType).name,
-                                        competition.name,
-                                        competition.date
-                                    )
+                                onNavigateToResults(
+                                    competition.id,
+                                    competition.resultsType.name,
+                                    competition.name,
+                                    competition.date,
                                 )
                             },
-                            onSignupClick = {
-                                navController.safeNavigate(
-                                    Screen.CompetitionSignup.createRoute(competition.id)
-                                )
-                            },
-                            onSignupsListClick = {
-                                navController.safeNavigate(
-                                    Screen.CompetitionSignupsList.createRoute(competition.id)
-                                )
-                            },
+                            onSignupClick = { onNavigateToSignup(competition.id) },
+                            onSignupsListClick = { onNavigateToSignupsList(competition.id) },
                             onPatrolsOrRelayClick = {
-                                navController.safeNavigate(
-                                    Screen.CompetitionPatrols.createRoute(
-                                        competition.id,
-                                        competition.competitionType.id
-                                    )
-                                )
+                                onNavigateToPatrols(competition.id, competition.competitionType.id)
                             },
-                            onTeamsClick = {
-                                navController.safeNavigate(
-                                    Screen.CompetitionTeams.createRoute(competition.id)
-                                )
-                            }
+                            onTeamsClick = { onNavigateToTeams(competition.id) }
                         )
                     }
                 }
@@ -301,7 +282,8 @@ fun CompetitionItem(
 ) {
     var isExpanded by remember { mutableStateOf(false) }
     var showCalendarDialog by remember { mutableStateOf(false) }
-    val context = LocalContext.current
+    val urlLauncher: UrlLauncher = koinInject()
+    val calendarOpener: CalendarOpener = koinInject()
     val hasLocation =
         competition.lat != 0.0 || competition.lng != 0.0 || !competition.googleMaps.isNullOrBlank()
 
@@ -323,7 +305,7 @@ fun CompetitionItem(
                     competition = competition,
                     hasLocation = hasLocation,
                     onCalendarClick = { showCalendarDialog = true },
-                    context = context
+                    urlLauncher = urlLauncher,
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 WeaponClassBadges(
@@ -359,6 +341,7 @@ fun CompetitionItem(
                 Column(modifier = Modifier.fillMaxWidth()) {
                     CompetitionDetail(
                         competition = competition,
+                        urlLauncher = urlLauncher,
                         modifier = Modifier.padding(8.dp)
                     )
                 }
@@ -409,20 +392,14 @@ fun CompetitionItem(
             confirmButton = {
                 Button(onClick = {
                     showCalendarDialog = false
-                    val intent = Intent(Intent.ACTION_INSERT).apply {
-                        data = CalendarContract.Events.CONTENT_URI
-                        putExtra(CalendarContract.Events.TITLE, eventTitle)
-                        if (startMillis != null) putExtra(
-                            CalendarContract.EXTRA_EVENT_BEGIN_TIME,
-                            startMillis
-                        )
-                        if (endMillis != null) putExtra(
-                            CalendarContract.EXTRA_EVENT_END_TIME,
-                            endMillis
-                        )
-                        if (startMillis == null) putExtra(CalendarContract.Events.ALL_DAY, true)
-                    }
-                    context.startActivity(intent)
+                    calendarOpener.addEvent(
+                        title = eventTitle,
+                        description = null,
+                        location = null,
+                        beginEpochMillis = startMillis ?: 0L,
+                        endEpochMillis = endMillis ?: 0L,
+                        allDay = startMillis == null,
+                    )
                 }) {
                     Text(stringResource(Res.string.competitions_add_to_calendar))
                 }
@@ -441,7 +418,7 @@ private fun CompetitionItemHeader(
     competition: Datum,
     hasLocation: Boolean,
     onCalendarClick: () -> Unit,
-    context: android.content.Context
+    urlLauncher: UrlLauncher,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -487,14 +464,14 @@ private fun CompetitionItemHeader(
         if (hasLocation) {
             IconButton(
                 onClick = {
-                    val uri = when {
+                    val url = when {
                         competition.lat != 0.0 || competition.lng != 0.0 ->
-                            "geo:${competition.lat},${competition.lng}?q=${competition.lat},${competition.lng}".toUri()
+                            "geo:${competition.lat},${competition.lng}?q=${competition.lat},${competition.lng}"
 
                         else ->
-                            competition.googleMaps!!.replace("/maps/embed", "/maps").toUri()
+                            competition.googleMaps!!.replace("/maps/embed", "/maps")
                     }
-                    context.startActivity(Intent(Intent.ACTION_VIEW, uri))
+                    urlLauncher.openUrl(url)
                 }
             ) {
                 Icon(
@@ -596,8 +573,11 @@ private fun CompetitionItemButtons(
 }
 
 @Composable
-fun CompetitionDetail(competition: Datum, modifier: Modifier = Modifier) {
-    val context = LocalContext.current
+fun CompetitionDetail(
+    competition: Datum,
+    urlLauncher: UrlLauncher,
+    modifier: Modifier = Modifier,
+) {
     Column(
         modifier = modifier.fillMaxWidth()
     ) {
@@ -690,21 +670,14 @@ fun CompetitionDetail(competition: Datum, modifier: Modifier = Modifier) {
                     label = stringResource(Res.string.competitions_phone),
                     value = competition.contactTelephone ?: "",
                     onClick = competition.contactTelephone?.takeIf { it.isNotEmpty() }?.let {
-                        { context.startActivity(Intent(Intent.ACTION_DIAL, "tel:$it".toUri())) }
+                        { urlLauncher.openUrl("tel:$it") }
                     }
                 )
                 DetailRow(
                     label = stringResource(Res.string.competitions_email),
                     value = competition.contactEmail ?: "",
                     onClick = competition.contactEmail?.takeIf { it.isNotEmpty() }?.let {
-                        {
-                            context.startActivity(
-                                Intent(
-                                    Intent.ACTION_SENDTO,
-                                    "mailto:$it".toUri()
-                                )
-                            )
-                        }
+                        { urlLauncher.openUrl("mailto:$it") }
                     }
                 )
                 DetailRow(
@@ -713,7 +686,7 @@ fun CompetitionDetail(competition: Datum, modifier: Modifier = Modifier) {
                     onClick = competition.website?.takeIf { it.isNotEmpty() }?.let {
                         val url =
                             if (it.startsWith("http://") || it.startsWith("https://")) it else "https://$it"
-                        { context.startActivity(Intent(Intent.ACTION_VIEW, url.toUri())) }
+                        { urlLauncher.openUrl(url) }
                     }
                 )
             }
@@ -772,9 +745,13 @@ private fun DetailRow(label: String, value: String, onClick: (() -> Unit)? = nul
 @Preview(showBackground = true, name = "Competitions - Loaded")
 @Composable
 fun CompetitionsScreenPreview() {
-    val navController = rememberNavController()
     CompetitionsScreen(
-        navController = navController, competitionsViewModel = CompetitionsViewModelMock()
+        onNavigateToResults = { _, _, _, _ -> },
+        onNavigateToSignup = {},
+        onNavigateToSignupsList = {},
+        onNavigateToPatrols = { _, _ -> },
+        onNavigateToTeams = {},
+        competitionsViewModel = CompetitionsViewModelMock(),
     )
 }
 
@@ -782,8 +759,12 @@ fun CompetitionsScreenPreview() {
 @Composable
 fun CompetitionsScreenLoadingPreview() {
     CompetitionsScreen(
-        navController = rememberNavController(),
-        competitionsViewModel = CompetitionsViewModelMock(CompetitionsUiState(isLoading = true))
+        onNavigateToResults = { _, _, _, _ -> },
+        onNavigateToSignup = {},
+        onNavigateToSignupsList = {},
+        onNavigateToPatrols = { _, _ -> },
+        onNavigateToTeams = {},
+        competitionsViewModel = CompetitionsViewModelMock(CompetitionsUiState(isLoading = true)),
     )
 }
 
@@ -791,8 +772,12 @@ fun CompetitionsScreenLoadingPreview() {
 @Composable
 fun CompetitionsScreenErrorPreview() {
     CompetitionsScreen(
-        navController = rememberNavController(),
-        competitionsViewModel = CompetitionsViewModelMock(CompetitionsUiState(hasError = true))
+        onNavigateToResults = { _, _, _, _ -> },
+        onNavigateToSignup = {},
+        onNavigateToSignupsList = {},
+        onNavigateToPatrols = { _, _ -> },
+        onNavigateToTeams = {},
+        competitionsViewModel = CompetitionsViewModelMock(CompetitionsUiState(hasError = true)),
     )
 }
 
@@ -800,7 +785,11 @@ fun CompetitionsScreenErrorPreview() {
 @Composable
 fun CompetitionsScreenEmptyPreview() {
     CompetitionsScreen(
-        navController = rememberNavController(),
+        onNavigateToResults = { _, _, _, _ -> },
+        onNavigateToSignup = {},
+        onNavigateToSignupsList = {},
+        onNavigateToPatrols = { _, _ -> },
+        onNavigateToTeams = {},
         competitionsViewModel = CompetitionsViewModelMock(
             CompetitionsUiState(
                 competitions = se.kjellstrand.webshooter.data.competitions.remote.Competitions(
@@ -809,9 +798,9 @@ fun CompetitionsScreenEmptyPreview() {
                     lastPage = 1,
                     total = 0,
                     status = "",
-                    competitionTypes = emptyList()
-                )
-            )
-        )
+                    competitionTypes = emptyList(),
+                ),
+            ),
+        ),
     )
 }

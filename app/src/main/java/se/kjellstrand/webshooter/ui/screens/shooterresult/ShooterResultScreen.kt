@@ -29,9 +29,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import se.kjellstrand.webshooter.ui.navigation.safePopBackStack
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.ui.mock.MockResults
@@ -48,7 +45,7 @@ import se.kjellstrand.webshooter.ui.common.Dimens
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShooterResultScreen(
-    navController: NavController,
+    onBack: () -> Unit,
     viewModel: ShooterResultViewModel,
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -57,7 +54,7 @@ fun ShooterResultScreen(
             ScreenTopBar(
                 title = uiState.shooterName,
                 navigationIcon = {
-                    IconButton(onClick = { navController.safePopBackStack() }) {
+                    IconButton(onClick = onBack) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
                     }
                 }
@@ -235,7 +232,7 @@ fun StationResultsGrid(stationResults: List<StationResult>, resultsType: Results
 fun ShooterResultScreenPreview() {
     val mockResults = MockResults().results
     ShooterResultScreen(
-        navController = rememberNavController(),
+        onBack = {},
         viewModel = ShooterResultViewModelMock(ShooterResultUiState(
             isLoading = false,
             shooterName = "Erik Svensson",
@@ -249,7 +246,7 @@ fun ShooterResultScreenPreview() {
 @Composable
 fun ShooterResultScreenLoadingPreview() {
     ShooterResultScreen(
-        navController = rememberNavController(),
+        onBack = {},
         viewModel = ShooterResultViewModelMock(ShooterResultUiState(isLoading = true))
     )
 }
@@ -258,7 +255,7 @@ fun ShooterResultScreenLoadingPreview() {
 @Composable
 fun ShooterResultScreenErrorPreview() {
     ShooterResultScreen(
-        navController = rememberNavController(),
+        onBack = {},
         viewModel = ShooterResultViewModelMock(ShooterResultUiState(isLoading = false, error = "NetworkError"))
     )
 }

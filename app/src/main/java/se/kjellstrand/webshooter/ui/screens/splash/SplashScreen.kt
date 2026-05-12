@@ -19,13 +19,12 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import org.koin.compose.viewmodel.koinViewModel
-import androidx.navigation.NavController
 import kotlinx.coroutines.delay
-import se.kjellstrand.webshooter.ui.navigation.Screen
 
 @Composable
 fun SplashScreen(
-    navController: NavController,
+    onNavigateToLanding: () -> Unit,
+    onNavigateToLogin: () -> Unit,
     viewModel: SplashViewModel = koinViewModel<SplashViewModel>()
 ) {
     val alpha = remember { Animatable(0f) }
@@ -33,17 +32,14 @@ fun SplashScreen(
     LaunchedEffect(Unit) {
         alpha.animateTo(1f, animationSpec = tween(600))
         delay(800)
-        val destination = if (viewModel.hasSession()) {
+        if (viewModel.hasSession()) {
             // Prime the in-memory cookie jar before any authenticated request
             // fires from LandingScreen — without Laravel session cookies the
             // backend returns 500 even with a valid bearer token.
             viewModel.primeCookies()
-            Screen.LandingScreen.route
+            onNavigateToLanding()
         } else {
-            Screen.LoginScreen.route
-        }
-        navController.navigate(destination) {
-            popUpTo(0) { inclusive = true }
+            onNavigateToLogin()
         }
     }
 

@@ -13,6 +13,10 @@ import se.kjellstrand.webshooter.data.db.AppDatabase
 import se.kjellstrand.webshooter.data.db.createAppDatabase
 import se.kjellstrand.webshooter.data.secure.SecurePrefs
 import se.kjellstrand.webshooter.data.secure.createSecurePrefs
+import se.kjellstrand.webshooter.ui.platform.AndroidCalendarOpener
+import se.kjellstrand.webshooter.ui.platform.AndroidUrlLauncher
+import se.kjellstrand.webshooter.ui.platform.CalendarOpener
+import se.kjellstrand.webshooter.ui.platform.UrlLauncher
 
 /**
  * Android Koin module — supplies host-bound singletons (Context-scoped
@@ -32,6 +36,8 @@ fun androidPlatformModule(
     single { createAppDatabase(context) }
     single<AuthTokenManager> { createAuthTokenManager(context) }
     single<SecurePrefs> { createSecurePrefs(context) }
+    single<UrlLauncher> { AndroidUrlLauncher(context) }
+    single<CalendarOpener> { AndroidCalendarOpener(context) }
     single<HttpClient> {
         createWebshooterHttpClient(
             json = get(),

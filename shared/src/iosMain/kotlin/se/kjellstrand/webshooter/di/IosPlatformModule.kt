@@ -11,6 +11,10 @@ import se.kjellstrand.webshooter.data.db.AppDatabase
 import se.kjellstrand.webshooter.data.db.createAppDatabase
 import se.kjellstrand.webshooter.data.secure.SecurePrefs
 import se.kjellstrand.webshooter.data.secure.createSecurePrefs
+import se.kjellstrand.webshooter.ui.platform.CalendarOpener
+import se.kjellstrand.webshooter.ui.platform.IosCalendarOpener
+import se.kjellstrand.webshooter.ui.platform.IosUrlLauncher
+import se.kjellstrand.webshooter.ui.platform.UrlLauncher
 
 /**
  * iOS Koin module — supplies the Darwin-engine HttpClient, the iOS Room
@@ -23,6 +27,8 @@ fun iosPlatformModule(config: WebshooterConfig): Module = module {
     single { createAppDatabase() }
     single<AuthTokenManager> { createAuthTokenManager() }
     single<SecurePrefs> { createSecurePrefs() }
+    single<UrlLauncher> { IosUrlLauncher() }
+    single<CalendarOpener> { IosCalendarOpener() }
     single<HttpClient> {
         createWebshooterHttpClient(
             json = get(),

@@ -1,7 +1,5 @@
 package se.kjellstrand.webshooter.ui.screens.licenses
 
-import android.content.Intent
-import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,11 +14,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.dp
-import se.kjellstrand.webshooter.R
+import org.koin.compose.koinInject
 import se.kjellstrand.webshooter.resources.*
+import se.kjellstrand.webshooter.ui.platform.UrlLauncher
 
 data class LicenseItem(
     val name: String,
@@ -29,8 +27,7 @@ data class LicenseItem(
 )
 
 @Composable
-fun LicensesScreen() {
-    val context = LocalContext.current
+fun LicensesScreen(urlLauncher: UrlLauncher = koinInject()) {
 
     val licenses = listOf(
         LicenseItem("Kotlin", "https://github.com/JetBrains/kotlin", "Apache 2.0"),
@@ -68,9 +65,7 @@ fun LicensesScreen() {
             text = stringResource(Res.string.licenses_apache_license),
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.clickable {
-                context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(apacheLicenseUrl)))
-            }
+            modifier = Modifier.clickable { urlLauncher.openUrl(apacheLicenseUrl) }
         )
 
         Spacer(Modifier.height(24.dp))
@@ -81,9 +76,7 @@ fun LicensesScreen() {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable {
-                        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(item.url)))
-                    }
+                    .clickable { urlLauncher.openUrl(item.url) }
                     .padding(vertical = 8.dp)
             ) {
                 Text(
