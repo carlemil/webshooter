@@ -35,11 +35,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.common.WeaponClass
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.ui.mock.MockCompetitions
@@ -202,7 +200,7 @@ private fun WeaponClassDropdown(
     }
 }
 
-@Preview(showBackground = true, name = "Signup - Default")
+@Preview
 @Composable
 fun SignupScreenPreview() {
     SignupScreen(
@@ -212,7 +210,7 @@ fun SignupScreenPreview() {
     )
 }
 
-@Preview(showBackground = true, name = "Signup - Loading")
+@Preview
 @Composable
 fun SignupScreenLoadingPreview() {
     SignupScreen(
@@ -222,7 +220,7 @@ fun SignupScreenLoadingPreview() {
     )
 }
 
-@Preview(showBackground = true, name = "Signup - Error")
+@Preview
 @Composable
 fun SignupScreenErrorPreview() {
     SignupScreen(

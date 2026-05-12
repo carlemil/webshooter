@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import org.jetbrains.compose.resources.stringResource
-import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.resources.*
 
 @Composable

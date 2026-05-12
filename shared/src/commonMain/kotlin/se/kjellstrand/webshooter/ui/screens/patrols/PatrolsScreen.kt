@@ -48,10 +48,9 @@ import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
-import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitionpatrols.remote.PatrolEntry
 import se.kjellstrand.webshooter.ui.mock.PatrolsViewModelMock
 import se.kjellstrand.webshooter.data.competitionpatrols.remote.PatrolSignupEntry
@@ -384,7 +383,7 @@ private fun SignupRow(signup: PatrolSignupEntry, isCurrentUser: Boolean) {
     }
 }
 
-@Preview(showBackground = true, name = "Patrols - Loaded")
+@Preview
 @Composable
 fun PatrolsScreenPreview() {
     CompetitionPatrolsScreen(
@@ -393,7 +392,7 @@ fun PatrolsScreenPreview() {
     )
 }
 
-@Preview(showBackground = true, name = "Patrols - Loading")
+@Preview
 @Composable
 fun PatrolsScreenLoadingPreview() {
     CompetitionPatrolsScreen(
@@ -402,7 +401,7 @@ fun PatrolsScreenLoadingPreview() {
     )
 }
 
-@Preview(showBackground = true, name = "Patrols - Empty")
+@Preview
 @Composable
 fun PatrolsScreenEmptyPreview() {
     CompetitionPatrolsScreen(

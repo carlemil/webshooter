@@ -67,6 +67,7 @@ kotlin {
             api(libs.multiplatform.settings)
             api(libs.koin.core)
             api(libs.koin.core.viewmodel)
+            api(libs.koin.compose.viewmodel)
             api(libs.androidx.lifecycle.viewmodel)
 
             // Compose Multiplatform (used by screens being moved into commonMain).

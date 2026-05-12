@@ -30,9 +30,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitionteams.remote.TeamEntry
 import se.kjellstrand.webshooter.ui.mock.TeamsViewModelMock
 import se.kjellstrand.webshooter.data.competitionteams.remote.TeamSignupEntry
@@ -187,7 +186,7 @@ private fun TeamSignupRow(signup: TeamSignupEntry, isCurrentUser: Boolean) {
     }
 }
 
-@Preview(showBackground = true, name = "Teams - Loaded")
+@Preview
 @Composable
 fun TeamsScreenPreview() {
     CompetitionTeamsScreen(
@@ -196,7 +195,7 @@ fun TeamsScreenPreview() {
     )
 }
 
-@Preview(showBackground = true, name = "Teams - Loading")
+@Preview
 @Composable
 fun TeamsScreenLoadingPreview() {
     CompetitionTeamsScreen(
@@ -205,7 +204,7 @@ fun TeamsScreenLoadingPreview() {
     )
 }
 
-@Preview(showBackground = true, name = "Teams - Empty")
+@Preview
 @Composable
 fun TeamsScreenEmptyPreview() {
     CompetitionTeamsScreen(

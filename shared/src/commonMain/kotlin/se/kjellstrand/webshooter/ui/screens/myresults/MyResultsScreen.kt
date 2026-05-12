@@ -38,10 +38,9 @@ import androidx.compose.ui.Modifier
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.koin.compose.viewmodel.koinViewModel
-import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.mysignups.remote.SignupEntry
 import se.kjellstrand.webshooter.ui.mock.MyResultsViewModelMock
 import se.kjellstrand.webshooter.resources.*
@@ -360,19 +359,19 @@ private fun RowScope.GridCell(
     )
 }
 
-@Preview(showBackground = true, name = "MyResults - Loaded")
+@Preview
 @Composable
 fun MyEntriesScreenPreview() {
     MyEntriesScreen(viewModel = MyResultsViewModelMock())
 }
 
-@Preview(showBackground = true, name = "MyResults - Loading")
+@Preview
 @Composable
 fun MyEntriesScreenLoadingPreview() {
     MyEntriesScreen(viewModel = MyResultsViewModelMock(MyResultsUiState(isLoading = true)))
 }
 
-@Preview(showBackground = true, name = "MyResults - Empty")
+@Preview
 @Composable
 fun MyEntriesScreenEmptyPreview() {
     MyEntriesScreen(viewModel = MyResultsViewModelMock(MyResultsUiState()))

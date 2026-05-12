@@ -28,9 +28,8 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.viewmodel.koinViewModel
-import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.club.remote.ClubData
 import se.kjellstrand.webshooter.data.club.remote.ClubMember
 import se.kjellstrand.webshooter.ui.mock.ClubViewModelMock
@@ -204,19 +203,19 @@ private fun ClubMemberListTab(members: List<ClubMember>) {
     }
 }
 
-@Preview(showBackground = true, name = "Club - Information")
+@Preview
 @Composable
 fun ClubScreenPreview() {
     ClubScreen(viewModel = ClubViewModelMock())
 }
 
-@Preview(showBackground = true, name = "Club - Loading")
+@Preview
 @Composable
 fun ClubScreenLoadingPreview() {
     ClubScreen(viewModel = ClubViewModelMock(ClubUiState(isLoading = true)))
 }
 
-@Preview(showBackground = true, name = "Club - Admins")
+@Preview
 @Composable
 fun ClubScreenAdminsPreview() {
     ClubScreen(viewModel = ClubViewModelMock(
@@ -224,7 +223,7 @@ fun ClubScreenAdminsPreview() {
     ))
 }
 
-@Preview(showBackground = true, name = "Club - Users")
+@Preview
 @Composable
 fun ClubScreenUsersPreview() {
     ClubScreen(viewModel = ClubViewModelMock(
@@ -232,7 +231,7 @@ fun ClubScreenUsersPreview() {
     ))
 }
 
-@Preview(showBackground = true, name = "Club - Error")
+@Preview
 @Composable
 fun ClubScreenErrorPreview() {
     ClubScreen(viewModel = ClubViewModelMock(ClubUiState(error = "NetworkError")))

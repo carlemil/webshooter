@@ -49,12 +49,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.res.dimensionResource
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.koin.compose.viewmodel.koinViewModel
-import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.ui.mock.MockSettings
 import se.kjellstrand.webshooter.ui.mock.SettingsViewModelMock
 import se.kjellstrand.webshooter.data.settings.remote.UserProfile
@@ -462,19 +460,19 @@ private fun PasswordField(value: String, onValueChange: (String) -> Unit, label:
     )
 }
 
-@Preview(showBackground = true, name = "Settings - Profile View")
+@Preview
 @Composable
 fun SettingsScreenPreview() {
     SettingsScreen(viewModel = SettingsViewModelMock())
 }
 
-@Preview(showBackground = true, name = "Settings - Loading")
+@Preview
 @Composable
 fun SettingsScreenLoadingPreview() {
     SettingsScreen(viewModel = SettingsViewModelMock(SettingsUiState(isLoading = true)))
 }
 
-@Preview(showBackground = true, name = "Settings - Edit Mode")
+@Preview
 @Composable
 fun SettingsScreenEditPreview() {
     SettingsScreen(viewModel = SettingsViewModelMock(SettingsUiState(
@@ -486,7 +484,7 @@ fun SettingsScreenEditPreview() {
     )))
 }
 
-@Preview(showBackground = true, name = "Settings - Password Tab")
+@Preview
 @Composable
 fun SettingsScreenPasswordPreview() {
     SettingsScreen(viewModel = SettingsViewModelMock(SettingsUiState(
@@ -495,7 +493,7 @@ fun SettingsScreenPasswordPreview() {
     )))
 }
 
-@Preview(showBackground = true, name = "Settings - Error")
+@Preview
 @Composable
 fun SettingsScreenErrorPreview() {
     SettingsScreen(viewModel = SettingsViewModelMock(SettingsUiState(

@@ -47,9 +47,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitionsignups.remote.CompetitionSignupEntry
 import se.kjellstrand.webshooter.ui.mock.SignupsViewModelMock
 import se.kjellstrand.webshooter.ui.common.ScreenTopBar
@@ -323,7 +322,7 @@ private fun SignupRow(entries: List<CompetitionSignupEntry>, isCurrentUser: Bool
     }
 }
 
-@Preview(showBackground = true, name = "Signups - Loaded")
+@Preview
 @Composable
 fun SignupsScreenPreview() {
     CompetitionSignupsScreen(
@@ -332,7 +331,7 @@ fun SignupsScreenPreview() {
     )
 }
 
-@Preview(showBackground = true, name = "Signups - Loading")
+@Preview
 @Composable
 fun SignupsScreenLoadingPreview() {
     CompetitionSignupsScreen(
@@ -341,7 +340,7 @@ fun SignupsScreenLoadingPreview() {
     )
 }
 
-@Preview(showBackground = true, name = "Signups - Empty")
+@Preview
 @Composable
 fun SignupsScreenEmptyPreview() {
     CompetitionSignupsScreen(

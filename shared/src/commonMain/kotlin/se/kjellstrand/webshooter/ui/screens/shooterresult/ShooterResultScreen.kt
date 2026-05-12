@@ -26,10 +26,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.ui.mock.MockResults
 import se.kjellstrand.webshooter.ui.mock.ShooterResultViewModelMock
@@ -227,7 +225,7 @@ fun StationResultsGrid(stationResults: List<StationResult>, resultsType: Results
 
 }
 
-@Preview(showBackground = true, name = "ShooterResult - Loaded")
+@Preview
 @Composable
 fun ShooterResultScreenPreview() {
     val mockResults = MockResults().results
@@ -242,7 +240,7 @@ fun ShooterResultScreenPreview() {
     )
 }
 
-@Preview(showBackground = true, name = "ShooterResult - Loading")
+@Preview
 @Composable
 fun ShooterResultScreenLoadingPreview() {
     ShooterResultScreen(
@@ -251,7 +249,7 @@ fun ShooterResultScreenLoadingPreview() {
     )
 }
 
-@Preview(showBackground = true, name = "ShooterResult - Error")
+@Preview
 @Composable
 fun ShooterResultScreenErrorPreview() {
     ShooterResultScreen(

@@ -24,10 +24,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalConfiguration
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.dp
-import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.charts.Participant
 import se.kjellstrand.webshooter.data.club.remote.ClubMember
 import se.kjellstrand.webshooter.resources.*
@@ -63,7 +61,7 @@ fun ShooterPickerDialog(
         }.sortedBy { (it.fullname ?: it.name).lowercase() }
     }
 
-    val halfDialog = LocalConfiguration.current.screenHeightDp.dp / 2
+    val selectedSectionMaxHeight = 200.dp
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -89,7 +87,7 @@ fun ShooterPickerDialog(
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .heightIn(max = halfDialog)
+                            .heightIn(max = selectedSectionMaxHeight)
                     ) {
                         items(selectedShooters.toList()) { (userId, name) ->
                             Row(

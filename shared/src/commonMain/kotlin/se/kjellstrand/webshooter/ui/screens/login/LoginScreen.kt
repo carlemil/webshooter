@@ -32,7 +32,7 @@ import androidx.compose.ui.Modifier
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.koin.compose.viewmodel.koinViewModel
 import kotlinx.coroutines.flow.collectLatest
@@ -144,7 +144,7 @@ fun LoginScreen(
     }
 }
 
-@Preview(showBackground = true, name = "Login - Default")
+@Preview
 @Composable
 fun LoginScreenPreview() {
     MaterialTheme {
@@ -155,7 +155,7 @@ fun LoginScreenPreview() {
     }
 }
 
-@Preview(showBackground = true, name = "Login - Loading")
+@Preview
 @Composable
 fun LoginScreenLoadingPreview() {
     MaterialTheme {
@@ -168,7 +168,7 @@ fun LoginScreenLoadingPreview() {
     }
 }
 
-@Preview(showBackground = true, name = "Login - Error")
+@Preview
 @Composable
 fun LoginScreenErrorPreview() {
     MaterialTheme {
