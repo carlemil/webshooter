@@ -29,7 +29,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -38,13 +37,10 @@ import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.repeatOnLifecycle
-import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.clubstats.ShooterStats
 import se.kjellstrand.webshooter.ui.common.CHART_COLORS
-import se.kjellstrand.webshooter.ui.common.CHART_MIN_HEIGHT_FRACTION
+import se.kjellstrand.webshooter.ui.common.CHART_DEFAULT_HEIGHT
+import se.kjellstrand.webshooter.ui.common.CHART_LEGEND_MAX_HEIGHT
 import se.kjellstrand.webshooter.ui.common.CHART_SHAPE_COUNT
 import se.kjellstrand.webshooter.ui.common.ChartLegend
 import se.kjellstrand.webshooter.ui.common.ChartShape
@@ -60,12 +56,9 @@ import se.kjellstrand.webshooter.resources.*
 @Composable
 fun ClubStatsScreen(viewModel: ClubStatsViewModel) {
     val uiState by viewModel.uiState.collectAsState()
-    val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(lifecycleOwner) {
-        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-            viewModel.refresh()
-        }
+    LaunchedEffect(Unit) {
+        viewModel.refresh()
     }
 
     var highlightedLegendId by remember { mutableStateOf<String?>(null) }
@@ -114,7 +107,6 @@ fun ClubStatsScreen(viewModel: ClubStatsViewModel) {
             onSelectGroup = viewModel::selectWeaponGroup,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
-        val screenHeight = LocalConfiguration.current.screenHeightDp.dp
         ChartStateWrapper(
             isLoading = uiState.isLoading && uiState.shooterStats.isEmpty(),
             hasError = uiState.hasError,
@@ -128,7 +120,7 @@ fun ClubStatsScreen(viewModel: ClubStatsViewModel) {
                 },
                 modifier = Modifier
                     .weight(1f)
-                    .heightIn(min = screenHeight * CHART_MIN_HEIGHT_FRACTION)
+                    .heightIn(min = CHART_DEFAULT_HEIGHT)
                     .fillMaxWidth()
                     .padding(8.dp)
             )
@@ -144,7 +136,7 @@ fun ClubStatsScreen(viewModel: ClubStatsViewModel) {
                 items = legendItems,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(max = screenHeight * (1f - CHART_MIN_HEIGHT_FRACTION))
+                    .heightIn(max = CHART_LEGEND_MAX_HEIGHT)
                     .padding(horizontal = 16.dp, vertical = 8.dp),
                 highlightedId = highlightedLegendId,
                 onItemClick = { id ->

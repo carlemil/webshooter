@@ -34,7 +34,6 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -44,15 +43,10 @@ import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.repeatOnLifecycle
-import android.graphics.Color as AndroidColor
-import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.seriespoints.CompetitionSeries
 import se.kjellstrand.webshooter.ui.common.AddShooterButton
 import se.kjellstrand.webshooter.ui.common.CHART_COLORS
-import se.kjellstrand.webshooter.ui.common.CHART_MIN_HEIGHT_FRACTION
+import se.kjellstrand.webshooter.ui.common.CHART_DEFAULT_HEIGHT
 import se.kjellstrand.webshooter.ui.common.ChartLegend
 import se.kjellstrand.webshooter.ui.common.ChartStateWrapper
 import se.kjellstrand.webshooter.ui.common.ShooterPickerDialog
@@ -63,15 +57,16 @@ import kotlin.math.ceil
 import kotlin.math.floor
 import se.kjellstrand.webshooter.resources.*
 
-private val LATEST_COLOR_INT = AndroidColor.rgb(76, 255, 120)
-private val OLDER_HSV = floatArrayOf(120f, 0.55f, 1f)
+private val LATEST_COLOR_INT: Int = Color(red = 76, green = 255, blue = 120).toArgb()
+private const val OLDER_HUE = 120f
+private const val OLDER_SAT = 0.55f
 
 private fun colorForAge(indexFromNewest: Int, total: Int): Int {
     if (indexFromNewest == 0) return LATEST_COLOR_INT
     val denom = (total - 1).coerceAtLeast(1)
     val t = indexFromNewest.toFloat() / denom
     val value = 0.75f - 0.55f * t
-    return AndroidColor.HSVToColor(floatArrayOf(OLDER_HSV[0], OLDER_HSV[1], value))
+    return Color.hsv(OLDER_HUE, OLDER_SAT, value).toArgb()
 }
 
 private val TREND_COLOR_ARGB: Int = CHART_COLORS[7]
@@ -86,12 +81,9 @@ internal fun competitionLegendId(comp: CompetitionSeries): String =
 @Composable
 fun SeriesPointsScreen(viewModel: SeriesPointsViewModel) {
     val uiState by viewModel.uiState.collectAsState()
-    val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(lifecycleOwner) {
-        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-            viewModel.refresh()
-        }
+    LaunchedEffect(Unit) {
+        viewModel.refresh()
     }
 
     Scaffold { _ ->
@@ -182,7 +174,6 @@ private fun SeriesPointsContent(
         )
 
         val competitions = uiState.filteredCompetitions
-        val screenHeight = LocalConfiguration.current.screenHeightDp.dp
 
         if (competitions.isEmpty()) {
             Box(
@@ -206,7 +197,7 @@ private fun SeriesPointsContent(
                     highlightedLegendId = if (highlightedLegendId == id) null else id
                 },
                 modifier = Modifier
-                    .height(screenHeight * CHART_MIN_HEIGHT_FRACTION)
+                    .height(CHART_DEFAULT_HEIGHT)
                     .fillMaxWidth()
                     .padding(8.dp)
             )

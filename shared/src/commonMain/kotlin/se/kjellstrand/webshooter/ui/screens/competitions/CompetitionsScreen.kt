@@ -53,24 +53,24 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.integerResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.core.net.toUri
 import org.koin.compose.viewmodel.koinViewModel
 import kotlinx.coroutines.launch
-import se.kjellstrand.webshooter.R
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.LocalDateTime
+import kotlinx.datetime.LocalTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toInstant
+import kotlinx.datetime.todayIn
 import se.kjellstrand.webshooter.data.common.CompetitionType
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadges
 import se.kjellstrand.webshooter.ui.mock.CompetitionsViewModelMock
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.LocalTime
-import java.time.ZoneId
 import se.kjellstrand.webshooter.resources.*
 import se.kjellstrand.webshooter.ui.common.Dimens
 
@@ -94,9 +94,9 @@ fun CompetitionsScreen(
     }
 
     val upcomingIndex = remember(competitionsState.filteredData) {
-        val today = LocalDate.now()
+        val today = Clock.System.todayIn(TimeZone.currentSystemDefault())
         competitionsState.filteredData.indexOfLast { competition ->
-            runCatching { !LocalDate.parse(competition.date).isBefore(today) }.getOrDefault(false)
+            runCatching { LocalDate.parse(competition.date) >= today }.getOrDefault(false)
         }
     }
 
@@ -365,19 +365,18 @@ fun CompetitionItem(
             .mapNotNull { it.endTimeHuman.takeIf { t -> t.isNotBlank() } }
             .maxOrNull()
 
+        val tz = TimeZone.currentSystemDefault()
         val startMillis = runCatching {
-            LocalDateTime.of(
+            LocalDateTime(
                 LocalDate.parse(competition.date),
-                LocalTime.parse(startTimeStr ?: "00:00")
-            )
-                .atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                LocalTime.parse(startTimeStr ?: "00:00"),
+            ).toInstant(tz).toEpochMilliseconds()
         }.getOrNull()
         val endMillis = runCatching {
-            LocalDateTime.of(
+            LocalDateTime(
                 LocalDate.parse(competition.date),
-                LocalTime.parse(endTimeStr ?: "23:59")
-            )
-                .atZone(ZoneId.systemDefault()).toInstant().toEpochMilli()
+                LocalTime.parse(endTimeStr ?: "23:59"),
+            ).toInstant(tz).toEpochMilliseconds()
         }.getOrNull()
 
         AlertDialog(
@@ -451,7 +450,10 @@ private fun CompetitionItemHeader(
             )
         }
         val isFutureCompetition = remember(competition.date) {
-            runCatching { LocalDate.parse(competition.date) >= LocalDate.now() }.getOrDefault(false)
+            runCatching {
+                LocalDate.parse(competition.date) >=
+                    Clock.System.todayIn(TimeZone.currentSystemDefault())
+            }.getOrDefault(false)
         }
         if (isFutureCompetition) {
             IconButton(onClick = onCalendarClick) {
@@ -501,7 +503,8 @@ private fun CompetitionItemButtons(
         val buttonContentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp)
         val resultsEnabled = competition.status == "completed" ||
                 runCatching {
-                    !LocalDate.parse(competition.date).isAfter(LocalDate.now())
+                    LocalDate.parse(competition.date) <=
+                        Clock.System.todayIn(TimeZone.currentSystemDefault())
                 }.getOrDefault(false)
         if (resultsEnabled) {
             Button(
@@ -742,7 +745,7 @@ private fun DetailRow(label: String, value: String, onClick: (() -> Unit)? = nul
     }
 }
 
-@Preview(showBackground = true, name = "Competitions - Loaded")
+@Preview
 @Composable
 fun CompetitionsScreenPreview() {
     CompetitionsScreen(
@@ -755,7 +758,7 @@ fun CompetitionsScreenPreview() {
     )
 }
 
-@Preview(showBackground = true, name = "Competitions - Loading")
+@Preview
 @Composable
 fun CompetitionsScreenLoadingPreview() {
     CompetitionsScreen(
@@ -768,7 +771,7 @@ fun CompetitionsScreenLoadingPreview() {
     )
 }
 
-@Preview(showBackground = true, name = "Competitions - Error")
+@Preview
 @Composable
 fun CompetitionsScreenErrorPreview() {
     CompetitionsScreen(
@@ -781,7 +784,7 @@ fun CompetitionsScreenErrorPreview() {
     )
 }
 
-@Preview(showBackground = true, name = "Competitions - Empty")
+@Preview
 @Composable
 fun CompetitionsScreenEmptyPreview() {
     CompetitionsScreen(

@@ -52,24 +52,20 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.dimensionResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.NavController
-import se.kjellstrand.webshooter.ui.navigation.safeNavigate
-import se.kjellstrand.webshooter.ui.navigation.safePopBackStack
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import se.kjellstrand.webshooter.R
+import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.todayIn
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.data.results.remote.Result
 import se.kjellstrand.webshooter.data.results.remote.StdMedal
@@ -79,9 +75,7 @@ import se.kjellstrand.webshooter.ui.common.ScreenTopBar
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
 import se.kjellstrand.webshooter.ui.mock.ResultsViewModelMock
-import se.kjellstrand.webshooter.ui.navigation.Screen
 import se.kjellstrand.webshooter.ui.theme.appColors
-import java.time.LocalDate
 import se.kjellstrand.webshooter.resources.*
 import se.kjellstrand.webshooter.ui.common.Dimens
 
@@ -97,17 +91,17 @@ fun CompetitionResultsScreen(
     var isFilterBottomSheetOpen by rememberSaveable { mutableStateOf(false) }
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
-    val lifecycleOwner = LocalLifecycleOwner.current
     val isCompetitionToday = remember(resultsViewModel.competitionDate) {
-        runCatching { LocalDate.parse(resultsViewModel.competitionDate) == LocalDate.now() }.getOrDefault(
-            false
-        )
+        runCatching {
+            LocalDate.parse(resultsViewModel.competitionDate) ==
+                Clock.System.todayIn(TimeZone.currentSystemDefault())
+        }.getOrDefault(false)
     }
 
     val refreshIntervalSeconds = 5 * 60
     val refreshIntervalMs = refreshIntervalSeconds * 1000L
-    var lastReloadAt by rememberSaveable { mutableLongStateOf(System.currentTimeMillis()) }
-    var nowMs by remember { mutableLongStateOf(System.currentTimeMillis()) }
+    var lastReloadAt by rememberSaveable { mutableLongStateOf(Clock.System.now().toEpochMilliseconds()) }
+    var nowMs by remember { mutableLongStateOf(Clock.System.now().toEpochMilliseconds()) }
     val secondsLeft = ((refreshIntervalMs - (nowMs - lastReloadAt)) / 1000L)
         .coerceIn(0L, refreshIntervalSeconds.toLong())
         .toInt()
@@ -123,18 +117,16 @@ fun CompetitionResultsScreen(
         lastSeenRefreshVersion = refreshVersion
     }
 
-    LaunchedEffect(lifecycleOwner, isCompetitionToday) {
+    LaunchedEffect(isCompetitionToday) {
         if (!isCompetitionToday) return@LaunchedEffect
-        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-            while (true) {
-                nowMs = System.currentTimeMillis()
-                if (nowMs - lastReloadAt >= refreshIntervalMs) {
-                    resultsViewModel.refresh()
-                    lastReloadAt = System.currentTimeMillis()
-                    nowMs = lastReloadAt
-                }
-                delay(1000L)
+        while (true) {
+            nowMs = Clock.System.now().toEpochMilliseconds()
+            if (nowMs - lastReloadAt >= refreshIntervalMs) {
+                resultsViewModel.refresh()
+                lastReloadAt = Clock.System.now().toEpochMilliseconds()
+                nowMs = lastReloadAt
             }
+            delay(1000L)
         }
     }
 
@@ -774,7 +766,7 @@ fun ResultItem(
     }
 }
 
-@Preview(showBackground = true, name = "Results - Loaded")
+@Preview
 @Composable
 fun ResultsScreenPreview() {
     CompetitionResultsScreen(
@@ -785,7 +777,7 @@ fun ResultsScreenPreview() {
     )
 }
 
-@Preview(showBackground = true, name = "Results - Loading")
+@Preview
 @Composable
 fun ResultsScreenLoadingPreview() {
     CompetitionResultsScreen(
@@ -796,7 +788,7 @@ fun ResultsScreenLoadingPreview() {
     )
 }
 
-@Preview(showBackground = true, name = "Results - Empty")
+@Preview
 @Composable
 fun ResultsScreenEmptyPreview() {
     CompetitionResultsScreen(

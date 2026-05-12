@@ -9,7 +9,15 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.dp
 
-const val CHART_MIN_HEIGHT_FRACTION = 0.5f
+/**
+ * Default chart canvas height. Previously the chart and legend were each
+ * sized to half of the device screen height (CHART_MIN_HEIGHT_FRACTION = 0.5)
+ * via LocalConfiguration; that's Android-only. With the screens moved to
+ * commonMain we use a fixed dp value tuned for typical phone screens —
+ * the legend list scrolls if it exceeds [CHART_LEGEND_MAX_HEIGHT].
+ */
+val CHART_DEFAULT_HEIGHT = 400.dp
+val CHART_LEGEND_MAX_HEIGHT = 400.dp
 
 /**
  * Default per-series color palette. Uses ARGB ints so that the value is

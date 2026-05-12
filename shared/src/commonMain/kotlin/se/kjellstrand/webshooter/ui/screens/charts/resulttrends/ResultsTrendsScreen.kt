@@ -31,7 +31,6 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.AnnotatedString
@@ -39,18 +38,15 @@ import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.rememberTextMeasurer
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.repeatOnLifecycle
-import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.charts.ChartDataPoint
 import se.kjellstrand.webshooter.ui.common.AddShooterButton
 import se.kjellstrand.webshooter.ui.common.CHART_COLORS
-import se.kjellstrand.webshooter.ui.common.CHART_MIN_HEIGHT_FRACTION
+import se.kjellstrand.webshooter.ui.common.CHART_DEFAULT_HEIGHT
+import se.kjellstrand.webshooter.ui.common.CHART_LEGEND_MAX_HEIGHT
 import se.kjellstrand.webshooter.ui.common.CHART_SHAPE_COUNT
 import se.kjellstrand.webshooter.ui.common.ChartLegend
 import se.kjellstrand.webshooter.ui.common.ChartShape
@@ -69,12 +65,9 @@ import se.kjellstrand.webshooter.resources.*
 @Composable
 fun ChartsScreen(viewModel: ResultsTrendsViewModel) {
     val uiState by viewModel.uiState.collectAsState()
-    val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(lifecycleOwner) {
-        lifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
-            viewModel.refresh()
-        }
+    LaunchedEffect(Unit) {
+        viewModel.refresh()
     }
 
     Scaffold { _ ->
@@ -152,7 +145,6 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
         val isHitsBased = uiState.selectedResultsType == "field" ||
             uiState.selectedResultsType == "pointfield"
 
-        val screenHeight = LocalConfiguration.current.screenHeightDp.dp
         if (uiState.availableResultsTypes.isNotEmpty()) {
             ChartScatterChart(
                 myData = chartData,
@@ -166,7 +158,7 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
                 },
                 modifier = Modifier
                     .weight(1f)
-                    .heightIn(min = screenHeight * CHART_MIN_HEIGHT_FRACTION)
+                    .heightIn(min = CHART_DEFAULT_HEIGHT)
                     .fillMaxWidth()
                     .padding(8.dp)
             )
@@ -221,7 +213,7 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
                     items = legendItems,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(max = screenHeight * (1f - CHART_MIN_HEIGHT_FRACTION))
+                        .heightIn(max = CHART_LEGEND_MAX_HEIGHT)
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     highlightedId = highlightedLegendId,
                     onItemClick = { id ->
@@ -668,7 +660,7 @@ private fun findNearestScatter(
     return if (bestDist <= maxDistancePx * 2f) best else null
 }
 
-@Preview(showBackground = true, name = "Charts - Default with data")
+@Preview
 @Composable
 fun ChartsScreenDefaultPreview() {
     val mock = MockCharts()
@@ -684,7 +676,7 @@ fun ChartsScreenDefaultPreview() {
     )
 }
 
-@Preview(showBackground = true, name = "Charts - Loading")
+@Preview
 @Composable
 fun ChartsScreenLoadingPreview() {
     ChartsScreen(
@@ -694,7 +686,7 @@ fun ChartsScreenLoadingPreview() {
     )
 }
 
-@Preview(showBackground = true, name = "Charts - Error")
+@Preview
 @Composable
 fun ChartsScreenErrorPreview() {
     ChartsScreen(
@@ -704,7 +696,7 @@ fun ChartsScreenErrorPreview() {
     )
 }
 
-@Preview(showBackground = true, name = "Charts - Empty")
+@Preview
 @Composable
 fun ChartsScreenEmptyPreview() {
     val mock = MockCharts()
@@ -719,7 +711,7 @@ fun ChartsScreenEmptyPreview() {
     )
 }
 
-@Preview(showBackground = true, name = "Charts - With compared shooters")
+@Preview
 @Composable
 fun ChartsScreenComparedPreview() {
     val mock = MockCharts()
