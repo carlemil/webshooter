@@ -7,7 +7,7 @@ import java.io.File
 class ChartsLegendAverageTrendTest {
 
     private val screenFile =
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsScreen.kt")
+        File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsScreen.kt")
     private val stringsFile = File("../shared/src/commonMain/composeResources/values/strings.xml")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---

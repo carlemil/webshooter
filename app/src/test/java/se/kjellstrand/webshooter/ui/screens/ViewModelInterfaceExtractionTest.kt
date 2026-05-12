@@ -22,7 +22,7 @@ import java.io.File
  */
 class ViewModelInterfaceExtractionTest {
 
-    private val screenBaseDir = "src/main/java/se/kjellstrand/webshooter/ui/screens"
+    private val screenBaseDir = "../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens"
 
     @Test
     fun `ClubViewModel should be an interface`() {

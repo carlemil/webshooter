@@ -6,8 +6,8 @@ import java.io.File
 
 class LoginPreviewTest {
 
-    private val loginScreenFile = File("src/main/java/se/kjellstrand/webshooter/ui/screens/login/LoginScreen.kt")
-    private val mockDir = "src/main/java/se/kjellstrand/webshooter/ui/mock"
+    private val loginScreenFile = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/login/LoginScreen.kt")
+    private val mockDir = "../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/mock"
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 

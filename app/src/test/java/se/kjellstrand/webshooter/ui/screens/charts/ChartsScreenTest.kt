@@ -15,7 +15,7 @@ import java.io.File
 class ChartsScreenTest {
 
     private val sourceFile =
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsScreen.kt")
+        File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsScreen.kt")
 
     @Test
     fun `ChartsScreen uses shared ChartLegend from ui common`() {

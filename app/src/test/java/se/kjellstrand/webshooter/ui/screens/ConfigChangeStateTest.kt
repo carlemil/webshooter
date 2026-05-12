@@ -6,8 +6,8 @@ import java.io.File
 
 class ConfigChangeStateTest {
 
-    private val signupsScreen = File("src/main/java/se/kjellstrand/webshooter/ui/screens/signups/SignupsScreen.kt")
-    private val resultsScreen = File("src/main/java/se/kjellstrand/webshooter/ui/screens/results/ResultsScreen.kt")
+    private val signupsScreen = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/signups/SignupsScreen.kt")
+    private val resultsScreen = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/results/ResultsScreen.kt")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 

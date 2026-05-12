@@ -7,8 +7,8 @@ import java.io.File
 class UserLegendTest {
 
     private val userLegendFile =
-        File("src/main/java/se/kjellstrand/webshooter/ui/common/ChartLegend.kt")
-    private val commonDir = File("src/main/java/se/kjellstrand/webshooter/ui/common")
+        File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/common/ChartLegend.kt")
+    private val commonDir = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/common")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 
@@ -92,7 +92,7 @@ class UserLegendTest {
 
     @Test
     fun `ChartStyles exposes CHART_COLORS and the new ChartShape enum`() {
-        val chartStyles = File("src/main/java/se/kjellstrand/webshooter/ui/common/ChartStyles.kt")
+        val chartStyles = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/common/ChartStyles.kt")
         assertTrue("ChartStyles.kt should exist", chartStyles.exists())
         val source = chartStyles.readText()
         assertTrue("ChartStyles must expose CHART_COLORS", source.contains("CHART_COLORS"))
@@ -105,7 +105,7 @@ class UserLegendTest {
 
     @Test
     fun `ChartStylesLegacy compatibility shim is gone (all screens migrated)`() {
-        val legacy = File("src/main/java/se/kjellstrand/webshooter/ui/common/ChartStylesLegacy.kt")
+        val legacy = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/common/ChartStylesLegacy.kt")
         assertTrue(
             "ChartStylesLegacy.kt should be deleted now that all chart screens are pure Compose",
             !legacy.exists()
@@ -114,7 +114,7 @@ class UserLegendTest {
 
     @Test
     fun `ChartSetup MPAndroidChart helper is gone`() {
-        val chartSetup = File("src/main/java/se/kjellstrand/webshooter/ui/common/ChartSetup.kt")
+        val chartSetup = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/common/ChartSetup.kt")
         assertTrue(
             "ChartSetup.kt (applyBaseChartStyle) should be deleted along with MPAndroidChart",
             !chartSetup.exists()

@@ -75,7 +75,7 @@ class WeaponClassGroupTest {
     @Test
     fun `WeaponClassGroupFilter renders only groups in availableGroups`() {
         val source = java.io.File(
-            "src/main/java/se/kjellstrand/webshooter/ui/common/WeaponClassGroupFilter.kt"
+            "../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/common/WeaponClassGroupFilter.kt"
         ).readText()
         assertFalse(
             "Filter must not iterate WeaponClassGroup.values() any more (would render ghost buttons for 13 groups)",
@@ -90,7 +90,7 @@ class WeaponClassGroupTest {
     @Test
     fun `WeaponClassGroupFilter no longer applies disabled state styling`() {
         val source = java.io.File(
-            "src/main/java/se/kjellstrand/webshooter/ui/common/WeaponClassGroupFilter.kt"
+            "../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/common/WeaponClassGroupFilter.kt"
         ).readText()
         assertFalse(
             "Filter must not branch on `enabled` (only enabled groups are rendered now)",

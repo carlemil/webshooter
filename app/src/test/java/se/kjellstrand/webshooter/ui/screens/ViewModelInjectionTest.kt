@@ -23,7 +23,7 @@ class ViewModelInjectionTest {
         "login/LoginScreen.kt",
         "myresults/MyResultsScreen.kt",
         "competitions/CompetitionsScreen.kt"
-    ).map { File("src/main/java/se/kjellstrand/webshooter/ui/screens/$it") }
+    ).map { File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/$it") }
 
     @Test
     fun `all screen composables use explicit koinViewModel type parameter`() {
@@ -46,7 +46,7 @@ class ViewModelInjectionTest {
 
     @Test
     fun `ClubScreen uses explicit koinViewModel type`() {
-        val source = File("src/main/java/se/kjellstrand/webshooter/ui/screens/club/ClubScreen.kt").readText()
+        val source = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/club/ClubScreen.kt").readText()
         assertTrue(
             "ClubScreen should use koinViewModel<ClubViewModelImpl>()",
             source.contains("koinViewModel<ClubViewModelImpl>()")

@@ -8,7 +8,7 @@ import java.io.File
 class SeriesPointsScreenTest {
 
     private val sourceFile =
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/seriespoints/SeriesPointsScreen.kt")
+        File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/charts/seriespoints/SeriesPointsScreen.kt")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 

@@ -14,7 +14,7 @@ import java.io.File
 class ResultsTrendsScreenFaeltCapTest {
 
     private val screenSource: String by lazy {
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsScreen.kt").readText()
+        File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsScreen.kt").readText()
     }
 
     @Test

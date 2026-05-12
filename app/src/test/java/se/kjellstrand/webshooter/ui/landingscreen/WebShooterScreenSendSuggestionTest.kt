@@ -10,6 +10,8 @@ class WebShooterScreenSendSuggestionTest {
     private val screenSource: String by lazy {
         File("src/main/java/se/kjellstrand/webshooter/ui/landingscreen/WebShooterScreen.kt").readText()
     }
+    // WebShooterScreen stays in :app (it's the Android-side drawer host), so its
+    // path is unchanged.
 
     private val stringsXml: String by lazy {
         File("../shared/src/commonMain/composeResources/values/strings.xml").readText()
@@ -62,18 +64,24 @@ class WebShooterScreenSendSuggestionTest {
     }
 
     @Test
-    fun `WebShooterScreen fires an ACTION_SENDTO intent with mailto and EXTRA_SUBJECT`() {
+    fun `WebShooterScreen opens a mailto URL with a pre-encoded subject parameter`() {
+        // The Phase 4 migration replaced the Android Intent.ACTION_SENDTO call
+        // with a UrlLauncher.openUrl("mailto:...") call so the screen can move
+        // to commonMain; the email subject is now passed as a URL-encoded query
+        // parameter instead of an Intent extra.
         assertTrue(
-            "WebShooterScreen should use Intent.ACTION_SENDTO to launch the email client",
-            screenSource.contains("ACTION_SENDTO")
+            "WebShooterScreen should hand the suggestion off to the platform UrlLauncher",
+            screenSource.contains("urlLauncher.openUrl(")
         )
         assertTrue(
-            "WebShooterScreen should build a mailto: URI for the suggestion intent",
+            "WebShooterScreen should build a mailto: URI for the suggestion",
             screenSource.contains("\"mailto:")
         )
         assertTrue(
-            "WebShooterScreen should attach EXTRA_SUBJECT so the email is pre-subjected",
-            screenSource.contains("EXTRA_SUBJECT")
+            "WebShooterScreen should attach the subject as a URL parameter so the email is pre-subjected",
+            screenSource.contains("?subject=") &&
+                (screenSource.contains("encodeURLParameter") ||
+                    screenSource.contains("URLEncoder"))
         )
     }
 

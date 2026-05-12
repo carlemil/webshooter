@@ -8,11 +8,11 @@ import java.io.File
 class AddShooterButtonTest {
 
     private val buttonFile =
-        File("src/main/java/se/kjellstrand/webshooter/ui/common/AddShooterButton.kt")
+        File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/common/AddShooterButton.kt")
     private val chartsScreen =
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsScreen.kt")
+        File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsScreen.kt")
     private val seriesPointsScreen =
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/seriespoints/SeriesPointsScreen.kt")
+        File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/charts/seriespoints/SeriesPointsScreen.kt")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 
@@ -87,6 +87,6 @@ class AddShooterButtonTest {
 
     @Test
     fun `ui common directory exists`() {
-        assertTrue(File("src/main/java/se/kjellstrand/webshooter/ui/common").isDirectory)
+        assertTrue(File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/common").isDirectory)
     }
 }

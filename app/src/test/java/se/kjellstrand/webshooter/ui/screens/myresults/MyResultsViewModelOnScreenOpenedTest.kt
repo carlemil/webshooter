@@ -17,11 +17,11 @@ class MyResultsViewModelOnScreenOpenedTest {
     }
 
     private val screenSource: String by lazy {
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/myresults/MyResultsScreen.kt").readText()
+        File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/myresults/MyResultsScreen.kt").readText()
     }
 
     private val mockSource: String by lazy {
-        File("src/main/java/se/kjellstrand/webshooter/ui/mock/MyResultsViewModelMock.kt").readText()
+        File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/mock/MyResultsViewModelMock.kt").readText()
     }
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---

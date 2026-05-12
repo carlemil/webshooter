@@ -6,8 +6,8 @@ import java.io.File
 
 class EmptyStatesTest {
 
-    private val clubScreen = File("src/main/java/se/kjellstrand/webshooter/ui/screens/club/ClubScreen.kt")
-    private val resultsScreen = File("src/main/java/se/kjellstrand/webshooter/ui/screens/results/ResultsScreen.kt")
+    private val clubScreen = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/club/ClubScreen.kt")
+    private val resultsScreen = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/results/ResultsScreen.kt")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 

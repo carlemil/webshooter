@@ -8,11 +8,11 @@ import java.io.File
 class WeaponClassGroupFilterMoveTest {
 
     private val newLocation =
-        File("src/main/java/se/kjellstrand/webshooter/ui/common/WeaponClassGroupFilter.kt")
+        File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/common/WeaponClassGroupFilter.kt")
     private val oldLocation =
         File("src/main/java/se.kjellstrand.webshooter.data.clubstats.WeaponClassGroupFilter.kt")
     private val seriesPointsScreen =
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/seriespoints/SeriesPointsScreen.kt")
+        File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/charts/seriespoints/SeriesPointsScreen.kt")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 

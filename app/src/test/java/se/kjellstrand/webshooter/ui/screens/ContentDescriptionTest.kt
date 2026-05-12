@@ -6,9 +6,9 @@ import java.io.File
 
 class ContentDescriptionTest {
 
-    private val loginScreen = File("src/main/java/se/kjellstrand/webshooter/ui/screens/login/LoginScreen.kt")
-    private val settingsScreen = File("src/main/java/se/kjellstrand/webshooter/ui/screens/settings/SettingsScreen.kt")
-    private val signupScreen = File("src/main/java/se/kjellstrand/webshooter/ui/screens/signup/SignupScreen.kt")
+    private val loginScreen = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/login/LoginScreen.kt")
+    private val settingsScreen = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/settings/SettingsScreen.kt")
+    private val signupScreen = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/signup/SignupScreen.kt")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 

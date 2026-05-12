@@ -6,10 +6,10 @@ import java.io.File
 
 class SharedComposablesTest {
 
-    private val commonDir = File("src/main/java/se/kjellstrand/webshooter/ui/common")
-    private val patrolsScreen = File("src/main/java/se/kjellstrand/webshooter/ui/screens/patrols/PatrolsScreen.kt")
-    private val teamsScreen = File("src/main/java/se/kjellstrand/webshooter/ui/screens/teams/TeamsScreen.kt")
-    private val signupsScreen = File("src/main/java/se/kjellstrand/webshooter/ui/screens/signups/SignupsScreen.kt")
+    private val commonDir = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/common")
+    private val patrolsScreen = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/patrols/PatrolsScreen.kt")
+    private val teamsScreen = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/teams/TeamsScreen.kt")
+    private val signupsScreen = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/signups/SignupsScreen.kt")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 

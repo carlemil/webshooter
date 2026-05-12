@@ -6,7 +6,7 @@ import java.io.File
 
 class ClubStatsScreenTest {
 
-    private val sourceFile = File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/clubstats/ClubStatsScreen.kt")
+    private val sourceFile = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/charts/clubstats/ClubStatsScreen.kt")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 
@@ -178,7 +178,7 @@ class ClubStatsScreenTest {
     @Test
     fun `ResultsTrendsScreen still exists`() {
         assertTrue(
-            File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsScreen.kt").exists()
+            File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsScreen.kt").exists()
         )
     }
 

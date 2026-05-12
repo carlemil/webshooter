@@ -16,7 +16,7 @@ class CompetitionsViewModelOnScreenOpenedTest {
     }
 
     private val screenSource: String by lazy {
-        File("src/main/java/se/kjellstrand/webshooter/ui/screens/competitions/CompetitionsScreen.kt").readText()
+        File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/competitions/CompetitionsScreen.kt").readText()
     }
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---

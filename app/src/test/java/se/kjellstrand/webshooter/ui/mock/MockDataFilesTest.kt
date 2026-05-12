@@ -6,7 +6,7 @@ import java.io.File
 
 class MockDataFilesTest {
 
-    private val mockDir = "src/main/java/se/kjellstrand/webshooter/ui/mock"
+    private val mockDir = "../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/mock"
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 

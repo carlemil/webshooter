@@ -8,7 +8,7 @@ import java.io.File
 class ShooterPickerDialogTest {
 
     private val sourceFile =
-        File("src/main/java/se/kjellstrand/webshooter/ui/common/ShooterPickerDialog.kt")
+        File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/common/ShooterPickerDialog.kt")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 
@@ -30,10 +30,10 @@ class ShooterPickerDialogTest {
     @Test
     fun `dialog caps selected list and stretches available list to bottom`() {
         val source = sourceFile.readText()
-        assertTrue(
-            "Must derive a half-screen max height from LocalConfiguration.current.screenHeightDp",
-            source.contains("LocalConfiguration.current.screenHeightDp")
-        )
+        // After the commonMain move LocalConfiguration is no longer available;
+        // the cap is now a fixed dp value, but the structural invariants
+        // (max-height cap on the selected list + weight(1f) on the available
+        // list so it fills to the dialog bottom) still hold.
         assertTrue(
             "Selected LazyColumn must apply heightIn(max = ...) to cap height",
             Regex("""heightIn\s*\(\s*max\s*=""").containsMatchIn(source)
