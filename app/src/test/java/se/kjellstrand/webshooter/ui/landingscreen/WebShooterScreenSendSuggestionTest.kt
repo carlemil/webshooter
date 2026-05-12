@@ -12,7 +12,7 @@ class WebShooterScreenSendSuggestionTest {
     }
 
     private val stringsXml: String by lazy {
-        File("src/main/res/values/strings.xml").readText()
+        File("../shared/src/commonMain/composeResources/values/strings.xml").readText()
     }
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
@@ -48,15 +48,15 @@ class WebShooterScreenSendSuggestionTest {
     @Test
     fun `WebShooterScreen references the three suggestion string resources`() {
         assertTrue(
-            "WebShooterScreen should reference R.string.web_shooter_send_suggestion",
+            "WebShooterScreen should reference Res.string.web_shooter_send_suggestion",
             screenSource.contains("web_shooter_send_suggestion")
         )
         assertTrue(
-            "WebShooterScreen should reference R.string.send_suggestion_email_subject",
+            "WebShooterScreen should reference Res.string.send_suggestion_email_subject",
             screenSource.contains("send_suggestion_email_subject")
         )
         assertTrue(
-            "WebShooterScreen should reference R.string.send_suggestion_email_recipient",
+            "WebShooterScreen should reference Res.string.send_suggestion_email_recipient",
             screenSource.contains("send_suggestion_email_recipient")
         )
     }
@@ -101,7 +101,7 @@ class WebShooterScreenSendSuggestionTest {
     fun `Settings section header and settingsItems rendering remain intact`() {
         assertTrue(
             "Settings section header should still be rendered",
-            screenSource.contains("SectionHeader(stringResource(R.string.menu_group_settings))")
+            screenSource.contains("SectionHeader(stringResource(Res.string.menu_group_settings))")
         )
         assertTrue(
             "settingsItems should still be iterated with MenuItem",
@@ -125,11 +125,11 @@ class WebShooterScreenSendSuggestionTest {
     fun `competition and stats drawer sections remain intact`() {
         assertTrue(
             "Competitions section header should still be rendered",
-            screenSource.contains("SectionHeader(stringResource(R.string.menu_group_competitions))")
+            screenSource.contains("SectionHeader(stringResource(Res.string.menu_group_competitions))")
         )
         assertTrue(
             "Stats section header should still be rendered",
-            screenSource.contains("SectionHeader(stringResource(R.string.menu_group_stats))")
+            screenSource.contains("SectionHeader(stringResource(Res.string.menu_group_stats))")
         )
     }
 }

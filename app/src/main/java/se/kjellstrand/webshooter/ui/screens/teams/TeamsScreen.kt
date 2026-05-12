@@ -28,7 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -44,6 +44,7 @@ import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
 import se.kjellstrand.webshooter.ui.navigation.safePopBackStack
 import se.kjellstrand.webshooter.ui.theme.appColors
+import se.kjellstrand.webshooter.resources.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,9 +62,9 @@ fun CompetitionTeamsScreen(
         topBar = {
             ScreenTopBar(
                 title = if (uiState.teams.isNotEmpty())
-                    stringResource(R.string.competition_teams_title_count, uiState.teams.size, totalShooters)
+                    stringResource(Res.string.competition_teams_title_count, uiState.teams.size, totalShooters)
                 else
-                    stringResource(R.string.competitions_teams_button),
+                    stringResource(Res.string.competitions_teams_button),
                 navigationIcon = {
                     IconButton(onClick = { navController.safePopBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -84,7 +85,7 @@ fun CompetitionTeamsScreen(
 
                 uiState.teams.isEmpty() -> {
                     Text(
-                        text = stringResource(R.string.competition_teams_no_teams),
+                        text = stringResource(Res.string.competition_teams_no_teams),
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
@@ -161,7 +162,7 @@ private fun TeamHeaderItem(team: TeamEntry) {
                     )
                 }
                 Text(
-                    text = stringResource(R.string.shooters, team.signups.size),
+                    text = stringResource(Res.string.shooters, team.signups.size),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

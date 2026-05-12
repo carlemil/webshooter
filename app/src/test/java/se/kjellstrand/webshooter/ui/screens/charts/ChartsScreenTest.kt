@@ -60,8 +60,8 @@ class ChartsScreenTest {
     fun `ChartsScreen renders charts_subtitle above the state wrapper`() {
         val source = sourceFile.readText()
         assertTrue(
-            "ChartsScreen must reference R.string.charts_subtitle",
-            source.contains("R.string.charts_subtitle")
+            "ChartsScreen must reference Res.string.charts_subtitle",
+            source.contains("Res.string.charts_subtitle")
         )
         val subtitleIndex = source.indexOf("charts_subtitle")
         val wrapperIndex = source.indexOf("ChartStateWrapper(")
@@ -70,7 +70,7 @@ class ChartsScreenTest {
 
     @Test
     fun `charts_subtitle string exists with Swedish explanation`() {
-        val strings = File("src/main/res/values/strings.xml").readText()
+        val strings = File("../shared/src/commonMain/composeResources/values/strings.xml").readText()
         assertTrue(
             "strings.xml must define charts_subtitle",
             Regex("""<string\s+name="charts_subtitle">[^<]*</string>""").containsMatchIn(strings)

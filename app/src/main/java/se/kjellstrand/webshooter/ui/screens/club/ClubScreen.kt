@@ -25,7 +25,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,6 +34,7 @@ import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.club.remote.ClubData
 import se.kjellstrand.webshooter.data.club.remote.ClubMember
 import se.kjellstrand.webshooter.ui.mock.ClubViewModelMock
+import se.kjellstrand.webshooter.resources.*
 
 @Composable
 fun ClubScreen(viewModel: ClubViewModel = koinViewModel<ClubViewModelImpl>()) {
@@ -44,17 +45,17 @@ fun ClubScreen(viewModel: ClubViewModel = koinViewModel<ClubViewModelImpl>()) {
             Tab(
                 selected = uiState.selectedTab == ClubTab.INFORMATION,
                 onClick = { viewModel.selectTab(ClubTab.INFORMATION) },
-                text = { Text(stringResource(R.string.club_club_tab_information)) }
+                text = { Text(stringResource(Res.string.club_club_tab_information)) }
             )
             Tab(
                 selected = uiState.selectedTab == ClubTab.ADMINS,
                 onClick = { viewModel.selectTab(ClubTab.ADMINS) },
-                text = { Text(stringResource(R.string.club_club_tab_admins)) }
+                text = { Text(stringResource(Res.string.club_club_tab_admins)) }
             )
             Tab(
                 selected = uiState.selectedTab == ClubTab.USERS,
                 onClick = { viewModel.selectTab(ClubTab.USERS) },
-                text = { Text(stringResource(R.string.club_club_tab_users)) }
+                text = { Text(stringResource(Res.string.club_club_tab_users)) }
             )
         }
 
@@ -88,17 +89,17 @@ private fun ClubInformationTab(club: ClubData?) {
             Spacer(modifier = Modifier.height(16.dp))
             InfoCard {
                 club.clubsNr?.takeIf { it.isNotBlank() }?.let { clubsNr ->
-                    InfoRow(stringResource(R.string.club_club_number), clubsNr)
+                    InfoRow(stringResource(Res.string.club_club_number), clubsNr)
                 }
                 club.email?.takeIf { it.isNotBlank() }?.let { email ->
                     InfoRow(
-                        label = stringResource(R.string.email),
+                        label = stringResource(Res.string.email),
                         value = email,
                         onClick = { clipboardManager.setText(AnnotatedString(email)) }
                     )
                 }
                 club.phone?.takeIf { it.isNotBlank() }?.let { phone ->
-                    InfoRow(stringResource(R.string.phone), phone)
+                    InfoRow(stringResource(Res.string.phone), phone)
                 }
 
                 val street = club.addressStreet ?: ""
@@ -106,7 +107,7 @@ private fun ClubInformationTab(club: ClubData?) {
                 val city = club.addressCity ?: ""
                 val country = club.addressCountry ?: ""
                 if (street.isNotBlank()) InfoRow(
-                    stringResource(R.string.club_address),
+                    stringResource(Res.string.club_address),
                     "$street, $zip, $city".trim()
                 )
                 if (country.isNotBlank()) InfoRow("", country)
@@ -116,14 +117,14 @@ private fun ClubInformationTab(club: ClubData?) {
                 val hasSwish = !club.swish.isNullOrBlank()
                 if (hasBankgiro || hasPostgiro || hasSwish) {
                     if (hasBankgiro) InfoRow(
-                        stringResource(R.string.club_bankgiro),
+                        stringResource(Res.string.club_bankgiro),
                         club.bankgiro!!
                     )
                     if (hasPostgiro) InfoRow(
-                        stringResource(R.string.club_postgiro),
+                        stringResource(Res.string.club_postgiro),
                         club.postgiro!!
                     )
-                    if (hasSwish) InfoRow(stringResource(R.string.club_swish), club.swish!!)
+                    if (hasSwish) InfoRow(stringResource(Res.string.club_swish), club.swish!!)
 
                 }
             }
@@ -186,7 +187,7 @@ private fun InfoRow(
 private fun ClubMemberListTab(members: List<ClubMember>) {
     if (members.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text(stringResource(R.string.club_no_members))
+            Text(stringResource(Res.string.club_no_members))
         }
         return
     }
@@ -263,14 +264,14 @@ private fun MemberItem(member: ClubMember) {
             }
             member.shootingCardNumber?.takeIf { it.isNotBlank() }?.let { number ->
                 Text(
-                    text = stringResource(R.string.shooting_card_number, number),
+                    text = stringResource(Res.string.shooting_card_number, number),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             member.status?.takeIf { it.isNotBlank() }?.let { status ->
                 Text(
-                    text = stringResource(R.string.club_member_status, status),
+                    text = stringResource(Res.string.club_member_status, status),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

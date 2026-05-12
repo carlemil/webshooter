@@ -17,7 +17,7 @@ class EmptyStatesTest {
         val memberListSection = source.substringAfter("ClubMemberListTab")
         assertTrue(
             "ClubMemberListTab should show an empty state text message when members list is empty",
-            memberListSection.contains("R.string.club_no_members") ||
+            memberListSection.contains("Res.string.club_no_members") ||
                 memberListSection.contains("no_members") ||
                 memberListSection.contains("No members")
         )
@@ -42,7 +42,7 @@ class EmptyStatesTest {
             .substringBefore("isLoading")
         assertTrue(
             "ResultsList should show an empty state message when no weapon groups are selected",
-            noneSelectedSection.contains("R.string.results_no_groups_selected") ||
+            noneSelectedSection.contains("Res.string.results_no_groups_selected") ||
                 noneSelectedSection.contains("Text(") ||
                 noneSelectedSection.contains("no_groups")
         )

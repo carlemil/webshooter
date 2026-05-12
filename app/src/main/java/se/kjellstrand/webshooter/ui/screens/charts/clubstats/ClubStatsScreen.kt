@@ -31,7 +31,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -55,6 +55,7 @@ import se.kjellstrand.webshooter.ui.common.drawScatterShape
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
+import se.kjellstrand.webshooter.resources.*
 
 @Composable
 fun ClubStatsScreen(viewModel: ClubStatsViewModel) {
@@ -74,12 +75,12 @@ fun ClubStatsScreen(viewModel: ClubStatsViewModel) {
 
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
-            text = stringResource(R.string.web_shooter_club_stats),
+            text = stringResource(Res.string.web_shooter_club_stats),
             style = MaterialTheme.typography.titleMedium,
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp)
         )
         Text(
-            text = stringResource(R.string.club_stats_subtitle),
+            text = stringResource(Res.string.club_stats_subtitle),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 4.dp)
@@ -98,7 +99,7 @@ fun ClubStatsScreen(viewModel: ClubStatsViewModel) {
                         onClick = { viewModel.selectYear(year) },
                         text = {
                             Text(
-                                if (year == 0) stringResource(R.string.club_stats_all_years)
+                                if (year == 0) stringResource(Res.string.club_stats_all_years)
                                 else year.toString()
                             )
                         }

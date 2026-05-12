@@ -8,7 +8,7 @@ class ClubStatsNavigationTest {
 
     private val screenFile = File("src/main/java/se/kjellstrand/webshooter/ui/navigation/Screen.kt")
     private val webShooterScreenFile = File("src/main/java/se/kjellstrand/webshooter/ui/landingscreen/WebShooterScreen.kt")
-    private val stringsFile = File("src/main/res/values/strings.xml")
+    private val stringsFile = File("../shared/src/commonMain/composeResources/values/strings.xml")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 

@@ -39,7 +39,7 @@ class WebShooterScreenTest {
 
     @Test
     fun `strings define four menu group section strings`() {
-        val strings = File("src/main/res/values/strings.xml").readText()
+        val strings = File("../shared/src/commonMain/composeResources/values/strings.xml").readText()
         assertTrue(
             "strings.xml must define menu_group_competitions = Tävlingar",
             strings.contains("<string name=\"menu_group_competitions\">Tävlingar</string>")
@@ -60,7 +60,7 @@ class WebShooterScreenTest {
 
     @Test
     fun `chart screen names are renamed to shorter Swedish labels`() {
-        val strings = File("src/main/res/values/strings.xml").readText()
+        val strings = File("../shared/src/commonMain/composeResources/values/strings.xml").readText()
         assertTrue(
             "web_shooter_charts must now be 'Resultattrender'",
             strings.contains("<string name=\"web_shooter_charts\">Resultattrender</string>")
@@ -74,10 +74,10 @@ class WebShooterScreenTest {
     @Test
     fun `drawer renders section headers for all four groups`() {
         val source = sourceFile.readText()
-        assertTrue(source.contains("R.string.menu_group_competitions"))
-        assertTrue(source.contains("R.string.menu_group_stats"))
-        assertTrue(source.contains("R.string.menu_group_club"))
-        assertTrue(source.contains("R.string.menu_group_settings"))
+        assertTrue(source.contains("Res.string.menu_group_competitions"))
+        assertTrue(source.contains("Res.string.menu_group_stats"))
+        assertTrue(source.contains("Res.string.menu_group_club"))
+        assertTrue(source.contains("Res.string.menu_group_settings"))
     }
 
     @Test

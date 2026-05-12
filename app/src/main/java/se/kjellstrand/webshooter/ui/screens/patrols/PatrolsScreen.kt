@@ -43,8 +43,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -63,6 +63,7 @@ import se.kjellstrand.webshooter.ui.navigation.safePopBackStack
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
 import se.kjellstrand.webshooter.ui.theme.appColors
+import se.kjellstrand.webshooter.resources.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -123,7 +124,7 @@ fun CompetitionPatrolsScreen(
     Scaffold(
         topBar = {
             ScreenTopBar(
-                title = stringResource(if (isFalt) R.string.competitions_patrols_button else R.string.competitions_relays_button),
+                title = stringResource(if (isFalt) Res.string.competitions_patrols_button else Res.string.competitions_relays_button),
                 navigationIcon = {
                     IconButton(onClick = { navController.safePopBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -151,7 +152,7 @@ fun CompetitionPatrolsScreen(
                 contentColor = if (ffEnabled) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
             ) {
                 Icon(
-                    painterResource(R.drawable.fast_forward),
+                    painterResource(Res.drawable.fast_forward),
                     contentDescription = "Fast forward to current user"
                 )
             }
@@ -169,7 +170,7 @@ fun CompetitionPatrolsScreen(
 
                 uiState.patrols.isEmpty() -> {
                     Text(
-                        text = stringResource(if (isFalt) R.string.competition_patrols_no_patrols else R.string.competition_patrols_no_relays),
+                        text = stringResource(if (isFalt) Res.string.competition_patrols_no_patrols else Res.string.competition_patrols_no_relays),
                         modifier = Modifier.align(Alignment.Center)
                     )
                 }
@@ -182,7 +183,7 @@ fun CompetitionPatrolsScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = stringResource(R.string.search),
+                            text = stringResource(Res.string.search),
                             style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.padding(end = 8.dp)
                         )
@@ -258,8 +259,8 @@ private fun PatrolHeaderItem(patrol: PatrolEntry, isFalt: Boolean) {
         ) {
             Text(
                 text = stringResource(
-                    if (isFalt) R.string.competition_patrols_patrol_number
-                    else R.string.competition_patrols_relay_number,
+                    if (isFalt) Res.string.competition_patrols_patrol_number
+                    else Res.string.competition_patrols_relay_number,
                     patrol.sortorder
                 ),
                 style = MaterialTheme.typography.titleSmall,
@@ -278,7 +279,7 @@ private fun PatrolHeaderItem(patrol: PatrolEntry, isFalt: Boolean) {
             )
             Text(
                 text = stringResource(
-                    R.string.competition_patrols_participant_count,
+                    Res.string.competition_patrols_participant_count,
                     patrol.signups.size
                 ),
                 style = MaterialTheme.typography.bodyMedium,
@@ -298,7 +299,7 @@ private fun PatrolHeaderItem(patrol: PatrolEntry, isFalt: Boolean) {
                 horizontalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Text(
-                    text = stringResource(R.string.weapon_groups),
+                    text = stringResource(Res.string.weapon_groups),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -334,14 +335,14 @@ private fun SignupHeaderRow() {
             modifier = Modifier.weight(2f)
         )
         Text(
-            text = stringResource(R.string.competition_patrols_name_club),
+            text = stringResource(Res.string.competition_patrols_name_club),
             style = MaterialTheme.typography.bodySmall,
             fontWeight = FontWeight.Normal,
             modifier = Modifier.weight(10f)
         )
         Box(modifier = Modifier.weight(6f), contentAlignment = Alignment.CenterEnd) {
             Text(
-                text = stringResource(R.string.weapon_group),
+                text = stringResource(Res.string.weapon_group),
                 style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.Normal
             )

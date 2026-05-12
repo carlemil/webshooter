@@ -45,8 +45,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -59,6 +59,7 @@ import se.kjellstrand.webshooter.ui.common.ScreenTopBar
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadge
 import se.kjellstrand.webshooter.ui.common.WeaponClassBadgeSize
 import se.kjellstrand.webshooter.ui.theme.appColors
+import se.kjellstrand.webshooter.resources.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -80,9 +81,9 @@ fun CompetitionSignupsScreen(
         topBar = {
             ScreenTopBar(
                 title = if (uiState.totalSignupsCount > 0)
-                    stringResource(R.string.competition_signups_list_participants_count, uiState.uniquePersonCount, uiState.totalSignupsCount)
+                    stringResource(Res.string.competition_signups_list_participants_count, uiState.uniquePersonCount, uiState.totalSignupsCount)
                 else
-                    stringResource(R.string.competition_signups_list_participants),
+                    stringResource(Res.string.competition_signups_list_participants),
                 navigationIcon = {
                     IconButton(onClick = { navController.safePopBackStack() }) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -92,7 +93,7 @@ fun CompetitionSignupsScreen(
         },
         floatingActionButton = {
             FloatingActionButton(onClick = { isFilterSheetOpen = true }) {
-                Icon(painterResource(R.drawable.filter_list), contentDescription = "Filter")
+                Icon(painterResource(Res.drawable.filter_list), contentDescription = "Filter")
             }
         }
     ) { paddingValues ->
@@ -103,7 +104,7 @@ fun CompetitionSignupsScreen(
                     .padding(top = paddingValues.calculateTopPadding()),
                 contentAlignment = Alignment.Center
             ) {
-                Text(stringResource(R.string.competition_signups_list_no_signups))
+                Text(stringResource(Res.string.competition_signups_list_no_signups))
             }
         } else {
             LazyColumn(
@@ -230,7 +231,7 @@ private fun SignupsFilterSheet(
             // Club filter section
             if (uiState.availableClubs.isNotEmpty()) {
                 Text(
-                    stringResource(R.string.competition_signups_list_filter_club_label),
+                    stringResource(Res.string.competition_signups_list_filter_club_label),
                     style = MaterialTheme.typography.titleMedium
                 )
                 Spacer(modifier = Modifier.height(4.dp))
@@ -238,7 +239,7 @@ private fun SignupsFilterSheet(
                     FilterChip(
                         selected = uiState.filterClubs.isEmpty(),
                         onClick = { onClearFilterClubs() },
-                        label = { Text(stringResource(R.string.competition_signups_list_filter_all)) }
+                        label = { Text(stringResource(Res.string.competition_signups_list_filter_all)) }
                     )
                     uiState.availableClubs.forEach { club ->
                         FilterChip(
@@ -256,7 +257,7 @@ private fun SignupsFilterSheet(
             // Weapon group filter section
             if (uiState.availableWeaponGroups.isNotEmpty()) {
                 Text(
-                    stringResource(R.string.competition_signups_list_filter_group_label),
+                    stringResource(Res.string.competition_signups_list_filter_group_label),
                     style = MaterialTheme.typography.titleMedium
                 )
                 Spacer(modifier = Modifier.height(4.dp))
@@ -264,7 +265,7 @@ private fun SignupsFilterSheet(
                     FilterChip(
                         selected = uiState.filterWeaponGroups.isEmpty(),
                         onClick = { onClearFilterWeaponGroups() },
-                        label = { Text(stringResource(R.string.competition_signups_list_filter_all)) }
+                        label = { Text(stringResource(Res.string.competition_signups_list_filter_all)) }
                     )
                     uiState.availableWeaponGroups.forEach { group ->
                         FilterChip(
@@ -288,10 +289,10 @@ private fun SignupsFilterSheet(
                     onClearFilterClubs()
                     onClearFilterWeaponGroups()
                 }) {
-                    Text(stringResource(R.string.competition_signups_list_clear_filters))
+                    Text(stringResource(Res.string.competition_signups_list_clear_filters))
                 }
                 Button(onClick = onDismiss) {
-                    Text(stringResource(R.string.results_done_button))
+                    Text(stringResource(Res.string.results_done_button))
                 }
             }
         }

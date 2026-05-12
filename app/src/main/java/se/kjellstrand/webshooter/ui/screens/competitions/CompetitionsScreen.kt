@@ -54,8 +54,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.integerResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -75,6 +75,8 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
+import se.kjellstrand.webshooter.resources.*
+import se.kjellstrand.webshooter.ui.common.Dimens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -124,7 +126,7 @@ fun CompetitionsScreen(
                     contentColor = if (ffEnabled) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.fast_forward),
+                        painter = painterResource(Res.drawable.fast_forward),
                         contentDescription = "Scroll to next signed-up competition"
                     )
                 }
@@ -138,13 +140,13 @@ fun CompetitionsScreen(
                     contentColor = if (upcomingIndex >= 0) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
                 ) {
                     Icon(
-                        painter = painterResource(R.drawable.event_upcoming),
+                        painter = painterResource(Res.drawable.event_upcoming),
                         contentDescription = "Scroll to next upcoming competition"
                     )
                 }
                 FloatingActionButton(onClick = { isFilterBottomSheetOpen = true }) {
                     Icon(
-                        painter = painterResource(R.drawable.filter_list),
+                        painter = painterResource(Res.drawable.filter_list),
                         contentDescription = "Open Filters"
                     )
                 }
@@ -155,7 +157,7 @@ fun CompetitionsScreen(
             val filteredData = competitionsState.filteredData
             if (filteredData.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    Text(stringResource(R.string.competitions_no_competitions_match_filter))
+                    Text(stringResource(Res.string.competitions_no_competitions_match_filter))
                 }
             } else {
                 LazyColumn(
@@ -173,8 +175,8 @@ fun CompetitionsScreen(
                         CompetitionItem(
                             competition = competition,
                             patrolOrRelayButtonText = when (competition.competitionType.id) {
-                                in CompetitionType.FALT_TYPE_IDS -> R.string.competitions_patrols_button
-                                else -> R.string.competitions_relays_button
+                                in CompetitionType.FALT_TYPE_IDS -> Res.string.competitions_patrols_button
+                                else -> Res.string.competitions_relays_button
                             },
                             onResultsClick = {
                                 navController.safeNavigate(
@@ -217,10 +219,10 @@ fun CompetitionsScreen(
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 if (competitionsState.hasError) {
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(stringResource(R.string.competitions_load_error))
+                        Text(stringResource(Res.string.competitions_load_error))
                         Spacer(modifier = Modifier.height(8.dp))
                         Button(onClick = { competitionsViewModel.reload() }) {
-                            Text(stringResource(R.string.competitions_retry))
+                            Text(stringResource(Res.string.competitions_retry))
                         }
                     }
                 } else {
@@ -255,7 +257,7 @@ fun CompetitionsFilterBottomSheet(
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                stringResource(R.string.competitions_filter_status),
+                stringResource(Res.string.competitions_filter_status),
                 style = MaterialTheme.typography.titleMedium
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -279,7 +281,7 @@ fun CompetitionsFilterBottomSheet(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Button(onClick = onDismissRequest) {
-                    Text(stringResource(R.string.results_done_button))
+                    Text(stringResource(Res.string.results_done_button))
                 }
             }
             Spacer(modifier = Modifier.height(8.dp))
@@ -290,7 +292,7 @@ fun CompetitionsFilterBottomSheet(
 @Composable
 fun CompetitionItem(
     competition: Datum,
-    patrolOrRelayButtonText: Int,
+    patrolOrRelayButtonText: org.jetbrains.compose.resources.StringResource,
     onResultsClick: () -> Unit,
     onSignupClick: () -> Unit = {},
     onSignupsListClick: () -> Unit = {},
@@ -348,8 +350,8 @@ fun CompetitionItem(
                 Icon(
                     imageVector = if (isExpanded) Icons.Default.KeyboardArrowUp
                     else Icons.Default.KeyboardArrowDown,
-                    contentDescription = if (isExpanded) stringResource(R.string.competitions_collapse)
-                    else stringResource(R.string.competitions_expand)
+                    contentDescription = if (isExpanded) stringResource(Res.string.competitions_collapse)
+                    else stringResource(Res.string.competitions_expand)
                 )
             }
 
@@ -422,12 +424,12 @@ fun CompetitionItem(
                     }
                     context.startActivity(intent)
                 }) {
-                    Text(stringResource(R.string.competitions_add_to_calendar))
+                    Text(stringResource(Res.string.competitions_add_to_calendar))
                 }
             },
             dismissButton = {
                 TextButton(onClick = { showCalendarDialog = false }) {
-                    Text(stringResource(R.string.settings_cancel))
+                    Text(stringResource(Res.string.settings_cancel))
                 }
             }
         )
@@ -464,7 +466,7 @@ private fun CompetitionItemHeader(
             Spacer(modifier = Modifier.height(2.dp))
             Text(
                 text = stringResource(
-                    R.string.competitions_competition_type,
+                    Res.string.competitions_competition_type,
                     competition.competitionType.name
                 ),
                 style = MaterialTheme.typography.bodySmall,
@@ -477,8 +479,8 @@ private fun CompetitionItemHeader(
         if (isFutureCompetition) {
             IconButton(onClick = onCalendarClick) {
                 Icon(
-                    painter = painterResource(R.drawable.calendar_add_on),
-                    contentDescription = stringResource(R.string.competitions_add_to_calendar)
+                    painter = painterResource(Res.drawable.calendar_add_on),
+                    contentDescription = stringResource(Res.string.competitions_add_to_calendar)
                 )
             }
         }
@@ -496,8 +498,8 @@ private fun CompetitionItemHeader(
                 }
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.map_search),
-                    contentDescription = stringResource(R.string.competitions_open_map)
+                    painter = painterResource(Res.drawable.map_search),
+                    contentDescription = stringResource(Res.string.competitions_open_map)
                 )
             }
         }
@@ -507,7 +509,7 @@ private fun CompetitionItemHeader(
 @Composable
 private fun CompetitionItemButtons(
     competition: Datum,
-    patrolOrRelayButtonText: Int,
+    patrolOrRelayButtonText: org.jetbrains.compose.resources.StringResource,
     onResultsClick: () -> Unit,
     onSignupClick: () -> Unit,
     onSignupsListClick: () -> Unit,
@@ -518,7 +520,7 @@ private fun CompetitionItemButtons(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
-        val shape = RoundedCornerShape(integerResource(R.integer.rounded_corner_shape_percent))
+        val shape = RoundedCornerShape(Dimens.RoundedCornerShapePercent)
         val buttonContentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp)
         val resultsEnabled = competition.status == "completed" ||
                 runCatching {
@@ -533,7 +535,7 @@ private fun CompetitionItemButtons(
             ) {
                 Text(
                     style = MaterialTheme.typography.bodySmall,
-                    text = stringResource(R.string.competitions_result),
+                    text = stringResource(Res.string.competitions_result),
                     textAlign = TextAlign.Center
                 )
             }
@@ -546,7 +548,7 @@ private fun CompetitionItemButtons(
         ) {
             Text(
                 style = MaterialTheme.typography.bodySmall,
-                text = stringResource(R.string.competition_signups_list_participants),
+                text = stringResource(Res.string.competition_signups_list_participants),
                 textAlign = TextAlign.Center
             )
         }
@@ -571,7 +573,7 @@ private fun CompetitionItemButtons(
             ) {
                 Text(
                     style = MaterialTheme.typography.bodySmall,
-                    text = stringResource(R.string.competitions_teams_button),
+                    text = stringResource(Res.string.competitions_teams_button),
                     textAlign = TextAlign.Center
                 )
             }
@@ -585,7 +587,7 @@ private fun CompetitionItemButtons(
             ) {
                 Text(
                     style = MaterialTheme.typography.bodySmall,
-                    text = stringResource(R.string.sign_up),
+                    text = stringResource(Res.string.sign_up),
                     textAlign = TextAlign.Center
                 )
             }
@@ -609,45 +611,45 @@ fun CompetitionDetail(competition: Datum, modifier: Modifier = Modifier) {
         ) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(
-                    text = stringResource(R.string.competitions_information),
+                    text = stringResource(Res.string.competitions_information),
                     style = MaterialTheme.typography.titleSmall
                 )
                 DetailRow(
-                    label = stringResource(R.string.competitions_contact_name, ""),
+                    label = stringResource(Res.string.competitions_contact_name, ""),
                     value = competition.contactName ?: ""
                 )
                 DetailRow(
-                    label = stringResource(R.string.competitions_date, ""),
+                    label = stringResource(Res.string.competitions_date, ""),
                     value = competition.date
                 )
                 DetailRow(
-                    label = stringResource(R.string.competitions_status, ""),
+                    label = stringResource(Res.string.competitions_status, ""),
                     value = competition.statusHuman
                 )
                 DetailRow(
-                    label = stringResource(R.string.competitions_open_for_team_signup, ""),
+                    label = stringResource(Res.string.competitions_open_for_team_signup, ""),
                     value = competition.signupsOpeningDate
                 )
                 DetailRow(
-                    label = stringResource(R.string.competitions_last_signup_date, ""),
+                    label = stringResource(Res.string.competitions_last_signup_date, ""),
                     value = competition.signupsClosingDate
                 )
                 DetailRow(
-                    label = stringResource(R.string.competitions_late_signup, ""),
+                    label = stringResource(Res.string.competitions_late_signup, ""),
                     value = competition.allowSignupsAfterClosingDateHuman
                 )
                 DetailRow(
-                    label = stringResource(R.string.competitions_team_signup, ""),
-                    value = if (competition.allowTeams == 1L) stringResource(R.string.competitions_yes) else stringResource(
-                        R.string.competitions_no
+                    label = stringResource(Res.string.competitions_team_signup, ""),
+                    value = if (competition.allowTeams == 1L) stringResource(Res.string.competitions_yes) else stringResource(
+                        Res.string.competitions_no
                     )
                 )
                 DetailRow(
-                    label = stringResource(R.string.competitions_competition_type, ""),
+                    label = stringResource(Res.string.competitions_competition_type, ""),
                     value = competition.competitionType.name
                 )
                 DetailRow(
-                    label = stringResource(R.string.competitions_result_calculation, ""),
+                    label = stringResource(Res.string.competitions_result_calculation, ""),
                     value = competition.resultsTypeHuman
                 )
             }
@@ -665,34 +667,34 @@ fun CompetitionDetail(competition: Datum, modifier: Modifier = Modifier) {
         ) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(
-                    text = stringResource(R.string.competitions_contact_information),
+                    text = stringResource(Res.string.competitions_contact_information),
                     style = MaterialTheme.typography.titleSmall
                 )
                 DetailRow(
-                    label = stringResource(R.string.competitions_arranger),
+                    label = stringResource(Res.string.competitions_arranger),
                     value = competition.club.name
                 )
                 DetailRow(
-                    label = stringResource(R.string.competitions_venue),
+                    label = stringResource(Res.string.competitions_venue),
                     value = competition.contactVenue ?: ""
                 )
                 DetailRow(
-                    label = stringResource(R.string.competitions_city),
+                    label = stringResource(Res.string.competitions_city),
                     value = competition.contactCity ?: ""
                 )
                 DetailRow(
-                    label = stringResource(R.string.competitions_contact_person),
+                    label = stringResource(Res.string.competitions_contact_person),
                     value = competition.contactName ?: ""
                 )
                 DetailRow(
-                    label = stringResource(R.string.competitions_phone),
+                    label = stringResource(Res.string.competitions_phone),
                     value = competition.contactTelephone ?: "",
                     onClick = competition.contactTelephone?.takeIf { it.isNotEmpty() }?.let {
                         { context.startActivity(Intent(Intent.ACTION_DIAL, "tel:$it".toUri())) }
                     }
                 )
                 DetailRow(
-                    label = stringResource(R.string.competitions_email),
+                    label = stringResource(Res.string.competitions_email),
                     value = competition.contactEmail ?: "",
                     onClick = competition.contactEmail?.takeIf { it.isNotEmpty() }?.let {
                         {
@@ -706,7 +708,7 @@ fun CompetitionDetail(competition: Datum, modifier: Modifier = Modifier) {
                     }
                 )
                 DetailRow(
-                    label = stringResource(R.string.competitions_website),
+                    label = stringResource(Res.string.competitions_website),
                     value = competition.website ?: "",
                     onClick = competition.website?.takeIf { it.isNotEmpty() }?.let {
                         val url =
@@ -729,7 +731,7 @@ fun CompetitionDetail(competition: Datum, modifier: Modifier = Modifier) {
         ) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(
-                    text = stringResource(R.string.competitions_description),
+                    text = stringResource(Res.string.competitions_description),
                     style = MaterialTheme.typography.titleSmall
                 )
                 Spacer(modifier = Modifier.height(4.dp))

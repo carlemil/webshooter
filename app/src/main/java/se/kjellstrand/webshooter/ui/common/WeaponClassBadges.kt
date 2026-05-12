@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.dp
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.common.WeaponClass
 import se.kjellstrand.webshooter.data.competitions.remote.Usersignup
+import se.kjellstrand.webshooter.ui.common.Dimens
 
 enum class WeaponClassBadgeSize { Small, Medium, Large }
 
@@ -76,7 +77,7 @@ fun WeaponClassBadge(
     }
 
     val borderWidth = 1.dp
-    val shape = RoundedCornerShape(integerResource(R.integer.rounded_corner_shape_percent))
+    val shape = RoundedCornerShape(Dimens.RoundedCornerShapePercent)
     val outlineModifier = Modifier.border(
         width = borderWidth,
         color = if (isHighlighted) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondary,

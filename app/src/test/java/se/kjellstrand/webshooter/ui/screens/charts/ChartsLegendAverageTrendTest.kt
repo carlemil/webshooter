@@ -8,7 +8,7 @@ class ChartsLegendAverageTrendTest {
 
     private val screenFile =
         File("src/main/java/se/kjellstrand/webshooter/ui/screens/charts/resulttrends/ResultsTrendsScreen.kt")
-    private val stringsFile = File("src/main/res/values/strings.xml")
+    private val stringsFile = File("../shared/src/commonMain/composeResources/values/strings.xml")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 
@@ -30,7 +30,7 @@ class ChartsLegendAverageTrendTest {
         val source = screenFile.readText()
         assertTrue(
             "ChartsContent must reference charts_legend_average when building legend items",
-            source.contains("R.string.charts_legend_average")
+            source.contains("Res.string.charts_legend_average")
         )
         assertTrue(
             "Average legend entry must gate on uiState.myAverage != null",
@@ -43,7 +43,7 @@ class ChartsLegendAverageTrendTest {
         val source = screenFile.readText()
         assertTrue(
             "ChartsContent must reference charts_legend_trend when building legend items",
-            source.contains("R.string.charts_legend_trend")
+            source.contains("Res.string.charts_legend_trend")
         )
         assertTrue(
             "Trend legend entry must gate on uiState.myTrend != null",

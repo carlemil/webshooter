@@ -9,8 +9,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import se.kjellstrand.webshooter.R
+import se.kjellstrand.webshooter.resources.*
 
 @Composable
 fun ColumnScope.ChartStateWrapper(
@@ -27,14 +28,14 @@ fun ColumnScope.ChartStateWrapper(
 
         hasError -> Box(modifier, contentAlignment = Alignment.Center) {
             Text(
-                text = stringResource(R.string.competitions_load_error),
+                text = stringResource(Res.string.competitions_load_error),
                 style = MaterialTheme.typography.bodyLarge
             )
         }
 
         isEmpty -> Box(modifier, contentAlignment = Alignment.Center) {
             Text(
-                text = stringResource(R.string.charts_no_data),
+                text = stringResource(Res.string.charts_no_data),
                 style = MaterialTheme.typography.bodyLarge
             )
         }

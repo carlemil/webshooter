@@ -36,7 +36,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.drawText
@@ -61,6 +61,7 @@ import se.kjellstrand.webshooter.ui.common.WeaponClassGroupFilter
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
+import se.kjellstrand.webshooter.resources.*
 
 private val LATEST_COLOR_INT = AndroidColor.rgb(76, 255, 120)
 private val OLDER_HSV = floatArrayOf(120f, 0.55f, 1f)
@@ -96,7 +97,7 @@ fun SeriesPointsScreen(viewModel: SeriesPointsViewModel) {
     Scaffold { _ ->
         Column(modifier = Modifier.fillMaxSize()) {
             Text(
-                text = stringResource(R.string.series_points_subtitle),
+                text = stringResource(Res.string.series_points_subtitle),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp)
@@ -112,7 +113,7 @@ fun SeriesPointsScreen(viewModel: SeriesPointsViewModel) {
 
     if (uiState.showSearchDialog) {
         ShooterPickerDialog(
-            title = stringResource(R.string.series_points_select_shooter),
+            title = stringResource(Res.string.series_points_select_shooter),
             searchQuery = uiState.searchQuery,
             clubMembers = uiState.clubMembers,
             allParticipants = uiState.allParticipants,
@@ -164,7 +165,7 @@ private fun SeriesPointsContent(
                         onClick = { viewModel.selectYear(year) },
                         text = {
                             Text(
-                                if (year == 0) stringResource(R.string.club_stats_all_years)
+                                if (year == 0) stringResource(Res.string.club_stats_all_years)
                                 else year.toString()
                             )
                         }
@@ -191,7 +192,7 @@ private fun SeriesPointsContent(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = stringResource(R.string.charts_no_data),
+                    text = stringResource(Res.string.charts_no_data),
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
@@ -214,7 +215,7 @@ private fun SeriesPointsContent(
                 if (uiState.seriesAverage != null) {
                     add(
                         UserLegendItem(
-                            label = stringResource(R.string.charts_legend_average),
+                            label = stringResource(Res.string.charts_legend_average),
                             color = Color(CHART_COLORS[1]),
                             shapeIndex = 7,
                             id = SP_LEGEND_ID_AVERAGE
@@ -224,7 +225,7 @@ private fun SeriesPointsContent(
                 if (uiState.seriesTrend != null) {
                     add(
                         UserLegendItem(
-                            label = stringResource(R.string.charts_legend_trend),
+                            label = stringResource(Res.string.charts_legend_trend),
                             color = Color(CHART_COLORS[7]),
                             shapeIndex = 8,
                             id = SP_LEGEND_ID_TREND
@@ -260,7 +261,7 @@ private fun SeriesPointsContent(
         }
 
         AddShooterButton(
-            text = stringResource(R.string.series_points_change_shooter),
+            text = stringResource(Res.string.series_points_change_shooter),
             onClick = { viewModel.setShowSearchDialog(true) },
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)

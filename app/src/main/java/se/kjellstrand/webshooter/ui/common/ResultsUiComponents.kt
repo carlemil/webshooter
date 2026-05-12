@@ -9,7 +9,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.StringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -21,7 +22,7 @@ object ResultsUiComponents {
 
     @Composable
     fun HeaderText(
-        stringRes: Int,
+        stringRes: StringResource,
         modifier: Modifier = Modifier,
         textAlign: TextAlign = TextAlign.Center,
         style: TextStyle = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)

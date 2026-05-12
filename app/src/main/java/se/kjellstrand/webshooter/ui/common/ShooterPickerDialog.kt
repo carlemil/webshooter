@@ -25,11 +25,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.dp
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.charts.Participant
 import se.kjellstrand.webshooter.data.club.remote.ClubMember
+import se.kjellstrand.webshooter.resources.*
 
 @Composable
 fun ShooterPickerDialog(
@@ -72,7 +73,7 @@ fun ShooterPickerDialog(
                 OutlinedTextField(
                     value = searchQuery,
                     onValueChange = onSearchQueryChanged,
-                    label = { Text(stringResource(R.string.charts_search_shooter)) },
+                    label = { Text(stringResource(Res.string.charts_search_shooter)) },
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -102,7 +103,7 @@ fun ShooterPickerDialog(
                                 )
                                 Icon(
                                     imageVector = Icons.Default.Close,
-                                    contentDescription = stringResource(R.string.charts_remove),
+                                    contentDescription = stringResource(Res.string.charts_remove),
                                     modifier = Modifier
                                         .size(20.dp)
                                         .clickable { onRemoveShooter(userId) }
@@ -133,7 +134,7 @@ fun ShooterPickerDialog(
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.charts_close))
+                Text(stringResource(Res.string.charts_close))
             }
         }
     )

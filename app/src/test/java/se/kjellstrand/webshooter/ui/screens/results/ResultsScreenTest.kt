@@ -64,7 +64,7 @@ class ResultsScreenTest {
         val source = sourceFile.readText()
         assertTrue(
             "GroupingMode labels should use stringResource for localization",
-            source.contains("R.string.results_grouping")
+            source.contains("Res.string.results_grouping")
         )
     }
 

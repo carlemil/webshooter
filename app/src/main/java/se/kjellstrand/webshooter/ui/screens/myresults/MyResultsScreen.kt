@@ -35,7 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,6 +44,7 @@ import org.koin.compose.viewmodel.koinViewModel
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.data.mysignups.remote.SignupEntry
 import se.kjellstrand.webshooter.ui.mock.MyResultsViewModelMock
+import se.kjellstrand.webshooter.resources.*
 
 @Composable
 fun MyEntriesScreen(
@@ -64,7 +65,7 @@ fun MyEntriesScreen(
 
         uiState.groupedEntries.isEmpty() -> {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Text(stringResource(R.string.signups_no_entries))
+                Text(stringResource(Res.string.signups_no_entries))
             }
         }
 
@@ -90,7 +91,7 @@ fun MyEntriesScreen(
                             CircularProgressIndicator()
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = stringResource(R.string.loading),
+                                text = stringResource(Res.string.loading),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -99,7 +100,7 @@ fun MyEntriesScreen(
                 }
                 item(key = "header_all_time") {
                     Text(
-                        text = stringResource(R.string.my_results_all_time),
+                        text = stringResource(Res.string.my_results_all_time),
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
                     )
@@ -121,7 +122,7 @@ fun MyEntriesScreen(
                 }
                 item(key = "header_competitions") {
                     Text(
-                        text = stringResource(R.string.my_results_competitions),
+                        text = stringResource(Res.string.my_results_competitions),
                         style = MaterialTheme.typography.titleLarge,
                         modifier = Modifier.padding(top = 8.dp, bottom = 4.dp)
                     )
@@ -142,13 +143,13 @@ private const val FMT_1F = "%.2f"
 @Composable
 private fun SymbolInfoDialog(onDismiss: () -> Unit) {
     val symbols = listOf(
-        stringResource(R.string.my_results_symbol_xbar) to stringResource(R.string.my_results_symbol_xbar_desc),
-        stringResource(R.string.my_results_symbol_x) to stringResource(R.string.my_results_symbol_x_desc),
-        stringResource(R.string.my_results_symbol_medal_pts) to stringResource(R.string.my_results_symbol_medal_pts_desc),
+        stringResource(Res.string.my_results_symbol_xbar) to stringResource(Res.string.my_results_symbol_xbar_desc),
+        stringResource(Res.string.my_results_symbol_x) to stringResource(Res.string.my_results_symbol_x_desc),
+        stringResource(Res.string.my_results_symbol_medal_pts) to stringResource(Res.string.my_results_symbol_medal_pts_desc),
     )
     AlertDialog(
         onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.my_results_symbols_title)) },
+        title = { Text(stringResource(Res.string.my_results_symbols_title)) },
         text = {
             Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 symbols.forEach { (symbol, desc) ->
@@ -170,7 +171,7 @@ private fun SymbolInfoDialog(onDismiss: () -> Unit) {
         },
         confirmButton = {
             TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.my_results_symbols_close))
+                Text(stringResource(Res.string.my_results_symbols_close))
             }
         }
     )
@@ -196,7 +197,7 @@ private fun YearlySummaryCard(rowsByType: List<Triple<String, List<SummaryRow>, 
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = stringResource(R.string.my_results_summary),
+                    text = stringResource(Res.string.my_results_summary),
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.weight(1f)
                 )
@@ -206,7 +207,7 @@ private fun YearlySummaryCard(rowsByType: List<Triple<String, List<SummaryRow>, 
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Info,
-                        contentDescription = stringResource(R.string.my_results_symbols_title),
+                        contentDescription = stringResource(Res.string.my_results_symbols_title),
                         modifier = Modifier.size(16.dp)
                     )
                 }
@@ -221,16 +222,16 @@ private fun YearlySummaryCard(rowsByType: List<Triple<String, List<SummaryRow>, 
                 )
                 val isFalt = type == "Fält"
                 GridRow {
-                    GridCell(stringResource(R.string.my_results_summary_class), 0.7f, fontWeight = FontWeight.Bold)
-                    GridCell(stringResource(R.string.my_results_summary_starter), 0.9f, fontWeight = FontWeight.Bold)
+                    GridCell(stringResource(Res.string.my_results_summary_class), 0.7f, fontWeight = FontWeight.Bold)
+                    GridCell(stringResource(Res.string.my_results_summary_starter), 0.9f, fontWeight = FontWeight.Bold)
                     if (isFalt) {
-                        GridCell(stringResource(R.string.my_results_summary_avg_hits_falt), 1.4f, fontWeight = FontWeight.Bold)
-                        GridCell(stringResource(R.string.my_results_summary_figures), 1.4f, fontWeight = FontWeight.Bold)
+                        GridCell(stringResource(Res.string.my_results_summary_avg_hits_falt), 1.4f, fontWeight = FontWeight.Bold)
+                        GridCell(stringResource(Res.string.my_results_summary_figures), 1.4f, fontWeight = FontWeight.Bold)
                     } else {
-                        GridCell(stringResource(R.string.my_results_summary_avg_score), 1.4f, fontWeight = FontWeight.Bold)
-                        GridCell(stringResource(R.string.my_results_summary_avg_hits_pres), 1.4f, fontWeight = FontWeight.Bold)
+                        GridCell(stringResource(Res.string.my_results_summary_avg_score), 1.4f, fontWeight = FontWeight.Bold)
+                        GridCell(stringResource(Res.string.my_results_summary_avg_hits_pres), 1.4f, fontWeight = FontWeight.Bold)
                     }
-                    GridCell(stringResource(R.string.my_results_symbol_medal_pts), 0.8f, fontWeight = FontWeight.Bold)
+                    GridCell(stringResource(Res.string.my_results_symbol_medal_pts), 0.8f, fontWeight = FontWeight.Bold)
                 }
                 HorizontalDivider(modifier = Modifier.padding(vertical = 2.dp))
                 rows.forEach { row ->
@@ -289,16 +290,16 @@ private fun CompetitionSignupsItem(entries: List<SignupEntry>, resultStats: Map<
             Spacer(modifier = Modifier.height(8.dp))
 
             GridRow {
-                GridCell(stringResource(R.string.my_results_summary_class), 2f, fontWeight = FontWeight.Bold)
+                GridCell(stringResource(Res.string.my_results_summary_class), 2f, fontWeight = FontWeight.Bold)
                 if (isFalt) {
-                    GridCell(stringResource(R.string.my_results_summary_avg_hits_falt), 1.5f, fontWeight = FontWeight.Bold)
-                    GridCell(stringResource(R.string.my_results_summary_figures), 1.5f, fontWeight = FontWeight.Bold)
+                    GridCell(stringResource(Res.string.my_results_summary_avg_hits_falt), 1.5f, fontWeight = FontWeight.Bold)
+                    GridCell(stringResource(Res.string.my_results_summary_figures), 1.5f, fontWeight = FontWeight.Bold)
                 } else {
-                    GridCell(stringResource(R.string.my_results_summary_avg_score), 1.5f, fontWeight = FontWeight.Bold)
-                    GridCell(stringResource(R.string.my_results_summary_avg_hits_pres), 1.5f, fontWeight = FontWeight.Bold)
+                    GridCell(stringResource(Res.string.my_results_summary_avg_score), 1.5f, fontWeight = FontWeight.Bold)
+                    GridCell(stringResource(Res.string.my_results_summary_avg_hits_pres), 1.5f, fontWeight = FontWeight.Bold)
                 }
-                GridCell(stringResource(R.string.medal), 1.2f, fontWeight = FontWeight.Bold)
-                GridCell(stringResource(R.string.my_results_symbol_medal_pts), 1.2f, fontWeight = FontWeight.Bold)
+                GridCell(stringResource(Res.string.medal), 1.2f, fontWeight = FontWeight.Bold)
+                GridCell(stringResource(Res.string.my_results_symbol_medal_pts), 1.2f, fontWeight = FontWeight.Bold)
             }
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 2.dp))

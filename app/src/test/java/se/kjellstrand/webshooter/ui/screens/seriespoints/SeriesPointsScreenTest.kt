@@ -27,8 +27,8 @@ class SeriesPointsScreenTest {
     fun `SeriesPointsScreen renders series_points_subtitle above the state wrapper`() {
         val source = sourceFile.readText()
         assertTrue(
-            "SeriesPointsScreen must reference R.string.series_points_subtitle",
-            source.contains("R.string.series_points_subtitle")
+            "SeriesPointsScreen must reference Res.string.series_points_subtitle",
+            source.contains("Res.string.series_points_subtitle")
         )
         val subtitleIdx = source.indexOf("series_points_subtitle")
         val wrapperIdx = source.indexOf("ChartStateWrapper(")
@@ -41,7 +41,7 @@ class SeriesPointsScreenTest {
     @Test
     fun `series_points_subtitle string exists with Swedish explanation`() {
         val strings =
-            File("src/main/res/values/strings.xml").readText()
+            File("../shared/src/commonMain/composeResources/values/strings.xml").readText()
         assertTrue(
             "strings.xml must define series_points_subtitle",
             Regex("""<string\s+name="series_points_subtitle">[^<]*</string>""").containsMatchIn(

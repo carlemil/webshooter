@@ -33,7 +33,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
@@ -64,6 +64,7 @@ import se.kjellstrand.webshooter.ui.mock.MockCharts
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
+import se.kjellstrand.webshooter.resources.*
 
 @Composable
 fun ChartsScreen(viewModel: ResultsTrendsViewModel) {
@@ -79,7 +80,7 @@ fun ChartsScreen(viewModel: ResultsTrendsViewModel) {
     Scaffold { _ ->
         Column(modifier = Modifier.fillMaxSize()) {
             Text(
-                text = stringResource(R.string.charts_subtitle),
+                text = stringResource(Res.string.charts_subtitle),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 8.dp, bottom = 4.dp)
@@ -95,7 +96,7 @@ fun ChartsScreen(viewModel: ResultsTrendsViewModel) {
 
     if (uiState.showSearchDialog) {
         ShooterPickerDialog(
-            title = stringResource(R.string.charts_add_shooter),
+            title = stringResource(Res.string.charts_add_shooter),
             searchQuery = uiState.searchQuery,
             clubMembers = uiState.clubMembers,
             allParticipants = uiState.allParticipants,
@@ -173,7 +174,7 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
                 if (chartData.isNotEmpty()) {
                     add(
                         UserLegendItem(
-                            label = stringResource(R.string.charts_my_results),
+                            label = stringResource(Res.string.charts_my_results),
                             color = Color(CHART_COLORS[0]),
                             shapeIndex = 0,
                             id = LEGEND_ID_ME
@@ -197,7 +198,7 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
                 if (uiState.myAverage != null) {
                     add(
                         UserLegendItem(
-                            label = stringResource(R.string.charts_legend_average),
+                            label = stringResource(Res.string.charts_legend_average),
                             color = Color(AVERAGE_COLOR_ARGB),
                             shapeIndex = 7,
                             id = LEGEND_ID_AVERAGE
@@ -207,7 +208,7 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
                 if (uiState.myTrend != null && !isHitsBased) {
                     add(
                         UserLegendItem(
-                            label = stringResource(R.string.charts_legend_trend),
+                            label = stringResource(Res.string.charts_legend_trend),
                             color = Color(TREND_COLOR_ARGB),
                             shapeIndex = 8,
                             id = LEGEND_ID_TREND
@@ -236,14 +237,14 @@ private fun ChartsContent(uiState: ChartsUiState, viewModel: ResultsTrendsViewMo
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = stringResource(R.string.charts_no_data),
+                    text = stringResource(Res.string.charts_no_data),
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
         }
 
         AddShooterButton(
-            text = stringResource(R.string.charts_add_shooter),
+            text = stringResource(Res.string.charts_add_shooter),
             onClick = { viewModel.setShowSearchDialog(true) },
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
@@ -279,7 +280,7 @@ fun ChartScatterChart(
     val density = LocalDensity.current
     val pointSizePx = with(density) { 18.dp.toPx() }
     val tapRadiusPx = with(density) { 24.dp.toPx() }
-    val myResultsLabel = stringResource(R.string.charts_my_results)
+    val myResultsLabel = stringResource(Res.string.charts_my_results)
 
     // Distinct sorted dates form the X-axis. Each date's float position is its
     // index in this list, so each series can map its dates to X coordinates.

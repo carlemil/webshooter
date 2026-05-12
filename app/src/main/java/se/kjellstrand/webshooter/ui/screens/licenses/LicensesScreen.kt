@@ -17,9 +17,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.unit.dp
 import se.kjellstrand.webshooter.R
+import se.kjellstrand.webshooter.resources.*
 
 data class LicenseItem(
     val name: String,
@@ -56,7 +57,7 @@ fun LicensesScreen() {
             .padding(16.dp)
     ) {
         Text(
-            text = stringResource(R.string.licenses_header),
+            text = stringResource(Res.string.licenses_header),
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -64,7 +65,7 @@ fun LicensesScreen() {
         Spacer(Modifier.height(16.dp))
 
         Text(
-            text = stringResource(R.string.licenses_apache_license),
+            text = stringResource(Res.string.licenses_apache_license),
             style = MaterialTheme.typography.titleSmall,
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier.clickable {

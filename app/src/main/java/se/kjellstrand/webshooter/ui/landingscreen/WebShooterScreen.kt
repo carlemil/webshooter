@@ -27,7 +27,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import android.content.Intent
 import androidx.core.net.toUri
 import androidx.compose.ui.tooling.preview.Preview
@@ -53,6 +53,7 @@ import se.kjellstrand.webshooter.ui.screens.myresults.MyEntriesScreen
 import se.kjellstrand.webshooter.ui.navigation.Screen
 import se.kjellstrand.webshooter.ui.screens.licenses.LicensesScreen
 import se.kjellstrand.webshooter.ui.screens.settings.SettingsScreen
+import se.kjellstrand.webshooter.resources.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -61,20 +62,20 @@ fun WebShooterScreen(navController: NavController) {
     val scope = rememberCoroutineScope()
 
     val competitionsItems = listOf(
-        NavigationItem(stringResource(R.string.web_shooter_competitions), Screen.CompetitionsList.route),
-        NavigationItem(stringResource(R.string.my_results), Screen.MyEntries.route)
+        NavigationItem(stringResource(Res.string.web_shooter_competitions), Screen.CompetitionsList.route),
+        NavigationItem(stringResource(Res.string.my_results), Screen.MyEntries.route)
     )
     val statsItems = listOf(
-        NavigationItem(stringResource(R.string.web_shooter_charts), Screen.Charts.route),
-        NavigationItem(stringResource(R.string.web_shooter_series_points), Screen.SeriesPoints.route),
-        NavigationItem(stringResource(R.string.web_shooter_club_stats), Screen.ClubStats.route)
+        NavigationItem(stringResource(Res.string.web_shooter_charts), Screen.Charts.route),
+        NavigationItem(stringResource(Res.string.web_shooter_series_points), Screen.SeriesPoints.route),
+        NavigationItem(stringResource(Res.string.web_shooter_club_stats), Screen.ClubStats.route)
     )
     val clubItems = listOf(
-        NavigationItem(stringResource(R.string.web_shooter_club), Screen.Club.route)
+        NavigationItem(stringResource(Res.string.web_shooter_club), Screen.Club.route)
     )
     val settingsItems = listOf(
-        NavigationItem(stringResource(R.string.web_shooter_settings), Screen.Settings.route),
-        NavigationItem(stringResource(R.string.web_shooter_licenses), Screen.Licenses.route)
+        NavigationItem(stringResource(Res.string.web_shooter_settings), Screen.Settings.route),
+        NavigationItem(stringResource(Res.string.web_shooter_licenses), Screen.Licenses.route)
     )
     val navigationItems = competitionsItems + statsItems + clubItems + settingsItems
 
@@ -89,9 +90,9 @@ fun WebShooterScreen(navController: NavController) {
     val competitionsViewModel: CompetitionsViewModelImpl = koinViewModel()
 
     val context = LocalContext.current
-    val suggestionLabel = stringResource(R.string.web_shooter_send_suggestion)
-    val suggestionSubject = stringResource(R.string.send_suggestion_email_subject)
-    val suggestionRecipient = stringResource(R.string.send_suggestion_email_recipient)
+    val suggestionLabel = stringResource(Res.string.web_shooter_send_suggestion)
+    val suggestionSubject = stringResource(Res.string.send_suggestion_email_subject)
+    val suggestionRecipient = stringResource(Res.string.send_suggestion_email_recipient)
     val sendSuggestionEmail: () -> Unit = {
         val intent = Intent(Intent.ACTION_SENDTO, "mailto:$suggestionRecipient".toUri()).apply {
             putExtra(Intent.EXTRA_SUBJECT, suggestionSubject)
@@ -104,7 +105,7 @@ fun WebShooterScreen(navController: NavController) {
             ModalDrawerSheet {
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    text = stringResource(R.string.web_shooter_menu),
+                    text = stringResource(Res.string.web_shooter_menu),
                     style = MaterialTheme.typography.headlineSmall,
                     modifier = Modifier.padding(16.dp)
                 )
@@ -142,19 +143,19 @@ fun WebShooterScreen(navController: NavController) {
                     )
                 }
 
-                SectionHeader(stringResource(R.string.menu_group_competitions))
+                SectionHeader(stringResource(Res.string.menu_group_competitions))
                 competitionsItems.forEach { MenuItem(it) }
 
                 HorizontalDivider()
-                SectionHeader(stringResource(R.string.menu_group_stats))
+                SectionHeader(stringResource(Res.string.menu_group_stats))
                 statsItems.forEach { MenuItem(it) }
 
                 HorizontalDivider()
-                SectionHeader(stringResource(R.string.menu_group_club))
+                SectionHeader(stringResource(Res.string.menu_group_club))
                 clubItems.forEach { MenuItem(it) }
 
                 HorizontalDivider()
-                SectionHeader(stringResource(R.string.menu_group_settings))
+                SectionHeader(stringResource(Res.string.menu_group_settings))
                 settingsItems.forEach { MenuItem(it) }
                 NavigationDrawerItem(
                     label = { Text(suggestionLabel) },
@@ -175,14 +176,14 @@ fun WebShooterScreen(navController: NavController) {
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            val title = navigationItems.find { it.route == selectedRoute }?.label ?: stringResource(R.string.app_name)
+            val title = navigationItems.find { it.route == selectedRoute }?.label ?: stringResource(Res.string.app_name)
             ScreenTopBar(
                 title = title,
                 navigationIcon = {
                     IconButton(onClick = { scope.launch { drawerState.open() } }) {
                         Icon(
                             imageVector = Icons.Default.Menu,
-                            contentDescription = stringResource(R.string.web_shooter_menu_content_description)
+                            contentDescription = stringResource(Res.string.web_shooter_menu_content_description)
                         )
                     }
                 }

@@ -76,13 +76,13 @@ class AddShooterButtonTest {
     @Test
     fun `ChartsScreen still references charts_add_shooter string`() {
         val source = chartsScreen.readText()
-        assertTrue(source.contains("R.string.charts_add_shooter"))
+        assertTrue(source.contains("Res.string.charts_add_shooter"))
     }
 
     @Test
     fun `SeriesPointsScreen still references series_points_change_shooter string`() {
         val source = seriesPointsScreen.readText()
-        assertTrue(source.contains("R.string.series_points_change_shooter"))
+        assertTrue(source.contains("Res.string.series_points_change_shooter"))
     }
 
     @Test

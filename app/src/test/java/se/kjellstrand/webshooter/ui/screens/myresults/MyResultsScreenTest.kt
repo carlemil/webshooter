@@ -28,7 +28,7 @@ class MyResultsScreenTest {
             .substringBefore("header_all_time")
         assertTrue(
             "Loading stats section should include explanatory text",
-            loadingStatsSection.contains("Text(") || loadingStatsSection.contains("R.string.loading")
+            loadingStatsSection.contains("Text(") || loadingStatsSection.contains("Res.string.loading")
         )
     }
 

@@ -36,7 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -47,6 +47,8 @@ import se.kjellstrand.webshooter.data.common.WeaponClass
 import se.kjellstrand.webshooter.data.competitions.remote.Datum
 import se.kjellstrand.webshooter.ui.mock.MockCompetitions
 import se.kjellstrand.webshooter.ui.mock.SignupViewModelMock
+import se.kjellstrand.webshooter.resources.*
+import se.kjellstrand.webshooter.ui.common.Dimens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -63,7 +65,7 @@ fun SignupScreen(
                 title = competition.name,
                 navigationIcon = {
                     IconButton(onClick = { navController.safePopBackStack() }) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.navigate_back))
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(Res.string.navigate_back))
                     }
                 }
             )
@@ -74,7 +76,7 @@ fun SignupScreen(
             .fillMaxSize()
             .padding(paddingValues)
             .padding(horizontal = 16.dp)
-            .padding(top = dimensionResource(R.dimen.screen_content_top_padding))
+            .padding(top = Dimens.ScreenContentTopPadding)
     ) {
         Text(
             text = "${competition.date}  •  ${competition.statusHuman}",
@@ -83,7 +85,7 @@ fun SignupScreen(
         )
         if (competition.userSignups.isNotEmpty()) {
             Text(
-                text = stringResource(R.string.signup_current_signups),
+                text = stringResource(Res.string.signup_current_signups),
                 style = MaterialTheme.typography.titleSmall
             )
             Spacer(modifier = Modifier.height(8.dp))
@@ -103,7 +105,7 @@ fun SignupScreen(
                         ),
                         enabled = !uiState.isLoading
                     ) {
-                        Text(stringResource(R.string.signup_remove_signup))
+                        Text(stringResource(Res.string.signup_remove_signup))
                     }
                 }
             }
@@ -123,7 +125,7 @@ fun SignupScreen(
         OutlinedTextField(
             value = uiState.note,
             onValueChange = { viewModel.updateNote(it) },
-            label = { Text(stringResource(R.string.signup_note)) },
+            label = { Text(stringResource(Res.string.signup_note)) },
             modifier = Modifier.fillMaxWidth(),
             minLines = 3
         )
@@ -154,7 +156,7 @@ fun SignupScreen(
                 enabled = uiState.selectedWeaponClassId != null,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(stringResource(R.string.sign_up))
+                Text(stringResource(Res.string.sign_up))
             }
         }
     }
@@ -177,10 +179,10 @@ private fun WeaponClassDropdown(
         modifier = Modifier.fillMaxWidth()
     ) {
         OutlinedTextField(
-            value = selectedClass?.classname ?: stringResource(R.string.signup_select_weapon_class),
+            value = selectedClass?.classname ?: stringResource(Res.string.signup_select_weapon_class),
             onValueChange = {},
             readOnly = true,
-            label = { Text(stringResource(R.string.weapon_class)) },
+            label = { Text(stringResource(Res.string.weapon_class)) },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             modifier = Modifier
                 .menuAnchor(MenuAnchorType.PrimaryNotEditable)

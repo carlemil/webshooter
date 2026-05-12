@@ -29,7 +29,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,6 +41,7 @@ import kotlinx.coroutines.flow.collectLatest
 import se.kjellstrand.webshooter.R
 import se.kjellstrand.webshooter.ui.common.UiEvent
 import se.kjellstrand.webshooter.ui.navigation.Screen
+import se.kjellstrand.webshooter.resources.*
 
 @Composable
 fun LoginScreen(
@@ -88,7 +89,7 @@ fun LoginScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Text(
-                text = stringResource(R.string.login_login),
+                text = stringResource(Res.string.login_login),
                 style = MaterialTheme.typography.headlineMedium,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
@@ -96,7 +97,7 @@ fun LoginScreen(
             OutlinedTextField(
                 value = username,
                 onValueChange = { username = it },
-                label = { Text(stringResource(R.string.login_username)) },
+                label = { Text(stringResource(Res.string.login_username)) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !uiState.isLoading
@@ -105,7 +106,7 @@ fun LoginScreen(
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text(stringResource(R.string.password)) },
+                label = { Text(stringResource(Res.string.password)) },
                 singleLine = true,
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
@@ -115,7 +116,7 @@ fun LoginScreen(
                         Icons.Default.VisibilityOff
 
                     IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                        Icon(imageVector = image, contentDescription = stringResource(R.string.toggle_password_visibility))
+                        Icon(imageVector = image, contentDescription = stringResource(Res.string.toggle_password_visibility))
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
@@ -136,7 +137,7 @@ fun LoginScreen(
                         modifier = Modifier.size(20.dp)
                     )
                 } else {
-                    Text(stringResource(R.string.login_login))
+                    Text(stringResource(Res.string.login_login))
                 }
             }
             uiState.errorMessage?.let { errorMessage ->

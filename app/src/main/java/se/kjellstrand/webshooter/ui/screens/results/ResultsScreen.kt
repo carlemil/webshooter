@@ -55,8 +55,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
+import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -84,6 +84,8 @@ import se.kjellstrand.webshooter.ui.mock.ResultsViewModelMock
 import se.kjellstrand.webshooter.ui.navigation.Screen
 import se.kjellstrand.webshooter.ui.theme.appColors
 import java.time.LocalDate
+import se.kjellstrand.webshooter.resources.*
+import se.kjellstrand.webshooter.ui.common.Dimens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -166,15 +168,15 @@ fun CompetitionResultsScreen(
     }
     var occurrenceIdx by remember(currentUserIndices) { mutableIntStateOf(-1) }
 
+    // Hoist the StringResource into Composable scope so the LaunchedEffect can
+    // capture the resolved String. Compose Resources' getString() is suspend
+    // so we can't call it synchronously from the Toast site.
+    val noResultsMessage = stringResource(Res.string.results_no_results_found)
     LaunchedEffect(Unit) {
         resultsViewModel.resultsEvent.collect { event ->
             when (event) {
                 is ResultsEvent.Empty -> {
-                    Toast.makeText(
-                        context,
-                        context.getString(R.string.results_no_results_found),
-                        Toast.LENGTH_LONG
-                    ).show()
+                    Toast.makeText(context, noResultsMessage, Toast.LENGTH_LONG).show()
                     navController.popBackStack()
                 }
             }
@@ -216,13 +218,13 @@ fun CompetitionResultsScreen(
                     contentColor = if (ffEnabled) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant
                 ) {
                     Icon(
-                        painterResource(R.drawable.fast_forward),
+                        painterResource(Res.drawable.fast_forward),
                         contentDescription = "Fast forward to current user"
                     )
                 }
                 FloatingActionButton(onClick = { isFilterBottomSheetOpen = true }) {
                     Icon(
-                        painterResource(R.drawable.filter_list),
+                        painterResource(Res.drawable.filter_list),
                         contentDescription = "Open Filters"
                     )
                 }
@@ -245,11 +247,11 @@ fun CompetitionResultsScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 16.dp)
-                    .padding(top = dimensionResource(R.dimen.screen_content_top_padding))
+                    .padding(top = Dimens.ScreenContentTopPadding)
             ) {
                 if (isCompetitionToday) {
                     Text(
-                        text = stringResource(R.string.updates_in, secondsLeft),
+                        text = stringResource(Res.string.updates_in, secondsLeft),
                         style = MaterialTheme.typography.labelSmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.align(Alignment.Start)
@@ -309,7 +311,7 @@ fun ResultsList(
                             .padding(16.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(stringResource(R.string.results_no_groups_selected))
+                        Text(stringResource(Res.string.results_no_groups_selected))
                     }
                 }
             } else if (resultsUiState.isLoading) {
@@ -461,12 +463,12 @@ private fun GroupHeaderItem(
                     )
                 } else {
                     val headerText = when (group.header) {
-                        ResultsViewModelImpl.GROUP_HEADER_UNKNOWN_CLUB -> stringResource(R.string.unknown)
-                        ResultsViewModelImpl.GROUP_HEADER_NO_MEDAL -> stringResource(R.string.dash)
+                        ResultsViewModelImpl.GROUP_HEADER_UNKNOWN_CLUB -> stringResource(Res.string.unknown)
+                        ResultsViewModelImpl.GROUP_HEADER_NO_MEDAL -> stringResource(Res.string.dash)
                         else -> if (isMedlGrouping) {
                             when (group.header) {
-                                StdMedal.S.value -> stringResource(R.string.silver)
-                                StdMedal.B.value -> stringResource(R.string.bronze)
+                                StdMedal.S.value -> stringResource(Res.string.silver)
+                                StdMedal.B.value -> stringResource(Res.string.bronze)
                                 else -> group.header
                             }
                         } else {
@@ -556,9 +558,9 @@ fun ResultsListHeader(
         verticalAlignment = Alignment.CenterVertically
     ) {
         HeaderText(
-            R.string.placement, modifier = Modifier.weight(2f)
+            Res.string.placement, modifier = Modifier.weight(2f)
         )
-        HeaderText(R.string.name, modifier = Modifier.weight(nameWeight))
+        HeaderText(Res.string.name, modifier = Modifier.weight(nameWeight))
 
         Row(
             modifier = Modifier.weight(rightWeight),
@@ -567,22 +569,22 @@ fun ResultsListHeader(
         ) {
             if (showWeaponClass) {
                 HeaderText(
-                    R.string.weapon_class_short,
+                    Res.string.weapon_class_short,
                     modifier = Modifier
                         .weight(2f)
                         .padding(start = 4.dp)
                 )
             }
-            if (showMedal) HeaderText(R.string.medal, modifier = Modifier.weight(1f))
+            if (showMedal) HeaderText(Res.string.medal, modifier = Modifier.weight(1f))
             when (resultsType) {
                 ResultsType.FIELD,
                 ResultsType.POINTS_FIELD -> {
-                    HeaderText(R.string.hfp, modifier = Modifier.weight(scoreWeight))
+                    HeaderText(Res.string.hfp, modifier = Modifier.weight(scoreWeight))
                 }
 
                 ResultsType.PRECISION,
                 ResultsType.MILITARY -> {
-                    HeaderText(R.string.px, modifier = Modifier.weight(scoreWeight))
+                    HeaderText(Res.string.px, modifier = Modifier.weight(scoreWeight))
                 }
             }
         }
@@ -603,7 +605,7 @@ fun GroupingAndFilterBottomSheet(
         sheetState = bottomSheetState,
         content = {
             Column(modifier = Modifier.padding(16.dp)) {
-                Text(stringResource(R.string.results_grouping), style = MaterialTheme.typography.titleMedium)
+                Text(stringResource(Res.string.results_grouping), style = MaterialTheme.typography.titleMedium)
                 Spacer(modifier = Modifier.height(4.dp))
                 GroupingMode.entries.forEach { mode ->
                     Row(
@@ -618,10 +620,10 @@ fun GroupingAndFilterBottomSheet(
                         )
                         Text(
                             text = when (mode) {
-                                GroupingMode.WEAPON_CLASS -> stringResource(R.string.results_grouping_weapon_class)
-                                GroupingMode.CLUB -> stringResource(R.string.results_grouping_club)
-                                GroupingMode.MEDL -> stringResource(R.string.results_grouping_medl)
-                                GroupingMode.NONE -> stringResource(R.string.results_grouping_none)
+                                GroupingMode.WEAPON_CLASS -> stringResource(Res.string.results_grouping_weapon_class)
+                                GroupingMode.CLUB -> stringResource(Res.string.results_grouping_club)
+                                GroupingMode.MEDL -> stringResource(Res.string.results_grouping_medl)
+                                GroupingMode.NONE -> stringResource(Res.string.results_grouping_none)
                             }
                         )
                     }
@@ -630,7 +632,7 @@ fun GroupingAndFilterBottomSheet(
                 HorizontalDivider()
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
-                    stringResource(R.string.results_select_weapon_groups),
+                    stringResource(Res.string.results_select_weapon_groups),
                     style = MaterialTheme.typography.titleMedium
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -647,15 +649,15 @@ fun GroupingAndFilterBottomSheet(
                     TextButton(onClick = {
                         onFilterChange(filterState.copy(selectedWeaponGroups = allWeaponGroups.toSet()))
                     }) {
-                        Text(stringResource(R.string.results_filter_all))
+                        Text(stringResource(Res.string.results_filter_all))
                     }
                     TextButton(onClick = {
                         onFilterChange(filterState.copy(selectedWeaponGroups = emptySet()))
                     }) {
-                        Text(stringResource(R.string.results_filter_none))
+                        Text(stringResource(Res.string.results_filter_none))
                     }
                     Button(onClick = onDismissRequest) {
-                        Text(stringResource(R.string.results_done_button))
+                        Text(stringResource(Res.string.results_done_button))
                     }
                 }
             }
@@ -737,7 +739,7 @@ fun ResultItem(
                 overflow = TextOverflow.Ellipsis
             )
             if (showClub) ItemText(
-                text = result.signup.club?.name ?: stringResource(R.string.unknown_club),
+                text = result.signup.club?.name ?: stringResource(Res.string.unknown_club),
                 overflow = TextOverflow.Ellipsis
             )
         }
@@ -762,9 +764,9 @@ fun ResultItem(
             }
             if (showMedal) ItemText(
                 text = when (result.stdMedal) {
-                    StdMedal.S -> stringResource(R.string.silver)
-                    StdMedal.B -> stringResource(R.string.bronze)
-                    null -> stringResource(R.string.dash)
+                    StdMedal.S -> stringResource(Res.string.silver)
+                    StdMedal.B -> stringResource(Res.string.bronze)
+                    null -> stringResource(Res.string.dash)
                 },
                 style = itemStyle,
                 modifier = Modifier.weight(1f)

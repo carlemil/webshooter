@@ -8,10 +8,21 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.compose.compiler)
 }
 
 room {
     schemaDirectory("$projectDir/schemas")
+}
+
+compose.resources {
+    // Make the generated Res accessor public + put it in a sensible
+    // package so :app (and the future iOS host) can reference
+    // se.kjellstrand.webshooter.resources.Res.string.foo without imports
+    // from auto-sanitized package names like `web_shooter.shared.*`.
+    publicResClass = true
+    packageOfResClass = "se.kjellstrand.webshooter.resources"
 }
 
 kotlin {
@@ -57,6 +68,18 @@ kotlin {
             api(libs.koin.core)
             api(libs.koin.core.viewmodel)
             api(libs.androidx.lifecycle.viewmodel)
+
+            // Compose Multiplatform (used by screens being moved into commonMain).
+            // The JetBrains Compose artifacts re-export the same FQNs as
+            // AndroidX Compose, so consumer code doesn't need import changes.
+            // api(...) so :app can use the same Compose Multiplatform
+            // artifacts and the generated Res class transitively.
+            api(compose.runtime)
+            api(compose.foundation)
+            api(compose.material3)
+            api(compose.materialIconsExtended)
+            api(compose.components.resources)
+            api(compose.components.uiToolingPreview)
         }
         androidMain.dependencies {
             implementation(libs.kotlinx.coroutines.android)

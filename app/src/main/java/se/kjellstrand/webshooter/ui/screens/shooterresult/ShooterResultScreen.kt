@@ -42,6 +42,8 @@ import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.HeaderText
 import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.ItemText
 import se.kjellstrand.webshooter.ui.common.ResultsUiComponents.WeaponGroupSeparator
 import se.kjellstrand.webshooter.ui.common.ScreenTopBar
+import se.kjellstrand.webshooter.resources.*
+import se.kjellstrand.webshooter.ui.common.Dimens
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -67,7 +69,7 @@ fun ShooterResultScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp)
-                .padding(top = dimensionResource(R.dimen.screen_content_top_padding))
+                .padding(top = Dimens.ScreenContentTopPadding)
         ) {
             if (uiState.isLoading) {
                 Box(
@@ -112,24 +114,24 @@ fun StationResultsGrid(stationResults: List<StationResult>, resultsType: Results
             ResultsType.FIELD,
             ResultsType.POINTS_FIELD -> {
                 HeaderText(
-                    R.string.shooter_result_station,
+                    Res.string.shooter_result_station,
                     modifier = Modifier.weight(1f),
                     textAlign = androidx.compose.ui.text.style.TextAlign.Start
                 )
-                HeaderText(R.string.hits, modifier = Modifier.weight(1f))
-                HeaderText(R.string.figures, modifier = Modifier.weight(1f))
-                HeaderText(R.string.points, modifier = Modifier.weight(1f))
+                HeaderText(Res.string.hits, modifier = Modifier.weight(1f))
+                HeaderText(Res.string.figures, modifier = Modifier.weight(1f))
+                HeaderText(Res.string.points, modifier = Modifier.weight(1f))
             }
 
             ResultsType.PRECISION,
             ResultsType.MILITARY -> {
                 HeaderText(
-                    R.string.shooter_result_serie,
+                    Res.string.shooter_result_serie,
                     modifier = Modifier.weight(1f),
                     textAlign = androidx.compose.ui.text.style.TextAlign.Start
                 )
-                HeaderText(R.string.points, modifier = Modifier.weight(1f))
-                HeaderText(R.string.x, modifier = Modifier.weight(1f))
+                HeaderText(Res.string.points, modifier = Modifier.weight(1f))
+                HeaderText(Res.string.x, modifier = Modifier.weight(1f))
             }
         }
     }
