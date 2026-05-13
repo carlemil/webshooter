@@ -47,6 +47,7 @@ import se.kjellstrand.webshooter.ui.common.AddShooterButton
 import se.kjellstrand.webshooter.ui.common.CHART_COLORS
 import se.kjellstrand.webshooter.ui.common.CHART_DEFAULT_HEIGHT
 import se.kjellstrand.webshooter.ui.common.CHART_LEGEND_MAX_HEIGHT
+import se.kjellstrand.webshooter.ui.common.formatDecimal
 import se.kjellstrand.webshooter.ui.common.CHART_SHAPE_COUNT
 import se.kjellstrand.webshooter.ui.common.ChartLegend
 import se.kjellstrand.webshooter.ui.common.ChartShape
@@ -511,7 +512,7 @@ private fun buildSeries(
     val points = chartData.sortedBy { it.date }.map { dp ->
         val xVal = sortedDates.indexOf(dp.date).toFloat().coerceAtLeast(0f)
         val yVal = dp.averageSerieScore.toFloat()
-        val display = "%.1f".format(dp.averageSerieScore).removeSuffix(".0").removeSuffix(",0")
+        val display = formatDecimal(dp.averageSerieScore, 1).removeSuffix(".0")
         ScatterPoint(
             x = xVal,
             y = yVal,
@@ -596,7 +597,7 @@ private fun DrawScope.drawAxesWithDateLabels(
             end = Offset(plot.right, y),
             strokeWidth = 0.5.dp.toPx(),
         )
-        val label = textMeasurer.measure(AnnotatedString("%.0f".format(value)), labelStyle)
+        val label = textMeasurer.measure(AnnotatedString(formatDecimal(value, 0)), labelStyle)
         drawText(
             textLayoutResult = label,
             topLeft = Offset(plot.left - label.size.width - 4.dp.toPx(), y - label.size.height / 2f),

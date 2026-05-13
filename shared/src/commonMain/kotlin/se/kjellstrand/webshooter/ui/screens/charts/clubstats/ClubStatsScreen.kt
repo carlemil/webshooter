@@ -41,6 +41,7 @@ import se.kjellstrand.webshooter.data.clubstats.ShooterStats
 import se.kjellstrand.webshooter.ui.common.CHART_COLORS
 import se.kjellstrand.webshooter.ui.common.CHART_DEFAULT_HEIGHT
 import se.kjellstrand.webshooter.ui.common.CHART_LEGEND_MAX_HEIGHT
+import se.kjellstrand.webshooter.ui.common.formatDecimal
 import se.kjellstrand.webshooter.ui.common.CHART_SHAPE_COUNT
 import se.kjellstrand.webshooter.ui.common.ChartLegend
 import se.kjellstrand.webshooter.ui.common.ChartShape
@@ -261,7 +262,7 @@ private fun BoxWithMarkerPosition(
     yMin: Float, yMax: Float,
 ) {
     val density = LocalDensity.current
-    val avg = "%.1f".format(point.stats.averagePoints)
+    val avg = formatDecimal(point.stats.averagePoints, 1)
     val markerText = "${point.stats.fullname}\n$avg p · ${point.stats.competitionCount} tävlingar"
 
     Box(
@@ -374,7 +375,7 @@ private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawAxes(
             end = Offset(plot.right, y),
             strokeWidth = 0.5.dp.toPx(),
         )
-        val label = textMeasurer.measure(AnnotatedString("%.0f".format(value)), labelStyle)
+        val label = textMeasurer.measure(AnnotatedString(formatDecimal(value, 0)), labelStyle)
         drawText(
             textLayoutResult = label,
             topLeft = Offset(plot.left - label.size.width - 4.dp.toPx(), y - label.size.height / 2f),

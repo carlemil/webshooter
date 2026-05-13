@@ -224,7 +224,7 @@ fun CompetitionResultsScreen(
             onRefresh = {
                 isRefreshing = true
                 resultsViewModel.refresh()
-                lastReloadAt = System.currentTimeMillis()
+                lastReloadAt = Clock.System.now().toEpochMilliseconds()
                 nowMs = lastReloadAt
             },
             modifier = Modifier

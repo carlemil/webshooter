@@ -52,6 +52,7 @@ import se.kjellstrand.webshooter.ui.common.ChartStateWrapper
 import se.kjellstrand.webshooter.ui.common.ShooterPickerDialog
 import se.kjellstrand.webshooter.ui.common.UserLegendItem
 import se.kjellstrand.webshooter.ui.common.WeaponClassGroupFilter
+import se.kjellstrand.webshooter.ui.common.formatDecimal
 import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -528,7 +529,7 @@ private fun DrawScope.drawAxes(
             end = Offset(plot.right, y),
             strokeWidth = 0.5.dp.toPx(),
         )
-        val label = textMeasurer.measure(AnnotatedString("%.0f".format(value)), labelStyle)
+        val label = textMeasurer.measure(AnnotatedString(formatDecimal(value, 0)), labelStyle)
         drawText(
             textLayoutResult = label,
             topLeft = Offset(plot.left - label.size.width - 4.dp.toPx(), y - label.size.height / 2f),

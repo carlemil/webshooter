@@ -319,4 +319,13 @@ tasks.configureEach {
     if (name.startsWith("merge") && name.endsWith("Assets")) {
         mustRunAfter(generatePrebuiltDatabase)
     }
+    // AGP lint tasks read src/main/assets as an input. Without this,
+    // running ":app:assembleProdRelease" hits a Gradle implicit-dependency
+    // validation error because the assets dir is produced by
+    // generatePrebuiltDatabase. mustRunAfter is too soft for Gradle 8.x's
+    // strict validator — needs a real dependsOn.
+    val lower = name.lowercase()
+    if (lower.contains("lint") && lower.contains("prodrelease")) {
+        dependsOn(generatePrebuiltDatabase)
+    }
 }

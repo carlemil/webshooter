@@ -42,6 +42,7 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.koin.compose.viewmodel.koinViewModel
 import se.kjellstrand.webshooter.data.mysignups.remote.SignupEntry
+import se.kjellstrand.webshooter.ui.common.formatDecimal
 import se.kjellstrand.webshooter.ui.mock.MyResultsViewModelMock
 import se.kjellstrand.webshooter.resources.*
 
@@ -137,7 +138,7 @@ fun MyEntriesScreen(
     }
 }
 
-private const val FMT_1F = "%.2f"
+private const val MY_RESULTS_DECIMALS = 2
 
 @Composable
 private fun SymbolInfoDialog(onDismiss: () -> Unit) {
@@ -238,11 +239,11 @@ private fun YearlySummaryCard(rowsByType: List<Triple<String, List<SummaryRow>, 
                         GridCell(row.weaponClass, 0.7f)
                         GridCell(row.count.toString(), 0.9f)
                         if (isFalt) {
-                            GridCell(FMT_1F.format(row.avgHits), 1.4f)
-                            GridCell(FMT_1F.format(row.figureHits), 1.4f)
+                            GridCell(formatDecimal(row.avgHits, MY_RESULTS_DECIMALS), 1.4f)
+                            GridCell(formatDecimal(row.figureHits, MY_RESULTS_DECIMALS), 1.4f)
                         } else {
-                            GridCell(FMT_1F.format(row.avgScore), 1.4f)
-                            GridCell(FMT_1F.format(row.avgHits), 1.4f)
+                            GridCell(formatDecimal(row.avgScore, MY_RESULTS_DECIMALS), 1.4f)
+                            GridCell(formatDecimal(row.avgHits, MY_RESULTS_DECIMALS), 1.4f)
                         }
                         GridCell(row.medalScore.toString(), 0.8f)
                     }
@@ -252,11 +253,11 @@ private fun YearlySummaryCard(rowsByType: List<Triple<String, List<SummaryRow>, 
                     GridCell("Alla", 0.7f, fontWeight = FontWeight.Bold)
                     GridCell(totalRow.count.toString(), 0.9f, fontWeight = FontWeight.Bold)
                     if (isFalt) {
-                        GridCell(FMT_1F.format(totalRow.avgHits), 1.4f, fontWeight = FontWeight.Bold)
-                        GridCell(FMT_1F.format(totalRow.figureHits), 1.4f, fontWeight = FontWeight.Bold)
+                        GridCell(formatDecimal(totalRow.avgHits, MY_RESULTS_DECIMALS), 1.4f, fontWeight = FontWeight.Bold)
+                        GridCell(formatDecimal(totalRow.figureHits, MY_RESULTS_DECIMALS), 1.4f, fontWeight = FontWeight.Bold)
                     } else {
-                        GridCell(FMT_1F.format(totalRow.avgScore), 1.4f, fontWeight = FontWeight.Bold)
-                        GridCell(FMT_1F.format(totalRow.avgHits), 1.4f, fontWeight = FontWeight.Bold)
+                        GridCell(formatDecimal(totalRow.avgScore, MY_RESULTS_DECIMALS), 1.4f, fontWeight = FontWeight.Bold)
+                        GridCell(formatDecimal(totalRow.avgHits, MY_RESULTS_DECIMALS), 1.4f, fontWeight = FontWeight.Bold)
                     }
                     GridCell(totalRow.medalScore.toString(), 0.8f, fontWeight = FontWeight.Bold)
                 }
@@ -321,11 +322,11 @@ private fun CompetitionSignupsItem(entries: List<SignupEntry>, resultStats: Map<
                 GridRow {
                     GridCell(entry.weaponclass.classname, 2f)
                     if (isFalt) {
-                        GridCell(if (avgHits != null) FMT_1F.format(avgHits) else "-", 1.5f)
+                        GridCell(if (avgHits != null) formatDecimal(avgHits, MY_RESULTS_DECIMALS) else "-", 1.5f)
                         GridCell(if (figureHits != null) figureHits.toString() else "-", 1.5f)
                     } else {
-                        GridCell(if (avgScore != null) FMT_1F.format(avgScore) else "-", 1.5f)
-                        GridCell(if (avgHits != null) FMT_1F.format(avgHits) else "-", 1.5f)
+                        GridCell(if (avgScore != null) formatDecimal(avgScore, MY_RESULTS_DECIMALS) else "-", 1.5f)
+                        GridCell(if (avgHits != null) formatDecimal(avgHits, MY_RESULTS_DECIMALS) else "-", 1.5f)
                     }
                     GridCell(medalCount.toString(), 1.2f)
                     GridCell(medalScore.toString(), 1.2f)

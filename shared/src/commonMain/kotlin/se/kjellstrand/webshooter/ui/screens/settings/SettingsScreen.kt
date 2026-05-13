@@ -52,6 +52,9 @@ import androidx.compose.ui.text.input.VisualTransformation
 import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import org.koin.compose.viewmodel.koinViewModel
 import se.kjellstrand.webshooter.ui.mock.MockSettings
 import se.kjellstrand.webshooter.ui.mock.SettingsViewModelMock
@@ -341,7 +344,9 @@ private fun GenderDropdown(selected: Gender, onSelect: (Gender) -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun BirthYearDropdown(selected: Int?, onSelect: (Int) -> Unit) {
-    val currentYear = java.util.Calendar.getInstance().get(java.util.Calendar.YEAR)
+    val currentYear = Clock.System.now()
+        .toLocalDateTime(TimeZone.currentSystemDefault())
+        .year
     val years = (currentYear downTo 1916).toList()
     var expanded by remember { mutableStateOf(false) }
 
