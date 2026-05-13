@@ -1,3 +1,1 @@
-- Dagens resultat visas i diagrammen direkt, även innan tävlingen är slutförd
-- Diagrammen uppdateras när du kommer tillbaka till dem
-- Tydligare färger på Snitt- och Trend-linjerna i resultatdiagrammet
+Stabilitetsförbättringar och buggfixar under huven.
