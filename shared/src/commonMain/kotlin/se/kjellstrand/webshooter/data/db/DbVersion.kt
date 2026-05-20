@@ -5,4 +5,4 @@ package se.kjellstrand.webshooter.data.db
  * database under app/src/main/assets/databases/webshooter.db is regenerated
  * each release, and Room destroys-and-recreates on a version mismatch.
  */
-const val DB_VERSION: Int = 33
+const val DB_VERSION: Int = 34

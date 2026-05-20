@@ -21,9 +21,16 @@ private const val TAG = "DatabaseFactory"
  * next network sync rehydrates everything.
  */
 fun createAppDatabase(context: Context): AppDatabase = try {
-    buildWithAsset(context).also { it.openHelper.writableDatabase }
-} catch (e: IllegalStateException) {
-    Log.w(TAG, "Bundled DB asset schema mismatch — rebuilding without asset", e)
+    val db = buildWithAsset(context)
+    // Force Room's onOpen + schema validation. `.writableDatabase` alone is
+    // not enough on Room 2.7 — validation is deferred until the first DAO
+    // query, so the IllegalStateException would escape this try/catch and
+    // crash the app on the main thread later. A trivial query against a
+    // real entity makes validation fire here, where we can recover.
+    db.openHelper.writableDatabase.query("SELECT 1 FROM competitions LIMIT 0").close()
+    db
+} catch (e: RuntimeException) {
+    Log.w(TAG, "Bundled DB asset unusable — rebuilding without asset", e)
     context.deleteDatabase(DB_NAME)
     buildWithoutAsset(context)
 }
