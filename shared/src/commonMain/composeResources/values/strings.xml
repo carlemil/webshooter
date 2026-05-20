@@ -182,6 +182,7 @@
     <string name="web_shooter_send_suggestion">Skicka förslag</string>
     <string name="markera">Markera</string>
     <string name="markera_camera_permission_required">Kameran behövs för att markera träffar live. Tryck för att ge åtkomst.</string>
+    <string name="markera_detect">Detektera</string>
     <string name="markera_pick_image">Välj bild</string>
     <string name="markera_switch_to_camera">Tillbaka till kamera</string>
     <string name="markera_no_image_picked">Ingen bild vald</string>

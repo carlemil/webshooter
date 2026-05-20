@@ -8,6 +8,7 @@ import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
@@ -52,6 +54,7 @@ import se.kjellstrand.webshooter.data.vision.mapToImageSpace
 import se.kjellstrand.webshooter.data.vision.nonMaxSuppression
 import se.kjellstrand.webshooter.resources.Res
 import se.kjellstrand.webshooter.resources.markera_camera_permission_required
+import se.kjellstrand.webshooter.resources.markera_detect
 import se.kjellstrand.webshooter.resources.markera_error_image_decode
 import se.kjellstrand.webshooter.resources.markera_error_inference
 import se.kjellstrand.webshooter.resources.markera_pick_image
@@ -69,6 +72,11 @@ fun MarkeraScreen() {
     val detector: HoleDetector = koinInject()
     val coroutineScope = rememberCoroutineScope()
     val pickedBitmap = remember { mutableStateOf<Bitmap?>(null) }
+    val previewView = remember {
+        PreviewView(context).apply {
+            scaleType = PreviewView.ScaleType.FIT_CENTER
+        }
+    }
 
     var cameraGranted by remember {
         mutableStateOf(
@@ -122,12 +130,38 @@ fun MarkeraScreen() {
         }
     }
 
+    val onDetectClick: () -> Unit = onDetect@{
+        if (uiState.isProcessing) return@onDetect
+        val snapshot = previewView.bitmap ?: return@onDetect
+        viewModel.setProcessing(true)
+        coroutineScope.launch {
+            try {
+                val input = withContext(Dispatchers.Default) {
+                    snapshot.toModelInput(detector.inputSize)
+                }
+                val raws = detector.detect(input)
+                val kept = nonMaxSuppression(
+                    filterByConfidence(raws, CONFIDENCE_THRESHOLD),
+                    IOU_THRESHOLD,
+                )
+                val detections = mapToImageSpace(kept, detector.inputSize, snapshot.width, snapshot.height)
+                Napier.d("snapshot ${snapshot.width}x${snapshot.height}: raw=${raws.size} kept=${kept.size}", tag = TAG)
+                viewModel.onFrameAnalysed(detections, snapshot.width, snapshot.height)
+            } catch (t: Throwable) {
+                Napier.w("snapshot inference failed", t, tag = TAG)
+                viewModel.setError(errorInference)
+            } finally {
+                viewModel.setProcessing(false)
+            }
+        }
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         when (uiState.mode) {
             MarkeraMode.Camera -> {
                 if (cameraGranted) {
-                    CameraPreviewWithOverlay(
-                        onDetections = { detections, w, h -> viewModel.onFrameAnalysed(detections, w, h) },
+                    CameraPreview(
+                        previewView = previewView,
                         onError = { viewModel.setError(it.message) },
                         modifier = Modifier.fillMaxSize(),
                     )
@@ -179,6 +213,11 @@ fun MarkeraScreen() {
             verticalArrangement = Arrangement.spacedBy(12.dp),
             horizontalAlignment = Alignment.End,
         ) {
+            if (uiState.mode == MarkeraMode.Camera && cameraGranted) {
+                FloatingActionButton(onClick = onDetectClick) {
+                    Icon(Icons.Default.Search, contentDescription = stringResource(Res.string.markera_detect))
+                }
+            }
             if (uiState.mode == MarkeraMode.Gallery) {
                 FloatingActionButton(onClick = {
                     pickedBitmap.value = null
