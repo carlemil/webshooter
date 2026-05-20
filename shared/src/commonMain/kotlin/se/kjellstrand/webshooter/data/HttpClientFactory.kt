@@ -53,7 +53,7 @@ fun HttpClientConfig<*>.configureWebshooterHttpClient(
     }
 
     install(Logging) {
-        level = if (isDebug) LogLevel.ALL else LogLevel.NONE
+        level = if (isDebug) LogLevel.INFO else LogLevel.NONE
         logger = object : Logger {
             override fun log(message: String) {
                 Napier.d(message, tag = LOG_TAG)
