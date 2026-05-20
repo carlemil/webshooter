@@ -91,10 +91,12 @@ kotlin {
             // so :app can pass MockInterceptor through extraOkHttpInterceptors.
             api(libs.ktor.client.okhttp)
             api(libs.okhttp)
+            // ONNX Runtime backs the Android HoleDetector actual.
+            // iOS will swap this for onnxruntime-objc once a host app exists.
+            implementation(libs.onnxruntime.android)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
-            implementation(libs.multiplatform.settings.keychain)
         }
     }
 }

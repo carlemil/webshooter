@@ -11,6 +11,7 @@ import se.kjellstrand.webshooter.ui.screens.charts.seriespoints.SeriesPointsView
 import se.kjellstrand.webshooter.ui.screens.club.ClubViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.login.LoginViewModelImpl
+import se.kjellstrand.webshooter.ui.screens.markera.MarkeraViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.myresults.MyResultsViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.patrols.PatrolsViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.results.ResultsViewModelImpl
@@ -45,6 +46,7 @@ val viewModelsModule = module {
     viewModel { SeriesPointsViewModelImpl(get(), get(), get()) }
     viewModel { SettingsViewModelImpl(get(), get(), get()) }
     viewModel { MyResultsViewModelImpl(get(), get(), get()) }
+    viewModel { MarkeraViewModelImpl() }
     viewModel {
         LoginViewModelImpl(
             loginRepository = get(),

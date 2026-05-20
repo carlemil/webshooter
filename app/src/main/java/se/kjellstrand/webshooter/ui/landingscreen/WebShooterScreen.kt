@@ -47,6 +47,7 @@ import se.kjellstrand.webshooter.ui.screens.charts.clubstats.ClubStatsScreen
 import se.kjellstrand.webshooter.ui.screens.charts.clubstats.ClubStatsViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsScreen
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsViewModelImpl
+import se.kjellstrand.webshooter.ui.screens.markera.MarkeraScreen
 import se.kjellstrand.webshooter.ui.screens.myresults.MyEntriesScreen
 import se.kjellstrand.webshooter.ui.navigation.Screen
 import se.kjellstrand.webshooter.ui.screens.licenses.LicensesScreen
@@ -67,6 +68,7 @@ fun WebShooterScreen(
     val scope = rememberCoroutineScope()
 
     val competitionsItems = listOf(
+        NavigationItem(stringResource(Res.string.markera), Screen.Markera.route),
         NavigationItem(stringResource(Res.string.web_shooter_competitions), Screen.CompetitionsList.route),
         NavigationItem(stringResource(Res.string.my_results), Screen.MyEntries.route)
     )
@@ -203,6 +205,9 @@ fun WebShooterScreen(
                         onNavigateToTeams = onNavigateToTeams,
                         competitionsViewModel = competitionsViewModel,
                     )
+                }
+                composable(Screen.Markera.route) {
+                    MarkeraScreen()
                 }
                 composable(Screen.MyEntries.route) {
                     MyEntriesScreen()

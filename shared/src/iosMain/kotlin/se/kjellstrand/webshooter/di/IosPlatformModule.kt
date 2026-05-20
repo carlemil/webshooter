@@ -11,6 +11,7 @@ import se.kjellstrand.webshooter.data.db.AppDatabase
 import se.kjellstrand.webshooter.data.db.createAppDatabase
 import se.kjellstrand.webshooter.data.secure.SecurePrefs
 import se.kjellstrand.webshooter.data.secure.createSecurePrefs
+import se.kjellstrand.webshooter.data.vision.HoleDetector
 import se.kjellstrand.webshooter.ui.platform.CalendarOpener
 import se.kjellstrand.webshooter.ui.platform.IosCalendarOpener
 import se.kjellstrand.webshooter.ui.platform.IosUrlLauncher
@@ -40,4 +41,8 @@ fun iosPlatformModule(config: WebshooterConfig): Module = module {
             clientSecret = config.clientSecret,
         )
     }
+    // Stub HoleDetector — the iOS actual ignores its model bytes and
+    // returns an empty list. Replace with a real onnxruntime-objc-backed
+    // factory when the iOS host app + bundle resource pipeline exist.
+    single<HoleDetector> { HoleDetector(ByteArray(0), inputSize = 640) }
 }
