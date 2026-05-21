@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import se.kjellstrand.webshooter.data.vision.Detection
+import se.kjellstrand.webshooter.data.vision.TargetCalibration
 
 class MarkeraViewModelImpl : ViewModel(), MarkeraViewModel {
 
@@ -36,6 +37,11 @@ class MarkeraViewModelImpl : ViewModel(), MarkeraViewModel {
         }
     }
 
+    override fun setCalibration(fresh: TargetCalibration?) {
+        if (fresh == null) return
+        _uiState.update { it.copy(calibration = fresh) }
+    }
+
     override fun switchMode(mode: MarkeraMode) {
         _uiState.update {
             if (it.mode == mode) it else it.copy(
@@ -43,6 +49,7 @@ class MarkeraViewModelImpl : ViewModel(), MarkeraViewModel {
                 detections = emptyList(),
                 imageWidth = 0,
                 imageHeight = 0,
+                calibration = null,
                 isProcessing = false,
                 error = null,
             )

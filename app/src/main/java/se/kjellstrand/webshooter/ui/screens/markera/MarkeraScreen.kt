@@ -49,6 +49,9 @@ import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import se.kjellstrand.webshooter.data.vision.HoleDetector
+import se.kjellstrand.webshooter.data.vision.TARGET_CARD_WIDTH_MM
+import se.kjellstrand.webshooter.data.vision.TargetCalibration
+import se.kjellstrand.webshooter.data.vision.computeHitScores
 import se.kjellstrand.webshooter.data.vision.filterByConfidence
 import se.kjellstrand.webshooter.data.vision.mapToImageSpace
 import se.kjellstrand.webshooter.data.vision.nonMaxSuppression
@@ -61,8 +64,42 @@ import se.kjellstrand.webshooter.resources.markera_pick_image
 import se.kjellstrand.webshooter.resources.markera_switch_to_camera
 
 private const val TAG = "Markera"
+private const val SCORE_TAG = "MarkeraScore"
 private const val CONFIDENCE_THRESHOLD = 0.35f
 private const val IOU_THRESHOLD = 0.45f
+
+private fun logHitScores(
+    detections: List<se.kjellstrand.webshooter.data.vision.Detection>,
+    width: Int,
+    height: Int,
+    calibration: TargetCalibration?,
+) {
+    val centerX = calibration?.centerX ?: (width / 2f)
+    val centerY = calibration?.centerY ?: (height / 2f)
+    val mmPerPx = calibration?.mmPerPx ?: (TARGET_CARD_WIDTH_MM / width.toDouble())
+    if (calibration != null) {
+        Napier.d(
+            "calibrated: centre=(${centerX.toInt()},${centerY.toInt()}) " +
+                "radius=${calibration.radiusPx.toInt()}px " +
+                "mmPerPx=${"%.3f".format(mmPerPx)} " +
+                "conf=${"%.2f".format(calibration.confidence)}",
+            tag = SCORE_TAG,
+        )
+    } else {
+        Napier.d("fallback calibration (no 7-ring blob found)", tag = SCORE_TAG)
+    }
+    val scores = computeHitScores(detections, centerX, centerY, mmPerPx)
+    val total = scores.sumOf { if (it.isInnerTen) 10 else it.ring }
+    scores.forEachIndexed { i, s ->
+        val ringStr = if (s.isInnerTen) "X" else s.ring.toString()
+        Napier.d(
+            "hit #${i + 1}: ring=$ringStr distance=${"%.1f".format(s.distanceMm)}mm " +
+                "px=(${s.centerXpx.toInt()},${s.centerYpx.toInt()})",
+            tag = SCORE_TAG,
+        )
+    }
+    Napier.d("total: ${scores.size} hits, score=$total", tag = SCORE_TAG)
+}
 
 @Composable
 fun MarkeraScreen() {
@@ -121,6 +158,9 @@ fun MarkeraScreen() {
                     IOU_THRESHOLD,
                 )
                 val detections = mapToImageSpace(kept, detector.inputSize, bitmap.width, bitmap.height)
+                val freshCal = withContext(Dispatchers.Default) { bitmap.calibrate() }
+                viewModel.setCalibration(freshCal)
+                logHitScores(detections, bitmap.width, bitmap.height, freshCal)
                 pickedBitmap.value = bitmap
                 viewModel.onGalleryImageAnalysed(detections, bitmap.width, bitmap.height)
             } catch (t: Throwable) {
@@ -146,6 +186,9 @@ fun MarkeraScreen() {
                 )
                 val detections = mapToImageSpace(kept, detector.inputSize, snapshot.width, snapshot.height)
                 Napier.d("snapshot ${snapshot.width}x${snapshot.height}: raw=${raws.size} kept=${kept.size}", tag = TAG)
+                val freshCal = withContext(Dispatchers.Default) { snapshot.calibrate() }
+                viewModel.setCalibration(freshCal)
+                logHitScores(detections, snapshot.width, snapshot.height, freshCal ?: uiState.calibration)
                 viewModel.onFrameAnalysed(detections, snapshot.width, snapshot.height)
             } catch (t: Throwable) {
                 Napier.w("snapshot inference failed", t, tag = TAG)
@@ -163,6 +206,12 @@ fun MarkeraScreen() {
                     CameraPreview(
                         previewView = previewView,
                         onError = { viewModel.setError(it.message) },
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                    CalibrationOverlay(
+                        calibration = uiState.calibration,
+                        imageWidth = uiState.imageWidth,
+                        imageHeight = uiState.imageHeight,
                         modifier = Modifier.fillMaxSize(),
                     )
                     DetectionOverlay(
@@ -185,6 +234,12 @@ fun MarkeraScreen() {
                         modifier = Modifier.fillMaxSize(),
                     )
                 }
+                CalibrationOverlay(
+                    calibration = uiState.calibration,
+                    imageWidth = uiState.imageWidth,
+                    imageHeight = uiState.imageHeight,
+                    modifier = Modifier.fillMaxSize(),
+                )
                 DetectionOverlay(
                     detections = uiState.detections,
                     imageWidth = uiState.imageWidth,
