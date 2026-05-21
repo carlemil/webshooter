@@ -108,4 +108,65 @@ class HitScoringTest {
         assertEquals(listOf(10, 8, 1), scores.map { it.ring })
         assertTrue(scores.first().isInnerTen)
     }
+
+    @Test
+    fun `ellipse calibration stretches the foreshortened axis back`() {
+        // 100x50 ellipse axis-aligned, mmPerPx = 1.0 (100mm = 100px on major).
+        // A hole at the right edge of the ellipse (+100 along major) should
+        // be at ring 7. A hole at the bottom of the ellipse (+50 along minor)
+        // should ALSO be at ring 7 after un-stretching (50 * 100/50 = 100).
+        val cal = TargetCalibration(
+            centerX = 0f, centerY = 0f,
+            semiMajorPx = 100f, semiMinorPx = 50f,
+            rotationRad = 0f,
+            mmPerPx = 1.0,
+            confidence = 1f,
+        )
+        val majorEdge = Detection(left = 98f, top = -2f, right = 102f, bottom = 2f, conf = 0.9f)
+        val minorEdge = Detection(left = -2f, top = 48f, right = 2f, bottom = 52f, conf = 0.9f)
+        val sMajor = computeHitScores(listOf(majorEdge), cal).single()
+        val sMinor = computeHitScores(listOf(minorEdge), cal).single()
+        assertEquals(7, sMajor.ring)
+        assertEquals(7, sMinor.ring)
+        assertEquals(sMajor.distanceMm, sMinor.distanceMm, 0.5)
+    }
+
+    @Test
+    fun `ellipse rotation rotates hole offsets before stretching`() {
+        // Ellipse rotated 90 degrees: semiMajor now along y, semiMinor along x.
+        // A hole at (+49, 0) sits on the apparent minor side and unstretches
+        // to ~98mm; a hole at (0, +98) is on the major side at the same true
+        // distance. Both should land in ring 7 with margin (avoid the 100mm
+        // boundary so cos(π/2) ≈ -4e-8 noise doesn't tip us into ring 6).
+        val cal = TargetCalibration(
+            centerX = 0f, centerY = 0f,
+            semiMajorPx = 100f, semiMinorPx = 50f,
+            rotationRad = (Math.PI / 2).toFloat(),
+            mmPerPx = 1.0,
+            confidence = 1f,
+        )
+        val alongX = Detection(left = 47f, top = -2f, right = 51f, bottom = 2f, conf = 0.9f)
+        val alongY = Detection(left = -2f, top = 96f, right = 2f, bottom = 100f, conf = 0.9f)
+        val sX = computeHitScores(listOf(alongX), cal).single()
+        val sY = computeHitScores(listOf(alongY), cal).single()
+        assertEquals(7, sX.ring)
+        assertEquals(7, sY.ring)
+        assertEquals(sX.distanceMm, sY.distanceMm, 1e-3)
+    }
+
+    @Test
+    fun `circular calibration degrades to the simple distance scorer`() {
+        // semiMajor == semiMinor → no stretch, no rotation.
+        val cal = TargetCalibration(
+            centerX = 200f, centerY = 200f,
+            semiMajorPx = 100f, semiMinorPx = 100f,
+            rotationRad = 0f,
+            mmPerPx = 1.0,
+            confidence = 1f,
+        )
+        val d = Detection(left = 248f, top = 198f, right = 252f, bottom = 202f, conf = 0.9f)
+        val s = computeHitScores(listOf(d), cal).single()
+        assertEquals(50.0, s.distanceMm, 1e-3)
+        assertEquals(9, s.ring)
+    }
 }

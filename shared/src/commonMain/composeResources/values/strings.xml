@@ -181,12 +181,10 @@
     <string name="web_shooter_licenses">Licenser</string>
     <string name="web_shooter_send_suggestion">Skicka förslag</string>
     <string name="markera">Markera</string>
-    <string name="markera_camera_permission_required">Kameran behövs för att markera träffar live. Tryck för att ge åtkomst.</string>
+    <string name="markera_camera_permission_required">Kameran behövs för att markera träffar. Tryck för att ge åtkomst.</string>
+    <string name="markera_grant_permission">Tillåt åtkomst</string>
     <string name="markera_detect">Detektera</string>
-    <string name="markera_pick_image">Välj bild</string>
-    <string name="markera_switch_to_camera">Tillbaka till kamera</string>
-    <string name="markera_no_image_picked">Ingen bild vald</string>
-    <string name="markera_error_image_decode">Kunde inte läsa bilden.</string>
+    <string name="markera_resume_live">Tillbaka till kamera</string>
     <string name="markera_error_inference">Detekteringen misslyckades.</string>
     <string name="send_suggestion_email_subject">Webshooter: förslag</string>
     <string name="send_suggestion_email_recipient" translatable="false">erbsman@gmail.com</string>

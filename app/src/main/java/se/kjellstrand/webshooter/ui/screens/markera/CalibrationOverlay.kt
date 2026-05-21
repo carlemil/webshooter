@@ -4,15 +4,19 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.rotate
 import se.kjellstrand.webshooter.data.vision.TargetCalibration
+import kotlin.math.PI
 import kotlin.math.min
 
 /**
  * Draws the calibrated target centre as a crosshair plus the fitted
- * 7-ring as a circle. Same FIT_CENTER mapping as [DetectionOverlay] so
- * the markings land on top of the same image the user sees.
+ * 7-ring as an ellipse (rotated to match perspective foreshortening).
+ * Same FIT_CENTER mapping as [DetectionOverlay] so the markings land on
+ * top of the same image the user sees.
  */
 @Composable
 fun CalibrationOverlay(
@@ -31,16 +35,17 @@ fun CalibrationOverlay(
         val offsetY = (size.height - imageHeight * scale) / 2f
         val cx = calibration.centerX * scale + offsetX
         val cy = calibration.centerY * scale + offsetY
-        val r = calibration.radiusPx * scale
+        val a = calibration.semiMajorPx * scale
+        val b = calibration.semiMinorPx * scale
 
-        // 7-ring circle
-        drawCircle(
-            color = color,
-            radius = r,
-            center = Offset(cx, cy),
-            style = Stroke(width = strokeWidthPx),
-        )
-        // Crosshair
+        rotate(degrees = (calibration.rotationRad * 180.0 / PI).toFloat(), pivot = Offset(cx, cy)) {
+            drawOval(
+                color = color,
+                topLeft = Offset(cx - a, cy - b),
+                size = Size(2f * a, 2f * b),
+                style = Stroke(width = strokeWidthPx),
+            )
+        }
         drawLine(
             color = color,
             start = Offset(cx - crosshairHalfPx, cy),

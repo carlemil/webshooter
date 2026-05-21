@@ -7,11 +7,8 @@ import se.kjellstrand.webshooter.data.vision.TargetCalibration
 interface MarkeraViewModel {
     val uiState: StateFlow<MarkeraUiState>
 
-    /** Push the result of one CameraX frame's analysis. */
+    /** Push the result of one inference pass on a frozen snapshot. */
     fun onFrameAnalysed(detections: List<Detection>, imageWidth: Int, imageHeight: Int)
-
-    /** Push the result of a single gallery-pick inference. */
-    fun onGalleryImageAnalysed(detections: List<Detection>, imageWidth: Int, imageHeight: Int)
 
     /**
      * Update the cached calibration. A non-null value replaces the
@@ -21,7 +18,8 @@ interface MarkeraViewModel {
      */
     fun setCalibration(fresh: TargetCalibration?)
 
-    fun switchMode(mode: MarkeraMode)
+    /** Clear detection overlay state (preserves cached calibration). */
+    fun clearResults()
 
     fun setProcessing(isProcessing: Boolean)
 

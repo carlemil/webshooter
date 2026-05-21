@@ -14,20 +14,8 @@ class MarkeraViewModelImpl : ViewModel(), MarkeraViewModel {
     override val uiState: StateFlow<MarkeraUiState> = _uiState.asStateFlow()
 
     override fun onFrameAnalysed(detections: List<Detection>, imageWidth: Int, imageHeight: Int) {
-        _uiState.update { current ->
-            if (current.mode != MarkeraMode.Camera) current else current.copy(
-                detections = detections,
-                imageWidth = imageWidth,
-                imageHeight = imageHeight,
-                error = null,
-            )
-        }
-    }
-
-    override fun onGalleryImageAnalysed(detections: List<Detection>, imageWidth: Int, imageHeight: Int) {
         _uiState.update {
             it.copy(
-                mode = MarkeraMode.Gallery,
                 detections = detections,
                 imageWidth = imageWidth,
                 imageHeight = imageHeight,
@@ -42,14 +30,12 @@ class MarkeraViewModelImpl : ViewModel(), MarkeraViewModel {
         _uiState.update { it.copy(calibration = fresh) }
     }
 
-    override fun switchMode(mode: MarkeraMode) {
+    override fun clearResults() {
         _uiState.update {
-            if (it.mode == mode) it else it.copy(
-                mode = mode,
+            it.copy(
                 detections = emptyList(),
                 imageWidth = 0,
                 imageHeight = 0,
-                calibration = null,
                 isProcessing = false,
                 error = null,
             )

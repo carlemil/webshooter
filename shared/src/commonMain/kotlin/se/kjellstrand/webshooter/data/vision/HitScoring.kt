@@ -1,5 +1,7 @@
 package se.kjellstrand.webshooter.data.vision
 
+import kotlin.math.cos
+import kotlin.math.sin
 import kotlin.math.sqrt
 
 /**
@@ -53,6 +55,53 @@ fun computeHitScores(
             centerXpx = cx,
             centerYpx = cy,
             distancePx = distPx,
+            distanceMm = distMm,
+            ring = ringForDistance(distMm),
+            isInnerTen = distMm <= INNER_TEN_RADIUS_MM,
+        )
+    }.sortedWith(
+        compareByDescending<HitScore> { it.isInnerTen }
+            .thenByDescending { it.ring }
+            .thenBy { it.distanceMm }
+    )
+}
+
+/**
+ * Score each detection in the frontal target plane recovered from the
+ * fitted ellipse. The projected 7-ring is an ellipse `(centerX, centerY,
+ * semiMajor, semiMinor, rotationRad)`; we rotate hole offsets so the
+ * major axis aligns with +x, then stretch the minor-axis component back
+ * by `semiMajor / semiMinor` so the ellipse becomes the original 7-ring
+ * circle. Distances are then converted to mm via `mmPerPx`, which is
+ * derived from `semiMajor`.
+ */
+fun computeHitScores(
+    detections: List<Detection>,
+    calibration: TargetCalibration,
+): List<HitScore> {
+    if (detections.isEmpty()) return emptyList()
+    val theta = calibration.rotationRad.toDouble()
+    val cosT = cos(theta)
+    val sinT = sin(theta)
+    val stretch = if (calibration.semiMinorPx > 0f)
+        (calibration.semiMajorPx / calibration.semiMinorPx).toDouble()
+    else 1.0
+    return detections.map { d ->
+        val cx = (d.left + d.right) / 2f
+        val cy = (d.top + d.bottom) / 2f
+        val dx = (cx - calibration.centerX).toDouble()
+        val dy = (cy - calibration.centerY).toDouble()
+        // Rotate by -theta so the major axis aligns with +x.
+        val xR = dx * cosT + dy * sinT
+        val yR = -dx * sinT + dy * cosT
+        // Stretch minor-axis component to undo foreshortening.
+        val yC = yR * stretch
+        val distPx = sqrt(xR * xR + yC * yC)
+        val distMm = distPx * calibration.mmPerPx
+        HitScore(
+            centerXpx = cx,
+            centerYpx = cy,
+            distancePx = distPx.toFloat(),
             distanceMm = distMm,
             ring = ringForDistance(distMm),
             isInnerTen = distMm <= INNER_TEN_RADIUS_MM,

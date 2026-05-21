@@ -3,10 +3,7 @@ package se.kjellstrand.webshooter.ui.screens.markera
 import android.Manifest
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Image
@@ -17,7 +14,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PhotoLibrary
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material3.Button
@@ -58,10 +54,9 @@ import se.kjellstrand.webshooter.data.vision.nonMaxSuppression
 import se.kjellstrand.webshooter.resources.Res
 import se.kjellstrand.webshooter.resources.markera_camera_permission_required
 import se.kjellstrand.webshooter.resources.markera_detect
-import se.kjellstrand.webshooter.resources.markera_error_image_decode
 import se.kjellstrand.webshooter.resources.markera_error_inference
-import se.kjellstrand.webshooter.resources.markera_pick_image
-import se.kjellstrand.webshooter.resources.markera_switch_to_camera
+import se.kjellstrand.webshooter.resources.markera_grant_permission
+import se.kjellstrand.webshooter.resources.markera_resume_live
 
 private const val TAG = "Markera"
 private const val SCORE_TAG = "MarkeraScore"
@@ -74,21 +69,26 @@ private fun logHitScores(
     height: Int,
     calibration: TargetCalibration?,
 ) {
-    val centerX = calibration?.centerX ?: (width / 2f)
-    val centerY = calibration?.centerY ?: (height / 2f)
-    val mmPerPx = calibration?.mmPerPx ?: (TARGET_CARD_WIDTH_MM / width.toDouble())
-    if (calibration != null) {
+    val scores = if (calibration != null) {
         Napier.d(
-            "calibrated: centre=(${centerX.toInt()},${centerY.toInt()}) " +
-                "radius=${calibration.radiusPx.toInt()}px " +
-                "mmPerPx=${"%.3f".format(mmPerPx)} " +
+            "calibrated: centre=(${calibration.centerX.toInt()},${calibration.centerY.toInt()}) " +
+                "semiMajor=${calibration.semiMajorPx.toInt()}px " +
+                "semiMinor=${calibration.semiMinorPx.toInt()}px " +
+                "θ=${"%.1f".format(calibration.rotationRad * 180.0 / kotlin.math.PI)}° " +
+                "mmPerPx=${"%.3f".format(calibration.mmPerPx)} " +
                 "conf=${"%.2f".format(calibration.confidence)}",
             tag = SCORE_TAG,
         )
+        computeHitScores(detections, calibration)
     } else {
         Napier.d("fallback calibration (no 7-ring blob found)", tag = SCORE_TAG)
+        computeHitScores(
+            detections,
+            centerX = width / 2f,
+            centerY = height / 2f,
+            mmPerPx = TARGET_CARD_WIDTH_MM / width.toDouble(),
+        )
     }
-    val scores = computeHitScores(detections, centerX, centerY, mmPerPx)
     val total = scores.sumOf { if (it.isInnerTen) 10 else it.ring }
     scores.forEachIndexed { i, s ->
         val ringStr = if (s.isInnerTen) "X" else s.ring.toString()
@@ -108,7 +108,7 @@ fun MarkeraScreen() {
     val uiState by viewModel.uiState.collectAsState()
     val detector: HoleDetector = koinInject()
     val coroutineScope = rememberCoroutineScope()
-    val pickedBitmap = remember { mutableStateOf<Bitmap?>(null) }
+    val snapshotBitmap = remember { mutableStateOf<Bitmap?>(null) }
     val previewView = remember {
         PreviewView(context).apply {
             scaleType = PreviewView.ScaleType.FIT_CENTER
@@ -129,50 +129,14 @@ fun MarkeraScreen() {
         if (!cameraGranted) permissionLauncher.launch(Manifest.permission.CAMERA)
     }
 
-    val errorImageDecode = stringResource(Res.string.markera_error_image_decode)
     val errorInference = stringResource(Res.string.markera_error_inference)
-
-    val galleryLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia(),
-    ) { uri: Uri? ->
-        if (uri == null) return@rememberLauncherForActivityResult
-        viewModel.switchMode(MarkeraMode.Gallery)
-        viewModel.setProcessing(true)
-        coroutineScope.launch {
-            try {
-                val bitmap = withContext(Dispatchers.IO) {
-                    context.contentResolver.openInputStream(uri)?.use { stream ->
-                        BitmapFactory.decodeStream(stream)
-                    }
-                }
-                if (bitmap == null) {
-                    viewModel.setError(errorImageDecode)
-                    return@launch
-                }
-                val input = withContext(Dispatchers.Default) {
-                    bitmap.toModelInput(detector.inputSize)
-                }
-                val raws = detector.detect(input)
-                val kept = nonMaxSuppression(
-                    filterByConfidence(raws, CONFIDENCE_THRESHOLD),
-                    IOU_THRESHOLD,
-                )
-                val detections = mapToImageSpace(kept, detector.inputSize, bitmap.width, bitmap.height)
-                val freshCal = withContext(Dispatchers.Default) { bitmap.calibrate() }
-                viewModel.setCalibration(freshCal)
-                logHitScores(detections, bitmap.width, bitmap.height, freshCal)
-                pickedBitmap.value = bitmap
-                viewModel.onGalleryImageAnalysed(detections, bitmap.width, bitmap.height)
-            } catch (t: Throwable) {
-                Napier.w("gallery inference failed", t, tag = TAG)
-                viewModel.setError(errorInference)
-            }
-        }
-    }
 
     val onDetectClick: () -> Unit = onDetect@{
         if (uiState.isProcessing) return@onDetect
         val snapshot = previewView.bitmap ?: return@onDetect
+        // Freeze the frame immediately so the user sees the static image
+        // the model will analyse instead of the live preview.
+        snapshotBitmap.value = snapshot
         viewModel.setProcessing(true)
         coroutineScope.launch {
             try {
@@ -187,66 +151,60 @@ fun MarkeraScreen() {
                 val detections = mapToImageSpace(kept, detector.inputSize, snapshot.width, snapshot.height)
                 Napier.d("snapshot ${snapshot.width}x${snapshot.height}: raw=${raws.size} kept=${kept.size}", tag = TAG)
                 val freshCal = withContext(Dispatchers.Default) { snapshot.calibrate() }
+                Napier.d(
+                    "snapshot dims ${snapshot.width}x${snapshot.height}, calibration=" +
+                        (freshCal?.let {
+                            "(${it.centerX.toInt()},${it.centerY.toInt()}) " +
+                                "a=${it.semiMajorPx.toInt()}px b=${it.semiMinorPx.toInt()}px"
+                        } ?: "null"),
+                    tag = TAG,
+                )
                 viewModel.setCalibration(freshCal)
                 logHitScores(detections, snapshot.width, snapshot.height, freshCal ?: uiState.calibration)
                 viewModel.onFrameAnalysed(detections, snapshot.width, snapshot.height)
             } catch (t: Throwable) {
                 Napier.w("snapshot inference failed", t, tag = TAG)
                 viewModel.setError(errorInference)
-            } finally {
-                viewModel.setProcessing(false)
             }
         }
     }
 
+    val onResumeLive: () -> Unit = {
+        snapshotBitmap.value = null
+        viewModel.clearResults()
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
-        when (uiState.mode) {
-            MarkeraMode.Camera -> {
-                if (cameraGranted) {
-                    CameraPreview(
-                        previewView = previewView,
-                        onError = { viewModel.setError(it.message) },
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                    CalibrationOverlay(
-                        calibration = uiState.calibration,
-                        imageWidth = uiState.imageWidth,
-                        imageHeight = uiState.imageHeight,
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                    DetectionOverlay(
-                        detections = uiState.detections,
-                        imageWidth = uiState.imageWidth,
-                        imageHeight = uiState.imageHeight,
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                } else {
-                    PermissionPrompt(onGrantClick = { permissionLauncher.launch(Manifest.permission.CAMERA) })
-                }
-            }
-            MarkeraMode.Gallery -> {
-                val bmp = pickedBitmap.value
-                if (bmp != null) {
-                    Image(
-                        bitmap = bmp.asImageBitmap(),
-                        contentDescription = null,
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier.fillMaxSize(),
-                    )
-                }
-                CalibrationOverlay(
-                    calibration = uiState.calibration,
-                    imageWidth = uiState.imageWidth,
-                    imageHeight = uiState.imageHeight,
+        if (!cameraGranted) {
+            PermissionPrompt(onGrantClick = { permissionLauncher.launch(Manifest.permission.CAMERA) })
+        } else {
+            val frozen = snapshotBitmap.value
+            if (frozen != null) {
+                Image(
+                    bitmap = frozen.asImageBitmap(),
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
                     modifier = Modifier.fillMaxSize(),
                 )
-                DetectionOverlay(
-                    detections = uiState.detections,
-                    imageWidth = uiState.imageWidth,
-                    imageHeight = uiState.imageHeight,
+            } else {
+                CameraPreview(
+                    previewView = previewView,
+                    onError = { viewModel.setError(it.message) },
                     modifier = Modifier.fillMaxSize(),
                 )
             }
+            CalibrationOverlay(
+                calibration = uiState.calibration,
+                imageWidth = uiState.imageWidth,
+                imageHeight = uiState.imageHeight,
+                modifier = Modifier.fillMaxSize(),
+            )
+            DetectionOverlay(
+                detections = uiState.detections,
+                imageWidth = uiState.imageWidth,
+                imageHeight = uiState.imageHeight,
+                modifier = Modifier.fillMaxSize(),
+            )
         }
 
         uiState.error?.let { msg ->
@@ -261,30 +219,28 @@ fun MarkeraScreen() {
             )
         }
 
-        Column(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            horizontalAlignment = Alignment.End,
-        ) {
-            if (uiState.mode == MarkeraMode.Camera && cameraGranted) {
+        if (cameraGranted) {
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
+                horizontalAlignment = Alignment.End,
+            ) {
+                if (snapshotBitmap.value != null) {
+                    FloatingActionButton(onClick = onResumeLive) {
+                        Icon(
+                            Icons.Default.Videocam,
+                            contentDescription = stringResource(Res.string.markera_resume_live),
+                        )
+                    }
+                }
                 FloatingActionButton(onClick = onDetectClick) {
-                    Icon(Icons.Default.Search, contentDescription = stringResource(Res.string.markera_detect))
+                    Icon(
+                        Icons.Default.Search,
+                        contentDescription = stringResource(Res.string.markera_detect),
+                    )
                 }
-            }
-            if (uiState.mode == MarkeraMode.Gallery) {
-                FloatingActionButton(onClick = {
-                    pickedBitmap.value = null
-                    viewModel.switchMode(MarkeraMode.Camera)
-                }) {
-                    Icon(Icons.Default.Videocam, contentDescription = stringResource(Res.string.markera_switch_to_camera))
-                }
-            }
-            FloatingActionButton(onClick = {
-                galleryLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-            }) {
-                Icon(Icons.Default.PhotoLibrary, contentDescription = stringResource(Res.string.markera_pick_image))
             }
         }
     }
@@ -308,7 +264,7 @@ private fun PermissionPrompt(onGrantClick: () -> Unit) {
                 style = MaterialTheme.typography.bodyLarge,
             )
             Button(onClick = onGrantClick) {
-                Text(stringResource(Res.string.markera_pick_image))
+                Text(stringResource(Res.string.markera_grant_permission))
             }
         }
     }

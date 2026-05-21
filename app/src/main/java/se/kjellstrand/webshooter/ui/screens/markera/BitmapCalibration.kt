@@ -9,7 +9,8 @@ import se.kjellstrand.webshooter.data.vision.calibrateFromGrayscale
  * Subsample [this] Bitmap by [stride] in each axis, convert to grayscale
  * using BT.601 luma weights, and run [calibrateFromGrayscale]. Returns a
  * [TargetCalibration] in **original full-resolution Bitmap coordinates**
- * — centre and radius scaled back up by [stride].
+ * — centre and ellipse axes scaled back up by [stride]. The rotation
+ * angle is invariant under uniform subsampling.
  */
 fun Bitmap.calibrate(stride: Int = 4): TargetCalibration? {
     val sw = (width + stride - 1) / stride
@@ -39,14 +40,15 @@ fun Bitmap.calibrate(stride: Int = 4): TargetCalibration? {
 
     val small = calibrateFromGrayscale(gray, sw, sh) ?: return null
     val s = stride.toFloat()
-    val cxFull = small.centerX * s
-    val cyFull = small.centerY * s
-    val rFull = small.radiusPx * s
+    val majorFull = small.semiMajorPx * s
+    val minorFull = small.semiMinorPx * s
     return TargetCalibration(
-        centerX = cxFull,
-        centerY = cyFull,
-        radiusPx = rFull,
-        mmPerPx = TARGET_BLACK_RING_RADIUS_MM / rFull,
+        centerX = small.centerX * s,
+        centerY = small.centerY * s,
+        semiMajorPx = majorFull,
+        semiMinorPx = minorFull,
+        rotationRad = small.rotationRad,
+        mmPerPx = TARGET_BLACK_RING_RADIUS_MM / majorFull,
         confidence = small.confidence,
     )
 }
