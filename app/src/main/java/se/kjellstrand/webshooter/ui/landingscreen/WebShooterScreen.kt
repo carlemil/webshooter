@@ -5,6 +5,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.DrawerValue
@@ -68,7 +70,6 @@ fun WebShooterScreen(
     val scope = rememberCoroutineScope()
 
     val competitionsItems = listOf(
-        NavigationItem(stringResource(Res.string.markera), Screen.Markera.route),
         NavigationItem(stringResource(Res.string.web_shooter_competitions), Screen.CompetitionsList.route),
         NavigationItem(stringResource(Res.string.my_results), Screen.MyEntries.route)
     )
@@ -84,7 +85,10 @@ fun WebShooterScreen(
         NavigationItem(stringResource(Res.string.web_shooter_settings), Screen.Settings.route),
         NavigationItem(stringResource(Res.string.web_shooter_licenses), Screen.Licenses.route)
     )
-    val navigationItems = competitionsItems + statsItems + clubItems + settingsItems
+    val otherItems = listOf(
+        NavigationItem(stringResource(Res.string.markera), Screen.Markera.route)
+    )
+    val navigationItems = competitionsItems + statsItems + clubItems + settingsItems + otherItems
 
     val drawerNavController = rememberNavController()
     val navBackStackEntry by drawerNavController.currentBackStackEntryAsState()
@@ -107,6 +111,7 @@ fun WebShooterScreen(
     ModalNavigationDrawer(
         drawerContent = {
             ModalDrawerSheet {
+                Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 Spacer(Modifier.height(12.dp))
                 Text(
                     text = stringResource(Res.string.web_shooter_menu),
@@ -161,6 +166,10 @@ fun WebShooterScreen(
                 HorizontalDivider()
                 SectionHeader(stringResource(Res.string.menu_group_settings))
                 settingsItems.forEach { MenuItem(it) }
+
+                HorizontalDivider()
+                SectionHeader(stringResource(Res.string.menu_group_other))
+                otherItems.forEach { MenuItem(it) }
                 NavigationDrawerItem(
                     label = { Text(suggestionLabel) },
                     selected = false,
@@ -173,6 +182,7 @@ fun WebShooterScreen(
                         selectedContainerColor = MaterialTheme.colorScheme.surfaceVariant
                     )
                 )
+                }
             }
         },
         drawerState = drawerState

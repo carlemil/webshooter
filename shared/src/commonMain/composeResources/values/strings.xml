@@ -170,6 +170,7 @@
     <string name="menu_group_stats">Statistik</string>
     <string name="menu_group_club">Förening</string>
     <string name="menu_group_settings">Inställningar</string>
+    <string name="menu_group_other">Övrigt</string>
     <string name="web_shooter_club_stats">Föreningsstatistik</string>
     <string name="club_stats_subtitle">Snittpoäng / antal tävlingar i precision</string>
     <string name="club_stats_all_years">Alla år</string>
