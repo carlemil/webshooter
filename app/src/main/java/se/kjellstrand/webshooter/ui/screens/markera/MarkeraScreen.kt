@@ -7,7 +7,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -38,15 +37,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.viewmodel.compose.viewModel
-import kotlin.math.min
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -134,7 +129,6 @@ fun MarkeraScreen() {
     val uiState by viewModel.uiState.collectAsState()
     val detector: HoleDetector = koinInject()
     val coroutineScope = rememberCoroutineScope()
-    var canvasSize by remember { mutableStateOf(IntSize.Zero) }
     val previewView = remember {
         PreviewView(context).apply {
             scaleType = PreviewView.ScaleType.FILL_CENTER
@@ -203,33 +197,6 @@ fun MarkeraScreen() {
         viewModel.clearResults()
     }
 
-    val onTapCentre: (tapX: Float, tapY: Float) -> Unit = onTap@{ tapX, tapY ->
-        val cal = uiState.calibration ?: return@onTap
-        val imgW = uiState.imageWidth
-        val imgH = uiState.imageHeight
-        if (imgW <= 0 || imgH <= 0 || canvasSize == IntSize.Zero) return@onTap
-        // Inverse of the FIT_CENTER mapping the overlays + Image use.
-        val scale = min(
-            canvasSize.width.toFloat() / imgW,
-            canvasSize.height.toFloat() / imgH,
-        )
-        val letterboxX = (canvasSize.width - imgW * scale) / 2f
-        val letterboxY = (canvasSize.height - imgH * scale) / 2f
-        val imgX = (tapX - letterboxX) / scale
-        val imgY = (tapY - letterboxY) / scale
-        if (imgX !in 0f..imgW.toFloat() || imgY !in 0f..imgH.toFloat()) return@onTap
-
-        val updated = cal.copy(centerX = imgX, centerY = imgY)
-        viewModel.setCalibration(updated)
-        Napier.d(
-            "user tap centre at (${imgX.toInt()},${imgY.toInt()})",
-            tag = SCORE_TAG,
-        )
-        val scores = scoreDetections(uiState.detections, imgW, imgH, updated)
-        logHitScores(scores, updated)
-        viewModel.setTopScores(topPickerValues(scores))
-    }
-
     BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
         val isPortrait = maxHeight >= maxWidth
 
@@ -255,8 +222,6 @@ fun MarkeraScreen() {
                         uiState = uiState,
                         previewView = previewView,
                         onError = { viewModel.setError(it.message) },
-                        onTapCentre = onTapCentre,
-                        onCanvasSizeChanged = { canvasSize = it },
                         modifier = Modifier
                             .fillMaxWidth()
                             .aspectRatio(1f)
@@ -277,8 +242,6 @@ fun MarkeraScreen() {
                         uiState = uiState,
                         previewView = previewView,
                         onError = { viewModel.setError(it.message) },
-                        onTapCentre = onTapCentre,
-                        onCanvasSizeChanged = { canvasSize = it },
                         modifier = Modifier
                             .fillMaxHeight()
                             .aspectRatio(1f)
@@ -330,8 +293,6 @@ private fun Viewport(
     uiState: MarkeraUiState,
     previewView: PreviewView,
     onError: (Throwable) -> Unit,
-    onTapCentre: (Float, Float) -> Unit,
-    onCanvasSizeChanged: (IntSize) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Box(modifier = modifier) {
@@ -341,12 +302,7 @@ private fun Viewport(
                 bitmap = frozen.asImageBitmap(),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .onSizeChanged(onCanvasSizeChanged)
-                    .pointerInput(frozen) {
-                        detectTapGestures { tap -> onTapCentre(tap.x, tap.y) }
-                    },
+                modifier = Modifier.fillMaxSize(),
             )
         } else {
             CameraPreview(
