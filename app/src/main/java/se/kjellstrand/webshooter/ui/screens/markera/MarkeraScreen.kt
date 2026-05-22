@@ -8,6 +8,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,10 +34,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import kotlin.math.min
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -109,6 +114,7 @@ fun MarkeraScreen() {
     val detector: HoleDetector = koinInject()
     val coroutineScope = rememberCoroutineScope()
     val snapshotBitmap = remember { mutableStateOf<Bitmap?>(null) }
+    var canvasSize by remember { mutableStateOf(IntSize.Zero) }
     val previewView = remember {
         PreviewView(context).apply {
             scaleType = PreviewView.ScaleType.FIT_CENTER
@@ -174,6 +180,31 @@ fun MarkeraScreen() {
         viewModel.clearResults()
     }
 
+    val onTapCentre: (tapX: Float, tapY: Float) -> Unit = onTap@{ tapX, tapY ->
+        val cal = uiState.calibration ?: return@onTap
+        val imgW = uiState.imageWidth
+        val imgH = uiState.imageHeight
+        if (imgW <= 0 || imgH <= 0 || canvasSize == IntSize.Zero) return@onTap
+        // Inverse of the FIT_CENTER mapping the overlays + Image use.
+        val scale = min(
+            canvasSize.width.toFloat() / imgW,
+            canvasSize.height.toFloat() / imgH,
+        )
+        val letterboxX = (canvasSize.width - imgW * scale) / 2f
+        val letterboxY = (canvasSize.height - imgH * scale) / 2f
+        val imgX = (tapX - letterboxX) / scale
+        val imgY = (tapY - letterboxY) / scale
+        if (imgX !in 0f..imgW.toFloat() || imgY !in 0f..imgH.toFloat()) return@onTap
+
+        val updated = cal.copy(centerX = imgX, centerY = imgY)
+        viewModel.setCalibration(updated)
+        Napier.d(
+            "user tap centre at (${imgX.toInt()},${imgY.toInt()})",
+            tag = SCORE_TAG,
+        )
+        logHitScores(uiState.detections, imgW, imgH, updated)
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         if (!cameraGranted) {
             PermissionPrompt(onGrantClick = { permissionLauncher.launch(Manifest.permission.CAMERA) })
@@ -184,7 +215,12 @@ fun MarkeraScreen() {
                     bitmap = frozen.asImageBitmap(),
                     contentDescription = null,
                     contentScale = ContentScale.Fit,
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .onSizeChanged { canvasSize = it }
+                        .pointerInput(frozen) {
+                            detectTapGestures { tap -> onTapCentre(tap.x, tap.y) }
+                        },
                 )
             } else {
                 CameraPreview(
