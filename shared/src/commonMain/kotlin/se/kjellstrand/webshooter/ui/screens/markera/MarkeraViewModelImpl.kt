@@ -38,6 +38,7 @@ class MarkeraViewModelImpl : ViewModel(), MarkeraViewModel {
                 imageHeight = 0,
                 isProcessing = false,
                 error = null,
+                topScores = List(SCORE_PICKER_COUNT) { 0 },
             )
         }
     }
@@ -48,5 +49,22 @@ class MarkeraViewModelImpl : ViewModel(), MarkeraViewModel {
 
     override fun setError(message: String?) {
         _uiState.update { it.copy(error = message, isProcessing = false) }
+    }
+
+    override fun setTopScores(values: List<Int>) {
+        val normalised = values
+            .map { it.coerceIn(0, SCORE_PICKER_INNER_TEN) }
+            .take(SCORE_PICKER_COUNT)
+            .let { it + List(SCORE_PICKER_COUNT - it.size) { 0 } }
+        _uiState.update { it.copy(topScores = normalised) }
+    }
+
+    override fun setTopScoreAt(index: Int, value: Int) {
+        if (index !in 0 until SCORE_PICKER_COUNT) return
+        val clamped = value.coerceIn(0, SCORE_PICKER_INNER_TEN)
+        _uiState.update {
+            val updated = it.topScores.toMutableList().apply { this[index] = clamped }
+            it.copy(topScores = updated)
+        }
     }
 }

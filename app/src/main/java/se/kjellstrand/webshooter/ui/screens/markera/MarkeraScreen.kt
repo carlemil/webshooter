@@ -2,7 +2,6 @@ package se.kjellstrand.webshooter.ui.screens.markera
 
 import android.Manifest
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.camera.view.PreviewView
@@ -11,8 +10,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
@@ -41,6 +45,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlin.math.min
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers
@@ -49,6 +54,8 @@ import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
+import se.kjellstrand.webshooter.data.vision.Detection
+import se.kjellstrand.webshooter.data.vision.HitScore
 import se.kjellstrand.webshooter.data.vision.HoleDetector
 import se.kjellstrand.webshooter.data.vision.TARGET_CARD_WIDTH_MM
 import se.kjellstrand.webshooter.data.vision.TargetCalibration
@@ -68,13 +75,25 @@ private const val SCORE_TAG = "MarkeraScore"
 private const val CONFIDENCE_THRESHOLD = 0.35f
 private const val IOU_THRESHOLD = 0.45f
 
-private fun logHitScores(
-    detections: List<se.kjellstrand.webshooter.data.vision.Detection>,
+private fun scoreDetections(
+    detections: List<Detection>,
     width: Int,
     height: Int,
     calibration: TargetCalibration?,
-) {
-    val scores = if (calibration != null) {
+): List<HitScore> =
+    if (calibration != null) {
+        computeHitScores(detections, calibration)
+    } else {
+        computeHitScores(
+            detections,
+            centerX = width / 2f,
+            centerY = height / 2f,
+            mmPerPx = TARGET_CARD_WIDTH_MM / width.toDouble(),
+        )
+    }
+
+private fun logHitScores(scores: List<HitScore>, calibration: TargetCalibration?) {
+    if (calibration != null) {
         Napier.d(
             "calibrated: centre=(${calibration.centerX.toInt()},${calibration.centerY.toInt()}) " +
                 "semiMajor=${calibration.semiMajorPx.toInt()}px " +
@@ -84,15 +103,8 @@ private fun logHitScores(
                 "conf=${"%.2f".format(calibration.confidence)}",
             tag = SCORE_TAG,
         )
-        computeHitScores(detections, calibration)
     } else {
         Napier.d("fallback calibration (no 7-ring blob found)", tag = SCORE_TAG)
-        computeHitScores(
-            detections,
-            centerX = width / 2f,
-            centerY = height / 2f,
-            mmPerPx = TARGET_CARD_WIDTH_MM / width.toDouble(),
-        )
     }
     val total = scores.sumOf { if (it.isInnerTen) 10 else it.ring }
     scores.forEachIndexed { i, s ->
@@ -106,18 +118,26 @@ private fun logHitScores(
     Napier.d("total: ${scores.size} hits, score=$total", tag = SCORE_TAG)
 }
 
+/** Top-5 hits (already sorted desc by [computeHitScores]) → picker indices, padded to 5 with 0. */
+private fun topPickerValues(scores: List<HitScore>): List<Int> {
+    val taken = scores.take(SCORE_PICKER_COUNT).map {
+        if (it.isInnerTen) SCORE_PICKER_INNER_TEN else it.ring
+    }
+    return taken + List(SCORE_PICKER_COUNT - taken.size) { 0 }
+}
+
 @Composable
 fun MarkeraScreen() {
     val context = LocalContext.current
     val viewModel: MarkeraViewModelImpl = koinViewModel()
+    val snapshotVm: MarkeraSnapshotViewModel = viewModel()
     val uiState by viewModel.uiState.collectAsState()
     val detector: HoleDetector = koinInject()
     val coroutineScope = rememberCoroutineScope()
-    val snapshotBitmap = remember { mutableStateOf<Bitmap?>(null) }
     var canvasSize by remember { mutableStateOf(IntSize.Zero) }
     val previewView = remember {
         PreviewView(context).apply {
-            scaleType = PreviewView.ScaleType.FIT_CENTER
+            scaleType = PreviewView.ScaleType.FILL_CENTER
         }
     }
 
@@ -142,7 +162,7 @@ fun MarkeraScreen() {
         val snapshot = previewView.bitmap ?: return@onDetect
         // Freeze the frame immediately so the user sees the static image
         // the model will analyse instead of the live preview.
-        snapshotBitmap.value = snapshot
+        snapshotVm.set(snapshot)
         viewModel.setProcessing(true)
         coroutineScope.launch {
             try {
@@ -166,8 +186,11 @@ fun MarkeraScreen() {
                     tag = TAG,
                 )
                 viewModel.setCalibration(freshCal)
-                logHitScores(detections, snapshot.width, snapshot.height, freshCal ?: uiState.calibration)
+                val effectiveCal = freshCal ?: uiState.calibration
+                val scores = scoreDetections(detections, snapshot.width, snapshot.height, effectiveCal)
+                logHitScores(scores, effectiveCal)
                 viewModel.onFrameAnalysed(detections, snapshot.width, snapshot.height)
+                viewModel.setTopScores(topPickerValues(scores))
             } catch (t: Throwable) {
                 Napier.w("snapshot inference failed", t, tag = TAG)
                 viewModel.setError(errorInference)
@@ -176,7 +199,7 @@ fun MarkeraScreen() {
     }
 
     val onResumeLive: () -> Unit = {
-        snapshotBitmap.value = null
+        snapshotVm.clear()
         viewModel.clearResults()
     }
 
@@ -202,45 +225,67 @@ fun MarkeraScreen() {
             "user tap centre at (${imgX.toInt()},${imgY.toInt()})",
             tag = SCORE_TAG,
         )
-        logHitScores(uiState.detections, imgW, imgH, updated)
+        val scores = scoreDetections(uiState.detections, imgW, imgH, updated)
+        logHitScores(scores, updated)
+        viewModel.setTopScores(topPickerValues(scores))
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val isPortrait = maxHeight >= maxWidth
+
         if (!cameraGranted) {
-            PermissionPrompt(onGrantClick = { permissionLauncher.launch(Manifest.permission.CAMERA) })
+            PermissionPrompt(
+                onGrantClick = { permissionLauncher.launch(Manifest.permission.CAMERA) },
+            )
         } else {
-            val frozen = snapshotBitmap.value
-            if (frozen != null) {
-                Image(
-                    bitmap = frozen.asImageBitmap(),
-                    contentDescription = null,
-                    contentScale = ContentScale.Fit,
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .onSizeChanged { canvasSize = it }
-                        .pointerInput(frozen) {
-                            detectTapGestures { tap -> onTapCentre(tap.x, tap.y) }
-                        },
-                )
+            // Pickers and viewport live in disjoint slots so they never
+            // overlap: portrait stacks them vertically, landscape places
+            // pickers to the left of the viewport.
+            if (isPortrait) {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    ScorePickerHorizontalRow(
+                        values = uiState.topScores,
+                        onValueChange = viewModel::setTopScoreAt,
+                        modifier = Modifier
+                            .align(Alignment.CenterHorizontally)
+                            .padding(16.dp),
+                    )
+                    Viewport(
+                        snapshotVm = snapshotVm,
+                        uiState = uiState,
+                        previewView = previewView,
+                        onError = { viewModel.setError(it.message) },
+                        onTapCentre = onTapCentre,
+                        onCanvasSizeChanged = { canvasSize = it },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .aspectRatio(1f)
+                            .align(Alignment.CenterHorizontally),
+                    )
+                }
             } else {
-                CameraPreview(
-                    previewView = previewView,
-                    onError = { viewModel.setError(it.message) },
-                    modifier = Modifier.fillMaxSize(),
-                )
+                Row(modifier = Modifier.fillMaxSize()) {
+                    ScorePickerVerticalColumn(
+                        values = uiState.topScores,
+                        onValueChange = viewModel::setTopScoreAt,
+                        modifier = Modifier
+                            .align(Alignment.CenterVertically)
+                            .padding(16.dp),
+                    )
+                    Viewport(
+                        snapshotVm = snapshotVm,
+                        uiState = uiState,
+                        previewView = previewView,
+                        onError = { viewModel.setError(it.message) },
+                        onTapCentre = onTapCentre,
+                        onCanvasSizeChanged = { canvasSize = it },
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .aspectRatio(1f)
+                            .align(Alignment.CenterVertically),
+                    )
+                }
             }
-            CalibrationOverlay(
-                calibration = uiState.calibration,
-                imageWidth = uiState.imageWidth,
-                imageHeight = uiState.imageHeight,
-                modifier = Modifier.fillMaxSize(),
-            )
-            DetectionOverlay(
-                detections = uiState.detections,
-                imageWidth = uiState.imageWidth,
-                imageHeight = uiState.imageHeight,
-                modifier = Modifier.fillMaxSize(),
-            )
         }
 
         uiState.error?.let { msg ->
@@ -256,22 +301,19 @@ fun MarkeraScreen() {
         }
 
         if (cameraGranted) {
-            Column(
+            val isFrozen = snapshotVm.snapshot != null
+            FloatingActionButton(
+                onClick = if (isFrozen) onResumeLive else onDetectClick,
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
-                horizontalAlignment = Alignment.End,
             ) {
-                if (snapshotBitmap.value != null) {
-                    FloatingActionButton(onClick = onResumeLive) {
-                        Icon(
-                            Icons.Default.Videocam,
-                            contentDescription = stringResource(Res.string.markera_resume_live),
-                        )
-                    }
-                }
-                FloatingActionButton(onClick = onDetectClick) {
+                if (isFrozen) {
+                    Icon(
+                        Icons.Default.Videocam,
+                        contentDescription = stringResource(Res.string.markera_resume_live),
+                    )
+                } else {
                     Icon(
                         Icons.Default.Search,
                         contentDescription = stringResource(Res.string.markera_detect),
@@ -279,6 +321,52 @@ fun MarkeraScreen() {
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun Viewport(
+    snapshotVm: MarkeraSnapshotViewModel,
+    uiState: MarkeraUiState,
+    previewView: PreviewView,
+    onError: (Throwable) -> Unit,
+    onTapCentre: (Float, Float) -> Unit,
+    onCanvasSizeChanged: (IntSize) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Box(modifier = modifier) {
+        val frozen = snapshotVm.snapshot
+        if (frozen != null) {
+            Image(
+                bitmap = frozen.asImageBitmap(),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .onSizeChanged(onCanvasSizeChanged)
+                    .pointerInput(frozen) {
+                        detectTapGestures { tap -> onTapCentre(tap.x, tap.y) }
+                    },
+            )
+        } else {
+            CameraPreview(
+                previewView = previewView,
+                onError = onError,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
+        CalibrationOverlay(
+            calibration = uiState.calibration,
+            imageWidth = uiState.imageWidth,
+            imageHeight = uiState.imageHeight,
+            modifier = Modifier.fillMaxSize(),
+        )
+        DetectionOverlay(
+            detections = uiState.detections,
+            imageWidth = uiState.imageWidth,
+            imageHeight = uiState.imageHeight,
+            modifier = Modifier.fillMaxSize(),
+        )
     }
 }
 

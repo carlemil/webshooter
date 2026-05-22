@@ -24,4 +24,10 @@ interface MarkeraViewModel {
     fun setProcessing(isProcessing: Boolean)
 
     fun setError(message: String?)
+
+    /** Replace the 5-slot top-scores list (each value 0..11; 11 == X). */
+    fun setTopScores(values: List<Int>)
+
+    /** Update one slot of the top-scores list (e.g. user edited a picker). */
+    fun setTopScoreAt(index: Int, value: Int)
 }
