@@ -18,8 +18,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material.icons.filled.Videocam
+import androidx.compose.material.icons.filled.PhotoCamera
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Button
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -113,7 +113,7 @@ private fun logHitScores(scores: List<HitScore>, calibration: TargetCalibration?
     Napier.d("total: ${scores.size} hits, score=$total", tag = SCORE_TAG)
 }
 
-/** Top-5 hits (already sorted desc by [computeHitScores]) → picker indices, padded to 5 with 0. */
+/** Top [SCORE_PICKER_COUNT] hits (already sorted desc by [computeHitScores]) → picker indices, padded with 0. */
 private fun topPickerValues(scores: List<HitScore>): List<Int> {
     val taken = scores.take(SCORE_PICKER_COUNT).map {
         if (it.isInnerTen) SCORE_PICKER_INNER_TEN else it.ring
@@ -273,12 +273,12 @@ fun MarkeraScreen() {
             ) {
                 if (isFrozen) {
                     Icon(
-                        Icons.Default.Videocam,
+                        Icons.Default.Refresh,
                         contentDescription = stringResource(Res.string.markera_resume_live),
                     )
                 } else {
                     Icon(
-                        Icons.Default.Search,
+                        Icons.Default.PhotoCamera,
                         contentDescription = stringResource(Res.string.markera_detect),
                     )
                 }

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PageSize
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -23,12 +24,22 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.unit.dp
+import kotlin.math.absoluteValue
 
 private val PICKER_GAP = 4.dp
-private val SLIDER_ITEM_WIDTH = 48.dp
-private val SLIDER_ITEM_HEIGHT = 56.dp
-private val SLIDER_VISIBLE_ITEMS = 5
+private val SLIDER_ITEM_WIDTH = 40.dp
+private val SLIDER_ITEM_HEIGHT = 44.dp
+private const val SLIDER_VISIBLE_ITEMS = 3
+private const val SIDE_ITEM_MIN_ALPHA = 0.25f
+
+/** Linear fade: 1.0 at offset 0, [SIDE_ITEM_MIN_ALPHA] at offset ≥ 1. */
+private fun PagerState.pageAlpha(page: Int): Float {
+    val offset = ((currentPage - page) + currentPageOffsetFraction).absoluteValue
+    val t = offset.coerceIn(0f, 1f)
+    return 1f - (1f - SIDE_ITEM_MIN_ALPHA) * t
+}
 
 /**
  * Horizontal sliding picker built on [HorizontalPager]. The selected
@@ -70,7 +81,9 @@ private fun HorizontalSlidingScorePicker(
             modifier = Modifier.fillMaxSize(),
         ) { page ->
             Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .alpha(pagerState.pageAlpha(page)),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
@@ -131,7 +144,9 @@ private fun VerticalSlidingScorePicker(
             modifier = Modifier.fillMaxSize(),
         ) { page ->
             Box(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .alpha(pagerState.pageAlpha(page)),
                 contentAlignment = Alignment.Center,
             ) {
                 Text(
@@ -153,7 +168,7 @@ private fun VerticalSlidingScorePicker(
     }
 }
 
-/** Portrait — five vertical sliding pickers in a row above the viewport. */
+/** Portrait — vertical sliding pickers in a row above the viewport. */
 @Composable
 fun ScorePickerHorizontalRow(
     values: List<Int>,
@@ -170,7 +185,7 @@ fun ScorePickerHorizontalRow(
     }
 }
 
-/** Landscape — five horizontal sliding pickers in a column left of the viewport. */
+/** Landscape — horizontal sliding pickers in a column left of the viewport. */
 @Composable
 fun ScorePickerVerticalColumn(
     values: List<Int>,
