@@ -38,6 +38,11 @@ fun CalibrationOverlay(
         val a = calibration.semiMajorPx * scale
         val b = calibration.semiMinorPx * scale
 
+        // Crosshair arms align with the ellipse's principal axes and the
+        // minor-axis arm is shortened by b / a so the cross looks like a
+        // symmetric "+" on the target plane projected through the same
+        // perspective as the ring.
+        val minorArm = if (a > 0f) crosshairHalfPx * (b / a) else crosshairHalfPx
         rotate(degrees = (calibration.rotationRad * 180.0 / PI).toFloat(), pivot = Offset(cx, cy)) {
             drawOval(
                 color = color,
@@ -45,18 +50,18 @@ fun CalibrationOverlay(
                 size = Size(2f * a, 2f * b),
                 style = Stroke(width = strokeWidthPx),
             )
+            drawLine(
+                color = color,
+                start = Offset(cx - crosshairHalfPx, cy),
+                end = Offset(cx + crosshairHalfPx, cy),
+                strokeWidth = strokeWidthPx,
+            )
+            drawLine(
+                color = color,
+                start = Offset(cx, cy - minorArm),
+                end = Offset(cx, cy + minorArm),
+                strokeWidth = strokeWidthPx,
+            )
         }
-        drawLine(
-            color = color,
-            start = Offset(cx - crosshairHalfPx, cy),
-            end = Offset(cx + crosshairHalfPx, cy),
-            strokeWidth = strokeWidthPx,
-        )
-        drawLine(
-            color = color,
-            start = Offset(cx, cy - crosshairHalfPx),
-            end = Offset(cx, cy + crosshairHalfPx),
-            strokeWidth = strokeWidthPx,
-        )
     }
 }

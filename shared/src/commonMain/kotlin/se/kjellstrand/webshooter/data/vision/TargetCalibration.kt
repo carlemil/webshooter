@@ -15,9 +15,11 @@ const val TARGET_BLACK_RING_RADIUS_MM: Double = 100.0
  * ellipse, and stretching back along the minor axis recovers the
  * frontal-plane distances we actually want to score.
  *
- * For a frontal (non-tilted) shot, [semiMajorPx] == [semiMinorPx] and
- * [rotationRad] is meaningless — the scoring math degenerates cleanly
- * to a plain circle.
+ * [centerX, centerY] is the ellipse centroid. Strictly speaking, under a
+ * full perspective projection the projected centre of the 3D circle is
+ * offset from the ellipse centroid toward the far side. Recovering that
+ * offset would need either the camera's focal length or a manual tap;
+ * for now we accept the centroid as the best automatic estimate.
  */
 data class TargetCalibration(
     val centerX: Float,
