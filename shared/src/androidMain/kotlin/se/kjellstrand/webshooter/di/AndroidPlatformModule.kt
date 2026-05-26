@@ -13,7 +13,6 @@ import se.kjellstrand.webshooter.data.db.AppDatabase
 import se.kjellstrand.webshooter.data.db.createAppDatabase
 import se.kjellstrand.webshooter.data.secure.SecurePrefs
 import se.kjellstrand.webshooter.data.secure.createSecurePrefs
-import se.kjellstrand.webshooter.data.vision.HoleDetector
 import se.kjellstrand.webshooter.ui.platform.AndroidCalendarOpener
 import se.kjellstrand.webshooter.ui.platform.AndroidUrlLauncher
 import se.kjellstrand.webshooter.ui.platform.CalendarOpener
@@ -51,13 +50,4 @@ fun androidPlatformModule(
             extraOkHttpInterceptors = extraOkHttpInterceptors,
         )
     }
-    // best.onnx ships as an Android asset (see :app/src/main/assets/best.onnx).
-    // Constructed lazily on first navigation to the Markera screen.
-    single<HoleDetector> {
-        val bytes = context.assets.open(HOLE_DETECTOR_MODEL_ASSET).readBytes()
-        HoleDetector(bytes, inputSize = HOLE_DETECTOR_INPUT_SIZE)
-    }
 }
-
-private const val HOLE_DETECTOR_MODEL_ASSET = "best.onnx"
-private const val HOLE_DETECTOR_INPUT_SIZE = 640

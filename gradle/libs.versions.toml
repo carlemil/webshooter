@@ -29,8 +29,6 @@ kotlin = "2.1.10"
 ksp = "2.1.10-1.0.31"
 securityCryptoVersion = "1.1.0-alpha06"
 firebaseBom = "33.9.0"
-onnxruntimeAndroid = "1.19.2"
-cameraX = "1.4.1"
 
 [plugins]
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
@@ -92,9 +90,4 @@ androidx-security-crypto-ktx = { module = "androidx.security:security-crypto-ktx
 firebase-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebaseBom" }
 firebase-crashlytics = { module = "com.google.firebase:firebase-crashlytics-ktx" }
 firebase-analytics = { module = "com.google.firebase:firebase-analytics-ktx" }
-onnxruntime-android = { module = "com.microsoft.onnxruntime:onnxruntime-android", version.ref = "onnxruntimeAndroid" }
-androidx-camera-core = { module = "androidx.camera:camera-core", version.ref = "cameraX" }
-androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraX" }
-androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraX" }
-androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "cameraX" }
 

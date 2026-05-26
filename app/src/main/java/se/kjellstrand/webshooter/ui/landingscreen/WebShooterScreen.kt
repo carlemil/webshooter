@@ -49,7 +49,6 @@ import se.kjellstrand.webshooter.ui.screens.charts.clubstats.ClubStatsScreen
 import se.kjellstrand.webshooter.ui.screens.charts.clubstats.ClubStatsViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsScreen
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsViewModelImpl
-import se.kjellstrand.webshooter.ui.screens.markera.MarkeraScreen
 import se.kjellstrand.webshooter.ui.screens.myresults.MyEntriesScreen
 import se.kjellstrand.webshooter.ui.navigation.Screen
 import se.kjellstrand.webshooter.ui.screens.licenses.LicensesScreen
@@ -85,10 +84,7 @@ fun WebShooterScreen(
         NavigationItem(stringResource(Res.string.web_shooter_settings), Screen.Settings.route),
         NavigationItem(stringResource(Res.string.web_shooter_licenses), Screen.Licenses.route)
     )
-    val otherItems = listOf(
-        NavigationItem(stringResource(Res.string.markera), Screen.Markera.route)
-    )
-    val navigationItems = competitionsItems + statsItems + clubItems + settingsItems + otherItems
+    val navigationItems = competitionsItems + statsItems + clubItems + settingsItems
 
     val drawerNavController = rememberNavController()
     val navBackStackEntry by drawerNavController.currentBackStackEntryAsState()
@@ -169,7 +165,6 @@ fun WebShooterScreen(
 
                 HorizontalDivider()
                 SectionHeader(stringResource(Res.string.menu_group_other))
-                otherItems.forEach { MenuItem(it) }
                 NavigationDrawerItem(
                     label = { Text(suggestionLabel) },
                     selected = false,
@@ -215,9 +210,6 @@ fun WebShooterScreen(
                         onNavigateToTeams = onNavigateToTeams,
                         competitionsViewModel = competitionsViewModel,
                     )
-                }
-                composable(Screen.Markera.route) {
-                    MarkeraScreen()
                 }
                 composable(Screen.MyEntries.route) {
                     MyEntriesScreen()

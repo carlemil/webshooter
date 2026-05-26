@@ -16,7 +16,6 @@ sealed class Screen(val route: String) {
             "competition_results/$competitionId/$resultsType?competitionName=${android.net.Uri.encode(competitionName)}&competitionDate=${android.net.Uri.encode(competitionDate)}"
     }
     object Club : Screen("club")
-    object Markera : Screen("markera")
     object MyEntries : Screen("my_entries")
     object Charts : Screen("charts")
     object SeriesPoints : Screen("series_points")

@@ -139,12 +139,6 @@ dependencies {
     // Navigation
     implementation(libs.androidx.navigation.compose)
 
-    // CameraX (live preview + ImageAnalysis for the Markera screen)
-    implementation(libs.androidx.camera.core)
-    implementation(libs.androidx.camera.camera2)
-    implementation(libs.androidx.camera.lifecycle)
-    implementation(libs.androidx.camera.view)
-
     // Koin (DI) — koin-core comes via :shared as api dep
     implementation(libs.koin.compose.viewmodel)
 
