@@ -1,5 +1,7 @@
 package se.kjellstrand.webshooter.ui.navigation
 
+import io.ktor.http.encodeURLParameter
+
 sealed class Screen(val route: String) {
 
     companion object {
@@ -13,7 +15,7 @@ sealed class Screen(val route: String) {
     object CompetitionResults : Screen("competition_results/{competitionId}/{resultsType}?competitionName={competitionName}&competitionDate={competitionDate}") {
         const val deepLink = "$DEEP_LINK_BASE_URI/competition_results/{competitionId}/{resultsType}"
         fun createRoute(competitionId: Long, resultsType: String, competitionName: String, competitionDate: String) =
-            "competition_results/$competitionId/$resultsType?competitionName=${android.net.Uri.encode(competitionName)}&competitionDate=${android.net.Uri.encode(competitionDate)}"
+            "competition_results/$competitionId/$resultsType?competitionName=${competitionName.encodeURLParameter()}&competitionDate=${competitionDate.encodeURLParameter()}"
     }
     object Club : Screen("club")
     object MyEntries : Screen("my_entries")

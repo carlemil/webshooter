@@ -23,7 +23,7 @@ import androidx.compose.material3.Text
 import se.kjellstrand.webshooter.ui.common.ScreenTopBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
-import androidx.activity.compose.BackHandler
+import se.kjellstrand.webshooter.ui.platform.BackHandler
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -32,7 +32,7 @@ import org.jetbrains.compose.resources.stringResource
 import io.ktor.http.encodeURLParameter
 import org.koin.compose.koinInject
 import se.kjellstrand.webshooter.ui.platform.UrlLauncher
-import androidx.compose.ui.tooling.preview.Preview
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import org.koin.compose.viewmodel.koinViewModel
 import androidx.navigation.compose.NavHost
@@ -239,7 +239,7 @@ fun WebShooterScreen(
 
 data class NavigationItem(val label: String, val route: String)
 
-@Preview(showBackground = true)
+@Preview
 @Composable
 fun WebShooterScreenPreview() {
     WebShooterScreen(

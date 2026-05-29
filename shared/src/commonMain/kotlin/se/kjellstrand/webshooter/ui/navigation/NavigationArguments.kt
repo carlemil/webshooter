@@ -1,6 +1,6 @@
 package se.kjellstrand.webshooter.ui.navigation
 
-import android.os.Bundle
+import androidx.core.bundle.Bundle
 
 object NavigationArguments {
 

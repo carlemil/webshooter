@@ -2,6 +2,7 @@ package se.kjellstrand.webshooter.ui.navigation
 
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
+import androidx.navigation.NavOptionsBuilder
 
 /**
  * Only navigate if the current back stack entry is resumed,
@@ -15,7 +16,7 @@ fun NavController.safePopBackStack(): Boolean {
     }
 }
 
-fun NavController.safeNavigate(route: String, builder: (androidx.navigation.NavOptionsBuilder.() -> Unit)? = null) {
+fun NavController.safeNavigate(route: String, builder: (NavOptionsBuilder.() -> Unit)? = null) {
     if (currentBackStackEntry?.lifecycle?.currentState == Lifecycle.State.RESUMED) {
         if (builder != null) {
             navigate(route, builder)

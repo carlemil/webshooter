@@ -136,8 +136,7 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-    // Navigation
-    implementation(libs.androidx.navigation.compose)
+    // Navigation comes via :shared commonMain (JB multiplatform port).
 
     // Koin (DI) — koin-core comes via :shared as api dep
     implementation(libs.koin.compose.viewmodel)

@@ -1,6 +1,7 @@
 package se.kjellstrand.webshooter.ui
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.compose.rememberNavController
 import se.kjellstrand.webshooter.ui.navigation.AppNavHost
 import se.kjellstrand.webshooter.ui.theme.WebShooterTheme
@@ -29,7 +31,13 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
-                    AppNavHost(navController = navController)
+                    val toastContext = LocalContext.current
+                    AppNavHost(
+                        navController = navController,
+                        showMessage = { message ->
+                            Toast.makeText(toastContext, message, Toast.LENGTH_LONG).show()
+                        },
+                    )
                 }
             }
         }

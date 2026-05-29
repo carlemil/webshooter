@@ -81,11 +81,17 @@ kotlin {
             api(compose.materialIconsExtended)
             api(compose.components.resources)
             api(compose.components.uiToolingPreview)
+            // JetBrains multiplatform port of androidx.navigation:navigation-compose.
+            // API-compatible with the Android jetpack version 2.8.x but works on iOS.
+            api(libs.androidx.navigation.compose)
         }
         androidMain.dependencies {
             implementation(libs.kotlinx.coroutines.android)
             implementation(libs.androidx.security.crypto)
             implementation(libs.androidx.security.crypto.ktx)
+            // androidx.activity.compose.BackHandler — backs the platform-
+            // specific BackHandler() actual in ui/platform/.
+            implementation(libs.androidx.activity.compose)
             // OkHttp engine for the Android HttpClient factory; the
             // engine block also needs okhttp3.Interceptor on the classpath
             // so :app can pass MockInterceptor through extraOkHttpInterceptors.

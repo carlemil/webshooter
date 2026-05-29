@@ -5,15 +5,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
-import android.util.Log
-import android.widget.Toast
+import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -38,12 +36,11 @@ import se.kjellstrand.webshooter.ui.screens.teams.CompetitionTeamsScreen
 import se.kjellstrand.webshooter.ui.screens.teams.TeamsViewModelImpl
 
 @Composable
-fun AppNavHost(navController: NavHostController) {
+fun AppNavHost(
+    navController: NavHostController,
+    showMessage: (String) -> Unit,
+) {
     val sessionViewModel: SessionViewModel = koinViewModel()
-    val toastContext = LocalContext.current
-    val showMessage: (String) -> Unit = { message ->
-        Toast.makeText(toastContext, message, Toast.LENGTH_LONG).show()
-    }
 
     LaunchedEffect(Unit) {
         sessionViewModel.sessionManager.events.collectLatest { event ->
@@ -215,13 +212,12 @@ fun AppNavHost(navController: NavHostController) {
             route = Screen.CompetitionSignup.route,
             arguments = listOf(navArgument("competitionId") { type = NavType.LongType })
         ) { backStackEntry ->
-            val context = LocalContext.current
             val competitionId = try {
                 NavigationArguments.requireLong(backStackEntry.arguments, "competitionId")
             } catch (e: IllegalArgumentException) {
-                Log.e("AppNavHost", "CompetitionSignup: ${e.message}")
+                Napier.e("CompetitionSignup: ${e.message}", tag = "AppNavHost")
                 LaunchedEffect(Unit) {
-                    Toast.makeText(context, "Failed to open signup: missing competition", Toast.LENGTH_LONG).show()
+                    showMessage("Failed to open signup: missing competition")
                     navController.safePopBackStack()
                 }
                 return@composable
@@ -230,13 +226,13 @@ fun AppNavHost(navController: NavHostController) {
                 try {
                     navController.getBackStackEntry(Screen.LandingScreen.route)
                 } catch (e: IllegalArgumentException) {
-                    Log.e("AppNavHost", "CompetitionSignup: LandingScreen not in back stack", e)
+                    Napier.e("CompetitionSignup: LandingScreen not in back stack", e, tag = "AppNavHost")
                     null
                 }
             }
             if (parentEntry == null) {
                 LaunchedEffect(Unit) {
-                    Toast.makeText(context, "Failed to open signup: navigation error", Toast.LENGTH_LONG).show()
+                    showMessage("Failed to open signup: navigation error")
                     navController.safePopBackStack()
                 }
                 return@composable
