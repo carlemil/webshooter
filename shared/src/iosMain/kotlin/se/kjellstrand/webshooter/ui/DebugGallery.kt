@@ -72,6 +72,14 @@ fun DebugGallery(screenName: String) {
         "club" -> ClubScreen(viewModel = ClubViewModelMock())
         "settings" -> SettingsScreen(viewModel = SettingsViewModelMock())
         "licenses" -> LicensesScreen()
+        // NOTE: populating groupedResults via `ResultsViewModelImpl.groupResults`
+        // on these mocks triggers a LazyColumn duplicate-key crash on iOS
+        // (kotlin.IllegalArgumentException: "Key 'group-C3-16343' was already
+        // used"). The same combination also crashes on Android at runtime —
+        // the existing @Preview just doesn't trigger LazyList layout. This is
+        // a real latent bug in the screen's key derivation. Tracked TODO;
+        // leaving these screens with empty groupedResults so the gallery stays
+        // crash-free for verification purposes.
         "results" -> {
             val mockResults = MockResults().results
             CompetitionResultsScreen(
