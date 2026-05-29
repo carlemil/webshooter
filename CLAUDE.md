@@ -36,14 +36,16 @@ On Windows, run gradle via the shell script (`./gradlew`) not `gradlew.bat` dire
 
 Two Gradle modules:
 
-- **`:shared`** — Kotlin Multiplatform (`commonMain`, `androidMain`, `iosMain`). Contains the entire data layer (repositories, Ktor data sources, Room entities/DAOs, `AppDatabase`), the Koin DI graph, the platform factories (`HttpClient`, `AppDatabase`, `AuthTokenManager`, `SecurePrefs`), and **all ViewModels + UI state classes** under `ui/screens/<feature>/`. The `Shared.framework` binary is configured for all three iOS targets.
-- **`:app`** — Android Compose application. Contains only Android-specific surface: Compose screens (`ui/screens/<feature>/XxxScreen.kt`), navigation (`ui/navigation/AppNavHost.kt`), theme, `MainActivity`, `ShooterApplication`, the `MockInterceptor`, and Compose-preview mocks (`ui/mock/`).
+- **`:shared`** — Kotlin Multiplatform (`commonMain`, `androidMain`, `iosMain`). Contains the entire data layer (repositories, Ktor data sources, Room entities/DAOs, `AppDatabase`), the Koin DI graph, the platform factories (`HttpClient`, `AppDatabase`, `AuthTokenManager`, `SecurePrefs`), **and the entire Compose UI** — every screen (`ui/screens/<feature>/XxxScreen.kt`), ViewModel + UI state, the theme (`ui/theme/`), shared composables (`ui/common/`), the Compose-preview mocks (`ui/mock/`), and the platform abstractions (`ui/platform/`). The UI is built with **Compose Multiplatform** (JetBrains `compose` plugin), so it is KMP-portable. The `Shared.framework` binary is configured for all three iOS targets.
+- **`:app`** — thin Android host. Contains only what must be Android-specific: `MainActivity`, `ShooterApplication` (Koin init, Napier, Firebase), the `MockInterceptor` (reads `R.raw.*`), the top-level navigation graph (`ui/navigation/` — `Screen.kt`, `AppNavHost.kt`, `NavControllerExtensions.kt`, `NavigationArguments.kt`), and the `WebShooterScreen` landing/drawer scaffold (`ui/landingscreen/`). Android XML themes live in `app/src/main/res/values{,-night}/themes.xml` (for the system splash / Activity chrome — distinct from the Compose theme in `:shared`).
 
-iOS does not yet have its own host app, but `:shared/iosMain` is wired (Darwin Ktor engine, Keychain-backed settings, Documents-directory Room database, iOS Koin platform module) so that adding one is mostly Swift glue + an `initKoin(iosPlatformModule(config))` call.
+Compose resources (strings, drawables) are shared: they live in `shared/src/commonMain/composeResources/` and are accessed via the generated `se.kjellstrand.webshooter.resources.Res` (configured `publicResClass = true`, custom package in `:shared/build.gradle.kts`). Use `stringResource(Res.string.foo)` from `org.jetbrains.compose.resources`, not Android `R.string`.
+
+iOS does not yet have its own host app, but `:shared/iosMain` is wired (Darwin Ktor engine, Keychain-backed settings, Documents-directory Room database, iOS Koin platform module, `Ios*` platform-abstraction impls) so that adding one is mostly Swift glue + an `initKoin(iosPlatformModule(config))` call.
 
 ## Architecture
 
-Clean three-layer architecture: **data + view-models (`:shared`) → di (Koin in `:shared`) → ui screens (`:app`)**. Each feature is a vertical slice across the layers.
+Clean three-layer architecture: **data → di (Koin) → ui (screens + view-models)**, all living in `:shared`. `:app` is just the Android host that boots Koin and wires the navigation graph. Each feature is a vertical slice across the layers.
 
 ### Data Layer (`:shared/commonMain/data/<feature>/`)
 Each feature has:
@@ -89,14 +91,20 @@ The `noResults` boolean column on `CompetitionEntity` is a skip-flag for competi
 - `WebshooterConfig` — `isDebug`, `baseUrl`, `versionName`, `clientSecret`, supplied by the platform module from `BuildConfig` on Android.
 
 ### UI Layer
-**ViewModels live in `:shared/commonMain/ui/screens/<feature>/`** (interface + `*Impl` + `*UiState`), with the matching Compose **screens in `:app/ui/screens/<feature>/`**. ViewModels are plain `androidx.lifecycle.ViewModel` subclasses (the KMP artifact); they hold a `MutableStateFlow<UiState>` and screens observe with `collectAsState()`. Mock implementations in `:app/ui/mock/` drive Compose previews.
+Each feature folder under `:shared/commonMain/ui/screens/<feature>/` holds the Compose **screen** (`XxxScreen.kt`), the **ViewModel** (interface `XxxViewModel` + `XxxViewModelImpl`), and the **UI state** (`XxxUiState`). ViewModels are plain `androidx.lifecycle.ViewModel` subclasses (the KMP artifact); they hold a `MutableStateFlow<UiState>` and screens observe with `collectAsState()`. Mock ViewModel/data implementations in `:shared/commonMain/ui/mock/` drive `@Preview`s (Android-only previews, but the code is shared).
 
-Navigation is Jetpack Compose Navigation. Routes are defined as a sealed class in `ui/navigation/Screen.kt` and wired in `ui/navigation/AppNavHost.kt`. Deep links use the base URI `https://webshooter.se/app`. Start destination is `LoginScreen`.
+**Platform abstractions** (`:shared/commonMain/ui/platform/`): `UrlLauncher` and `CalendarOpener` are `interface`s with Android/iOS impls (`AndroidUrlLauncher`, `IosUrlLauncher`, …) supplied by the platform Koin module and obtained in composables via `koinInject()`. Use these instead of touching Android `Intent`/`Context` directly so the screen stays KMP-portable.
+
+**Navigation is two-level** (Jetpack/Compose Navigation; routes are a sealed class in `:app/ui/navigation/Screen.kt`):
+- The **top-level `AppNavHost`** (`:app`) starts at `Screen.SplashScreen`. `SplashScreen` checks for a stored token and routes to either `LoginScreen` or `LandingScreen`. `AppNavHost` also owns the full-screen *detail* destinations (competition results, shooter result, signup, signups list, patrols, teams) and the session-expiry redirect driven by `SessionManager.events`.
+- The **`WebShooterScreen`** landing scaffold (`:app/ui/landingscreen/`) hosts its own *nested* `NavHost` behind a `ModalNavigationDrawer`, starting at `CompetitionsList`. The drawer sections (Competitions, MyEntries, Charts, SeriesPoints, ClubStats, Club, Settings, Licenses) are nested destinations, not top-level routes.
+
+Deep links use the base URI `https://webshooter.se/app`. The 5 nav-arg VMs (Teams, Signups, Patrols, Results, ShooterResult) receive their args via `koinViewModel { parametersOf(...) }` — see the DI section.
 
 ### Charts (pure Compose Canvas)
-The 3 chart screens (`ClubStatsScreen` scatter, `SeriesPointsScreen` multi-series line, `ResultsTrendsScreen` combined scatter + trend) are hand-rolled on top of `androidx.compose.foundation.Canvas`. There is **no third-party chart library** — the screens manage their own axes, grid, tick labels, hit-testing (`pointerInput { detectTapGestures }` finding the nearest point by Manhattan distance), and tooltip overlays (positioned via custom `Modifier.layout`).
+The 3 chart screens — all under `:shared/commonMain/ui/screens/charts/` — are `clubstats/ClubStatsScreen` (scatter), `seriespoints/SeriesPointsScreen` (multi-series line), and `resulttrends/` (the `ChartsScreen` composable in `ResultsTrendsScreen.kt`, combined scatter + trend). They are hand-rolled on top of `androidx.compose.foundation.Canvas`. There is **no third-party chart library** — the screens manage their own axes, grid, tick labels, hit-testing (`pointerInput { detectTapGestures }` finding the nearest point by Manhattan distance), and tooltip overlays (positioned via custom `Modifier.layout`).
 
-Shared chart primitives in `:app/ui/common/`:
+Shared chart primitives in `:shared/commonMain/ui/common/`:
 - `ChartStyles.kt` — `ChartShape` enum (Circle, Square, Triangle, Cross, X, ChevronDown, ChevronUp), `CHART_COLORS` palette, `DrawScope.drawScatterShape(shape, color, center, size)`.
 - `ChartLegend.kt` — Compose `FlowRow` legend driven by `UserLegendItem(label, color, shapeIndex, id)`. `shapeIndex` 0..6 indexes into `ChartShape`; 7 = horizontal line (average), 8 = sloped line (trend).
 
