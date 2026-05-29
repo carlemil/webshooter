@@ -4,6 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Build Commands
 
+### Android
 ```bash
 # Compile check (fastest feedback)
 ./gradlew :app:compileProdReleaseSources --no-daemon
@@ -30,22 +31,74 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ./gradlew :app:connectedAndroidTest --no-daemon
 ```
 
+### iOS
+
+```bash
+# Link the shared framework for the iOS Simulator (fastest sanity check).
+# Auto-detects/installs the Kotlin/Native compiler on first run.
+./gradlew :shared:linkDebugFrameworkIosSimulatorArm64 --no-daemon
+
+# Regenerate the Xcode project from iosApp/project.yml (no-op if unchanged).
+(cd iosApp && xcodegen generate)
+
+# Build the Staging scheme for an iPhone Simulator.
+xcodebuild -project iosApp/iosApp.xcodeproj \
+  -scheme Staging -configuration Debug-Staging \
+  -destination 'platform=iOS Simulator,name=iPhone 17' build
+
+# Same, but switching to Prod backend.
+xcodebuild -project iosApp/iosApp.xcodeproj \
+  -scheme Prod -configuration Debug-Prod \
+  -destination 'platform=iOS Simulator,name=iPhone 17' build
+
+# Install + launch a built .app on the booted simulator.
+xcrun simctl install booted \
+  ~/Library/Developer/Xcode/DerivedData/iosApp-*/Build/Products/Debug-Staging-iphonesimulator/iosApp.app
+xcrun simctl launch booted se.kjellstrand.webshooter
+```
+
+`iosApp/project.yml` is the source of truth; `iosApp/iosApp.xcodeproj/` is gitignored and regenerated from it via [xcodegen](https://github.com/yonaskolb/XcodeGen). Run `xcodegen generate` after editing `project.yml`.
+
+**Environment gotchas (Mac):**
+- Gradle 8.9 cannot run under JDK 26 (max supported is JDK 22). Use OpenJDK 17–22 — install via `brew install openjdk@21` and set `JAVA_HOME` to `/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home`. The Xcode Run Script in `project.yml` auto-detects an installed `openjdk@N` if `JAVA_HOME` isn't set.
+- If `xcode-select -p` points at `/Library/Developer/CommandLineTools`, the iOS link will fail. Either `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer` (system change) or set `DEVELOPER_DIR` inline for the build.
+- `gradlew` is currently tracked in git without the executable bit (mode `100644`). `./gradlew` from the Xcode Run Script fails with "Permission denied" — that's why the script invokes it via `sh ./gradlew`. Fix permanently with `git update-index --chmod=+x gradlew`.
+
 On Windows, run gradle via the shell script (`./gradlew`) not `gradlew.bat` directly. iOS Kotlin/Native targets (`compileKotlinIosX64`, `linkDebugFrameworkIosX64`, etc.) silently SKIP on Windows — they require a macOS host.
+
+### iOS — DebugGallery (smoke-test screens without backend)
+
+`shared/src/iosMain/.../ui/DebugGallery.kt` lets you render any single screen on Simulator using its mock VM, by launching the app with the `SCREEN` env var:
+
+```bash
+xcrun simctl terminate booted se.kjellstrand.webshooter 2>/dev/null
+SIMCTL_CHILD_SCREEN=competitions xcrun simctl launch booted se.kjellstrand.webshooter
+```
+
+Known screen names: `login, competitions, myentries, charts, club, settings, licenses, results, shooter, signupslist, patrols, teams, signup`. When `SCREEN` is unset, `MainViewController` boots the real `AppNavHost`. `ClubStats` and `SeriesPoints` aren't in the gallery — their screens take concrete `*Impl` VMs and no `ui/mock/` stubs exist; smoke-test those interactively against the backend.
 
 ## Module Layout
 
-Two Gradle modules:
+Two Gradle modules plus an Xcode project:
 
-- **`:shared`** — Kotlin Multiplatform (`commonMain`, `androidMain`, `iosMain`). Contains the entire data layer (repositories, Ktor data sources, Room entities/DAOs, `AppDatabase`), the Koin DI graph, the platform factories (`HttpClient`, `AppDatabase`, `AuthTokenManager`, `SecurePrefs`), **and the entire Compose UI** — every screen (`ui/screens/<feature>/XxxScreen.kt`), ViewModel + UI state, the theme (`ui/theme/`), shared composables (`ui/common/`), the Compose-preview mocks (`ui/mock/`), and the platform abstractions (`ui/platform/`). The UI is built with **Compose Multiplatform** (JetBrains `compose` plugin), so it is KMP-portable. The `Shared.framework` binary is configured for all three iOS targets.
-- **`:app`** — thin Android host. Contains only what must be Android-specific: `MainActivity`, `ShooterApplication` (Koin init, Napier, Firebase), the `MockInterceptor` (reads `R.raw.*`), the top-level navigation graph (`ui/navigation/` — `Screen.kt`, `AppNavHost.kt`, `NavControllerExtensions.kt`, `NavigationArguments.kt`), and the `WebShooterScreen` landing/drawer scaffold (`ui/landingscreen/`). Android XML themes live in `app/src/main/res/values{,-night}/themes.xml` (for the system splash / Activity chrome — distinct from the Compose theme in `:shared`).
+- **`:shared`** — Kotlin Multiplatform (`commonMain`, `androidMain`, `iosMain`). Contains the entire data layer (repositories, Ktor data sources, Room entities/DAOs, `AppDatabase`), the Koin DI graph, the platform factories (`HttpClient`, `AppDatabase`, `AuthTokenManager`, `SecurePrefs`), **and the entire Compose UI** — every screen (`ui/screens/<feature>/XxxScreen.kt`), ViewModel + UI state, the theme (`ui/theme/`), shared composables (`ui/common/`), the Compose-preview mocks (`ui/mock/`), the platform abstractions (`ui/platform/` including a multiplatform `BackHandler` expect/actual), and the **top-level navigation graph** (`ui/navigation/AppNavHost.kt`, `Screen.kt`, `NavigationArguments.kt`, `NavControllerExtensions.kt`) and the **landing/drawer scaffold** (`ui/landingscreen/WebShooterScreen.kt`). The UI is built with **Compose Multiplatform** (JetBrains `compose` plugin), so it is KMP-portable. Navigation uses the JetBrains multiplatform port `org.jetbrains.androidx.navigation:navigation-compose` (NOT the Android-only `androidx.navigation:navigation-compose`). The `Shared.framework` binary is configured for all three iOS targets.
+- **`:app`** — thin Android host. Contains only what must be Android-specific: `MainActivity` (boots the Compose hierarchy and wires `showMessage` to `Toast`), `ShooterApplication` (Koin init, Napier, Firebase), the `MockInterceptor` (reads `R.raw.*`). Android XML themes live in `app/src/main/res/values{,-night}/themes.xml` (for the system splash / Activity chrome — distinct from the Compose theme in `:shared`).
+- **`iosApp/`** — SwiftUI host generated from `project.yml` by [xcodegen](https://github.com/yonaskolb/XcodeGen). Contains `WebshooterApp.swift` (the `@main` SwiftUI App that builds a `WebshooterConfig` from `Bundle.main.infoDictionary` and calls `KoinKt.doInitKoin`), `ContentView.swift` (a `UIViewControllerRepresentable` wrapper for the shared `MainViewController`), `Info.plist`, `iosApp.entitlements` (declares `keychain-access-groups` so `AuthTokenManager` and `SecurePrefs` can write to Keychain — required even on Simulator), and minimal `Assets.xcassets/` (AppIcon, AccentColor). The Xcode `.xcodeproj/` is gitignored and regenerated from `project.yml`.
 
 Compose resources (strings, drawables) are shared: they live in `shared/src/commonMain/composeResources/` and are accessed via the generated `se.kjellstrand.webshooter.resources.Res` (configured `publicResClass = true`, custom package in `:shared/build.gradle.kts`). Use `stringResource(Res.string.foo)` from `org.jetbrains.compose.resources`, not Android `R.string`.
 
-iOS does not yet have its own host app, but `:shared/iosMain` is wired (Darwin Ktor engine, Keychain-backed settings, Documents-directory Room database, iOS Koin platform module, `Ios*` platform-abstraction impls) so that adding one is mostly Swift glue + an `initKoin(iosPlatformModule(config))` call.
+### iOS host wiring (`iosApp/` + `:shared/iosMain`)
+
+- `shared/src/iosMain/.../ui/MainViewController.kt` is the iOS entry point. Returns a `ComposeUIViewController { WebShooterTheme { AppNavHost(rememberNavController(), showMessage = …) } }`. When the launcher sets the `SCREEN` env var (`SIMCTL_CHILD_SCREEN=<name>`), it routes through `DebugGallery` instead — see the iOS Build Commands section.
+- `IosPlatformModule.iosPlatformModule(config: WebshooterConfig)` provides every iOS-side binding to Koin: Darwin Ktor `HttpClient`, Keychain-backed `AuthTokenManager` + `SecurePrefs`, Documents-directory Room database, `IosUrlLauncher` (uses `UIApplication.openURL`), and `IosCalendarOpener` (uses EventKit's `EKEventStore.saveEvent`, requires `NSCalendarsUsageDescription` in `Info.plist`).
+- `xcodegen` defines two schemes — **Staging** (hits `staging.webshooter.se`) and **Prod** (hits `webshooter.se`) — by setting `WEBSHOOTER_BASE_URL` as a per-configuration build setting that's injected into `Info.plist` via `$(WEBSHOOTER_BASE_URL)` substitution. The Swift side reads it through `Bundle.main.infoDictionary["WebshooterBaseUrl"]`. `WEBSHOOTER_CLIENT_SECRET` follows the same pattern (default is the same fallback secret that `app/build.gradle.kts` uses).
+- Simulator builds use **ad-hoc code signing** (`CODE_SIGN_IDENTITY = -` + the entitlements file) because Keychain access on iOS requires entitlements to be embedded into the `.app`, even on Simulator. Real team signing comes later when targeting devices.
+- The Xcode "Run Script" build phase invokes `:shared:embedAndSignAppleFrameworkForXcode`. It auto-locates a usable JDK (17–22) and explicitly passes `KOTLIN_FRAMEWORK_BUILD_TYPE` so the plugin's auto-detect handles the `Debug-Staging` / `Release-Prod` config names.
+- iOS-only Compose Multiplatform gotcha: `Info.plist` must include `CADisableMinimumFrameDurationOnPhone = true` or `androidx.compose.ui.uikit.PlistSanityCheck` throws `SIGABRT` on startup.
 
 ## Architecture
 
-Clean three-layer architecture: **data → di (Koin) → ui (screens + view-models)**, all living in `:shared`. `:app` is just the Android host that boots Koin and wires the navigation graph. Each feature is a vertical slice across the layers.
+Clean three-layer architecture: **data → di (Koin) → ui (screens + view-models + navigation)**, all living in `:shared`. `:app` is a thin Android host that boots Koin and renders the shared `AppNavHost`; `iosApp/` is a thin SwiftUI host that does the same via `ComposeUIViewController`. Each feature is a vertical slice across the layers.
 
 ### Data Layer (`:shared/commonMain/data/<feature>/`)
 Each feature has:
@@ -95,9 +148,9 @@ Each feature folder under `:shared/commonMain/ui/screens/<feature>/` holds the C
 
 **Platform abstractions** (`:shared/commonMain/ui/platform/`): `UrlLauncher` and `CalendarOpener` are `interface`s with Android/iOS impls (`AndroidUrlLauncher`, `IosUrlLauncher`, …) supplied by the platform Koin module and obtained in composables via `koinInject()`. Use these instead of touching Android `Intent`/`Context` directly so the screen stays KMP-portable.
 
-**Navigation is two-level** (Jetpack/Compose Navigation; routes are a sealed class in `:app/ui/navigation/Screen.kt`):
-- The **top-level `AppNavHost`** (`:app`) starts at `Screen.SplashScreen`. `SplashScreen` checks for a stored token and routes to either `LoginScreen` or `LandingScreen`. `AppNavHost` also owns the full-screen *detail* destinations (competition results, shooter result, signup, signups list, patrols, teams) and the session-expiry redirect driven by `SessionManager.events`.
-- The **`WebShooterScreen`** landing scaffold (`:app/ui/landingscreen/`) hosts its own *nested* `NavHost` behind a `ModalNavigationDrawer`, starting at `CompetitionsList`. The drawer sections (Competitions, MyEntries, Charts, SeriesPoints, ClubStats, Club, Settings, Licenses) are nested destinations, not top-level routes.
+**Navigation is two-level** (Compose Multiplatform Navigation; routes are a sealed class in `:shared/commonMain/.../ui/navigation/Screen.kt`):
+- The **top-level `AppNavHost`** (`:shared`) starts at `Screen.SplashScreen`. `SplashScreen` checks for a stored token and routes to either `LoginScreen` or `LandingScreen`. `AppNavHost` also owns the full-screen *detail* destinations (competition results, shooter result, signup, signups list, patrols, teams) and the session-expiry redirect driven by `SessionManager.events`. Takes a `showMessage: (String) -> Unit` parameter — Android `MainActivity` wires it to `Toast`, iOS `MainViewController` wires it to a `Napier` log placeholder for now.
+- The **`WebShooterScreen`** landing scaffold (`:shared/.../ui/landingscreen/`) hosts its own *nested* `NavHost` behind a `ModalNavigationDrawer`, starting at `CompetitionsList`. The drawer sections (Competitions, MyEntries, Charts, SeriesPoints, ClubStats, Club, Settings, Licenses) are nested destinations, not top-level routes.
 
 Deep links use the base URI `https://webshooter.se/app`. The 5 nav-arg VMs (Teams, Signups, Patrols, Results, ShooterResult) receive their args via `koinViewModel { parametersOf(...) }` — see the DI section.
 
@@ -122,3 +175,19 @@ Highlight state is hoisted to the screen (`highlightedLegendId: String?`) and sh
 - **Column weights in patrol/signup lists:** header and data rows must share identical weight values to align columns.
 - **Error handling:** Network errors are surfaced via toast and Napier-logged; UI remains responsive. Session expiry from token-refresh failure flows through `SessionManager.events` and is observed by `SessionViewModel` to bounce the user back to login.
 - **KMP-only stdlib gotchas in commonMain:** `Dispatchers.IO` doesn't exist (use `Dispatchers.Default`); `@Volatile` is JVM-only (use `kotlin.concurrent.Volatile`); `java.time.*` is JVM-only (use `kotlinx-datetime`); `Map.toSortedMap` is JVM-only (sort entries manually).
+
+## iOS port — current status
+
+Working on Simulator end-to-end as of commit `77aa688`:
+- iOS host (`iosApp/`) launches, boots Koin with a per-scheme backend URL, renders the shared `AppNavHost` (Splash → Login → Landing → drawer).
+- All 13 mock-driven screens reachable via `DebugGallery` render without crash on iPhone 17 Simulator (iOS 26.5 SDK).
+- Keychain, Darwin Ktor, Room (Documents directory), shared compose-resources, EventKit calendar add, multiplatform `BackHandler` — all wired.
+
+Not yet verified / still TODO:
+- **Interactive walk-through against a real backend.** Type real credentials into `LoginScreen`, navigate every drawer section + every detail screen, watch for surprises (date locale, focus, scroll). Staging DNS isn't reachable from at least one network I tried; if you hit the same wall, switch to the Prod scheme.
+- **`ClubStatsScreen` and `SeriesPointsScreen`** aren't in `DebugGallery` (their screens take concrete `*Impl` VMs and no `ui/mock/` stubs exist). Verify them via the real flow.
+- **`IosCalendarOpener`** is implemented but never exercised end-to-end — try "add to calendar" from a competition results screen.
+- **LaunchScreen polish:** currently an empty `UILaunchScreen` dict in `Info.plist`. A branded launch with the icon centred would be nicer.
+- **Device install + TestFlight:** plan Phase 8 and 9, both deferred. Needs your Apple ID for personal-team signing.
+- **Firebase Crashlytics/Analytics:** plan Phase 10, deferred per the original decision.
+- **`gradlew` git mode is still `100644`.** Fix with `git update-index --chmod=+x gradlew` to drop the `sh ./gradlew` workaround in the Xcode Run Script.
