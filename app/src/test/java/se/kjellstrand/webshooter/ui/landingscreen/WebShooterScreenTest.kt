@@ -6,7 +6,7 @@ import java.io.File
 
 class WebShooterScreenTest {
 
-    private val sourceFile = File("src/main/java/se/kjellstrand/webshooter/ui/landingscreen/WebShooterScreen.kt")
+    private val sourceFile = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/landingscreen/WebShooterScreen.kt")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 

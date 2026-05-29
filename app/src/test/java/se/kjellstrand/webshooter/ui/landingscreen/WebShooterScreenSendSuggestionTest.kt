@@ -8,10 +8,8 @@ import java.io.File
 class WebShooterScreenSendSuggestionTest {
 
     private val screenSource: String by lazy {
-        File("src/main/java/se/kjellstrand/webshooter/ui/landingscreen/WebShooterScreen.kt").readText()
+        File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/landingscreen/WebShooterScreen.kt").readText()
     }
-    // WebShooterScreen stays in :app (it's the Android-side drawer host), so its
-    // path is unchanged.
 
     private val stringsXml: String by lazy {
         File("../shared/src/commonMain/composeResources/values/strings.xml").readText()

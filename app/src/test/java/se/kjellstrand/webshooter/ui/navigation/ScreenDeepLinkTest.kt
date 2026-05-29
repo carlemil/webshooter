@@ -6,8 +6,8 @@ import java.io.File
 
 class ScreenDeepLinkTest {
 
-    private val screenFile = File("src/main/java/se/kjellstrand/webshooter/ui/navigation/Screen.kt")
-    private val navHostFile = File("src/main/java/se/kjellstrand/webshooter/ui/navigation/AppNavHost.kt")
+    private val screenFile = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/navigation/Screen.kt")
+    private val navHostFile = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/navigation/AppNavHost.kt")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
 

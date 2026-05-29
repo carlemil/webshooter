@@ -7,7 +7,7 @@ import java.io.File
 class StateManagementTest {
 
     private val loginScreen = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/login/LoginScreen.kt")
-    private val webShooterScreen = File("src/main/java/se/kjellstrand/webshooter/ui/landingscreen/WebShooterScreen.kt")
+    private val webShooterScreen = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/landingscreen/WebShooterScreen.kt")
     private val settingsScreen = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/ui/screens/settings/SettingsScreen.kt")
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
