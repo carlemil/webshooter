@@ -22,6 +22,14 @@
     <string>34</string>
     <key>CADisableMinimumFrameDurationOnPhone</key>
     <true/>
+    <key>NSCalendarsUsageDescription</key>
+    <string>WebShooter needs access to your calendar to add upcoming competitions you've registered for.</string>
+    <key>NSCalendarsWriteOnlyAccessUsageDescription</key>
+    <string>WebShooter needs access to your calendar to add upcoming competitions you've registered for.</string>
+    <key>WebshooterBaseUrl</key>
+    <string>$(WEBSHOOTER_BASE_URL)</string>
+    <key>WebshooterClientSecret</key>
+    <string>$(WEBSHOOTER_CLIENT_SECRET)</string>
     <key>LSRequiresIPhoneOS</key>
     <true/>
     <key>UIApplicationSceneManifest</key>

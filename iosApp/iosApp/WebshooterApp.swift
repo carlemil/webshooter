@@ -4,15 +4,23 @@ import Shared
 @main
 struct WebshooterApp: App {
     init() {
-        let bundleVersion = (Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String) ?? "0.0.0"
+        let info = Bundle.main.infoDictionary
+        let bundleVersion = (info?["CFBundleShortVersionString"] as? String) ?? "0.0.0"
+        // BaseUrl + ClientSecret come from the build configuration via Info.plist
+        // substitution. The Staging and Prod schemes set WEBSHOOTER_BASE_URL to
+        // staging.webshooter.se vs webshooter.se respectively. See project.yml.
+        let baseUrl = (info?["WebshooterBaseUrl"] as? String) ?? "https://staging.webshooter.se/"
+        let clientSecret = (info?["WebshooterClientSecret"] as? String) ?? ""
+        #if DEBUG
+        let isDebug = true
+        #else
+        let isDebug = false
+        #endif
         let config = WebshooterConfig(
-            isDebug: true,
-            baseUrl: "https://staging.webshooter.se/",
+            isDebug: isDebug,
+            baseUrl: baseUrl,
             versionName: bundleVersion,
-            // Same default secret as the Android build's hardcoded fallback;
-            // see app/build.gradle.kts productFlavors block. Replace with
-            // an xcconfig/Info.plist source in Phase 7.
-            clientSecret: "REMOVED-CLIENT-SECRET"
+            clientSecret: clientSecret
         )
         _ = KoinKt.doInitKoin(platformModule: IosPlatformModuleKt.iosPlatformModule(config: config))
     }

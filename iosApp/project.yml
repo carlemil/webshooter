@@ -6,17 +6,37 @@ options:
   developmentLanguage: en
   createIntermediateGroups: true
 
+# Mirrors the Android side's `prod` and `staging` product flavors:
+# each scheme maps to one build configuration that hard-codes the
+# backend URL. The CLIENT_SECRET is the same fallback the Android
+# build uses (see app/build.gradle.kts productFlavors).
+configs:
+  Debug-Staging: debug
+  Debug-Prod: debug
+  Release-Staging: release
+  Release-Prod: release
+
 settings:
   base:
     SWIFT_VERSION: "5.0"
     ENABLE_USER_SCRIPT_SANDBOXING: NO
     # Ad-hoc signing for Simulator. Real signing identity comes in Phase 8
     # when we move to device installs. Ad-hoc is needed so the entitlements
-    # file below is embedded — the Keychain APIs (used by AuthTokenManager
+    # file is embedded — the Keychain APIs (used by AuthTokenManager
     # and SecurePrefs) require keychain-access-groups even on Simulator.
     CODE_SIGN_IDENTITY: "-"
     CODE_SIGNING_REQUIRED: YES
     CODE_SIGNING_ALLOWED: YES
+    WEBSHOOTER_CLIENT_SECRET: "REMOVED-CLIENT-SECRET"
+  configs:
+    Debug-Staging:
+      WEBSHOOTER_BASE_URL: "https://staging.webshooter.se/"
+    Release-Staging:
+      WEBSHOOTER_BASE_URL: "https://staging.webshooter.se/"
+    Debug-Prod:
+      WEBSHOOTER_BASE_URL: "https://webshooter.se/"
+    Release-Prod:
+      WEBSHOOTER_BASE_URL: "https://webshooter.se/"
 
 targets:
   iosApp:
@@ -46,8 +66,60 @@ targets:
         script: |
           set -euo pipefail
           cd "$SRCROOT/.."
-          export JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home
+          # Pick a JDK 17–22 (Gradle 8.9 doesn't run under JDK 26). Prefer
+          # JAVA_HOME from the Xcode env if it points at a usable JDK, else
+          # auto-pick the highest installed openjdk@N (21 preferred). If
+          # nothing matches, fall back to the system /usr/bin/java's home.
+          if [ -z "${JAVA_HOME:-}" ] || ! "$JAVA_HOME/bin/javac" -version 2>&1 | grep -qE "javac (1[7-9]|2[0-2])"; then
+            for v in 21 20 19 18 17; do
+              if [ -d "/opt/homebrew/opt/openjdk@${v}/libexec/openjdk.jdk/Contents/Home" ]; then
+                export JAVA_HOME="/opt/homebrew/opt/openjdk@${v}/libexec/openjdk.jdk/Contents/Home"
+                break
+              fi
+            done
+            if [ -z "${JAVA_HOME:-}" ]; then
+              export JAVA_HOME="$(/usr/libexec/java_home 2>/dev/null || true)"
+            fi
+          fi
+          # KOTLIN_FRAMEWORK_BUILD_TYPE picks debug-vs-release from our
+          # config name (the plugin's auto-detect only handles plain
+          # Debug/Release, not the Staging/Prod-suffixed variants).
+          if [[ "$CONFIGURATION" == Debug* ]]; then
+            export KOTLIN_FRAMEWORK_BUILD_TYPE=debug
+          else
+            export KOTLIN_FRAMEWORK_BUILD_TYPE=release
+          fi
           # `sh ./gradlew` because the repo tracks gradlew without the
           # executable bit (mode 100644). Fix the bit if/when that changes.
           sh ./gradlew :shared:embedAndSignAppleFrameworkForXcode \
             -Pkotlin.native.cocoapods.generate.wrapper=false
+
+schemes:
+  Staging:
+    build:
+      targets:
+        iosApp: all
+    run:
+      config: Debug-Staging
+    test:
+      config: Debug-Staging
+    profile:
+      config: Release-Staging
+    analyze:
+      config: Debug-Staging
+    archive:
+      config: Release-Staging
+  Prod:
+    build:
+      targets:
+        iosApp: all
+    run:
+      config: Debug-Prod
+    test:
+      config: Debug-Prod
+    profile:
+      config: Release-Prod
+    analyze:
+      config: Debug-Prod
+    archive:
+      config: Release-Prod
