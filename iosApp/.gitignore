@@ -1,0 +1,6 @@
+# xcodegen output — regenerable from project.yml
+iosApp.xcodeproj/
+xcuserdata/
+*.xcworkspace
+DerivedData/
+build/

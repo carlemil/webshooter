@@ -24,10 +24,7 @@ fun createAppDatabase(): AppDatabase {
     )?.path ?: error("Unable to resolve iOS Documents directory for Room database")
     val dbPath = "$documents/webshooter.db"
 
-    return Room.databaseBuilder<AppDatabase>(
-        name = dbPath,
-        factory = { AppDatabase::class.instantiateImpl() },
-    )
+    return Room.databaseBuilder<AppDatabase>(name = dbPath)
         .setDriver(BundledSQLiteDriver())
         .fallbackToDestructiveMigration(dropAllTables = true)
         .build()

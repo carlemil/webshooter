@@ -1,7 +1,9 @@
 package se.kjellstrand.webshooter.data.db
 
+import androidx.room.ConstructedBy
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import androidx.room.RoomDatabaseConstructor
 import se.kjellstrand.webshooter.data.club.local.ClubDao
 import se.kjellstrand.webshooter.data.club.local.ClubEntity
 import se.kjellstrand.webshooter.data.competitionpatrols.local.PatrolEntity
@@ -33,6 +35,7 @@ import se.kjellstrand.webshooter.data.mysignups.local.SignupsDao
     version = DB_VERSION,
     exportSchema = true
 )
+@ConstructedBy(AppDatabaseConstructor::class)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun competitionsDao(): CompetitionsDao
     abstract fun resultsDao(): ResultsDao
@@ -43,3 +46,12 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun clubDao(): ClubDao
     abstract fun userProfileDao(): UserProfileDao
 }
+
+// KSP generates the `actual` for non-Android targets at build time; Android
+// still uses reflection via the legacy `Room.databaseBuilder(context, klass)`
+// API, so no manual actual is needed there either.
+@Suppress("KotlinNoActualForExpect")
+expect object AppDatabaseConstructor : RoomDatabaseConstructor<AppDatabase> {
+    override fun initialize(): AppDatabase
+}
+

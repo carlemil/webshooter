@@ -1,0 +1,49 @@
+name: iosApp
+options:
+  bundleIdPrefix: se.kjellstrand
+  deploymentTarget:
+    iOS: "16.0"
+  developmentLanguage: en
+  createIntermediateGroups: true
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    ENABLE_USER_SCRIPT_SANDBOXING: NO
+    # Simulator-only for now; no provisioning profile or team needed.
+    CODE_SIGNING_REQUIRED: NO
+    CODE_SIGNING_ALLOWED: NO
+    CODE_SIGN_IDENTITY: ""
+
+targets:
+  iosApp:
+    type: application
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: iosApp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: se.kjellstrand.webshooter
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SWIFT_VERSION: "5.0"
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
+        FRAMEWORK_SEARCH_PATHS:
+          - $(inherited)
+          - $(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)
+        OTHER_LDFLAGS:
+          - $(inherited)
+          - -framework
+          - Shared
+        INFOPLIST_FILE: iosApp/Info.plist
+    preBuildScripts:
+      - name: "Embed Kotlin/Native shared framework"
+        basedOnDependencyAnalysis: false
+        script: |
+          set -euo pipefail
+          cd "$SRCROOT/.."
+          export JAVA_HOME=/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home
+          # `sh ./gradlew` because the repo tracks gradlew without the
+          # executable bit (mode 100644). Fix the bit if/when that changes.
+          sh ./gradlew :shared:embedAndSignAppleFrameworkForXcode \
+            -Pkotlin.native.cocoapods.generate.wrapper=false
