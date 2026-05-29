@@ -10,10 +10,13 @@ settings:
   base:
     SWIFT_VERSION: "5.0"
     ENABLE_USER_SCRIPT_SANDBOXING: NO
-    # Simulator-only for now; no provisioning profile or team needed.
-    CODE_SIGNING_REQUIRED: NO
-    CODE_SIGNING_ALLOWED: NO
-    CODE_SIGN_IDENTITY: ""
+    # Ad-hoc signing for Simulator. Real signing identity comes in Phase 8
+    # when we move to device installs. Ad-hoc is needed so the entitlements
+    # file below is embedded — the Keychain APIs (used by AuthTokenManager
+    # and SecurePrefs) require keychain-access-groups even on Simulator.
+    CODE_SIGN_IDENTITY: "-"
+    CODE_SIGNING_REQUIRED: YES
+    CODE_SIGNING_ALLOWED: YES
 
 targets:
   iosApp:
@@ -36,6 +39,7 @@ targets:
           - -framework
           - Shared
         INFOPLIST_FILE: iosApp/Info.plist
+        CODE_SIGN_ENTITLEMENTS: iosApp/iosApp.entitlements
     preBuildScripts:
       - name: "Embed Kotlin/Native shared framework"
         basedOnDependencyAnalysis: false
