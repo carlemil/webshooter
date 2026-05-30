@@ -58,8 +58,8 @@ class MockResults {
             results = listOf()
         ),
         Result(
-            id = 16343,
-            signupsID = 19957,
+            id = 16344,
+            signupsID = 19958,
             placement = 3,
             figureHits = 29,
             hits = 46,
@@ -69,7 +69,7 @@ class MockResults {
                 user = User(
                     name = "Olof",
                     lastname = "Olofson",
-                    userID = 846904506,
+                    userID = 846904507,
                     fullname = "Olof Olofson"
                 ),
                 club = null
@@ -82,8 +82,8 @@ class MockResults {
             results = listOf()
         ),
         Result(
-            id = 16343,
-            signupsID = 19957,
+            id = 16345,
+            signupsID = 19959,
             placement = 3,
             figureHits = 20,
             hits = 41,
@@ -93,7 +93,7 @@ class MockResults {
                 user = User(
                     name = "Bosse",
                     lastname = "Borgare",
-                    userID = 846904506,
+                    userID = 846904508,
                     fullname = "Bosse Borgare"
                 ),
                 club = null

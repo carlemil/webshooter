@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.ui.mock.ChartsViewModelMock
 import se.kjellstrand.webshooter.ui.mock.ClubViewModelMock
 import se.kjellstrand.webshooter.ui.mock.CompetitionsViewModelMock
@@ -31,6 +32,7 @@ import se.kjellstrand.webshooter.ui.screens.myresults.MyEntriesScreen
 import se.kjellstrand.webshooter.ui.screens.patrols.CompetitionPatrolsScreen
 import se.kjellstrand.webshooter.ui.screens.results.CompetitionResultsScreen
 import se.kjellstrand.webshooter.ui.screens.results.ResultsUiState
+import se.kjellstrand.webshooter.ui.screens.results.ResultsViewModelImpl
 import se.kjellstrand.webshooter.ui.screens.settings.SettingsScreen
 import se.kjellstrand.webshooter.ui.screens.shooterresult.ShooterResultScreen
 import se.kjellstrand.webshooter.ui.screens.shooterresult.ShooterResultUiState
@@ -72,22 +74,16 @@ fun DebugGallery(screenName: String) {
         "club" -> ClubScreen(viewModel = ClubViewModelMock())
         "settings" -> SettingsScreen(viewModel = SettingsViewModelMock())
         "licenses" -> LicensesScreen()
-        // NOTE: populating groupedResults via `ResultsViewModelImpl.groupResults`
-        // on these mocks triggers a LazyColumn duplicate-key crash on iOS
-        // (kotlin.IllegalArgumentException: "Key 'group-C3-16343' was already
-        // used"). The same combination also crashes on Android at runtime —
-        // the existing @Preview just doesn't trigger LazyList layout. This is
-        // a real latent bug in the screen's key derivation. Tracked TODO;
-        // leaving these screens with empty groupedResults so the gallery stays
-        // crash-free for verification purposes.
         "results" -> {
             val mockResults = MockResults().results
+            val grouped = ResultsViewModelImpl.groupResults(mockResults, ResultsType.FIELD)
             CompetitionResultsScreen(
                 resultsViewModel = ResultsViewModelMock(
                     ResultsUiState(
                         isLoading = false,
                         competitionName = "Vintercup 2026",
                         results = mockResults,
+                        groupedResults = grouped,
                     )
                 ),
                 onBack = {},
@@ -97,6 +93,7 @@ fun DebugGallery(screenName: String) {
         }
         "shooter" -> {
             val mockResults = MockResults().results
+            val grouped = ResultsViewModelImpl.groupResults(mockResults, ResultsType.FIELD)
             ShooterResultScreen(
                 onBack = {},
                 viewModel = ShooterResultViewModelMock(
@@ -104,6 +101,7 @@ fun DebugGallery(screenName: String) {
                         isLoading = false,
                         shooterName = "Erik Svensson",
                         results = mockResults,
+                        groupedResults = grouped,
                     )
                 ),
             )
