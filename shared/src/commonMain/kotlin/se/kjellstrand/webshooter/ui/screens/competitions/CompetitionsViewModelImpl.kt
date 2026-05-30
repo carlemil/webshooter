@@ -21,6 +21,16 @@ class CompetitionsViewModelImpl(
     @kotlin.concurrent.Volatile private var syncTriggered = false
     @kotlin.concurrent.Volatile private var hasBeenOpenedOnce = false
 
+    override var savedFirstVisibleItemIndex: Int = 0
+        private set
+    override var savedFirstVisibleItemScrollOffset: Int = 0
+        private set
+
+    override fun saveScrollPosition(index: Int, offset: Int) {
+        savedFirstVisibleItemIndex = index
+        savedFirstVisibleItemScrollOffset = offset
+    }
+
     init {
         viewModelScope.launch {
             competitionsRepository.observeAll().collect { data ->

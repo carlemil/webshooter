@@ -12,6 +12,8 @@ class CompetitionsViewModelMock(
 ) : ViewModel(),
     CompetitionsViewModel {
     override val uiState: StateFlow<CompetitionsUiState> = MutableStateFlow(initialState)
+    override val savedFirstVisibleItemIndex: Int = 0
+    override val savedFirstVisibleItemScrollOffset: Int = 0
 
     override fun getCompetitionById(competitionId: Long): Datum? {
         return uiState.value.competitions?.data?.find { it.id == competitionId }
@@ -20,4 +22,5 @@ class CompetitionsViewModelMock(
     override fun reload() {}
     override fun onScreenOpened() {}
     override fun setSelectedStatuses(statuses: Set<String>) {}
+    override fun saveScrollPosition(index: Int, offset: Int) {}
 }

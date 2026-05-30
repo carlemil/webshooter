@@ -85,12 +85,22 @@ fun CompetitionsScreen(
     competitionsViewModel: CompetitionsViewModel = koinViewModel<CompetitionsViewModelImpl>()
 ) {
     val competitionsState by competitionsViewModel.uiState.collectAsState()
-    val listState = rememberLazyListState()
+    val listState = rememberLazyListState(
+        initialFirstVisibleItemIndex = competitionsViewModel.savedFirstVisibleItemIndex,
+        initialFirstVisibleItemScrollOffset = competitionsViewModel.savedFirstVisibleItemScrollOffset,
+    )
     val coroutineScope = rememberCoroutineScope()
     var isFilterBottomSheetOpen by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         competitionsViewModel.onScreenOpened()
+    }
+
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.firstVisibleItemIndex to listState.firstVisibleItemScrollOffset }
+            .collect { (index, offset) ->
+                competitionsViewModel.saveScrollPosition(index, offset)
+            }
     }
 
     val upcomingIndex = remember(competitionsState.filteredData) {
