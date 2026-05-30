@@ -27,24 +27,11 @@ data class LicenseItem(
 )
 
 @Composable
-fun LicensesScreen(urlLauncher: UrlLauncher = koinInject()) {
+expect fun LicensesScreen()
 
-    val licenses = listOf(
-        LicenseItem("Kotlin", "https://github.com/JetBrains/kotlin", "Apache 2.0"),
-        LicenseItem("Jetpack Compose", "https://developer.android.com/jetpack/compose", "Apache 2.0"),
-        LicenseItem("Compose Material 3", "https://developer.android.com/jetpack/androidx/releases/compose-material3", "Apache 2.0"),
-        LicenseItem("AndroidX Core KTX", "https://developer.android.com/jetpack/androidx/releases/core", "Apache 2.0"),
-        LicenseItem("AndroidX Navigation Compose", "https://developer.android.com/jetpack/compose/navigation", "Apache 2.0"),
-        LicenseItem("AndroidX Security Crypto", "https://developer.android.com/jetpack/androidx/releases/security", "Apache 2.0"),
-        LicenseItem("AndroidX Room", "https://developer.android.com/jetpack/androidx/releases/room", "Apache 2.0"),
-        LicenseItem("Hilt (Dagger)", "https://github.com/google/dagger", "Apache 2.0"),
-        LicenseItem("Retrofit", "https://github.com/square/retrofit", "Apache 2.0"),
-        LicenseItem("OkHttp", "https://github.com/square/okhttp", "Apache 2.0"),
-        LicenseItem("Gson", "https://github.com/google/gson", "Apache 2.0"),
-        LicenseItem("Firebase Crashlytics", "https://firebase.google.com/docs/crashlytics", "Apache 2.0"),
-        LicenseItem("Firebase Analytics", "https://firebase.google.com/docs/analytics", "Apache 2.0"),
-    )
-
+@Composable
+internal fun LicensesContent(licenses: List<LicenseItem>) {
+    val urlLauncher: UrlLauncher = koinInject()
     val apacheLicenseUrl = "https://www.apache.org/licenses/LICENSE-2.0"
 
     Column(
