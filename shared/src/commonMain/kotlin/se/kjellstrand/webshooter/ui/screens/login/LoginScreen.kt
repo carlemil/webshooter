@@ -30,6 +30,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import org.jetbrains.compose.resources.stringResource
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -91,6 +94,11 @@ fun LoginScreen(
                 onValueChange = { username = it },
                 label = { Text(stringResource(Res.string.login_username)) },
                 singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.None,
+                    autoCorrect = false,
+                    keyboardType = KeyboardType.Email,
+                ),
                 modifier = Modifier.fillMaxWidth(),
                 enabled = !uiState.isLoading
             )
@@ -100,6 +108,11 @@ fun LoginScreen(
                 onValueChange = { password = it },
                 label = { Text(stringResource(Res.string.password)) },
                 singleLine = true,
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.None,
+                    autoCorrect = false,
+                    keyboardType = KeyboardType.Password,
+                ),
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
                     val image = if (passwordVisible)

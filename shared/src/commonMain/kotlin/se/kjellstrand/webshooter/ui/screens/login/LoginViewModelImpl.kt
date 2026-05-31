@@ -45,10 +45,13 @@ class LoginViewModelImpl(
 
     override fun login(username: String, password: String) {
         viewModelScope.launch {
-            if (username == "mockuser" && password == "mockpassword") {
+            val normalizedUser = username.trim()
+            val normalizedPass = password.trim()
+            if (normalizedUser.equals("mockuser", ignoreCase = true) &&
+                normalizedPass.equals("mockpassword", ignoreCase = true)) {
                 MockModeManager.isMockMode = true
                 authTokenManager.storeTokens("mock_token", "mock_refresh_token", 3600)
-                securePrefs.saveUsername(username)
+                securePrefs.saveUsername(normalizedUser)
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     isSuccess = true
