@@ -1,0 +1,1 @@
+{"signups":{"current_page":1,"data":[],"first_page_url":null,"from":null,"last_page":1,"last_page_url":null,"next_page_url":null,"path":null,"per_page":50,"prev_page_url":null,"to":null,"total":0}}
