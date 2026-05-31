@@ -23,10 +23,10 @@ data class Competitions (
     val lastPage: Long,
 
     val total: Long,
-    val status: String,
+    val status: String = "",
 
     @SerialName("competitiontypes")
-    val competitionTypes: List<CompetitionType>
+    val competitionTypes: List<CompetitionType> = emptyList()
 )
 
 @Serializable

@@ -15,6 +15,7 @@ import io.ktor.util.InternalAPI
 import io.ktor.util.date.GMTDate
 import io.ktor.utils.io.ByteReadChannel
 import kotlin.coroutines.coroutineContext
+import kotlinx.coroutines.Job
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.Foundation.NSBundle
 import platform.Foundation.NSString
@@ -50,7 +51,7 @@ fun installIosMockInterceptor(client: HttpClient) {
                 headers = headersOf("Content-Type", "application/json"),
                 version = HttpProtocolVersion.HTTP_1_1,
                 body = ByteReadChannel(body.encodeToByteArray()),
-                callContext = coroutineContext,
+                callContext = coroutineContext + Job(),
             )
             HttpClientCall(client, request.build(), responseData)
         }
