@@ -8,7 +8,9 @@ import kotlinx.coroutines.launch
 import org.koin.mp.KoinPlatform
 import se.kjellstrand.webshooter.data.AuthTokenManager
 import se.kjellstrand.webshooter.data.MockInterceptor
+import se.kjellstrand.webshooter.data.MockModeManager
 import se.kjellstrand.webshooter.data.competitions.CompetitionsRepository
+import se.kjellstrand.webshooter.data.secure.SecurePrefs
 import se.kjellstrand.webshooter.di.ApplicationCoroutineScopeQualifier
 import se.kjellstrand.webshooter.di.WebshooterConfig
 import se.kjellstrand.webshooter.di.androidPlatformModule
@@ -39,6 +41,7 @@ class ShooterApplication : Application() {
         }
 
         val koin = KoinPlatform.getKoin()
+        MockModeManager.isMockMode = koin.get<SecurePrefs>().isMockMode()
         val authTokenManager = koin.get<AuthTokenManager>()
         if (authTokenManager.readToken() == null) return
         val applicationScope = koin.get<CoroutineScope>(ApplicationCoroutineScopeQualifier)

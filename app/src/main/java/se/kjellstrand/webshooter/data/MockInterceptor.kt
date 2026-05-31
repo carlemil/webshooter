@@ -1,6 +1,7 @@
 package se.kjellstrand.webshooter.data
 
 import android.content.Context
+import io.github.aakira.napier.Napier
 import okhttp3.Headers.Companion.headersOf
 import okhttp3.Interceptor
 import okhttp3.MediaType.Companion.toMediaType
@@ -162,13 +163,14 @@ open class MockInterceptor(
         }
 
         val responseCode = if (responseString.isEmpty()) 404 else 200
+        Napier.d("$method $path -> $responseCode (${responseString.length} bytes)", tag = "MockInterceptor")
         val responseHeaders = when (path) {
             "/" -> headersOf("header", "headertest")
-            else -> headersOf()
+            else -> headersOf("Content-Type", "application/json")
         }
         return Response.Builder()
             .code(responseCode)
-            .message(responseString)
+            .message(if (responseCode == 200) "OK" else "Not Found")
             .body(responseString.toResponseBody("application/json".toMediaType()))
             .headers(responseHeaders)
             .request(request)

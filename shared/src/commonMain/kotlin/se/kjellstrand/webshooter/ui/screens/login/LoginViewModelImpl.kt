@@ -50,6 +50,7 @@ class LoginViewModelImpl(
             if (normalizedUser.equals("mockuser", ignoreCase = true) &&
                 normalizedPass.equals("mockpassword", ignoreCase = true)) {
                 MockModeManager.isMockMode = true
+                securePrefs.saveMockMode(true)
                 authTokenManager.storeTokens("mock_token", "mock_refresh_token", 3600)
                 securePrefs.saveUsername(normalizedUser)
                 _uiState.value = _uiState.value.copy(
@@ -65,6 +66,8 @@ class LoginViewModelImpl(
                     when (resource) {
                         is Resource.Success -> {
                             val loginResponse = resource.data
+                            MockModeManager.isMockMode = false
+                            securePrefs.clearMockMode()
                             authTokenManager.storeTokens(
                                 loginResponse.accessToken,
                                 loginResponse.refreshToken,

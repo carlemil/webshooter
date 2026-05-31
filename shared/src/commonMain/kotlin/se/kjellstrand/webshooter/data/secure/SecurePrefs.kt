@@ -19,8 +19,19 @@ class SecurePrefs(private val settings: Settings) {
         settings.remove(KEY_USERNAME)
     }
 
+    fun saveMockMode(enabled: Boolean) {
+        settings.putBoolean(KEY_MOCK_MODE, enabled)
+    }
+
+    fun isMockMode(): Boolean = settings.getBoolean(KEY_MOCK_MODE, false)
+
+    fun clearMockMode() {
+        settings.remove(KEY_MOCK_MODE)
+    }
+
     companion object {
         const val FILE_NAME = "secure_prefs"
         private const val KEY_USERNAME = "username"
+        private const val KEY_MOCK_MODE = "mock_mode"
     }
 }

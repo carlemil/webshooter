@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import se.kjellstrand.webshooter.data.AuthTokenManager
+import se.kjellstrand.webshooter.data.MockModeManager
 import se.kjellstrand.webshooter.data.common.Resource
 import se.kjellstrand.webshooter.data.settings.SettingsRepository
 import se.kjellstrand.webshooter.data.settings.remote.UserProfile
@@ -163,6 +164,8 @@ class SettingsViewModelImpl(
 
     override fun logout() {
         securePrefs.clearUsername()
+        securePrefs.clearMockMode()
+        MockModeManager.isMockMode = false
         authTokenManager.clearToken()
         _uiState.value = _uiState.value.copy(loggedOut = true)
     }
