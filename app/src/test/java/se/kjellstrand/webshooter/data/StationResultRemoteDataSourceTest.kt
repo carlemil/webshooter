@@ -54,8 +54,13 @@ class StationResultRemoteDataSourceTest {
 
     @Test
     fun login_returns_correct_LoginDto() {
+        // The real webshooter.se OAuth endpoint returns Content-Type:
+        // application/json; that header is what triggers Ktor's
+        // ContentNegotiation plugin to deserialize. Without it, .body()
+        // throws NoTransformationFoundException.
         val mockResponse = MockResponse()
             .setResponseCode(200)
+            .setHeader("Content-Type", "application/json")
             .setBody(
                 """{
                 "access_token": "1234567890",

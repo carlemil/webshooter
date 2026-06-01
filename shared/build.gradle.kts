@@ -44,6 +44,16 @@ kotlin {
             baseName = "Shared"
             isStatic = true
         }
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        compilerOptions {
+            // Opt in to Compose Multiplatform's experimental iOS accessibility
+            // configuration so MainViewController can set accessibilitySyncOptions.
+            // Required for XCUITest to find Compose labels (see iosAppUITests/).
+            optIn.addAll(
+                "androidx.compose.runtime.ExperimentalComposeApi",
+                "androidx.compose.ui.ExperimentalComposeUiApi",
+            )
+        }
     }
 
     sourceSets {

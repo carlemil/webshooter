@@ -4,7 +4,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerAuthProvider
-import io.ktor.client.plugins.plugin
+import io.ktor.client.plugins.pluginOrNull
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
@@ -25,9 +25,10 @@ class LoginRemoteDataSourceKtor(
         }.body()
         // Force the Auth plugin to drop its in-memory token cache so the next
         // request reads the freshly-stored tokens from AuthTokenManager.
-        httpClient.plugin(Auth).providers
-            .filterIsInstance<BearerAuthProvider>()
-            .forEach { it.clearToken() }
+        // pluginOrNull keeps test clients (which skip Auth) from blowing up.
+        httpClient.pluginOrNull(Auth)?.providers
+            ?.filterIsInstance<BearerAuthProvider>()
+            ?.forEach { it.clearToken() }
         return response
     }
 }

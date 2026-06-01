@@ -188,5 +188,10 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.mockwebserver)
+    testImplementation(libs.mockwebserver)
+    // androidx-test-ext lets the JVM/Robolectric source set use
+    // @RunWith(AndroidJUnit4::class), which then delegates to the Robolectric
+    // runner — needed by tests that touch android.os.* APIs.
+    testImplementation(libs.androidx.junit)
 
 }

@@ -45,6 +45,13 @@ targets:
     deploymentTarget: "16.0"
     sources:
       - path: iosApp
+        excludes:
+          - "Resources/mocks"
+      - path: iosApp/Resources/mocks
+        # Folder reference (blue) so the bundle preserves the `mocks/`
+        # subdirectory — `NSBundle.pathForResource:ofType:inDirectory:`
+        # in IosMockInterceptor needs it.
+        type: folder
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: se.kjellstrand.webshooter
@@ -89,20 +96,69 @@ targets:
           else
             export KOTLIN_FRAMEWORK_BUILD_TYPE=release
           fi
-          # `sh ./gradlew` because the repo tracks gradlew without the
-          # executable bit (mode 100644). Fix the bit if/when that changes.
-          sh ./gradlew :shared:embedAndSignAppleFrameworkForXcode \
+          ./gradlew :shared:embedAndSignAppleFrameworkForXcode \
             -Pkotlin.native.cocoapods.generate.wrapper=false
+
+  iosAppUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: iosAppUITests
+    dependencies:
+      - target: iosApp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: se.kjellstrand.webshooter.uitests
+        SWIFT_VERSION: "5.0"
+        TEST_TARGET_NAME: iosApp
+        GENERATE_INFOPLIST_FILE: YES
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGNING_REQUIRED: YES
+        CODE_SIGNING_ALLOWED: YES
+
+  iosAppTests:
+    type: bundle.unit-test
+    platform: iOS
+    deploymentTarget: "16.0"
+    sources:
+      - path: iosAppTests
+    dependencies:
+      - target: iosApp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: se.kjellstrand.webshooter.tests
+        SWIFT_VERSION: "5.0"
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/iosApp.app/iosApp"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        GENERATE_INFOPLIST_FILE: YES
+        ENABLE_USER_SCRIPT_SANDBOXING: NO
+        CODE_SIGN_IDENTITY: "-"
+        CODE_SIGNING_REQUIRED: YES
+        CODE_SIGNING_ALLOWED: YES
+        FRAMEWORK_SEARCH_PATHS:
+          - $(inherited)
+          - $(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)
+        OTHER_LDFLAGS:
+          - $(inherited)
+          - -framework
+          - Shared
 
 schemes:
   Staging:
     build:
       targets:
         iosApp: all
+        iosAppUITests: [test]
+        iosAppTests: [test]
     run:
       config: Debug-Staging
     test:
       config: Debug-Staging
+      targets:
+        - iosAppTests
+        - iosAppUITests
     profile:
       config: Release-Staging
     analyze:
@@ -113,10 +169,15 @@ schemes:
     build:
       targets:
         iosApp: all
+        iosAppUITests: [test]
+        iosAppTests: [test]
     run:
       config: Debug-Prod
     test:
       config: Debug-Prod
+      targets:
+        - iosAppTests
+        - iosAppUITests
     profile:
       config: Release-Prod
     analyze:

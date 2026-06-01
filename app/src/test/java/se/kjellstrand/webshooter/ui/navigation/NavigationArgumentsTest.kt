@@ -1,13 +1,21 @@
 package se.kjellstrand.webshooter.ui.navigation
 
+import android.app.Application
 import android.os.Bundle
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
-@RunWith(AndroidJUnit4::class)
+// android.os.Bundle is an Android-SDK stub at JVM-test time; Robolectric
+// provides a real implementation. We override the application class to a
+// bare `android.app.Application` so Robolectric doesn't boot
+// `ShooterApplication`, which would double-start Koin and conflict with
+// other tests in this source set.
+@RunWith(RobolectricTestRunner::class)
+@Config(application = Application::class)
 class NavigationArgumentsTest {
 
     // --- requireLong ---
