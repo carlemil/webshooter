@@ -1,7 +1,8 @@
 package se.kjellstrand.webshooter.data.club.local
 
-import org.junit.Assert.*
-import org.junit.Test
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 import se.kjellstrand.webshooter.data.club.remote.ClubData
 
 class ClubMappersTest {
@@ -35,7 +36,7 @@ class ClubMappersTest {
     fun `sanitize replaces literal null string with null for phone`() {
         val club = buildClubData(phone = "null")
         val sanitized = club.sanitizeNullStrings()
-        assertNull("phone 'null' string should become null", sanitized.phone)
+        assertNull(sanitized.phone, "phone 'null' string should become null")
     }
 
     @Test
@@ -47,18 +48,18 @@ class ClubMappersTest {
             addressCountry = "null"
         )
         val sanitized = club.sanitizeNullStrings()
-        assertNull("addressStreet 'null' should become null", sanitized.addressStreet)
-        assertNull("addressZipcode 'null' should become null", sanitized.addressZipcode)
-        assertNull("addressCity 'null' should become null", sanitized.addressCity)
-        assertNull("addressCountry 'null' should become null", sanitized.addressCountry)
+        assertNull(sanitized.addressStreet, "addressStreet 'null' should become null")
+        assertNull(sanitized.addressZipcode, "addressZipcode 'null' should become null")
+        assertNull(sanitized.addressCity, "addressCity 'null' should become null")
+        assertNull(sanitized.addressCountry, "addressCountry 'null' should become null")
     }
 
     @Test
     fun `sanitize replaces literal null string with null for bankgiro and postgiro`() {
         val club = buildClubData(bankgiro = "null", postgiro = "null")
         val sanitized = club.sanitizeNullStrings()
-        assertNull("bankgiro 'null' should become null", sanitized.bankgiro)
-        assertNull("postgiro 'null' should become null", sanitized.postgiro)
+        assertNull(sanitized.bankgiro, "bankgiro 'null' should become null")
+        assertNull(sanitized.postgiro, "postgiro 'null' should become null")
     }
 
     // --- Guard tests (should PASS before and after fix) ---

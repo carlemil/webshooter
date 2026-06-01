@@ -1,8 +1,12 @@
 package se.kjellstrand.webshooter.data.mysignups.local
 
 import kotlinx.serialization.json.Json
-import org.junit.Assert.*
-import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+import kotlin.test.assertFalse
+import kotlin.test.Test
 
 class SignupMappersTest {
 

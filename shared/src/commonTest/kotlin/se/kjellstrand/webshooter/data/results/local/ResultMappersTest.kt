@@ -1,8 +1,12 @@
 package se.kjellstrand.webshooter.data.results.local
 
 import kotlinx.serialization.json.Json
-import org.junit.Assert.*
-import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
+import kotlin.test.assertFalse
+import kotlin.test.Test
 import se.kjellstrand.webshooter.data.common.ClassnameGeneral
 import se.kjellstrand.webshooter.data.common.WeaponClass
 import se.kjellstrand.webshooter.data.results.remote.Result

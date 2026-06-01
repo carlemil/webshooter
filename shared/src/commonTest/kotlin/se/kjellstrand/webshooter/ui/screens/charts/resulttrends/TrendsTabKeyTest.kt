@@ -1,7 +1,7 @@
 package se.kjellstrand.webshooter.ui.screens.charts.resulttrends
 
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.Test
 
 class TrendsTabKeyTest {
 

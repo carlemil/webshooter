@@ -62,18 +62,21 @@ open class NoOpResultsRepository(
 ) : ResultsRepository(remote, backingDao, testJson()) {
 
     val refreshCalls = mutableListOf<Long>()
-    private val concurrency = java.util.concurrent.atomic.AtomicInteger(0)
-    @Volatile var maxConcurrency: Int = 0
+    // kotlinx.coroutines.test.runTest pins the test body to a single
+    // dispatcher, so a plain Int counter is enough — no atomicity needed
+    // for the scenarios these tests exercise.
+    private var concurrency: Int = 0
+    var maxConcurrency: Int = 0
 
     override suspend fun refreshResultsFor(competitionId: Long): RefreshOutcome {
-        val now = concurrency.incrementAndGet()
-        if (now > maxConcurrency) maxConcurrency = now
+        concurrency += 1
+        if (concurrency > maxConcurrency) maxConcurrency = concurrency
         return try {
             refreshCalls.add(competitionId)
             refreshAction?.invoke(competitionId)
             RefreshOutcome.Success
         } finally {
-            concurrency.decrementAndGet()
+            concurrency -= 1
         }
     }
 }

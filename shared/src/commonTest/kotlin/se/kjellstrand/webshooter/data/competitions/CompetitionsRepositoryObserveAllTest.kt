@@ -4,11 +4,11 @@ import kotlinx.serialization.json.Json
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.runBlocking
-import org.junit.Assert.assertEquals
-import org.junit.Assert.assertNotNull
-import org.junit.Assert.assertTrue
-import org.junit.Test
+import kotlinx.coroutines.test.runTest
+import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
+import kotlin.test.Test
 import se.kjellstrand.webshooter.data.common.Club
 import se.kjellstrand.webshooter.data.common.CompetitionType
 import se.kjellstrand.webshooter.data.competitions.local.CompetitionEntity
@@ -76,29 +76,15 @@ class CompetitionsRepositoryObserveAllTest {
         CompetitionsRepository(FakeRemote(), dao, json, NoOpResultsRepository(), NoOpResultsDao())
 
     // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
+    //
+    // The previous `observeAll method exists` and `observeAll returns Flow
+    // and is not a suspend fun` reflection tests were dropped during the
+    // commonTest migration. `repo.observeAll().first()` below requires
+    // observeAll to be a Flow-returning, non-suspend function — the
+    // compiler enforces both contracts.
 
     @Test
-    fun `observeAll method exists on repository`() {
-        val method = CompetitionsRepository::class.java.methods.find { it.name == "observeAll" }
-        assertNotNull("CompetitionsRepository should have observeAll", method)
-    }
-
-    @Test
-    fun `observeAll returns Flow and is not a suspend fun`() {
-        val method = CompetitionsRepository::class.java.methods.find { it.name == "observeAll" }
-        assertNotNull(method)
-        assertTrue(
-            "observeAll should NOT be suspend (Flow returns reactively)",
-            method!!.parameterTypes.none { it.name.contains("Continuation") }
-        )
-        assertTrue(
-            "observeAll should return a Flow",
-            Flow::class.java.isAssignableFrom(method.returnType)
-        )
-    }
-
-    @Test
-    fun `observeAll emits domain Datum list when DAO emits entities`(): Unit = runBlocking {
+    fun `observeAll emits domain Datum list when DAO emits entities`()= runTest {
         val entities = listOf(datum(1).toEntity(json), datum(2).toEntity(json))
         val dao = FakeDao(observed = entities)
         val repo = buildRepo(dao)
@@ -110,7 +96,7 @@ class CompetitionsRepositoryObserveAllTest {
     }
 
     @Test
-    fun `observeAll filters out entities that fail to deserialize`(): Unit = runBlocking {
+    fun `observeAll filters out entities that fail to deserialize`()= runTest {
         // One valid entity, one with corrupt JSON in competitionTypeJson → toDomain returns null → filtered out
         val good = datum(10).toEntity(json)
         val bad = good.copy(id = 11, competitionTypeJson = "{not valid json")
@@ -124,10 +110,8 @@ class CompetitionsRepositoryObserveAllTest {
     }
 
     // --- Guard tests (should PASS before and after fix) ---
-
-    @Test
-    fun `repository still has syncAll`() {
-        val method = CompetitionsRepository::class.java.methods.find { it.name == "syncAll" }
-        assertNotNull("syncAll should still exist", method)
-    }
+    //
+    // The previous `repository still has syncAll` reflection guard was
+    // dropped during the commonTest migration —
+    // CompetitionsRepositorySyncAllTest calls `repo.syncAll()` directly.
 }
