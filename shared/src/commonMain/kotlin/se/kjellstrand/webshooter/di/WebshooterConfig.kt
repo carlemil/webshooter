@@ -11,4 +11,13 @@ data class WebshooterConfig(
     val baseUrl: String,
     val versionName: String,
     val clientSecret: String,
+    /**
+     * Gate for the Crashlytics platform binding. True only on the prod
+     * release flavor on Android (set via `BuildConfig.CRASH_REPORTING_ENABLED`)
+     * and on the Release-Prod scheme on iOS (set via Info.plist
+     * `WebshooterCrashReportingEnabled`). Staging, debug, and mock-mode
+     * runs bind [se.kjellstrand.webshooter.data.telemetry.NoOpCrashReporter]
+     * so they never reach the dashboard.
+     */
+    val crashReportingEnabled: Boolean = false,
 )

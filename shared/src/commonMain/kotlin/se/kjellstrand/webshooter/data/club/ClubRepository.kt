@@ -46,7 +46,7 @@ class ClubRepository constructor(
             dao.insert(sanitized.club.toEntity(json))
             emit(Resource.Success(sanitized))
         } catch (e: ResponseException) {
-            if (cached == null) emit(Resource.Error(UserError.HttpError(e.response.status.value)))
+            if (cached == null) emit(Resource.Error(UserError.HttpError(e.response.status.value, e.response.call.request.url.encodedPath)))
         } catch (e: SocketTimeoutException) {
             if (cached == null) emit(Resource.Error(UserError.IOError))
         } catch (e: ConnectTimeoutException) {

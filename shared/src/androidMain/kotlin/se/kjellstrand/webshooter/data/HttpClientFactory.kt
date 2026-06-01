@@ -6,6 +6,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.okhttp.OkHttp
 import kotlinx.serialization.json.Json
 import okhttp3.Interceptor
+import se.kjellstrand.webshooter.data.telemetry.CrashReporter
 
 /**
  * Android factory: builds the Webshooter [HttpClient] over the OkHttp engine
@@ -18,6 +19,7 @@ fun createWebshooterHttpClient(
     json: Json,
     authTokenManager: AuthTokenManager,
     sessionManager: SessionManager,
+    crashReporter: CrashReporter,
     isDebug: Boolean,
     baseUrl: String,
     versionName: String,
@@ -28,6 +30,7 @@ fun createWebshooterHttpClient(
         json = json,
         authTokenManager = authTokenManager,
         sessionManager = sessionManager,
+        crashReporter = crashReporter,
         isDebug = isDebug,
         baseUrl = baseUrl,
         userAgent = "Webshooter-Android/$versionName",

@@ -44,7 +44,7 @@ class SettingsRepository constructor(
             dao.insert(updated.toEntity(json))
             emit(Resource.Success(updated))
         } catch (e: ResponseException) {
-            if (cached == null) emit(Resource.Error(UserError.HttpError(e.response.status.value)))
+            if (cached == null) emit(Resource.Error(UserError.HttpError(e.response.status.value, e.response.call.request.url.encodedPath)))
         } catch (e: SocketTimeoutException) {
             if (cached == null) emit(Resource.Error(UserError.IOError))
         } catch (e: ConnectTimeoutException) {
@@ -96,7 +96,7 @@ class SettingsRepository constructor(
             dao.insert(updated.toEntity(json))
             emit(Resource.Success(updated))
         } catch (e: ResponseException) {
-            emit(Resource.Error(UserError.HttpError(e.response.status.value)))
+            emit(Resource.Error(UserError.HttpError(e.response.status.value, e.response.call.request.url.encodedPath)))
         } catch (e: SocketTimeoutException) {
             emit(Resource.Error(UserError.IOError))
         } catch (e: ConnectTimeoutException) {
@@ -124,7 +124,7 @@ class SettingsRepository constructor(
             remoteDataSource.updatePassword(fields)
             emit(Resource.Success(Unit))
         } catch (e: ResponseException) {
-            emit(Resource.Error(UserError.HttpError(e.response.status.value)))
+            emit(Resource.Error(UserError.HttpError(e.response.status.value, e.response.call.request.url.encodedPath)))
         } catch (e: SocketTimeoutException) {
             emit(Resource.Error(UserError.IOError))
         } catch (e: ConnectTimeoutException) {

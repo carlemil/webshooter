@@ -31,7 +31,7 @@ fun <T> cachedResourceFlow(
         fetchFromRemote()
     } catch (e: ResponseException) {
         Napier.w("Network error", e, tag)
-        if (cachedData == null) emit(Resource.Error(UserError.HttpError(e.response.status.value)))
+        if (cachedData == null) emit(Resource.Error(UserError.HttpError(e.response.status.value, e.response.call.request.url.encodedPath)))
         return@flow
     } catch (e: SocketTimeoutException) {
         Napier.w("Network error", e, tag)

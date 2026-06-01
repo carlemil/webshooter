@@ -14,6 +14,7 @@ import io.ktor.client.plugins.cookies.HttpCookies
 import io.ktor.client.plugins.logging.LogLevel
 import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.observer.ResponseObserver
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -25,6 +26,7 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import se.kjellstrand.webshooter.data.login.remote.LoginResponse
 import se.kjellstrand.webshooter.data.login.remote.RefreshTokenRequest
+import se.kjellstrand.webshooter.data.telemetry.CrashReporter
 
 private const val LOG_TAG = "WebshooterHTTP"
 
@@ -41,6 +43,7 @@ fun HttpClientConfig<*>.configureWebshooterHttpClient(
     json: Json,
     authTokenManager: AuthTokenManager,
     sessionManager: SessionManager,
+    crashReporter: CrashReporter,
     isDebug: Boolean,
     baseUrl: String,
     userAgent: String,
@@ -57,6 +60,21 @@ fun HttpClientConfig<*>.configureWebshooterHttpClient(
         logger = object : Logger {
             override fun log(message: String) {
                 Napier.d(message, tag = LOG_TAG)
+            }
+        }
+    }
+
+    // Emit a one-line Crashlytics breadcrumb for every non-2xx response.
+    // Bodies are not logged — only method + path + status — so this can
+    // safely stay on in release. (The Ktor `Logging` plugin above is set
+    // to LogLevel.NONE in release, so it doesn't reach the antilog.)
+    install(ResponseObserver) {
+        onResponse { response ->
+            val status = response.status.value
+            if (status !in 200..299) {
+                val method = response.call.request.method.value
+                val path = response.call.request.url.encodedPath
+                crashReporter.log("HTTP $status $method $path")
             }
         }
     }

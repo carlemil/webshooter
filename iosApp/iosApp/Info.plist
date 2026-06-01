@@ -26,10 +26,23 @@
     <string>WebShooter needs access to your calendar to add upcoming competitions you've registered for.</string>
     <key>NSCalendarsWriteOnlyAccessUsageDescription</key>
     <string>WebShooter needs access to your calendar to add upcoming competitions you've registered for.</string>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleURLName</key>
+            <string>se.kjellstrand.webshooter</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>webshooter</string>
+            </array>
+        </dict>
+    </array>
     <key>WebshooterBaseUrl</key>
     <string>$(WEBSHOOTER_BASE_URL)</string>
     <key>WebshooterClientSecret</key>
     <string>$(WEBSHOOTER_CLIENT_SECRET)</string>
+    <key>WebshooterCrashReportingEnabled</key>
+    <string>$(WEBSHOOTER_CRASH_REPORTING_ENABLED)</string>
     <key>LSRequiresIPhoneOS</key>
     <true/>
     <key>UIApplicationSceneManifest</key>
@@ -38,7 +51,23 @@
         <false/>
     </dict>
     <key>UILaunchScreen</key>
-    <dict/>
+    <dict>
+        <key>UIColorName</key>
+        <string>AccentColor</string>
+    </dict>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSExceptionDomains</key>
+        <dict>
+            <key>localhost</key>
+            <dict>
+                <key>NSExceptionAllowsInsecureHTTPLoads</key>
+                <true/>
+                <key>NSIncludesSubdomains</key>
+                <true/>
+            </dict>
+        </dict>
+    </dict>
     <key>UIRequiredDeviceCapabilities</key>
     <array>
         <string>arm64</string>

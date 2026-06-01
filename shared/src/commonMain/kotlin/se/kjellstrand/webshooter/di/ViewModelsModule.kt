@@ -53,6 +53,7 @@ val viewModelsModule = module {
             securePrefs = get(),
             competitionsRepository = get(),
             applicationScope = get(qualifier = ApplicationCoroutineScopeQualifier),
+            crashReporter = get(),
         )
     }
 

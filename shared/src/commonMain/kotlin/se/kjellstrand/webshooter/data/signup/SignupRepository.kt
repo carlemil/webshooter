@@ -33,7 +33,7 @@ class SignupRepository constructor(
             remoteDataSource.signup(fields)
             emit(Resource.Success(Unit))
         } catch (e: ResponseException) {
-            emit(Resource.Error(UserError.HttpError(e.response.status.value)))
+            emit(Resource.Error(UserError.HttpError(e.response.status.value, e.response.call.request.url.encodedPath)))
         } catch (e: SocketTimeoutException) {
             emit(Resource.Error(UserError.IOError))
         } catch (e: ConnectTimeoutException) {
@@ -52,7 +52,7 @@ class SignupRepository constructor(
             remoteDataSource.removeSignup(signupId)
             emit(Resource.Success(Unit))
         } catch (e: ResponseException) {
-            emit(Resource.Error(UserError.HttpError(e.response.status.value)))
+            emit(Resource.Error(UserError.HttpError(e.response.status.value, e.response.call.request.url.encodedPath)))
         } catch (e: SocketTimeoutException) {
             emit(Resource.Error(UserError.IOError))
         } catch (e: ConnectTimeoutException) {

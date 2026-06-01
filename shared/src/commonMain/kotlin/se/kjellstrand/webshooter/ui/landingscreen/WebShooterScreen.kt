@@ -23,9 +23,11 @@ import androidx.compose.material3.Text
 import se.kjellstrand.webshooter.ui.common.ScreenTopBar
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import se.kjellstrand.webshooter.ui.platform.BackHandler
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
+import se.kjellstrand.webshooter.data.telemetry.CrashReporter
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import org.jetbrains.compose.resources.stringResource
@@ -89,6 +91,14 @@ fun WebShooterScreen(
     val drawerNavController = rememberNavController()
     val navBackStackEntry by drawerNavController.currentBackStackEntryAsState()
     val selectedRoute = navBackStackEntry?.destination?.route ?: Screen.CompetitionsList.route
+
+    // Mirror AppNavHost's route tracking for the nested drawer destinations
+    // so a crash on, say, ClubScreen surfaces with currentRoute=club.
+    val crashReporter: CrashReporter = koinInject()
+    LaunchedEffect(selectedRoute) {
+        crashReporter.setCustomKey("currentRoute", selectedRoute)
+        crashReporter.log("→ $selectedRoute")
+    }
 
     BackHandler(selectedRoute != Screen.CompetitionsList.route) {
         drawerNavController.popBackStack(Screen.CompetitionsList.route, inclusive = false)

@@ -52,7 +52,7 @@ open class ResultsRepository constructor(
                 resultsRemoteDataSource.getResults(competitionId)
             } catch (e: ResponseException) {
                 Napier.w("Error", e, TAG)
-                if (!hasCached) emit(Resource.Error(UserError.HttpError(e.response.status.value)))
+                if (!hasCached) emit(Resource.Error(UserError.HttpError(e.response.status.value, e.response.call.request.url.encodedPath)))
                 return@flow
             } catch (e: SocketTimeoutException) {
                 Napier.w("Error", e, TAG)
@@ -129,7 +129,7 @@ open class ResultsRepository constructor(
                 resultsRemoteDataSource.getResults(competitionId)
             } catch (e: ResponseException) {
                 Napier.w("Error", e, TAG)
-                emit(Resource.Error(UserError.HttpError(e.response.status.value)))
+                emit(Resource.Error(UserError.HttpError(e.response.status.value, e.response.call.request.url.encodedPath)))
                 return@flow
             } catch (e: SocketTimeoutException) {
                 Napier.w("Error", e, TAG)

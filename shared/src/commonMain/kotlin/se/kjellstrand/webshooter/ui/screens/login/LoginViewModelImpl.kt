@@ -18,6 +18,7 @@ import se.kjellstrand.webshooter.data.competitions.CompetitionsRepository
 import se.kjellstrand.webshooter.data.cookies.CookiesRepository
 import se.kjellstrand.webshooter.data.login.LoginRepository
 import se.kjellstrand.webshooter.data.secure.SecurePrefs
+import se.kjellstrand.webshooter.data.telemetry.CrashReporter
 import se.kjellstrand.webshooter.ui.common.UiEvent
 
 class LoginViewModelImpl(
@@ -27,6 +28,7 @@ class LoginViewModelImpl(
     internal val securePrefs: SecurePrefs,
     private val competitionsRepository: CompetitionsRepository,
     private val applicationScope: CoroutineScope,
+    private val crashReporter: CrashReporter,
 ) : ViewModel(), LoginViewModel {
 
     companion object {
@@ -50,6 +52,7 @@ class LoginViewModelImpl(
             if (normalizedUser.equals("mockuser", ignoreCase = true) &&
                 normalizedPass.equals("mockpassword", ignoreCase = true)) {
                 MockModeManager.isMockMode = true
+                crashReporter.setCustomKey("mockMode", true)
                 securePrefs.saveMockMode(true)
                 authTokenManager.storeTokens("mock_token", "mock_refresh_token", 3600)
                 securePrefs.saveUsername(normalizedUser)
@@ -67,6 +70,7 @@ class LoginViewModelImpl(
                         is Resource.Success -> {
                             val loginResponse = resource.data
                             MockModeManager.isMockMode = false
+                            crashReporter.setCustomKey("mockMode", false)
                             securePrefs.clearMockMode()
                             authTokenManager.storeTokens(
                                 loginResponse.accessToken,

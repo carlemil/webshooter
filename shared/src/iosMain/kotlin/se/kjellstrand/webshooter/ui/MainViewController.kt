@@ -22,11 +22,31 @@ import platform.UIKit.UIViewController
 import se.kjellstrand.webshooter.data.AuthTokenManager
 import se.kjellstrand.webshooter.data.MockModeManager
 import se.kjellstrand.webshooter.data.secure.SecurePrefs
+import se.kjellstrand.webshooter.data.telemetry.CrashReporter
+import se.kjellstrand.webshooter.data.telemetry.CrashlyticsAntilog
+import se.kjellstrand.webshooter.di.WebshooterConfig
 import se.kjellstrand.webshooter.ui.navigation.AppNavHost
 import se.kjellstrand.webshooter.ui.theme.WebShooterTheme
 
 private val napierInstalled: Boolean by lazy {
     Napier.base(DebugAntilog())
+    // Mirror ShooterApplication on Android: pipe Napier.w/.e through to
+    // Crashlytics when the config says so. On non-prod schemes the Koin
+    // binding is NoOpCrashReporter, so the antilog is a no-op anyway.
+    val koin = KoinPlatform.getKoin()
+    val config = koin.get<WebshooterConfig>()
+    val crashReporter = koin.get<CrashReporter>()
+    if (config.crashReportingEnabled) {
+        Napier.base(CrashlyticsAntilog(crashReporter))
+        crashReporter.setCustomKey("platform", "ios")
+        crashReporter.setCustomKey(
+            "flavor",
+            if (config.baseUrl.contains("staging.webshooter.se")) "staging" else "prod"
+        )
+        crashReporter.setCustomKey("baseUrl", config.baseUrl)
+        crashReporter.setCustomKey("versionName", config.versionName)
+    }
+    crashReporter.setCustomKey("mockMode", MockModeManager.isMockMode)
     true
 }
 
@@ -42,6 +62,7 @@ private fun applyMockAutoLoginIfRequested() {
     if (env != "mock") return
     val koin = KoinPlatform.getKoin()
     MockModeManager.isMockMode = true
+    koin.get<CrashReporter>().setCustomKey("mockMode", true)
     koin.get<SecurePrefs>().saveMockMode(true)
     koin.get<SecurePrefs>().saveUsername("mockuser")
     koin.get<AuthTokenManager>().storeTokens("mock_token", "mock_refresh_token", 3600)

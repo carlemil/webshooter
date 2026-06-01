@@ -6,6 +6,15 @@ options:
   developmentLanguage: en
   createIntermediateGroups: true
 
+# Swift Package Manager dependencies. firebase-ios-sdk supplies both
+# FirebaseAnalytics and FirebaseCrashlytics; we only depend on
+# Crashlytics today. Pinned to a major version to avoid surprise
+# breaking changes between Firebase BoM updates.
+packages:
+  Firebase:
+    url: https://github.com/firebase/firebase-ios-sdk
+    from: 11.0.0
+
 # Mirrors the Android side's `prod` and `staging` product flavors:
 # each scheme maps to one build configuration that hard-codes the
 # backend URL. The CLIENT_SECRET is the same fallback the Android
@@ -28,6 +37,10 @@ settings:
     CODE_SIGNING_REQUIRED: YES
     CODE_SIGNING_ALLOWED: YES
     WEBSHOOTER_CLIENT_SECRET: "REMOVED-CLIENT-SECRET"
+    # Crash reporting only ships on Release-Prod. Staging + every debug
+    # config stays Napier-only — see IosCrashReporter bind in
+    # IosPlatformModule. Read at runtime from Info.plist by WebshooterApp.
+    WEBSHOOTER_CRASH_REPORTING_ENABLED: "NO"
   configs:
     Debug-Staging:
       WEBSHOOTER_BASE_URL: "https://staging.webshooter.se/"
@@ -37,6 +50,7 @@ settings:
       WEBSHOOTER_BASE_URL: "https://webshooter.se/"
     Release-Prod:
       WEBSHOOTER_BASE_URL: "https://webshooter.se/"
+      WEBSHOOTER_CRASH_REPORTING_ENABLED: "YES"
 
 targets:
   iosApp:
@@ -52,6 +66,9 @@ targets:
         # subdirectory — `NSBundle.pathForResource:ofType:inDirectory:`
         # in IosMockInterceptor needs it.
         type: folder
+    dependencies:
+      - package: Firebase
+        product: FirebaseCrashlytics
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: se.kjellstrand.webshooter

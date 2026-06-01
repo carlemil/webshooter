@@ -107,6 +107,12 @@ kotlin {
             // so :app can pass MockInterceptor through extraOkHttpInterceptors.
             api(libs.ktor.client.okhttp)
             api(libs.okhttp)
+            // Firebase Crashlytics for the Android binding of CrashReporter.
+            // The google-services plugin + google-services.json stay in :app
+            // since they're host-level concerns. KMP sourceSets need .get()
+            // on the TOML accessor (vs `:app` which can drop it).
+            implementation(platform(libs.firebase.bom.get()))
+            implementation(libs.firebase.crashlytics.get())
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)

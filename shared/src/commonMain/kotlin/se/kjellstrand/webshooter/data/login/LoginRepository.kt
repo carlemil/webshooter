@@ -39,7 +39,7 @@ open class LoginRepository(
                 )
             } catch (e: ResponseException) {
                 Napier.w("Error", e, TAG)
-                emit(Resource.Error(UserError.HttpError(e.response.status.value)))
+                emit(Resource.Error(UserError.HttpError(e.response.status.value, e.response.call.request.url.encodedPath)))
                 return@flow
             } catch (e: SocketTimeoutException) {
                 Napier.w("Error", e, TAG)

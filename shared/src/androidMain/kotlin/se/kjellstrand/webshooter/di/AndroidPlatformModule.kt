@@ -13,6 +13,9 @@ import se.kjellstrand.webshooter.data.db.AppDatabase
 import se.kjellstrand.webshooter.data.db.createAppDatabase
 import se.kjellstrand.webshooter.data.secure.SecurePrefs
 import se.kjellstrand.webshooter.data.secure.createSecurePrefs
+import se.kjellstrand.webshooter.data.telemetry.AndroidCrashReporter
+import se.kjellstrand.webshooter.data.telemetry.CrashReporter
+import se.kjellstrand.webshooter.data.telemetry.NoOpCrashReporter
 import se.kjellstrand.webshooter.ui.platform.AndroidCalendarOpener
 import se.kjellstrand.webshooter.ui.platform.AndroidUrlLauncher
 import se.kjellstrand.webshooter.ui.platform.CalendarOpener
@@ -38,11 +41,15 @@ fun androidPlatformModule(
     single<SecurePrefs> { createSecurePrefs(context) }
     single<UrlLauncher> { AndroidUrlLauncher(context) }
     single<CalendarOpener> { AndroidCalendarOpener(context) }
+    single<CrashReporter> {
+        if (config.crashReportingEnabled) AndroidCrashReporter() else NoOpCrashReporter
+    }
     single<HttpClient> {
         createWebshooterHttpClient(
             json = get(),
             authTokenManager = get(),
             sessionManager = get<SessionManager>(),
+            crashReporter = get(),
             isDebug = config.isDebug,
             baseUrl = config.baseUrl,
             versionName = config.versionName,

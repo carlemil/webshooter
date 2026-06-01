@@ -79,12 +79,17 @@ android {
             dimension = "server"
             buildConfigField("String", "BASE_URL", "\"https://webshooter.se/\"")
             buildConfigField("String", "CLIENT_SECRET", secretField)
+            // Only prod releases ship crash reports to Firebase. Debug
+            // builds of either flavor stay Napier-only — see
+            // ShooterApplication.onCreate.
+            buildConfigField("Boolean", "CRASH_REPORTING_ENABLED", "true")
         }
         create("staging") {
             dimension = "server"
             applicationIdSuffix = ".staging"
             buildConfigField("String", "BASE_URL", "\"https://staging.webshooter.se/\"")
             buildConfigField("String", "CLIENT_SECRET", secretField)
+            buildConfigField("Boolean", "CRASH_REPORTING_ENABLED", "false")
         }
     }
 

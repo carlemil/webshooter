@@ -53,7 +53,7 @@ class SignupsRepository constructor(
             emit(Resource.Success(result.groupedSignups))
         } catch (e: ResponseException) {
             Napier.w("Error", e, TAG)
-            if (!hasCached) emit(Resource.Error(UserError.HttpError(e.response.status.value)))
+            if (!hasCached) emit(Resource.Error(UserError.HttpError(e.response.status.value, e.response.call.request.url.encodedPath)))
         } catch (e: SocketTimeoutException) {
             Napier.w("Error", e, TAG)
             if (!hasCached) emit(Resource.Error(UserError.IOError))

@@ -26,10 +26,12 @@ final class SharedFrameworkSmokeTests: XCTestCase {
             isDebug: true,
             baseUrl: "https://example.test/",
             versionName: "0.0.0",
-            clientSecret: "test"
+            clientSecret: "test",
+            crashReportingEnabled: false
         )
         XCTAssertEqual(config.baseUrl, "https://example.test/")
         XCTAssertEqual(config.versionName, "0.0.0")
         XCTAssertTrue(config.isDebug)
+        XCTAssertFalse(config.crashReportingEnabled)
     }
 }

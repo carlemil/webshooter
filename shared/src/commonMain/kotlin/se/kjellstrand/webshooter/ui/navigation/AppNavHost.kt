@@ -9,14 +9,17 @@ import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
 import androidx.navigation.navDeepLink
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.collectLatest
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import se.kjellstrand.webshooter.data.SessionManager
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
+import se.kjellstrand.webshooter.data.telemetry.CrashReporter
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsScreen
 import se.kjellstrand.webshooter.ui.screens.splash.SplashScreen
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsViewModelImpl
@@ -41,15 +44,38 @@ fun AppNavHost(
     showMessage: (String) -> Unit,
 ) {
     val sessionViewModel: SessionViewModel = koinViewModel()
+    val crashReporter: CrashReporter = koinInject()
+
+    // Whenever the back-stack tip changes, push the destination as both
+    // a custom key (visible in any subsequent crash) and a breadcrumb
+    // (the trail of routes the user took to get there).
+    val backStackEntry by navController.currentBackStackEntryAsState()
+    LaunchedEffect(backStackEntry?.destination?.route) {
+        val route = backStackEntry?.destination?.route ?: return@LaunchedEffect
+        crashReporter.setCustomKey("currentRoute", route)
+        crashReporter.log("→ $route")
+    }
 
     LaunchedEffect(Unit) {
         sessionViewModel.sessionManager.events.collectLatest { event ->
             when (event) {
                 is SessionManager.SessionEvent.Expired -> {
+                    crashReporter.log("session expired → login")
                     navController.navigate(Screen.LoginScreen.route) {
                         popUpTo(0) { inclusive = true }
                     }
                 }
+            }
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        DeepLinkBus.incoming.collectLatest { rawUrl ->
+            val route = DeepLinkRouter.resolve(rawUrl)
+            if (route == null) {
+                Napier.w("Ignoring unroutable deep link: $rawUrl", tag = "AppNavHost")
+            } else {
+                navController.safeNavigate(route)
             }
         }
     }
