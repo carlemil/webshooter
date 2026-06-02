@@ -10,6 +10,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import se.kjellstrand.webshooter.data.competitions.remote.ResultsType
 import se.kjellstrand.webshooter.ui.mock.ChartsViewModelMock
+import se.kjellstrand.webshooter.ui.mock.ClubStatsViewModelMock
 import se.kjellstrand.webshooter.ui.mock.ClubViewModelMock
 import se.kjellstrand.webshooter.ui.mock.CompetitionsViewModelMock
 import se.kjellstrand.webshooter.ui.mock.LoginViewModelMock
@@ -18,12 +19,15 @@ import se.kjellstrand.webshooter.ui.mock.MockResults
 import se.kjellstrand.webshooter.ui.mock.MyResultsViewModelMock
 import se.kjellstrand.webshooter.ui.mock.PatrolsViewModelMock
 import se.kjellstrand.webshooter.ui.mock.ResultsViewModelMock
+import se.kjellstrand.webshooter.ui.mock.SeriesPointsViewModelMock
 import se.kjellstrand.webshooter.ui.mock.SettingsViewModelMock
 import se.kjellstrand.webshooter.ui.mock.ShooterResultViewModelMock
 import se.kjellstrand.webshooter.ui.mock.SignupViewModelMock
 import se.kjellstrand.webshooter.ui.mock.SignupsViewModelMock
 import se.kjellstrand.webshooter.ui.mock.TeamsViewModelMock
+import se.kjellstrand.webshooter.ui.screens.charts.clubstats.ClubStatsScreen
 import se.kjellstrand.webshooter.ui.screens.charts.resulttrends.ChartsScreen
+import se.kjellstrand.webshooter.ui.screens.charts.seriespoints.SeriesPointsScreen
 import se.kjellstrand.webshooter.ui.screens.club.ClubScreen
 import se.kjellstrand.webshooter.ui.screens.competitions.CompetitionsScreen
 import se.kjellstrand.webshooter.ui.screens.licenses.LicensesScreen
@@ -49,10 +53,6 @@ import se.kjellstrand.webshooter.ui.screens.teams.CompetitionTeamsScreen
  *
  * The wider app entry point (`MainViewController`) honours this env var when
  * present; otherwise it boots the real `AppNavHost`.
- *
- * ClubStats and SeriesPoints are intentionally absent: their screens take
- * concrete `*Impl` ViewModels and no mocks exist for them in `ui/mock/`.
- * Verify those interactively against the real backend.
  */
 @Composable
 fun DebugGallery(screenName: String) {
@@ -71,6 +71,8 @@ fun DebugGallery(screenName: String) {
         )
         "myentries" -> MyEntriesScreen(viewModel = MyResultsViewModelMock())
         "charts" -> ChartsScreen(viewModel = ChartsViewModelMock())
+        "clubstats" -> ClubStatsScreen(viewModel = ClubStatsViewModelMock())
+        "seriespoints" -> SeriesPointsScreen(viewModel = SeriesPointsViewModelMock())
         "club" -> ClubScreen(viewModel = ClubViewModelMock())
         "settings" -> SettingsScreen(viewModel = SettingsViewModelMock())
         "licenses" -> LicensesScreen()
@@ -125,7 +127,7 @@ fun DebugGallery(screenName: String) {
         )
         else -> Box(modifier = Modifier.fillMaxSize().padding(24.dp)) {
             Text(
-                text = "Unknown SCREEN env: '$screenName'.\nKnown: login, competitions, myentries, charts, club, settings, licenses, results, shooter, signupslist, patrols, teams, signup.",
+                text = "Unknown SCREEN env: '$screenName'.\nKnown: login, competitions, myentries, charts, clubstats, seriespoints, club, settings, licenses, results, shooter, signupslist, patrols, teams, signup.",
                 style = MaterialTheme.typography.bodyLarge,
             )
         }
