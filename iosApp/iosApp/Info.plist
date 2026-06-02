@@ -26,17 +26,6 @@
     <string>WebShooter needs access to your calendar to add upcoming competitions you've registered for.</string>
     <key>NSCalendarsWriteOnlyAccessUsageDescription</key>
     <string>WebShooter needs access to your calendar to add upcoming competitions you've registered for.</string>
-    <key>CFBundleURLTypes</key>
-    <array>
-        <dict>
-            <key>CFBundleURLName</key>
-            <string>se.kjellstrand.webshooter</string>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>webshooter</string>
-            </array>
-        </dict>
-    </array>
     <key>WebshooterBaseUrl</key>
     <string>$(WEBSHOOTER_BASE_URL)</string>
     <key>WebshooterClientSecret</key>
