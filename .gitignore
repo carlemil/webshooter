@@ -13,6 +13,7 @@ local.properties
 
 # Log/OS Files
 *.log
+.DS_Store
 
 # Android Studio generated files and folders
 captures/
@@ -38,6 +39,7 @@ play-account.json
 
 # Google Services (e.g. APIs or Firebase)
 google-services.json
+GoogleService-Info.plist
 
 # Android Profiling
 *.hprof
