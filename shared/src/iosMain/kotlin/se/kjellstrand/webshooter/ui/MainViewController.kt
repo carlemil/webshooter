@@ -46,6 +46,12 @@ private val napierInstalled: Boolean by lazy {
         crashReporter.setCustomKey("baseUrl", config.baseUrl)
         crashReporter.setCustomKey("versionName", config.versionName)
     }
+    // Restore the persisted mock-mode flag — mirrors
+    // ShooterApplication.onCreate on Android. Without this, a user who
+    // logged in with mockuser/mockpassword and reopened the app keeps
+    // mock_token in Keychain but MockModeManager.isMockMode == false,
+    // which means real network calls fire with the invalid bearer.
+    MockModeManager.isMockMode = koin.get<SecurePrefs>().isMockMode()
     crashReporter.setCustomKey("mockMode", MockModeManager.isMockMode)
     true
 }
