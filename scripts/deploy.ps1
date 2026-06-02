@@ -145,7 +145,7 @@ if [ "$BOOTED" -eq 0 ]; then
   echo "[boot] simulator $UDID ready"
 fi
 '@
-    $simOut = $simScript | & ssh $MacHost 'bash -s' 2>&1
+    $simOut = $simScript | & ssh $MacHost 'tr -d "\r" | bash -s' 2>&1
     if ($LASTEXITCODE -ne 0) {
         if ($simOut -match "ERR_NO_SIM") {
             Write-Fail "No iOS simulator runtime available on the Mac. Install one via Xcode -> Settings -> Platforms."
@@ -254,7 +254,7 @@ xcrun simctl launch booted se.kjellstrand.webshooter
         $exitCode = 0
         $stashConflict = $false
         try {
-            $out = $Script | & ssh $MacHost 'bash -s' -- $Flavor $MacRepo 2>&1
+            $out = $Script | & ssh $MacHost 'tr -d "\r" | bash -s' -- $Flavor $MacRepo 2>&1
             $sshExit = $LASTEXITCODE
             $out | Tee-Object -FilePath $LogFile -Append | ForEach-Object { Write-Output $_ }
             if ($out -match "STASH_POP_CONFLICT") { $stashConflict = $true }
