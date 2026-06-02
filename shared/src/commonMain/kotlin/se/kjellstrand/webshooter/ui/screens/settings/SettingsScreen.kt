@@ -150,40 +150,44 @@ private fun ViewProfileContent(profile: UserProfile?, onEditClick: () -> Unit, o
         )
     }
 
-    if (profile == null) {
-        Text(stringResource(Res.string.settings_no_profile_data))
-        return
-    }
-
-    Card(
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(modifier = Modifier.padding(12.dp)) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(stringResource(Res.string.settings_personal_information), style = MaterialTheme.typography.titleMedium)
-                IconButton(onClick = onEditClick) {
-                    Icon(Icons.Default.Edit, contentDescription = stringResource(Res.string.settings_edit_profile))
+    if (profile != null) {
+        Card(
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+            elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(stringResource(Res.string.settings_personal_information), style = MaterialTheme.typography.titleMedium)
+                    IconButton(onClick = onEditClick) {
+                        Icon(Icons.Default.Edit, contentDescription = stringResource(Res.string.settings_edit_profile))
+                    }
                 }
+                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                ProfileInfoRow(stringResource(Res.string.name), "${profile.name} ${profile.lastname}")
+                ProfileInfoRow(stringResource(Res.string.email), profile.email)
+                ProfileInfoRow(stringResource(Res.string.settings_mobile), profile.mobile ?: stringResource(Res.string.dash))
+                ProfileInfoRow(stringResource(Res.string.phone), profile.phone ?: stringResource(Res.string.dash))
+                val genderEnum = Gender.fromApiValue(profile.gender)
+                ProfileInfoRow(stringResource(Res.string.settings_gender), if (genderEnum == Gender.UNSET) stringResource(Res.string.dash) else stringResource(genderLabelRes(genderEnum)))
+                ProfileInfoRow(stringResource(Res.string.settings_birth_year), profile.birthday?.substringBefore("-") ?: stringResource(Res.string.dash))
+                ProfileInfoRow(stringResource(Res.string.settings_shooting_card_no), profile.shootingCardNumber ?: stringResource(Res.string.dash))
             }
-            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-            ProfileInfoRow(stringResource(Res.string.name), "${profile.name} ${profile.lastname}")
-            ProfileInfoRow(stringResource(Res.string.email), profile.email)
-            ProfileInfoRow(stringResource(Res.string.settings_mobile), profile.mobile ?: stringResource(Res.string.dash))
-            ProfileInfoRow(stringResource(Res.string.phone), profile.phone ?: stringResource(Res.string.dash))
-            val genderEnum = Gender.fromApiValue(profile.gender)
-            ProfileInfoRow(stringResource(Res.string.settings_gender), if (genderEnum == Gender.UNSET) stringResource(Res.string.dash) else stringResource(genderLabelRes(genderEnum)))
-            ProfileInfoRow(stringResource(Res.string.settings_birth_year), profile.birthday?.substringBefore("-") ?: stringResource(Res.string.dash))
-            ProfileInfoRow(stringResource(Res.string.settings_shooting_card_no), profile.shootingCardNumber ?: stringResource(Res.string.dash))
         }
+    } else {
+        Text(stringResource(Res.string.settings_no_profile_data))
     }
 
+    // Always render the logout button — even when the profile failed to
+    // load. Profile load can fail because the cached auth token is bad,
+    // and logout is exactly how the user recovers from that. Pre-fix this
+    // section was inside an `if (profile != null)` block, so a stale token
+    // (which itself caused the profile fetch to fail) trapped the user.
     Spacer(modifier = Modifier.height(24.dp))
     Button(
         onClick = { showLogoutDialog = true },
