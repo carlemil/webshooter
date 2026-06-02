@@ -11,7 +11,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.navArgument
-import androidx.navigation.navDeepLink
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.compose.koinInject
@@ -65,17 +64,6 @@ fun AppNavHost(
                         popUpTo(0) { inclusive = true }
                     }
                 }
-            }
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        DeepLinkBus.incoming.collectLatest { rawUrl ->
-            val route = DeepLinkRouter.resolve(rawUrl)
-            if (route == null) {
-                Napier.w("Ignoring unroutable deep link: $rawUrl", tag = "AppNavHost")
-            } else {
-                navController.safeNavigate(route)
             }
         }
     }
@@ -157,9 +145,6 @@ fun AppNavHost(
                 navArgument("resultsType") { type = NavType.StringType },
                 navArgument("competitionName") { type = NavType.StringType; defaultValue = "" },
                 navArgument("competitionDate") { type = NavType.StringType; defaultValue = "" }
-            ),
-            deepLinks = listOf(
-                navDeepLink { uriPattern = Screen.CompetitionResults.deepLink }
             )
         ) { backStackEntry ->
             val competitionId = NavigationArguments.requireLong(backStackEntry.arguments, "competitionId")
