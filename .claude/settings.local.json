@@ -83,7 +83,8 @@
       "Bash(FILTER_BRANCH_SQUELCH_WARNING=1 git:*)",
       "Bash(sqlite3:*)",
       "Bash(cd /d D:\\\\source\\\\webshooter)",
-      "Bash(grep -r \"stationResultsJson\" --include=\"*.kt\" app/src/main/java)"
+      "Bash(grep -r \"stationResultsJson\" --include=\"*.kt\" app/src/main/java)",
+      "Bash(pwsh:*)"
     ]
   }
 }

@@ -6,22 +6,30 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import platform.EventKit.EKEntityType
 import platform.EventKit.EKEvent
 import platform.EventKit.EKEventStore
-import platform.EventKit.EKSpan
+import platform.EventKitUI.EKEventEditViewAction
+import platform.EventKitUI.EKEventEditViewController
+import platform.EventKitUI.EKEventEditViewDelegateProtocol
 import platform.Foundation.NSDate
 import platform.Foundation.dateWithTimeIntervalSince1970
+import platform.UIKit.UIApplication
+import platform.UIKit.UIViewController
+import platform.darwin.NSObject
 
 /**
- * iOS EventKit-backed calendar opener. Mirrors the Android version's UX
- * goal of "add an event to the user's calendar" but writes directly via
- * EKEventStore.saveEvent rather than presenting Apple's event editor.
+ * iOS EventKit-backed calendar opener. Presents the system's
+ * [EKEventEditViewController] modally so the user can review and confirm
+ * the event — matches the Android picker UX where the system calendar app
+ * opens its own editor on top of the WebShooter activity.
  *
- * Access is requested with the deprecated `requestAccessToEntityType` so
- * the same code path works back to iOS 13. On iOS 17+ this still works
- * (it's been preserved for compatibility) provided `NSCalendarsUsageDescription`
- * is in Info.plist.
+ * Falls back to a silent `saveEvent` write only if no presenting view
+ * controller can be located (e.g. mid-launch or background) — better to
+ * still capture the entry than drop it.
  */
 @OptIn(ExperimentalForeignApi::class, BetaInteropApi::class)
 class IosCalendarOpener : CalendarOpener {
+    // Hold a strong reference to the delegate so it isn't deallocated mid-flight.
+    private var pendingDelegate: EventEditDelegate? = null
+
     override fun addEvent(
         title: String,
         description: String?,
@@ -45,14 +53,44 @@ class IosCalendarOpener : CalendarOpener {
                 this.allDay = allDay
                 calendar = store.defaultCalendarForNewEvents
             }
-            // Passing null for the NSError out-pointer — error details are
-            // lost but logging a failure is still useful.
-            val saved = store.saveEvent(event, EKSpan.EKSpanThisEvent, null)
-            if (saved) {
-                Napier.i("Added '$title' to calendar")
-            } else {
-                Napier.w("Calendar save failed for '$title'")
+
+            val presenter = topPresentedViewController()
+            if (presenter == null) {
+                Napier.w("No presenting UIViewController; falling back to silent save")
+                runCatching { store.saveEvent(event, platform.EventKit.EKSpan.EKSpanThisEvent, null) }
+                return@requestAccessToEntityType
             }
+
+            val editVc = EKEventEditViewController().apply {
+                eventStore = store
+                this.event = event
+            }
+            val delegate = EventEditDelegate(
+                onDone = { pendingDelegate = null }
+            )
+            pendingDelegate = delegate
+            editVc.editViewDelegate = delegate
+            presenter.presentViewController(editVc, animated = true, completion = null)
         }
+    }
+
+    private fun topPresentedViewController(): UIViewController? {
+        var vc: UIViewController? = UIApplication.sharedApplication.keyWindow?.rootViewController
+        while (vc?.presentedViewController != null) {
+            vc = vc.presentedViewController
+        }
+        return vc
+    }
+}
+
+@OptIn(BetaInteropApi::class)
+private class EventEditDelegate(
+    private val onDone: () -> Unit,
+) : NSObject(), EKEventEditViewDelegateProtocol {
+    override fun eventEditViewController(
+        controller: EKEventEditViewController,
+        didCompleteWithAction: EKEventEditViewAction,
+    ) {
+        controller.dismissViewControllerAnimated(true) { onDone() }
     }
 }
