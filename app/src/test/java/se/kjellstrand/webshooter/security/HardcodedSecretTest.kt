@@ -9,54 +9,49 @@ class HardcodedSecretTest {
     private val loginRepo = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/login/LoginRepository.kt")
     private val refreshTokenRequest = File("../shared/src/commonMain/kotlin/se/kjellstrand/webshooter/data/login/remote/RefreshTokenRequest.kt")
     private val buildGradle = File("build.gradle.kts")
+    private val prebuiltDbGradle = File("prebuilt-database.gradle.kts")
+    private val iosProject = File("../iosApp/project.yml")
 
-    // --- Fixed behavior (should FAIL before fix, PASS after fix) ---
+    // The webshooter.se OAuth client secret is a quoted 40-char alphanumeric literal.
+    // It must come from local.properties / Secrets.xcconfig, never from tracked files.
+    private val secretLiteral = Regex("\"[A-Za-z0-9]{40}\"")
 
-    @Test
-    fun `LoginRepository does not contain hardcoded client secret`() {
-        val source = loginRepo.readText()
+    private fun assertNoHardcodedSecret(file: File) {
+        assertTrue("${file.path} should exist", file.exists())
         assertFalse(
-            "LoginRepository should not contain the hardcoded client secret string",
-            source.contains("REMOVED-CLIENT-SECRET")
+            "${file.path} should not contain a hardcoded client secret",
+            secretLiteral.containsMatchIn(file.readText())
         )
     }
 
     @Test
-    fun `RefreshTokenRequest does not contain hardcoded client secret`() {
-        val source = refreshTokenRequest.readText()
-        assertFalse(
-            "RefreshTokenRequest should not contain the hardcoded client secret string",
-            source.contains("REMOVED-CLIENT-SECRET")
-        )
-    }
+    fun `LoginRepository does not contain hardcoded client secret`() = assertNoHardcodedSecret(loginRepo)
+
+    @Test
+    fun `RefreshTokenRequest does not contain hardcoded client secret`() = assertNoHardcodedSecret(refreshTokenRequest)
+
+    @Test
+    fun `app build script does not contain hardcoded client secret`() = assertNoHardcodedSecret(buildGradle)
+
+    @Test
+    fun `prebuilt database script does not contain hardcoded client secret`() = assertNoHardcodedSecret(prebuiltDbGradle)
+
+    @Test
+    fun `iOS project does not contain hardcoded client secret`() = assertNoHardcodedSecret(iosProject)
 
     @Test
     fun `client secret is defined in BuildConfig`() {
-        val source = buildGradle.readText()
         assertTrue(
             "build.gradle.kts should define CLIENT_SECRET as a buildConfigField",
-            source.contains("CLIENT_SECRET")
+            buildGradle.readText().contains("CLIENT_SECRET")
         )
-    }
-
-    // --- Guard tests (should PASS before and after fix) ---
-
-    @Test
-    fun `LoginRepository exists`() {
-        assertTrue(loginRepo.exists())
-    }
-
-    @Test
-    fun `RefreshTokenRequest exists`() {
-        assertTrue(refreshTokenRequest.exists())
     }
 
     @Test
     fun `LoginRepository still creates LoginRequest`() {
-        val source = loginRepo.readText()
         assertTrue(
             "LoginRepository should still create LoginRequest for authentication",
-            source.contains("LoginRequest(")
+            loginRepo.readText().contains("LoginRequest(")
         )
     }
 }

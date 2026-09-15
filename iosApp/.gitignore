@@ -4,3 +4,6 @@ xcuserdata/
 *.xcworkspace
 DerivedData/
 build/
+
+# Local secrets (WEBSHOOTER_CLIENT_SECRET), included optionally by Base.xcconfig
+Secrets.xcconfig

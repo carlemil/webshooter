@@ -67,13 +67,18 @@ android {
     }
 
     productFlavors {
+        // webshooter.se OAuth client secret: local.properties CLIENT_SECRET, else env WEBSHOOTER_CLIENT_SECRET.
+        // Never hardcode it here, this repo is public.
         val propsFile = rootProject.file("local.properties")
-        val clientSecret = if (propsFile.exists()) {
+        val clientSecret = (if (propsFile.exists()) {
             propsFile.readLines()
                 .firstOrNull { it.startsWith("CLIENT_SECRET=") }
                 ?.substringAfter("=")?.trim()
-        } else null
-        val secretField = "\"${clientSecret ?: "REMOVED-CLIENT-SECRET"}\""
+        } else null) ?: System.getenv("WEBSHOOTER_CLIENT_SECRET")
+        if (clientSecret.isNullOrEmpty()) {
+            logger.warn("CLIENT_SECRET not set in local.properties or WEBSHOOTER_CLIENT_SECRET; login will fail in this build")
+        }
+        val secretField = "\"${clientSecret.orEmpty()}\""
 
         create("prod") {
             dimension = "server"

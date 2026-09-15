@@ -17,13 +17,20 @@ packages:
 
 # Mirrors the Android side's `prod` and `staging` product flavors:
 # each scheme maps to one build configuration that hard-codes the
-# backend URL. The CLIENT_SECRET is the same fallback the Android
-# build uses (see app/build.gradle.kts productFlavors).
+# backend URL.
 configs:
   Debug-Staging: debug
   Debug-Prod: debug
   Release-Staging: release
   Release-Prod: release
+
+# WEBSHOOTER_CLIENT_SECRET comes from the git-ignored iosApp/Secrets.xcconfig,
+# pulled in by Base.xcconfig. This repo is public: never put the secret here.
+configFiles:
+  Debug-Staging: Base.xcconfig
+  Debug-Prod: Base.xcconfig
+  Release-Staging: Base.xcconfig
+  Release-Prod: Base.xcconfig
 
 settings:
   base:
@@ -36,7 +43,6 @@ settings:
     CODE_SIGN_IDENTITY: "-"
     CODE_SIGNING_REQUIRED: YES
     CODE_SIGNING_ALLOWED: YES
-    WEBSHOOTER_CLIENT_SECRET: "REMOVED-CLIENT-SECRET"
     # Crash reporting only ships on Release-Prod. Staging + every debug
     # config stays Napier-only — see IosCrashReporter bind in
     # IosPlatformModule. Read at runtime from Info.plist by WebshooterApp.

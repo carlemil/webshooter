@@ -52,7 +52,7 @@ val generatePrebuiltDatabase = tasks.register("generatePrebuiltDatabase") {
         val password = props.getProperty("PREBUILD_PASSWORD")
             ?: throw GradleException("PREBUILD_PASSWORD not set in local.properties")
         val clientSecret = props.getProperty("CLIENT_SECRET")
-            ?: "REMOVED-CLIENT-SECRET"
+            ?: throw GradleException("CLIENT_SECRET not set in local.properties")
 
         val schemaJson = com.google.gson.JsonParser.parseString(schemaFile.readText()).asJsonObject
         val database = schemaJson.getAsJsonObject("database")
