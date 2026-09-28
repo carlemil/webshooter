@@ -19,8 +19,6 @@ class MockResults {
             stdMedal = null,
             signup = Signup(
                 user = User(
-                    name = "Alf",
-                    lastname = "Andersson",
                     userID = 1625372658,
                     fullname = "Alf Andersson"
                 ),
@@ -43,8 +41,6 @@ class MockResults {
             stdMedal = StdMedal.S,
             signup = Signup(
                 user = User(
-                    name = "Martin",
-                    lastname = "Nordborg",
                     userID = 846904506,
                     fullname = "Martin Nordborg"
                 ),
@@ -67,8 +63,6 @@ class MockResults {
             stdMedal = StdMedal.S,
             signup = Signup(
                 user = User(
-                    name = "Olof",
-                    lastname = "Olofson",
                     userID = 846904507,
                     fullname = "Olof Olofson"
                 ),
@@ -91,8 +85,6 @@ class MockResults {
             stdMedal = StdMedal.S,
             signup = Signup(
                 user = User(
-                    name = "Bosse",
-                    lastname = "Borgare",
                     userID = 846904508,
                     fullname = "Bosse Borgare"
                 ),

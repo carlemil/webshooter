@@ -59,9 +59,6 @@ data class Signup(
 
 @Serializable
 data class User(
-    val name: String,
-    val lastname: String,
-
     @SerialName("user_id")
     val userID: Long,
 

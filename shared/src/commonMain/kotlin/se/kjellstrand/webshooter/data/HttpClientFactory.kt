@@ -1,10 +1,13 @@
 package se.kjellstrand.webshooter.data
 
 import io.github.aakira.napier.Napier
+import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.plugins.DefaultRequest
 import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.api.Send
+import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.client.plugins.auth.Auth
 import io.ktor.client.plugins.auth.providers.BearerTokens
 import io.ktor.client.plugins.auth.providers.bearer
@@ -20,9 +23,11 @@ import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
-import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.serialization.json.Json
 import se.kjellstrand.webshooter.data.login.remote.LoginResponse
 import se.kjellstrand.webshooter.data.login.remote.RefreshTokenRequest
@@ -104,49 +109,32 @@ fun HttpClientConfig<*>.configureWebshooterHttpClient(
                 val access = authTokenManager.readToken() ?: return@loadTokens null
                 BearerTokens(access, authTokenManager.readRefreshToken() ?: "")
             }
-            refreshTokens {
-                val refresh = authTokenManager.readRefreshToken()
-                if (refresh.isNullOrEmpty()) {
-                    authTokenManager.clearToken()
-                    sessionManager.emitSessionExpired()
-                    return@refreshTokens null
-                }
-                try {
-                    val response = client.post("api/v4.1.9/oauth/token") {
-                        attributes.put(Auth.AuthCircuitBreaker, Unit)
-                        contentType(ContentType.Application.Json)
-                        setBody(
-                            RefreshTokenRequest(
-                                client_secret = clientSecret,
-                                refresh_token = refresh
-                            )
-                        )
-                    }
-                    if (response.status.isSuccess()) {
-                        val body = json.decodeFromString(
-                            LoginResponse.serializer(),
-                            response.bodyAsText()
-                        )
-                        authTokenManager.storeTokens(
-                            body.accessToken,
-                            body.refreshToken,
-                            body.expiresIn
-                        )
-                        BearerTokens(body.accessToken, body.refreshToken)
-                    } else {
-                        authTokenManager.clearToken()
-                        sessionManager.emitSessionExpired()
-                        null
-                    }
-                } catch (e: Exception) {
-                    Napier.w("Token refresh failed", e, tag = LOG_TAG)
-                    authTokenManager.clearToken()
-                    sessionManager.emitSessionExpired()
-                    null
-                }
-            }
+            refreshTokens { refreshAccessToken(client, authTokenManager, sessionManager, json, clientSecret) }
         }
     }
+
+    // The backend answers an expired/invalid bearer with 500 instead of 401,
+    // so Ktor's 401-driven refreshTokens never fires. Refresh proactively
+    // from the stored expiry instead, and always send the latest stored token
+    // (the bearer provider caches whatever loadTokens returned first).
+    val refreshMutex = Mutex()
+    install(createClientPlugin("ProactiveTokenRefresh") {
+        on(Send) { request ->
+            if (request.headers.contains(HttpHeaders.Authorization)) {
+                if (authTokenManager.isTokenExpired()) {
+                    refreshMutex.withLock {
+                        if (authTokenManager.isTokenExpired()) {
+                            refreshAccessToken(client, authTokenManager, sessionManager, json, clientSecret)
+                        }
+                    }
+                }
+                authTokenManager.readToken()?.let {
+                    request.headers[HttpHeaders.Authorization] = "Bearer $it"
+                }
+            }
+            proceed(request)
+        }
+    })
 
     install(DefaultRequest) {
         url(baseUrl)
@@ -160,5 +148,35 @@ fun HttpClientConfig<*>.configureWebshooterHttpClient(
     HttpResponseValidator {
         // Default validator throws ClientRequestException / ServerResponseException
         // for 4xx/5xx when expectSuccess = true. No custom handling needed here.
+    }
+}
+
+private suspend fun refreshAccessToken(
+    client: HttpClient,
+    authTokenManager: AuthTokenManager,
+    sessionManager: SessionManager,
+    json: Json,
+    clientSecret: String,
+): BearerTokens? {
+    val refresh = authTokenManager.readRefreshToken()
+    if (refresh.isNullOrEmpty()) {
+        authTokenManager.clearToken()
+        sessionManager.emitSessionExpired()
+        return null
+    }
+    return try {
+        val response = client.post("api/v4.1.9/oauth/token") {
+            attributes.put(Auth.AuthCircuitBreaker, Unit)
+            contentType(ContentType.Application.Json)
+            setBody(RefreshTokenRequest(client_secret = clientSecret, refresh_token = refresh))
+        }
+        val body = json.decodeFromString(LoginResponse.serializer(), response.bodyAsText())
+        authTokenManager.storeTokens(body.accessToken, body.refreshToken, body.expiresIn)
+        BearerTokens(body.accessToken, body.refreshToken)
+    } catch (e: Exception) {
+        Napier.w("Token refresh failed", e, tag = LOG_TAG)
+        authTokenManager.clearToken()
+        sessionManager.emitSessionExpired()
+        null
     }
 }

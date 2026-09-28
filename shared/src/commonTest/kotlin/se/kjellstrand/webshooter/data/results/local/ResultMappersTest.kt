@@ -41,8 +41,6 @@ class ResultMappersTest {
         stdMedal = null,
         signup = Signup(
             user = User(
-                name = "Jane",
-                lastname = "Doe",
                 userID = userId,
                 fullname = fullname
             ),

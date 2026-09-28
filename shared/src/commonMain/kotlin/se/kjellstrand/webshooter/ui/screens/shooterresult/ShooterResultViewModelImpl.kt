@@ -31,9 +31,7 @@ class ShooterResultViewModelImpl(
                 when (resource) {
                     is Resource.Success -> {
                         val results = resource.data.results
-                        val shooterName =
-                            "${results.firstOrNull()?.signup?.user?.name} ${results.firstOrNull()?.signup?.user?.lastname}"
-                                ?: ""
+                        val shooterName = results.firstOrNull()?.signup?.user?.fullname ?: ""
                         _uiState.value = ShooterResultUiState(
                             isLoading = false,
                             shooterName = shooterName,

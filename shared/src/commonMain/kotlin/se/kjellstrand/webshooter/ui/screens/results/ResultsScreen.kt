@@ -706,7 +706,7 @@ fun ResultItem(
             modifier = Modifier.weight(if (showWeaponClass) 8f else 10f)
         ) {
             ItemText(
-                text = "${result.signup.user.name} ${result.signup.user.lastname}",
+                text = result.signup.user.fullname,
                 style = itemStyle,
                 overflow = TextOverflow.Ellipsis
             )

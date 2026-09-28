@@ -10,7 +10,9 @@ data class SignupsResponse(
 
 @Serializable
 data class SignupGroup(
-    val signups: List<SignupEntry>
+    val signups: List<SignupEntry>,
+    // false = backend left this year empty; fetch it via signup/year/{year}.
+    val loaded: Boolean = true
 )
 
 @Serializable

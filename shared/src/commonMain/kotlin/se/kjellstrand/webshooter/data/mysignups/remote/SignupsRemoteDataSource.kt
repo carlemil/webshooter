@@ -11,6 +11,11 @@ interface SignupsRemoteDataSource {
 class SignupsRemoteDataSourceKtor(
     private val httpClient: HttpClient
 ) : SignupsRemoteDataSource {
-    override suspend fun getSignups(): SignupsResponse =
-        httpClient.get("api/v4.1.9/signup").body()
+    override suspend fun getSignups(): SignupsResponse {
+        val response: SignupsResponse = httpClient.get("api/v4.1.9/signup").body()
+        return response.copy(groupedSignups = response.groupedSignups.mapValues { (year, group) ->
+            if (group.loaded) group
+            else httpClient.get("api/v4.1.9/signup/year/$year").body<SignupGroup>()
+        })
+    }
 }
