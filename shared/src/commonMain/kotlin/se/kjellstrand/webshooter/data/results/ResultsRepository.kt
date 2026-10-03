@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import okio.IOException
 import se.kjellstrand.webshooter.data.common.Resource
+import se.kjellstrand.webshooter.data.isThrottledOrUnauthenticated
 import se.kjellstrand.webshooter.data.common.UserError
 import se.kjellstrand.webshooter.data.results.local.ResultsDao
 import se.kjellstrand.webshooter.data.results.local.toDomain
@@ -85,23 +86,36 @@ open class ResultsRepository constructor(
     enum class RefreshOutcome {
         /** Server returned results; cache replaced. */
         Success,
-        /** Server returned 5xx (the backend bug for competitions without
-         *  any results yet) — caller should mark the competition skippable. */
+        /** Server answered 200 with an empty list — the competition has no
+         *  results (yet). Caller should mark it skippable until it changes. */
+        Empty,
+        /** The API itself failed with 5xx for this competition — caller
+         *  should mark the competition skippable. */
         ServerError,
+        /** Rejected before reaching the API: the 60 requests/minute limit
+         *  was hit (or the token was refused). Says nothing about this
+         *  competition; the caller should stop the bulk refresh and retry
+         *  on the next sync. The cache is left untouched. */
+        RateLimited,
         /** Network/IO error or other transient failure — keep retrying. */
         TransientFailure,
     }
 
     open suspend fun refreshResultsFor(competitionId: Long): RefreshOutcome {
         return try {
-            val fresh = resultsRemoteDataSource.getResults(competitionId)
+            val fresh = resultsRemoteDataSource.getResultsInBackground(competitionId)
             dao.deleteByCompetition(competitionId)
             dao.insertAll(fresh.results.map { it.toEntity(competitionId, json) })
-            RefreshOutcome.Success
+            if (fresh.results.isEmpty()) RefreshOutcome.Empty else RefreshOutcome.Success
         } catch (e: ServerResponseException) {
-            Napier.w("refreshResultsFor($competitionId) got 5xx; marking skippable", e, TAG)
-            try { dao.deleteByCompetition(competitionId) } catch (_: Exception) {}
-            RefreshOutcome.ServerError
+            if (e.response.isThrottledOrUnauthenticated()) {
+                Napier.w("refreshResultsFor($competitionId) was rate limited; will retry next sync", tag = TAG)
+                RefreshOutcome.RateLimited
+            } else {
+                Napier.w("refreshResultsFor($competitionId) got 5xx; marking skippable", e, TAG)
+                try { dao.deleteByCompetition(competitionId) } catch (_: Exception) {}
+                RefreshOutcome.ServerError
+            }
         } catch (e: Exception) {
             Napier.w("refreshResultsFor($competitionId) failed; invalidating cache", e, TAG)
             try { dao.deleteByCompetition(competitionId) } catch (_: Exception) {}

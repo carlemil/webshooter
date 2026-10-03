@@ -419,4 +419,59 @@ class CompetitionsRepositorySyncAllTest {
             resultsRepo.maxConcurrency in 1..4
         ,            "Concurrency must not exceed 4, observed ${resultsRepo.maxConcurrency}")
     }
+
+    // --- Refresh outcomes ---
+
+    private fun rigWithOutcomes(
+        ids: LongRange,
+        outcome: (Long) -> se.kjellstrand.webshooter.data.results.ResultsRepository.RefreshOutcome
+    ): Triple<CompetitionsRepository, FakeDao, NoOpResultsRepository> {
+        val resultsRepo = object : NoOpResultsRepository() {
+            override suspend fun refreshResultsFor(competitionId: Long): RefreshOutcome {
+                super.refreshResultsFor(competitionId)
+                return outcome(competitionId)
+            }
+        }
+        val remote = FakeRemoteDataSource().apply {
+            pageResponses[1] = response(1, 1, ids.map { datum(it, "completed") })
+        }
+        val dao = FakeDao(seeded = emptyList())
+        return Triple(CompetitionsRepository(remote, dao, json, resultsRepo, NoOpResultsDao()), dao, resultsRepo)
+    }
+
+    @Test
+    fun `syncAll flags a competition whose results came back empty`() = runTest {
+        val (repo, dao, _) = rigWithOutcomes(1..1L) {
+            se.kjellstrand.webshooter.data.results.ResultsRepository.RefreshOutcome.Empty
+        }
+
+        repo.syncAll()
+
+        assertEquals(true, dao.getAll().single().noResults)
+    }
+
+    @Test
+    fun `syncAll does not flag competitions when the refresh is rate limited`() = runTest {
+        val (repo, dao, _) = rigWithOutcomes(1..3L) {
+            se.kjellstrand.webshooter.data.results.ResultsRepository.RefreshOutcome.RateLimited
+        }
+
+        repo.syncAll()
+
+        assertTrue(dao.getAll().none { it.noResults }, "A throttled request says nothing about the competition")
+    }
+
+    @Test
+    fun `syncAll stops refreshing once it is rate limited`() = runTest {
+        val (repo, _, resultsRepo) = rigWithOutcomes(1..40L) {
+            se.kjellstrand.webshooter.data.results.ResultsRepository.RefreshOutcome.RateLimited
+        }
+
+        repo.syncAll()
+
+        assertTrue(
+            resultsRepo.refreshCalls.size <= 4,
+            "Only the in-flight requests may still go out, saw ${resultsRepo.refreshCalls.size}"
+        )
+    }
 }

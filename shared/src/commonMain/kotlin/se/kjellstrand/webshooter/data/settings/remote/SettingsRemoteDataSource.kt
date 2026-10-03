@@ -7,9 +7,13 @@ import io.ktor.client.request.get
 import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.http.Parameters
+import kotlinx.serialization.json.JsonObject
 
 interface SettingsRemoteDataSource {
     suspend fun getUserProfile(): UserProfileResponse
+
+    /** The `user` object exactly as the server sends it, unknown fields included. */
+    suspend fun getRawUserProfile(): JsonObject
     suspend fun updateUserProfile(fields: Map<String, String>): UserProfileResponse
     suspend fun updatePassword(fields: Map<String, String>)
 }
@@ -20,6 +24,10 @@ class SettingsRemoteDataSourceKtor(
 
     override suspend fun getUserProfile(): UserProfileResponse =
         httpClient.get("api/v4.1.9/authenticate/user").body()
+
+    override suspend fun getRawUserProfile(): JsonObject =
+        httpClient.get("api/v4.1.9/authenticate/user").body<JsonObject>()["user"] as? JsonObject
+            ?: JsonObject(emptyMap())
 
     override suspend fun updateUserProfile(fields: Map<String, String>): UserProfileResponse =
         httpClient.put("api/v4.1.9/authenticate/user") {

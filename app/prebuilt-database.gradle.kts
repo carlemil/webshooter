@@ -23,7 +23,7 @@ val generatePrebuiltDatabase = tasks.register("generatePrebuiltDatabase") {
 
     val schemaDir = file("../shared/schemas/se.kjellstrand.webshooter.data.db.AppDatabase")
     val dbFile = file("src/main/assets/databases/webshooter.db")
-    val maxCompetitionId = 300
+    val maxCompetitionId = 380
 
     inputs.dir(schemaDir)
     outputs.file(dbFile)

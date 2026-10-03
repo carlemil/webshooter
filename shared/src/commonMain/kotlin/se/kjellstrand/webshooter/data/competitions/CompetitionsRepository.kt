@@ -1,5 +1,6 @@
 package se.kjellstrand.webshooter.data.competitions
 
+import kotlinx.coroutines.CompletableDeferred
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -89,12 +90,20 @@ open class CompetitionsRepository constructor(
         if (toRefreshIds.isNotEmpty()) {
             coroutineScope {
                 val sem = Semaphore(REFRESH_CONCURRENCY)
+                // Completed once the server starts rejecting us for request
+                // volume; the rest of this run is then skipped and picked
+                // up by the next sync instead of being mis-flagged.
+                val rateLimited = CompletableDeferred<Unit>()
                 toRefreshIds.map { id ->
                     async {
                         sem.withPermit {
+                            if (rateLimited.isCompleted) return@withPermit
                             when (resultsRepository.refreshResultsFor(id)) {
-                                ResultsRepository.RefreshOutcome.ServerError ->
+                                ResultsRepository.RefreshOutcome.ServerError,
+                                ResultsRepository.RefreshOutcome.Empty ->
                                     dao.setNoResults(id, true)
+                                ResultsRepository.RefreshOutcome.RateLimited ->
+                                    rateLimited.complete(Unit)
                                 ResultsRepository.RefreshOutcome.Success ->
                                     if (existing[id]?.noResults == true) dao.setNoResults(id, false)
                                 ResultsRepository.RefreshOutcome.TransientFailure -> Unit

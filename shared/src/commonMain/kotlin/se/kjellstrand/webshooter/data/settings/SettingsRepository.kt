@@ -1,5 +1,6 @@
 package se.kjellstrand.webshooter.data.settings
 
+import io.github.aakira.napier.Napier
 import io.ktor.client.network.sockets.ConnectTimeoutException
 import io.ktor.client.network.sockets.SocketTimeoutException
 import io.ktor.client.plugins.ResponseException
@@ -60,7 +61,18 @@ class SettingsRepository constructor(
     fun updateUserProfile(profile: UserProfile): Flow<Resource<UserProfile, UserError>> = flow {
         emit(Resource.Loading(true))
         try {
+            // Mirror the web client: send back everything the server holds
+            // for the user, then overlay what this app edits. `clubs` and
+            // `api_token` are written below in the shape the app has
+            // always used.
+            val serverFields = try {
+                remoteDataSource.getRawUserProfile().toFormFields(skipKeys = setOf("clubs", "api_token"))
+            } catch (e: Exception) {
+                Napier.w("Could not load full profile before save; sending known fields only", e, "SettingsRepository")
+                emptyMap()
+            }
             val fields = buildMap<String, String> {
+                putAll(serverFields)
                 put("name", profile.name)
                 put("lastname", profile.lastname)
                 put("email", profile.email)

@@ -21,10 +21,13 @@ import io.ktor.client.plugins.observer.ResponseObserver
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
+import io.ktor.http.isSuccess
+import io.ktor.util.AttributeKey
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -34,6 +37,26 @@ import se.kjellstrand.webshooter.data.login.remote.RefreshTokenRequest
 import se.kjellstrand.webshooter.data.telemetry.CrashReporter
 
 private const val LOG_TAG = "WebshooterHTTP"
+
+private const val HEADER_RATE_LIMIT = "X-RateLimit-Limit"
+private const val HEADER_RATE_REMAINING = "X-RateLimit-Remaining"
+
+/**
+ * Mark a request as background work (bulk sync). The rate limiter then keeps
+ * [RequestRateLimiter.BACKGROUND_RESERVE] slots free for requests the user is
+ * actually waiting on.
+ */
+val BackgroundRequest = AttributeKey<Unit>("WebshooterBackgroundRequest")
+
+/**
+ * The backend adds `X-RateLimit-*` headers to every response that got past
+ * its throttle and auth middleware, including real 5xx errors. A 5xx
+ * *without* them was rejected up front: either the 60 requests/minute limit
+ * was exceeded or the bearer token was not accepted. Neither says anything
+ * about the resource that was asked for.
+ */
+fun HttpResponse.isThrottledOrUnauthenticated(): Boolean =
+    status.value >= 500 && headers[HEADER_RATE_REMAINING] == null
 
 /**
  * Apply the cross-platform Webshooter HTTP client configuration to an
@@ -133,6 +156,26 @@ fun HttpClientConfig<*>.configureWebshooterHttpClient(
                 }
             }
             proceed(request)
+        }
+    })
+
+    // The API allows 60 requests/minute per user and answers anything above
+    // that with an anonymous 500, so queue requests client-side instead.
+    val rateLimiter = RequestRateLimiter()
+    install(createClientPlugin("RequestRateLimit") {
+        on(Send) { request ->
+            val background = request.attributes.contains(BackgroundRequest)
+            rateLimiter.acquire(if (background) RequestRateLimiter.BACKGROUND_RESERVE else 0)
+            val call = proceed(request)
+            val headers = call.response.headers
+            val limit = headers[HEADER_RATE_LIMIT]?.toIntOrNull()
+            val remaining = headers[HEADER_RATE_REMAINING]?.toIntOrNull()
+            if (limit != null && remaining != null) {
+                rateLimiter.onServerCount(limit, remaining)
+            } else if (!call.response.status.isSuccess() && call.response.isThrottledOrUnauthenticated()) {
+                Napier.w("Request rejected before reaching the API (rate limit or auth)", tag = LOG_TAG)
+            }
+            call
         }
     })
 
