@@ -1,1 +1,7 @@
-Stabilitetsförbättringar och buggfixar under huven.
+• Resultat och Mina anmälningar fungerar igen efter ändringar på webshooter.se
+• Anmälningar från tidigare år visas igen
+• Inloggningen förnyas automatiskt så du slipper logga in på nytt
+• Tryck på en förklaring i diagrammen för att markera den serien
+• Bättre skyttväljare och ny M.-prec-flik i diagrammen
+• Tävlingslistan behåller scrollpositionen
+• Stabilitetsförbättringar och buggfixar

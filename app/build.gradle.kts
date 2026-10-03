@@ -9,8 +9,8 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-val appVersionCode = 34
-val appVersionName = "1.21.0"
+val appVersionCode = 35
+val appVersionName = "1.22.0"
 
 extra["appVersionCode"] = appVersionCode
 apply(from = "prebuilt-database.gradle.kts")
